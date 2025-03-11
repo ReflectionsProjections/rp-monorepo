@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
-# Prevent interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# # Prevent interactive prompts
+# ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y curl git build-essential
@@ -17,10 +17,16 @@ RUN mkdir -p /shared
 WORKDIR /shared
 
 COPY entrypoint.sh /entrypoint.sh
+
+COPY ./.env /
+
 RUN chmod +x /entrypoint.sh
 
-# Expose ports used by the API (customize as needed)
-EXPOSE 3000
+# Expose ports (API, web, admin)
+EXPOSE 3000 
+EXPOSE 5173
+EXPOSE 5174 
+
 
 ENTRYPOINT ["/entrypoint.sh"]
 # On container start, install dependencies and run the API

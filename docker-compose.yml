@@ -1,13 +1,12 @@
-version: "3.8"
-
 services:
   rp:
     build: .
     container_name: rp_dev
     volumes:
-      - ./shared:/shared  # Mount everything in shared folder
+      - ./dev:/shared  # Mount everything in shared folder
     ports:
       - "3000:3000"
-      # - "4000:4000"
-      # - "5000:5000"
-    command: bash -c "yarn install && yarn start"
+      - "5173:5173"
+      - "5174:5174"
+    stdin_open: true   # Allows interactive shell
+    tty: true          # Enables interactive mode
