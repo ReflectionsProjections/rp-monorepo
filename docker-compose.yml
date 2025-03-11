@@ -6,7 +6,7 @@ services:
       - ./dev:/shared  # Mount everything in shared folder
     ports:
       - "3000:3000"
-      - "5173:5173"
-      - "5174:5174"
+      - "3001:3001"
+      - "3002:3002"
     stdin_open: true   # Allows interactive shell
     tty: true          # Enables interactive mode

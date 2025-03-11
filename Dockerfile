@@ -24,8 +24,8 @@ RUN chmod +x /entrypoint.sh
 
 # Expose ports (API, web, admin)
 EXPOSE 3000 
-EXPOSE 5173
-EXPOSE 5174 
+EXPOSE 3001
+EXPOSE 3002
 
 
 ENTRYPOINT ["/entrypoint.sh"]
