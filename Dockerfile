@@ -5,6 +5,7 @@ FROM ubuntu:22.04
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y curl git build-essential
+RUN apt-get update && apt-get install -y tini
 
 # Install Node.js (LTS) and Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
@@ -27,8 +28,7 @@ EXPOSE 3000
 EXPOSE 3001
 EXPOSE 3002
 
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 # On container start, install dependencies and run the API
 # CMD ["bash", "-c", "cd yarn install && yarn start"]
 

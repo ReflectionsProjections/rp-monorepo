@@ -7,8 +7,7 @@ mkdir -p "$SHARED_DIR"
 # List of repositories to clone
 REPOS=(
     "git@github.com:ReflectionsProjections/rp-api.git"
-    "git@github.com:ReflectionsProjections/rp-web-2024.git"
-    "git@github.com:ReflectionsProjections/rp-admin.git"
+    "git@github.com:ReflectionsProjections/rp-web.git"
 )
 
 # Clone each repository
