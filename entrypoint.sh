@@ -1,27 +1,59 @@
 #!/bin/bash
+set -euo pipefail
+
+echo "
+              :=+****#**=.              
+            :+*==-=+++***#+.            
+           +*=---+**+++++**#=           
+          =*-----+*++++++++*%-          
+         .#------=+**++++++**%          
+     .:==*#-------==++*+**###%+=-:      
+   -++=--=#----------=*##+=-----=+++:   
+ .*+-:::::#+---------+#=------------*+  
+.#=:::::::-#+-------*#---------------+* 
+*+:::::::::-*#+=---=#-----------------++
+%-::::::::-==+*#*++##==--------======--%
+%+-::::::-++++=+++*%*++**+----=========%
+*#=======++++++++=+%=----+**=========-**
+ **=++++++++++++=+#+-------+#=======-+#.
+  +#++==+++++==+*#+---------+#======**. 
+   :+***+++++**##+=----------#+=++*+:   
+      :-=+%##**+++++=--------#*==:.     
+          %*+++++++**+=------#.         
+          -%+++++++++*+-----*=          
+           =#*+++++++*=---=*=           
+            .+#**++++=--=*+:            
+              .=**#****+=:              
+"
+echo -e "\033[1m\033[36mWelcome to the RP Dev Portal 🚀\033[0m"
+
+mkdir -p /shared/logs
 
 declare -A WORKSPACES=(
-    ["web"]="$BUILD_WEB"
+    ["hype"]="$BUILD_HYPE"
     ["admin"]="$BUILD_ADMIN"
+    ["info"]="$BUILD_INFO"
+    ["site"]="$BUILD_SITE"
 )
 
 cp /.env /shared/rp-api/
 cp /.env /shared/rp-web/
 
-mkdir -p /shared/logs/
+# Start the API
+echo "Starting API..."
+setsid bash -c "cd /shared/rp-api && yarn install && yarn start 2>&1 | tee /shared/logs/api.log" &
 
-setsid bash -c "cd /shared/rp-api && yarn install && yarn start 2>&1 | tee /shared/logs/api.log"  &
-setsid bash -c "cd /shared/rp-web && yarn && yarn prepare | tee /shared/logs/web.log"  &
+# Start the web setup
+echo "Starting web setup..."
+setsid bash -c "cd /shared/rp-web && yarn && yarn prepare | tee /shared/logs/web.log" &
 
+# Start the workspaces
 for workspace in "${!WORKSPACES[@]}"; do
     if [[ "${WORKSPACES[$workspace]}" == "true" ]]; then
-        echo "Building @rp/$workspace"
-        pwd
+        echo "Building @rp/$workspace..."
         mkdir -p "/shared/logs/$workspace"
         setsid bash -c "cd /shared/rp-web && yarn workspace @rp/$workspace dev --host 2>&1 | tee /shared/logs/$workspace/$workspace.log" &
     fi
 done
 
-echo "alias npm='echo DO NOT USE NPM COMMANDS'" > /tmp/temp_rc
-echo "echo 'run commands here:'"  >> /tmp/temp_rc
-exec bash --rcfile /tmp/temp_rc
+exec bash

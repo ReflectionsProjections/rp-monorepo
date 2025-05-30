@@ -1,15 +1,254 @@
 services:
+  
   rp:
     build: .
     container_name: rp_dev
     volumes:
-      - ./dev:/shared  # Mount everything in shared folder
+      - ./dev:/shared
     ports:
-      - "3000:3000"
-      - "5173:5173"
-      - "5174:5174"
-    stdin_open: true   # Allows interactive shell
-    tty: true          # Enables interactive mode
+      - "3000:3000" # API
+      - "3001:3001" # Site
+      - "3002:3002" # Admin
+      - "3003:3003" # Info
+      - "3004:3004" # Hype
+    stdin_open: true
+    tty: true
     environment:
-      - BUILD_WEB=${BUILD_WEB:-true}
+      - BUILD_HYPE=${BUILD_HYPE:-true}
+      - BUILD_INFO=${BUILD_INFO:-true}
+      - BUILD_SITE=${BUILD_SITE:-true}
       - BUILD_ADMIN=${BUILD_ADMIN:-true}
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - SUPABASE_URL=http://kong:8000
+      - SUPABASE_ANON_KEY=${ANON_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - supabase-network
+
+  studio:
+    container_name: supabase-studio
+    image: supabase/studio:2025.05.19-sha-3487831
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://studio:3000/api/platform/profile').then((r) => {if (r.status !== 200) throw new Error(r.status)})"
+        ]
+      timeout: 10s
+      interval: 5s
+      retries: 3
+    environment:
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      DEFAULT_ORGANIZATION_NAME: ${STUDIO_DEFAULT_ORGANIZATION}
+      DEFAULT_PROJECT_NAME: ${STUDIO_DEFAULT_PROJECT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL}
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+
+      LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
+      LOGFLARE_URL: http://analytics:4000
+      NEXT_PUBLIC_ENABLE_LOGS: true
+      # Comment to use Big Query backend for analytics
+      NEXT_ANALYTICS_BACKEND_PROVIDER: postgres
+      # Uncomment to use Big Query backend for analytics
+      # NEXT_ANALYTICS_BACKEND_PROVIDER: bigquery
+    networks:
+      - supabase-network
+
+  kong:
+    container_name: supabase-kong
+    image: kong:2.8.1
+    restart: unless-stopped
+    ports:
+      - ${KONG_HTTP_PORT}:8000/tcp
+      - ${KONG_HTTPS_PORT}:8443/tcp
+    volumes:
+      # https://github.com/supabase/supabase/issues/12661
+      - ./volumes/api/kong.yml:/home/kong/temp.yml:ro,z
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
+      # https://github.com/supabase/cli/issues/14
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      DASHBOARD_USERNAME: ${DASHBOARD_USERNAME}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
+    # https://unix.stackexchange.com/a/294837
+    entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
+    networks:
+      - supabase-network
+
+  rest:
+    container_name: supabase-rest
+    image: postgrest/postgrest:v12.2.12
+    restart: unless-stopped
+    depends_on:
+      db:
+        # Disable this if you are using an external Postgres database
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      PGRST_DB_SCHEMAS: ${PGRST_DB_SCHEMAS}
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
+      PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY}
+    command:
+      [
+        "postgrest"
+      ] 
+    networks:
+      - supabase-network
+
+  meta:
+    container_name: supabase-meta
+    image: supabase/postgres-meta:v0.89.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        # Disable this if you are using an external Postgres database
+        condition: service_healthy
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: ${POSTGRES_HOST}
+      PG_META_DB_PORT: ${POSTGRES_PORT}
+      PG_META_DB_NAME: ${POSTGRES_DB}
+      PG_META_DB_USER: supabase_admin
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - supabase-network
+
+  # analytics:
+  #   container_name: supabase-analytics
+  #   image: supabase/logflare:1.12.0
+  #   restart: unless-stopped
+  #   ports:
+  #     - 4000:4000
+  #   # Uncomment to use Big Query backend for analytics
+  #   # volumes:
+  #   #   - type: bind
+  #   #     source: ${PWD}/gcloud.json
+  #   #     target: /opt/app/rel/logflare/bin/gcloud.json
+  #   #     read_only: true
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "curl",
+  #         "http://localhost:4000/health"
+  #       ]
+  #     timeout: 5s
+  #     interval: 5s
+  #     retries: 10
+  #   depends_on:
+  #     db:
+  #       # Disable this if you are using an external Postgres database
+  #       condition: service_healthy
+  #   environment:
+  #     LOGFLARE_NODE_HOST: 127.0.0.1
+  #     DB_USERNAME: supabase_admin
+  #     DB_DATABASE: _supabase
+  #     DB_HOSTNAME: ${POSTGRES_HOST}
+  #     DB_PORT: ${POSTGRES_PORT}
+  #     DB_PASSWORD: ${POSTGRES_PASSWORD}
+  #     DB_SCHEMA: _analytics
+  #     LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
+  #     LOGFLARE_SINGLE_TENANT: true
+  #     LOGFLARE_SUPABASE_MODE: true
+  #     LOGFLARE_MIN_CLUSTER_SIZE: 1
+
+  #     # Comment variables to use Big Query backend for analytics
+  #     POSTGRES_BACKEND_URL: postgresql://supabase_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/_supabase
+  #     POSTGRES_BACKEND_SCHEMA: _analytics
+  #     LOGFLARE_FEATURE_FLAG_OVERRIDE: multibackend=true
+  #     # Uncomment to use Big Query backend for analytics
+  #     # GOOGLE_PROJECT_ID: ${GOOGLE_PROJECT_ID}
+  #     # GOOGLE_PROJECT_NUMBER: ${GOOGLE_PROJECT_NUMBER}
+  #   networks:
+  #     - supabase-network
+
+  # Comment out everything below this point if you are using an external Postgres database
+  db:
+    container_name: supabase-db
+    image: supabase/postgres:15.8.1.060
+    restart: unless-stopped
+    volumes:
+      - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
+      # Must be superuser to create event trigger
+      - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
+      # Must be superuser to alter reserved role
+      - ./volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
+      # Initialize the database settings with JWT_SECRET and JWT_EXP
+      - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
+      # PGDATA directory is persisted between restarts
+      - ./volumes/db/data:/var/lib/postgresql/data:Z
+      # Changes required for internal supabase data such as _analytics
+      - ./volumes/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
+      # Changes required for Analytics support
+      - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
+      # Changes required for Pooler support
+      - ./volumes/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql:Z
+      # Use named volume to persist pgsodium decryption key between restarts
+      - db-config:/etc/postgresql-custom
+      # Default setup for the database
+      - ./volumes/db/init/data.sql:/docker-entrypoint-initdb.d/init-scripts/99-data.sql:Z
+    healthcheck:
+      test:
+        [
+        "CMD",
+        "pg_isready",
+        "-U",
+        "postgres",
+        "-h",
+        "localhost"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: ${POSTGRES_PORT}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP: ${JWT_EXPIRY}
+    command:
+      [
+        "postgres",
+        "-c",
+        "config_file=/etc/postgresql/postgresql.conf",
+        "-c",
+        "log_min_messages=fatal" # prevents Realtime polling queries from appearing in logs
+      ]
+    networks:
+      - supabase-network
+
+volumes:
+  db-config:
+
+networks:
+  supabase-network:
+    driver: bridge

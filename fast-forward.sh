@@ -2,8 +2,7 @@
 
 REPOS=(
     "rp-api"
-    "rp-web-2024"
-    "rp-admin"
+    "rp-web"
 )
 
 WORKING_DIR=$(pwd)
