@@ -13,6 +13,8 @@ cd dev-env
 sh setup.sh
 ```
 
+3. Reach out to your Dev Chairs for the `.env` file
+
 ## Development
 
 ### Starting the Development Environment
@@ -64,34 +66,24 @@ sh fast-forward.sh
 ## Troubleshooting
 
 
-### Database Issues
+### Container Issues
 ```bash
 # Reset the database
 docker compose down -v
 docker compose up --build
 ```
 
-### Container Issues
+
+## Updating Environment Variables
+
+You can customize the development environment by setting your variables in the `.env` file. After making changes, rebuild the Docker environment to apply the updates:
+
 ```bash
-# Rebuild a specific service
-docker compose up --build rp
+# Stop all services
+docker compose down
 
-# View container logs
-docker compose logs -f rp
-```
-
-## Environment Variables
-
-You can customize the development environment by setting these variables:
-```bash
-# Database Configuration
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD=postgres
-export POSTGRES_DB=postgres
-
-# Build Configuration
-export BUILD_WEB=true
-export BUILD_ADMIN=true
+# Rebuild and start the services
+docker compose up --build
 ```
 
 ## Notes
