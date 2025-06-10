@@ -34,12 +34,7 @@ RUN chmod +x /entrypoint.sh
 COPY ./.env /
 
 # Expose ports (API, Web, Supabase Studio)
-EXPOSE 3000
-EXPOSE 3001
-EXPOSE 3002 
-EXPOSE 3003 
-EXPOSE 3004 
-EXPOSE 8000
+EXPOSE 3000 3001 3002 3003 3004 3005 8000
 
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 

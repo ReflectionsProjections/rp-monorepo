@@ -34,6 +34,7 @@ declare -A WORKSPACES=(
     ["admin"]="$BUILD_ADMIN"
     ["info"]="$BUILD_INFO"
     ["site"]="$BUILD_SITE"
+    ["sponsor"]="$BUILD_SPONSOR"
 )
 
 cp /.env /shared/rp-api/
