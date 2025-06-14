@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "dev/rp-web"
+		},
+		{
+			"path": "dev/rp-api"
+		}
+	],
+	"settings": {}
+}
