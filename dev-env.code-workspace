@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "dev/rp-api"
+		},
+		{
+			"path": "dev/rp-mobile"
 		}
 	],
 	"settings": {}

@@ -3,6 +3,7 @@
 REPOS=(
     "rp-api"
     "rp-web"
+    "rp-mobile"
 )
 
 WORKING_DIR=$(pwd)
