@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta property="og:title" content="R|P Sponsors" />
+    <meta property="og:url" content="sponsor.reflectionsprojections.org" />
+    <meta property="og:image" content="/rp_logo.svg" />
+    <meta
+      property="og:description"
+      content="Interested in sponsoring the Midwest's largest student-run tech conference?"
+    />
+
+    <style>
+      html {
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        width: 100dvw !important;
+        overflow: hidden;
+      }
+    </style>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Racing+Sans+One&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Oxanium:wght@200..800&family=Racing+Sans+One&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta name="theme-color" content="#0F1130" />
+
+    <title>R|P Sponsors</title>
+    <link rel="icon" type="image/svg+xml" href="/rp_logo.svg" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/rp_logo_png192.png"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/rp_logo_png32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/rp_logo_png180.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+  <script>
+    let isCeiling = false;
+    window.addEventListener("wheel", (e) => {
+      const delta = e.deltaY;
+      document.documentElement.style.background = "#0F1130";
+    });
+  </script>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "@rp/shared",
+  "version": "0.1.0",
+  "private": true,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "dev": "tsc -b --watch tsconfig.json",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "verify": "yarn lint && yarn build"
+  },
+  "peerDependencies": {
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.2",
+    "axios": "^1.6.8",
+    "chakra-react-select": "^5.0.5",
+    "formik": "^2.4.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.2.2"
+  }
+}

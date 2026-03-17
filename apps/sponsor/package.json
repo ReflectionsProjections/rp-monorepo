@@ -1,0 +1,50 @@
+{
+  "name": "@rp/sponsor",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build:dependencies": "yarn workspaces foreach -Rt --from @rp/sponsor --exclude @rp/sponsor run build",
+    "build": "yarn build:dependencies && vite build",
+    "dev": "yarn build:dependencies && vite",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "verify": "yarn build && tsc --noEmit && yarn lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/kufam": "^5.0.18",
+    "@fontsource/lexend-deca": "^5.0.13",
+    "@fontsource/lexend-exa": "^5.0.20",
+    "@fontsource/nunito": "^5.0.18",
+    "@fontsource/roboto-slab": "^5.0.20",
+    "@rp/shared": "*",
+    "axios": "^1.6.8",
+    "chakra-react-select": "^5.0.5",
+    "downloadjs": "^1.4.7",
+    "file-saver": "^2.0.5",
+    "formik": "^2.4.6",
+    "framer-motion": "11.3.23",
+    "fuse.js": "^7.0.0",
+    "jszip": "^3.10.1",
+    "moment": "^2.30.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.2.1",
+    "react-router-dom": "^6.23.0",
+    "yup": "^1.7.0"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.66",
+    "@types/react-autocomplete": "^1.8.11",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "typescript": "*",
+    "vite": "^5.2.0"
+  }
+}
