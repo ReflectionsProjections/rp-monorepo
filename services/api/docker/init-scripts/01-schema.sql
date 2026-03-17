@@ -1,0 +1,394 @@
+-- Drop existing schema if it exists
+DROP SCHEMA IF EXISTS public CASCADE;
+
+-- Create schema
+CREATE SCHEMA public;
+ALTER SCHEMA public OWNER TO postgres;
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+ALTER DATABASE postgres SET TIMEZONE TO 'UTC';
+
+-- Create types
+CREATE TYPE public."committeeNames" AS ENUM (
+    'CONTENT',
+    'CORPORATE',
+    'DESIGN',
+    'DEV',
+    'FULL TEAM',
+    'MARKETING',
+    'OPERATIONS'
+);
+
+CREATE TYPE public."eventType" AS ENUM (
+    'SPEAKER',
+    'CORPORATE',
+    'SPECIAL',
+    'PARTNERS',
+    'MEALS',
+    'CHECKIN'
+);
+
+CREATE TYPE public."roleType" AS ENUM (
+    'USER',
+    'STAFF',
+    'ADMIN',
+    'CORPORATE',
+    'SUPER_ADMIN'
+);
+
+CREATE TYPE public."staffAttendanceType" AS ENUM (
+    'PRESENT',
+    'EXCUSED',
+    'ABSENT'
+);
+
+CREATE TYPE public."tierType" AS ENUM (
+    'TIER1',
+    'TIER2',
+    'TIER3',
+    'TIER4'
+);
+
+CREATE TYPE public."iconColorType" AS ENUM (
+    'BLUE',
+    'RED',
+    'GREEN',
+    'PINK',
+    'PURPLE',
+    'ORANGE'
+);
+
+CREATE TYPE public."shiftRoleType" AS ENUM (
+    'CLEAN_UP',
+    'DINNER',
+    'CHECK_IN',
+    'SPEAKER_BUDDY',
+    'SPONSOR_BUDDY',
+    'DEV_ON_CALL',
+    'CHAIR_ON_CALL'
+);
+
+-- Create tables
+CREATE TABLE public."attendeeAttendances" (
+    "userId" character varying NOT NULL,
+    "eventsAttended" uuid[] DEFAULT '{}'::uuid[] NOT NULL,
+    CONSTRAINT "attendeeAttendance_pkey" PRIMARY KEY ("userId")
+);
+
+CREATE TABLE public."customTopics" (
+    "topicId" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "topicName" text NOT NULL,
+    CONSTRAINT "customTopicsPkey" PRIMARY KEY ("topicId"),
+    CONSTRAINT "customTopicsTopicNameKey" UNIQUE ("topicName")
+);
+
+CREATE TABLE public."attendees" (
+    "userId" character varying NOT NULL,
+    "points" integer DEFAULT 0 NOT NULL,
+    -- Daily points tracking for event days (Day 1 = Sept 16, 2025, etc.)
+    "pointsDay1" integer DEFAULT 0 NOT NULL,
+    "pointsDay2" integer DEFAULT 0 NOT NULL,
+    "pointsDay3" integer DEFAULT 0 NOT NULL,
+    "pointsDay4" integer DEFAULT 0 NOT NULL,
+    "pointsDay5" integer DEFAULT 0 NOT NULL,
+    "hasPriorityMon" boolean DEFAULT false NOT NULL,
+    "hasPriorityTue" boolean DEFAULT false NOT NULL,
+    "hasPriorityWed" boolean DEFAULT false NOT NULL,
+    "hasPriorityThu" boolean DEFAULT false NOT NULL,
+    "hasPriorityFri" boolean DEFAULT false NOT NULL,
+    "hasPrioritySat" boolean DEFAULT false NOT NULL,
+    "hasPrioritySun" boolean DEFAULT false NOT NULL,
+    "currentTier" public."tierType" DEFAULT 'TIER1' NOT NULL,
+    "icon" public."iconColorType" DEFAULT 'RED' NOT NULL,
+    "tags" text[] DEFAULT '{}'::text[] NOT NULL,
+    "favoriteEvents" uuid[] DEFAULT '{}'::uuid[] NOT NULL,
+    "puzzlesCompleted" text[] DEFAULT '{}'::text[] NOT NULL,
+    CONSTRAINT "attendees_pkey" PRIMARY KEY ("userId")
+);
+
+CREATE TABLE public."corporate" (
+    "email" text NOT NULL,
+    "name" text NOT NULL,
+    CONSTRAINT "corporate_pkey" PRIMARY KEY ("email")
+);
+
+CREATE TABLE public."eventAttendances" (
+    "eventId" uuid NOT NULL,
+    "attendee" character varying NOT NULL,
+    CONSTRAINT "event_attendance_pkey" PRIMARY KEY ("eventId", "attendee")
+);
+
+CREATE TABLE public."events" (
+    "eventId" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "name" text NOT NULL,
+    "startTime" timestamp with time zone NOT NULL,
+    "endTime" timestamp with time zone NOT NULL,
+    "points" integer NOT NULL,
+    "description" text NOT NULL,
+    "isVirtual" boolean NOT NULL,
+    "imageUrl" text,
+    "location" text,
+    "isVisible" boolean DEFAULT false NOT NULL,
+    "attendanceCount" integer DEFAULT 0 NOT NULL,
+    "eventType" public."eventType" NOT NULL,
+    "tags" text[] DEFAULT '{}'::text[] NOT NULL,
+    CONSTRAINT "events_pkey" PRIMARY KEY ("eventId")
+);
+
+CREATE TABLE public."leaderboardSubmissions" (
+    "submissionId" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "day" date NOT NULL,
+    "count" integer NOT NULL,
+    "submittedAt" timestamp with time zone DEFAULT now() NOT NULL,
+    "submittedBy" character varying NOT NULL,
+    CONSTRAINT "leaderboardSubmissions_pkey" PRIMARY KEY ("submissionId"),
+    CONSTRAINT "leaderboardSubmissions_day_unique" UNIQUE ("day")
+);
+
+CREATE TABLE public."redemptions" (
+    "userId" character varying NOT NULL,
+    "item" public."tierType" NOT NULL,
+    CONSTRAINT "redemptions_pkey" PRIMARY KEY ("userId", "item")
+);
+
+CREATE TABLE public."meetings" (
+    "meetingId" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "committeeType" public."committeeNames" NOT NULL,
+    "startTime" timestamp with time zone NOT NULL,
+    CONSTRAINT "meetings_pkey" PRIMARY KEY ("meetingId")
+);
+
+CREATE TABLE public."notifications" (
+    "userId" character varying NOT NULL,
+    "deviceId" text NOT NULL,
+    CONSTRAINT "notifications_pkey" PRIMARY KEY ("userId")
+);
+
+CREATE TABLE public."draftRegistrations" (
+    "allergies" text[] DEFAULT '{}'::text[] NOT NULL,
+    "allergiesOther" text NOT NULL,
+    "dietaryRestrictions" text[] DEFAULT '{}'::text[] NOT NULL,
+    "dietaryOther" text NOT NULL,
+    "educationLevel" text NOT NULL,
+    "educationOther" text NOT NULL,
+    "email" text NOT NULL,
+    "ethnicity" text[] DEFAULT '{}'::text[] NOT NULL,
+    "ethnicityOther" text NOT NULL,
+    "gender" text NOT NULL,
+    "genderOther" text NOT NULL,
+    "graduationYear" text NOT NULL,
+    "howDidYouHear" text[] DEFAULT '{}'::text[] NOT NULL,
+    "majors" text[] DEFAULT '{}'::text[] NOT NULL,
+    "minors" text[] DEFAULT '{}'::text[] NOT NULL,
+    "name" text NOT NULL,
+    "opportunities" text[] DEFAULT '{}'::text[] NOT NULL,
+    "personalLinks" text[] DEFAULT '{}'::text[] NOT NULL,
+    "resume" text DEFAULT '' NOT NULL,
+    "school" text NOT NULL,
+    "isInterestedMechMania" boolean NOT NULL,
+    "isInterestedPuzzleBang" boolean NOT NULL,
+    "tags" text[] DEFAULT '{}'::text[] NOT NULL,
+    "userId" character varying NOT NULL,
+    CONSTRAINT "draftRegistrations_pkey" PRIMARY KEY ("userId")
+);
+
+CREATE TABLE public."registrations" (
+    "allergies" text[] DEFAULT '{}'::text[] NOT NULL,
+    "dietaryRestrictions" text[] DEFAULT '{}'::text[] NOT NULL,
+    "educationLevel" text NOT NULL,
+    "email" text NOT NULL,
+    "ethnicity" text[] DEFAULT '{}'::text[] NOT NULL,
+    "gender" text NOT NULL,
+    "graduationYear" text NOT NULL,
+    "howDidYouHear" text[] DEFAULT '{}'::text[] NOT NULL,
+    "majors" text[] DEFAULT '{}'::text[] NOT NULL,
+    "minors" text[] DEFAULT '{}'::text[] NOT NULL,
+    "name" text NOT NULL,
+    "opportunities" text[] DEFAULT '{}'::text[] NOT NULL,
+    "personalLinks" text[] DEFAULT '{}'::text[] NOT NULL,
+    "school" text NOT NULL,
+    "isInterestedMechMania" boolean NOT NULL,
+    "isInterestedPuzzleBang" boolean NOT NULL,
+    "tags" text[] DEFAULT '{}'::text[] NOT NULL,
+    "hasResume" boolean DEFAULT false NOT NULL,
+    "userId" character varying NOT NULL,
+    CONSTRAINT "registrations_pkey" PRIMARY KEY ("userId"),
+    CONSTRAINT "registrations_email_key" UNIQUE ("email")
+);
+
+CREATE TABLE public."authInfo" (
+    "userId" character varying NOT NULL,
+    "authId" text NOT NULL,
+    "email" text NOT NULL,
+    "displayName" text NOT NULL,
+    CONSTRAINT "authInfo_pkey" PRIMARY KEY ("userId"),
+    CONSTRAINT "authInfo_authId_key" UNIQUE ("authId")
+);
+
+CREATE TABLE public."authRoles" (
+    "userId" character varying NOT NULL,
+    "role" public."roleType" NOT NULL,
+    CONSTRAINT "authRoles_pkey" PRIMARY KEY ("userId", "role")
+);
+
+CREATE TABLE public."authCodes" (
+    "email" character varying NOT NULL,
+    "hashedVerificationCode" text NOT NULL,
+    "expTime" timestamp with time zone NOT NULL,
+    CONSTRAINT "authCodes_pkey" PRIMARY KEY ("email")
+);
+
+-- Indexes for auth tables
+CREATE INDEX "authRoles_userId_idx" ON public."authRoles" ("userId");
+CREATE INDEX "authRoles_role_idx"   ON public."authRoles" ("role");
+CREATE INDEX "authInfo_authId_idx"  ON public."authInfo"  ("authId");
+
+CREATE TABLE public."speakers" (
+    "speakerId" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "name" text NOT NULL,
+    "title" text NOT NULL,
+    "bio" text NOT NULL,
+    "eventTitle" text NOT NULL,
+    "eventDescription" text NOT NULL,
+    "imgUrl" text NOT NULL,
+    CONSTRAINT "speakers_pkey" PRIMARY KEY ("speakerId")
+);
+
+CREATE TABLE public."staff" (
+    "email" text NOT NULL,
+    "name" text NOT NULL,
+    "team" public."committeeNames" NOT NULL,
+    "attendances" jsonb DEFAULT '{}'::jsonb NOT NULL,
+    CONSTRAINT "staff_pkey" PRIMARY KEY ("email")
+);
+
+CREATE TABLE public."shifts" (
+    "shiftId" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "name" text NOT NULL,
+    "role" public."shiftRoleType" NOT NULL,
+    "startTime" timestamp with time zone NOT NULL,
+    "endTime" timestamp with time zone NOT NULL,
+    "location" text NOT NULL,
+    CONSTRAINT "shifts_pkey" PRIMARY KEY ("shiftId")
+);
+
+CREATE TABLE public."shiftAssignments" (
+    "shiftId" uuid NOT NULL,
+    "staffEmail" text NOT NULL,
+    "acknowledged" boolean DEFAULT false NOT NULL,
+    CONSTRAINT "shiftAssignments_pkey" PRIMARY KEY ("shiftId", "staffEmail"),
+    CONSTRAINT "shiftAssignments_shiftId_fkey" FOREIGN KEY ("shiftId") REFERENCES public."shifts"("shiftId") ON DELETE CASCADE,
+    CONSTRAINT "shiftAssignments_staffEmail_fkey" FOREIGN KEY ("staffEmail") REFERENCES public."staff"("email") ON DELETE CASCADE
+);
+
+CREATE TABLE public."subscriptions" (
+    "userId" character varying NOT NULL,
+    "mailingList" text NOT NULL,
+    CONSTRAINT "subscriptions_pkey" PRIMARY KEY ("userId", "mailingList")
+);
+
+-- Add foreign key constraints
+ALTER TABLE ONLY public."attendeeAttendances"
+    ADD CONSTRAINT "attendee_attendance_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."attendees"
+    ADD CONSTRAINT "attendees_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."eventAttendances"
+    ADD CONSTRAINT "event_attendance_attendee_fkey" FOREIGN KEY ("attendee") REFERENCES public."attendees"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."eventAttendances"
+    ADD CONSTRAINT "event_attendance_event_id_fkey" FOREIGN KEY ("eventId") REFERENCES public."events"("eventId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."notifications"
+    ADD CONSTRAINT "notifications_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."registrations"
+    ADD CONSTRAINT "registrations_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."leaderboardSubmissions"
+    ADD CONSTRAINT "leaderboard_submissions_submitted_by_fkey" FOREIGN KEY ("submittedBy") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."redemptions"
+    ADD CONSTRAINT "redemptions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."subscriptions"
+    ADD CONSTRAINT "subscriptions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+-- PostgreSQL function for atomic tier promotions
+CREATE OR REPLACE FUNCTION public.promote_users_batch(user_ids text[])
+RETURNS int AS $$
+DECLARE
+    promoted_count int := 0;
+    tier1_count int := 0;
+    tier2_count int := 0;
+    tier3_count int := 0;
+    tier1_users text[];
+    tier2_users text[];
+    tier3_users text[];
+BEGIN
+    -- First, identify users by their CURRENT tier (before any promotions)
+    SELECT ARRAY(
+        SELECT "userId" FROM public."attendees" 
+        WHERE "userId" = ANY(user_ids) AND "currentTier" = 'TIER1'
+    ) INTO tier1_users;
+    
+    SELECT ARRAY(
+        SELECT "userId" FROM public."attendees" 
+        WHERE "userId" = ANY(user_ids) AND "currentTier" = 'TIER2'
+    ) INTO tier2_users;
+    
+    SELECT ARRAY(
+        SELECT "userId" FROM public."attendees" 
+        WHERE "userId" = ANY(user_ids) AND "currentTier" = 'TIER3'
+    ) INTO tier3_users;
+    
+    -- Now promote each group separately using the captured lists
+    -- Promote TIER1 -> TIER2
+    IF array_length(tier1_users, 1) > 0 THEN
+        UPDATE public."attendees" 
+        SET "currentTier" = 'TIER2'
+        WHERE "userId" = ANY(tier1_users);
+        GET DIAGNOSTICS tier1_count = ROW_COUNT;
+    END IF;
+    
+    -- Promote TIER2 -> TIER3  
+    IF array_length(tier2_users, 1) > 0 THEN
+        UPDATE public."attendees"
+        SET "currentTier" = 'TIER3' 
+        WHERE "userId" = ANY(tier2_users);
+        GET DIAGNOSTICS tier2_count = ROW_COUNT;
+    END IF;
+    
+    -- Promote TIER3 -> TIER4
+    IF array_length(tier3_users, 1) > 0 THEN
+        UPDATE public."attendees"
+        SET "currentTier" = 'TIER4' 
+        WHERE "userId" = ANY(tier3_users);
+        GET DIAGNOSTICS tier3_count = ROW_COUNT;
+    END IF;
+    
+    -- Return total promoted users
+    promoted_count := tier1_count + tier2_count + tier3_count;
+    
+    RETURN promoted_count;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function for counting tiers
+CREATE OR REPLACE FUNCTION get_tier_counts()
+RETURNS TABLE (
+  "currentTier" public."tierType",
+  count bigint
+) AS $$
+BEGIN
+  RETURN QUERY
+    SELECT
+      a."currentTier",
+      COUNT(a."userId")
+    FROM
+      public.attendees AS a
+    GROUP BY
+      a."currentTier";
+END;
+$$ LANGUAGE plpgsql;

@@ -1,0 +1,27 @@
+import { z } from "zod";
+
+export const Role = z.enum([
+    "USER",
+    "STAFF",
+    "ADMIN",
+    "CORPORATE",
+    "SUPER_ADMIN",
+]);
+export type Role = z.infer<typeof Role>;
+
+export enum Platform {
+    WEB = "web",
+    IOS = "ios",
+    ANDROID = "android",
+}
+
+export const PlatformValidator = z.nativeEnum(Platform);
+
+export const JwtPayloadValidator = z.object({
+    userId: z.string(),
+    displayName: z.string(),
+    email: z.string().email(),
+    roles: Role.array(),
+});
+
+export type JwtPayloadType = z.infer<typeof JwtPayloadValidator>;

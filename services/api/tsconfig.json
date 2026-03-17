@@ -1,0 +1,22 @@
+{
+    "semicolon": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "compilerOptions": {
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "sourceMap": true,
+        "module": "CommonJS",
+        "lib": ["ESNext", "DOM"],
+        "moduleResolution": "node",
+        "strict": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "noUnusedLocals": true,
+        "outDir": "./build/",
+        "types": ["node", "jest"]
+    },
+    "include": ["./src/"]
+}
