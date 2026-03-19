@@ -37,17 +37,12 @@ jobs:
               - 'services/api/**'
               - '.github/workflows/**'
               - 'docker-compose.yml'
-              - 'scripts/**'
             web:
               - 'apps/web/**'
               - '.github/workflows/**'
-              - 'docker-compose.yml'
-              - 'scripts/**'
             mobile:
               - 'apps/mobile/**'
               - '.github/workflows/**'
-              - 'docker-compose.yml'
-              - 'scripts/**'
 
   root:
     runs-on: ubuntu-latest
