@@ -1,3 +1,5 @@
+import { WebSocket } from "ws";
+
 const WS_TIMEOUT = 30 * 1000;
 
 export default class TestWebSocket {
@@ -33,7 +35,11 @@ export default class TestWebSocket {
             };
 
             this.ws.onmessage = (event) => {
-                this.received.push(event.data);
+                const data =
+                    typeof event.data === "string"
+                        ? event.data
+                        : event.data.toString();
+                this.received.push(data);
             };
 
             this.ws.onclose = (event) => {

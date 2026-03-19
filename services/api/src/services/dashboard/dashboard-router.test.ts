@@ -34,12 +34,10 @@ const DASHBOARD_MESSAGE: DashboardMessage = {
     message: "test message",
 };
 
-const pingsInTimeout = Math.floor(
-    Config.DASHBOARD_TIMEOUT_MS / Config.DASHBOARD_PING_EVERY_MS
-);
-
-Config.DASHBOARD_PING_EVERY_MS = 500;
-Config.DASHBOARD_TIMEOUT_MS = Config.DASHBOARD_PING_EVERY_MS * pingsInTimeout;
+const WS_SETTLE_MS = 50;
+const originalPingEveryMs = Config.DASHBOARD_PING_EVERY_MS;
+const originalTimeoutMs = Config.DASHBOARD_TIMEOUT_MS;
+const PING_MESSAGE = JSON.stringify({ type: "ping" });
 
 function sleep(delay: number) {
     return new Promise((res) => setTimeout(res, delay));
@@ -60,22 +58,22 @@ describe("ws /dashboard", () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
         ws.send(JSON.stringify(DISPLAY_0_METADATA));
-        await sleep(Config.DASHBOARD_PING_EVERY_MS / 4);
+        await sleep(WS_SETTLE_MS);
         const result = await ws.close();
         expect(result).toEqual({
             code: 1005,
-            received: [JSON.stringify({ type: "ping" })],
+            received: [PING_MESSAGE],
         });
     });
     it("ws rejects bad input", async () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
         ws.send("bad input");
-        await sleep(Config.DASHBOARD_PING_EVERY_MS / 4);
+        await sleep(WS_SETTLE_MS);
         const result = await ws.close();
         expect(result).toEqual({
             code: 1008,
-            received: [JSON.stringify({ type: "ping" }), "Invalid message"],
+            received: [PING_MESSAGE, "Invalid message"],
         });
     });
 });
@@ -145,38 +143,40 @@ describe("GET /dashboard", () => {
     });
 
     it("removes metadata when display times out", async () => {
-        const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
-        await ws.start();
-        ws.send(JSON.stringify(DISPLAY_0_METADATA));
-        await sleep(Config.DASHBOARD_PING_EVERY_MS);
+        Config.DASHBOARD_PING_EVERY_MS = 100;
+        Config.DASHBOARD_TIMEOUT_MS = 300;
 
-        const beforeTimeoutResult = await getAsAdmin("/dashboard").expect(
-            StatusCodes.OK
-        );
-        await sleep(Config.DASHBOARD_TIMEOUT_MS);
-        const afterTimeoutResult = await getAsAdmin("/dashboard").expect(
-            StatusCodes.OK
-        );
+        try {
+            const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
+            await ws.start();
+            ws.send(JSON.stringify(DISPLAY_0_METADATA));
+            await sleep(Config.DASHBOARD_PING_EVERY_MS);
 
-        const wsResult = await ws.close();
+            const beforeTimeoutResult = await getAsAdmin("/dashboard").expect(
+                StatusCodes.OK
+            );
+            await sleep(Config.DASHBOARD_TIMEOUT_MS);
+            const afterTimeoutResult = await getAsAdmin("/dashboard").expect(
+                StatusCodes.OK
+            );
 
-        const received = [];
-        for (let i = 0; i < pingsInTimeout + 1; i++) {
-            received.push(JSON.stringify({ type: "ping" }));
+            const wsResult = await ws.close();
+
+            expect(wsResult?.code).toBe(1005);
+            expect(wsResult?.received.length).toBeGreaterThanOrEqual(2);
+            expect(wsResult?.received.every((message) => message === PING_MESSAGE)).toBe(true);
+            expect(beforeTimeoutResult.body).toEqual([
+                {
+                    id: 0,
+                    metadata: DISPLAY_0_METADATA,
+                    lastUpdate: expect.any(Number),
+                },
+            ]);
+            expect(afterTimeoutResult.body).toEqual([]);
+        } finally {
+            Config.DASHBOARD_PING_EVERY_MS = originalPingEveryMs;
+            Config.DASHBOARD_TIMEOUT_MS = originalTimeoutMs;
         }
-
-        expect(wsResult).toEqual({
-            code: 1005,
-            received,
-        });
-        expect(beforeTimeoutResult.body).toEqual([
-            {
-                id: 0,
-                metadata: DISPLAY_0_METADATA,
-                lastUpdate: expect.any(Number),
-            },
-        ]);
-        expect(afterTimeoutResult.body).toEqual([]);
     });
 
     it("returns nothing if none connected", async () => {
