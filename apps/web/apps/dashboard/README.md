@@ -1,5 +1,13 @@
 # Reflections | Projections Dashboard
 
-Hi, it's Timothy from the past (2025). This is a mess that was scraped together a week before the event - but it works.
+This app powers the event dashboard.
 
-Please keep in mind that there are many things here to clean up - good luck.
+Use `apps/web/README.md` for workspace-level setup, scripts, and environment guidance.
+
+From `apps/web`, run:
+
+```bash
+yarn workspace @rp/dashboard dev
+```
+
+There is still cleanup debt here from the original event build, so expect some rough edges while making changes.

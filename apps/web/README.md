@@ -1,96 +1,36 @@
-# Reflections | Projections Web Monorepo
+# Reflections | Projections Web Workspace
 
-Webpages:
+This workspace contains the web apps and shared frontend package for Reflections | Projections.
+
+## Production Sites
 
 - [reflectionsprojections.org](https://reflectionsprojections.org)
 - [hype.reflectionsprojections.org](https://hype.reflectionsprojections.org)
 - [admin.reflectionsprojections.org](https://admin.reflectionsprojections.org)
 - [sponsor.reflectionsprojections.org](https://sponsor.reflectionsprojections.org)
 
-## Development Guide
+## Getting Started
 
-### Getting Started
+From `apps/web`:
 
-1. Clone the repository:
+```bash
+yarn
+yarn prepare
+```
 
-   ```bash
-   git clone git@github.com:ReflectionsProjections/rp-web.git
-   cd rp-web
-   ```
+## Common Scripts
 
-2. Install dependencies:
+These commands assume you are in `apps/web`.
 
-   ```bash
-   yarn
-   ```
-
-3. Enable pre-commit hooks:
-
-   ```bash
-   yarn prepare
-   ```
-
----
-
-### Scripts Cheat Sheet
-
-All of these assume your current working directory is the root of the monorepo. If your current working directory is instead in of a particular app, you can replace `yarn workspace <app-name>` with `yarn` to run the script for the current app.
-
-| Task                       | Command                                        |
-| :------------------------- | :--------------------------------------------- |
-| Install dependencies       | `yarn`                                         |
-| Start an app               | `yarn workspace <app-name> dev`                |
-| Build an app               | `yarn workspace <app-name> build`              |
-| Lint an app                | `yarn workspace <app-name> lint`               |
-| Format all files           | `yarn format`                                  |
+| Task | Command |
+| --- | --- |
+| Install dependencies | `yarn` |
+| Start an app | `yarn workspace <app-name> dev` |
+| Build an app | `yarn workspace <app-name> build` |
+| Lint an app | `yarn workspace <app-name> lint` |
+| Verify all workspaces | `yarn verify` |
+| Format workspace files | `yarn format` |
 | Add a dependency to an app | `yarn workspace <app-name> add <package-name>` |
-
----
-
-### Monorepo Structure Overview
-
-The monorepo is organized as follows:
-
-- **`apps/`**  
-  Contains all the different websites. Each site is an independent app with its own `package.json`.
-
-- **`apps/template/`**  
-  Contains reusable template configuration files that can be copied into new apps.
-
-- **`shared/`**  
-  Contains the shared package with code (e.g., components, utilities) that can be used across multiple apps.
-
-  To import from the shared package inside an app:
-
-  ```tsx
-  import { <component-name> } from "@rp/shared";
-  ```
-
----
-
-### Environment Variables
-
-You can specify environment variables from a `.env` file at the root of the monorepo.
-
-Example:
-
-```bash
-VITE_DEV_JWT=<your-jwt>
-```
-
-This value will be shared across all apps.
-
----
-
-### Running Scripts for a Webpage
-
-There are two ways to run a script (e.g., `dev`, `build`, `lint`) for a specific app.
-
-**Option 1: From the root of the monorepo using `workspace`:**
-
-```bash
-yarn workspace <app-name> <script-name>
-```
 
 Example:
 
@@ -98,206 +38,52 @@ Example:
 yarn workspace @rp/hype dev
 ```
 
-**Option 2: From the app directory:**
+## Workspace Structure
 
-```bash
-cd apps/<app-name>
-yarn <script-name>
+- `apps/`: individual web apps
+- `apps/template/`: reusable app template files
+- `shared/`: shared components, utilities, and API typing helpers
+
+Import shared code with:
+
+```tsx
+import { <component-name> } from "@rp/shared";
 ```
 
+## Environment Variables
+
+Web apps load environment variables from their local `.env` first, then fall back to the shared root `.env`.
+
 Example:
+
+```bash
+VITE_DEV_JWT=<your-jwt>
+```
+
+## Running a Specific App
+
+You can run an app either from `apps/web`:
+
+```bash
+yarn workspace @rp/hype dev
+```
+
+Or from the app directory itself:
 
 ```bash
 cd apps/hype
 yarn dev
 ```
 
----
+## Dependency Versions
 
-### Adding Dependencies to an App
+If the root `package.json` already specifies a dependency version, an app can inherit that version by using `"*"` in its `package.json`.
 
-There are two ways to add a dependency to a specific app.
+## API Route Types
 
-**Option 1: From the root of the monorepo using `workspace`:**
+When the frontend needs a new typed API route, update `shared/src/api/types.ts`.
 
-```bash
-yarn workspace <app-name> add <dependency-name>
-```
-
-Example:
-
-```bash
-yarn workspace @rp/hype add is-odd
-```
-
-**Option 2: From the app directory:**
-
-```bash
-cd apps/<app-name>
-yarn add <dependency-name>
-```
-
-Example:
-
-```bash
-cd apps/hype
-yarn add is-odd
-```
-
----
-
-### Using Versions from the Root `package.json`
-
-If the root `package.json` already specifies a version of a dependency, you can inherit that version by using `"*"` as the version in the app's `package.json`:
-
-Example of inheriting the root version:
-
-```json
-{
-  "dependencies": {
-    "react": "*"
-  }
-}
-```
-
-Example of using a specific version:
-
-```json
-{
-  "dependencies": {
-    "react": "^18.2.0"
-  }
-}
-```
-
----
-
-### Formatting with Prettier
-
-To format the entire codebase, run:
-
-```bash
-yarn format
-```
-
----
-
-### Setting Up VSCode Formatting
-
-To make sure VSCode uses the `.prettierrc.json` at the root of the repository:
-
-1. Install the Prettier extension for VSCode if you haven't already.
-2. Add the following to your VSCode `settings.json` (either user-level or workspace-level):
-
-```json
-{
-  "prettier.configPath": ".prettierrc.json"
-}
-```
-
-This will ensure VSCode respects the project’s formatting rules.
-
----
-
-### Committing Without Pre-commit Checks
-
-If you ever need to skip pre-commit hooks, you can add the `--no-verify` flag when committing:
-
-```bash
-git commit -m "your commit message" --no-verify
-```
-
-These checks will still fail on GitHub so do this at your own risk!
-
----
-
-### Adding a New API Route to the Type System
-
-#### 1. Open `shared/src/api/types.ts` - This file defines the `APIRoutes` interface, which maps API routes to their request and response types.
-
-#### 2. Add the new route to `APIRoutes`
-
-Each route is written using static strings.  
-If the route has dynamic parameters, use `:paramName` syntax.
-
-**Example:** Adding a new `GET` route `/staff/:staffId/attendance`:
-
-```ts
-export interface APIRoutes {
-  "/staff/:staffId/attendance": {
-    POST: {
-      request: { meetingId: string; attendanceType: AttendanceType };
-      response: Staff;
-    };
-  };
-  // existing routes...
-}
-```
-
-#### 3. (Optional) Define or update response/request types
-
-If the route uses a new structure, create a matching type. This type can then be used in your code.
-
-Example:
-
-```ts
-export type Staff = {
-  userId: string;
-  name: string;
-  team: TeamName;
-  attendances: Record<string, AttendanceType>;
-};
-```
-
-#### 4. Use the route in your code
-
-Use the `path()` helper to safely generate dynamic URLs while keeping TypeScript aware of the base pattern.
-
-Example:
-
-```tsx
-import { path } from "@rp/shared";
-
-const staffId = "abc123";
-
-const meetingId = "def456";
-const attendanceType = "PRESENT";
-
-const response = await api.post(
-  path("/staff/:staffId/attendance", { staffId }),
-  { data: { meetingId, attendanceType } }
-);
-
-console.log(response.data.attendances); // data is fully typed
-```
-
----
-
-### Creating a New App
-
-To create a new app:
-
-1. Copy configuration files from the `template` app:
-
-   ```bash
-   cp apps/template/eslint.config.mjs apps/<new-app-name>/
-   cp apps/template/package.json apps/<new-app-name>/
-   cp apps/template/tsconfig.json apps/<new-app-name>/
-   cp apps/template/tsconfig.tsbuildinfo apps/<new-app-name>/
-   cp apps/template/vite.config.ts apps/<new-app-name>/
-   ```
-
-2. Update the `package.json` in the new app:
-   - Replace all instances of `@rp/template` with `@rp/<new-app-name>`.
-   - Careful! `@rp/template` appears in multiple places in the `package.json`.
-
-3. Ensure dependencies are linked in the new app:
-
-   ```bash
-   yarn
-   ```
-
----
-
-**Questions or feedback?**  
-Feel free to open a PR or ask the team!
+- Add the route to `APIRoutes`
+- Use `:paramName` syntax for dynamic segments
+- Define any new request or response types alongside the route shape
+- Use the `path()` helper from `@rp/shared` when building dynamic URLs

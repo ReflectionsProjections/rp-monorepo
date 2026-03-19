@@ -1,32 +1,35 @@
-## Get started
+# Reflections | Projections Mobile
 
-1. Install dependencies
+This workspace contains the Expo mobile app.
 
-   ```bash
-   yarn
-   ```
+## Getting Started
 
-2. Start the app
+From `apps/mobile`:
 
-   ```bash
-    npx expo start -c
-   ```
+```bash
+yarn
+yarn start
+```
 
-In the output, you'll find options to open the app in a
+Make sure the shared root `.env` is in place before starting the app. Mobile configuration lives in `apps/mobile`, but local API-related values come from the repo-root environment.
+
+## Useful Scripts
+
+- `yarn start` to launch Expo
+- `yarn android` to run Android
+- `yarn ios` to run iOS
+- `yarn web` to run the web build
+- `yarn lint` to run linting
+- `yarn verify` to run the standard mobile checks
+
+In the Expo output, you can open the app in:
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Expo Go](https://expo.dev/go)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+This project uses [Expo Router file-based routing](https://docs.expo.dev/router/introduction/).
 
 ## Contributors
 

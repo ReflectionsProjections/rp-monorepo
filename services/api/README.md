@@ -1,169 +1,91 @@
 # API for Reflections | Projections
 
-This is the backend API service for Reflections | Projections 2025, built with Node.js, Express, and TypeScript. It includes a complete self-hosted Supabase infrastructure for local development.
+This is the backend API service for Reflections | Projections, built with Node.js, Express, and TypeScript.
+
+Shared setup, environment, and local infrastructure live at the monorepo root. Use the root README for DB/tooling startup, shared URLs, and verification commands outside this service.
 
 ## Quick Start
 
-1. **Install dependencies:**
+From `services/api`:
 
-    ```bash
-    yarn
-    ```
+1. Install dependencies:
 
-2. **Set up environment variables:**
-   - Reach out to your Dev Chairs for the `.env` file
-   - Place it in the root of the `rp-api` directory
-   - **Optional**: Add `DEV_ADMIN_EMAIL=your.email@example.com` to your `.env` file for local admin access
+   ```bash
+   yarn
+   ```
 
-3. **Start the full development environment:**
-    ```bash
-    docker compose up --build
-    ```
+2. Make sure the shared root `.env` is in place.
 
-## Docker Compose Setup
+3. From the repo root, start the local database and Supabase tooling:
 
-The API includes several Docker Compose configurations for different development scenarios:
+   ```bash
+   rp start
+   ```
 
-### Full Development Environment
+4. Run the API:
 
-**`docker-compose.yml`** - Spins up ALL services required locally (api, db, kong, studio, rest, meta)
+   ```bash
+   yarn dev
+   ```
 
-```bash
-docker compose up --build
-```
+## Scripts
 
-### API Only
-
-**`docker-compose.api.yml`** - Only spins up the API service (can configure to connect to prod database with env)
-
-```bash
-docker compose -f docker-compose.api.yml up --build
-```
-
-### Database Services Only
-
-**`docker-compose.db.yml`** - Only spins up the db-related services (db, kong, studio, rest, meta)
-
-```bash
-docker compose -f docker-compose.db.yml up --build
-```
-
-### Testing Environment
-
-**`docker-compose.test.yml`** - Only spins up the basic db services required for testing (db, kong, rest)
-
-```bash
-# Run tests in Docker
-yarn test:docker
-
-# Or manually start test environment
-docker compose -f docker-compose.test.yml up --build
-```
+| Task | Command |
+| --- | --- |
+| Start development server | `yarn dev` |
+| Start production server | `yarn start` |
+| Run tests | `yarn test` |
+| Run tests in watch mode | `yarn test:watch` |
+| Lint code | `yarn lint` |
+| Check lint | `yarn lint:check` |
+| Format code | `yarn format` |
+| Check formatting | `yarn format:check` |
+| Build project | `yarn build` |
+| Verify | `yarn verify` |
 
 ## Database Management
 
-The database is automatically initialized with the scripts in `docker/init-scripts/`. These scripts run in order:
+The API's local database is initialized from the repo root `docker/init-scripts/` scripts:
 
-1. **`00-roles.sql`** - Creates Supabase roles and users (anon, authenticated, service_role, etc.)
-2. **`01-schema.sql`** - Creates database schema, tables, and types
-3. **`02-grants.sql`** - Sets up permissions for all roles
+1. `00-roles.sql`
+2. `01-schema.sql`
+3. `02-grants.sql`
 
-You can modify the database schema in `docker/init-scripts/01-schema.sql`.
-
-## Development Scripts
-
-| Task                           | Command            |
-| ------------------------------ | ------------------ |
-| Install dependencies           | `yarn`             |
-| Start development server       | `yarn dev`         |
-| Start production server        | `yarn start`       |
-| Run tests                      | `yarn test`        |
-| Run tests in Docker            | `yarn test:docker` |
-| Lint code                      | `yarn lint`        |
-| Format code                    | `yarn format`      |
-| Build project                  | `yarn build`       |
-| Verify (build + lint + format) | `yarn verify`      |
-| View API logs                  | `yarn logs`        |
-| Enter API container            | `yarn shell`       |
-| Restart API service            | `yarn restart`     |
-
-## Service URLs
-
-When running locally with Docker Compose:
-
-| Service         | URL                   | Description                   |
-| --------------- | --------------------- | ----------------------------- |
-| API             | http://localhost:3000 | Main API endpoints            |
-| Supabase Studio | http://localhost:8000 | Database management interface |
-| Kong Gateway    | http://localhost:8000 | API gateway                   |
-| PostgREST       | http://localhost:3001 | REST API for PostgreSQL       |
+Most schema changes belong in `docker/init-scripts/01-schema.sql`.
 
 ## Development Workflow
 
-### Local Development (without Docker)
+Keep the root DB/tooling stack running while you work locally:
 
 ```bash
-# Install dependencies
-yarn
+rp start
+```
 
-# Start development server
+Then run the API from `services/api`:
+
+```bash
 yarn dev
 ```
 
-### Docker Development
+The API connects to the local Supabase services through values in the shared root `.env`.
+
+## Testing
+
+Run tests with the root DB/tooling stack running:
 
 ```bash
-# Start full environment
-docker compose up --build
-
-# In another terminal, view logs
-yarn logs
-
-# Enter the API container for debugging
-yarn shell
-```
-
-### Testing
-
-```bash
-# Run tests locally
 yarn test
-
-# Run tests in Docker environment
-yarn test:docker
 ```
 
 ## Troubleshooting
 
-### Common Issues
+1. Port conflicts: make sure ports `3000`, `5432`, `8000`, and `8001` are available.
+2. Environment variables: confirm the repo-root `.env` is present and up to date.
+3. Database connection: check that the root DB/tooling stack is healthy before starting the API.
 
-1. **Port conflicts**: Make sure ports 3000, 5432, and 8000 are available
-2. **Environment variables**: Ensure your `.env` file is properly configured
-3. **Database connection**: Check that the database service is healthy before starting the API
-
-### Useful Commands
+Useful repo-root commands:
 
 ```bash
-# View all container logs
-docker compose logs -f
-
-# View specific service logs
-docker compose logs -f api
-
-# Restart a specific service
-docker compose restart api
-
-# Clean up containers and volumes
-docker compose down -v
+rp logs-infra
+rp clean
 ```
-
-## Contributing
-
-1. Follow the existing code style (use `yarn format` to format code)
-2. Write tests for new features
-3. Run `yarn verify` before committing
-4. Ensure all tests pass with `yarn test:docker`
-
-## Questions or Issues?
-
-Feel free to open a PR or ask the team! For environment setup, reach out to your Dev Chairs.

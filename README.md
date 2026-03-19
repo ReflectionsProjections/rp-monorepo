@@ -1,70 +1,90 @@
-# Reflections | Projections Portal
+# Reflections | Projections Monorepo
 
-This repository orchestrates the development environment for the Reflections | Projections codebases. It provides a unified way to set up the API, Web, and Mobile repositories, and to start and manage the containerized API, Web, and Mobile services.
+This repository is the canonical monorepo for Reflections | Projections development. The API, web, and mobile codebases live together here so features can ship in a single branch and a single pull request.
 
-## Architecture
+For local development, Docker is used only for the database and Supabase-related tooling. The API, web, and mobile apps run directly on the host machine.
 
-- **API Service**: Runs from `./dev/rp-api/` with its own Docker setup (includes all self-hosted Supabase infrastructure)
-- **Web Service**: Runs all sites from the Monorepo in `./dev/rp-web/` with its own Docker setup  
-- **Mobile App**: Runs from `./dev/rp-mobile/` inside a Dockerized Expo development container
-- **Shared Infrastructure**: Database, Supabase Studio, Kong, REST API, and Meta services (managed by the API repo)
+## Layout
 
-## Initial Setup
+- `services/api`: API service
+- `apps/web`: web workspace root
+- `apps/web/apps/*`: site, admin, info, hype, sponsor, and dashboard apps
+- `apps/mobile`: Expo mobile app
+- `docker/init-scripts`: local database bootstrap scripts
+- `scripts/rp`: root helper for local orchestration
 
-1. Clone the repository and navigate to the project directory:
+## Setup
+
 ```bash
 git clone <repository-url>
 cd dev-env
+./setup.sh
 ```
 
-2. Run the setup script (and follow the prompts):
+Before starting services:
+
+- Reach out to your Dev Chairs for the shared `.env`
+- Place it at the repo root as `.env`
+- Install dependencies in `services/api`, `apps/web`, and `apps/mobile` with `yarn`
+
+Web apps load their local `.env` first, then fall back to the root `.env`. The API and local infrastructure also use the root `.env`.
+
+## Local Infrastructure
+
+The root `docker-compose.yml` owns the local database and Supabase-related services used during development:
+
+- `db`
+- `kong`
+- `rest`
+- `meta`
+- `studio`
+
+The database is initialized from `docker/init-scripts/` in this order:
+
+1. `00-roles.sql`
+2. `01-schema.sql`
+3. `02-grants.sql`
+
+If you need to change the local schema, update `docker/init-scripts/01-schema.sql`.
+
+## Local Development
+
+1. Start the local database and Supabase tooling:
+
 ```bash
-sh setup.sh
-```
-
-3. Reach out to your Dev Chairs for the `.env` file
-
-## Development
-
-### Starting the Development Environment
-
-```bash
-# Start all services (shows only API + Web + Mobile logs for cleaner output)
 rp start
-
-# Start all services (shows all logs including infrastructure)
-rp start-verbose
-# or short form:
-rp start-v
-
-# Start all services in detached mode
-rp start-detached
-# or short form:
-rp start-d
-
-# Start just the API service (shows only API logs)
-rp start-api
-
-# Start just the API service (shows all logs including infrastructure)
-rp start-api-v
-
-# Start just the Web service
-rp start-web
-
-# Start the mobile Expo container
-rp start-mobile
-
-# Start the mobile Expo container with a cleared cache
-rp start-mobile-clear
-
-# Start the mobile app in web mode
-rp start-mobile-web
 ```
 
-### Accessing Services
+2. In separate terminals, run app processes on your host machine:
+
+```bash
+cd services/api && yarn dev
+cd apps/web && yarn workspace @rp/site dev
+cd apps/mobile && yarn start
+```
+
+Swap `@rp/site` for any other web app workspace such as `@rp/admin`, `@rp/info`, `@rp/hype`, `@rp/sponsor`, or `@rp/dashboard`.
+
+See `services/api/README.md`, `apps/web/README.md`, and `apps/mobile/README.md` for service-specific workflows.
+
+## Common Commands
+
+```bash
+rp start
+rp start-verbose
+rp start-detached
+rp status
+rp stop
+rp clean
+rp logs
+rp logs-infra
+rp db
+```
+
+## Service URLs
 
 | Service | URL |
-|---------|-----|
+| --- | --- |
 | API | http://localhost:3000 |
 | Site | http://localhost:3001 |
 | Admin | http://localhost:3002 |
@@ -72,220 +92,29 @@ rp start-mobile-web
 | Hype | http://localhost:3004 |
 | Sponsor | http://localhost:3005 |
 | Dashboard | http://localhost:3006 |
-| Supabase Studio | http://localhost:8000 |
+| Kong Gateway | http://localhost:8000 |
+| Supabase Studio | http://localhost:8001 |
 | Expo Metro | http://localhost:8081 |
 | Expo Web | http://localhost:19006 |
 
-### Quick Start Commands 
+## Verification
+
+Run the matching checks from the owning directory:
 
 ```bash
-# Start all services (shows only API + Web + Mobile logs, add -v for more logs)
-rp start
-
-# Enter the API container
-rp enter
-
-# View logs for everything
-rp logs
-
-# Update .env files based on the main .env file
-rp update
-
-# Start the mobile container
-rp start-mobile
-
-# Stop all services
-rp stop
+./scripts/verify-root.sh
+cd services/api && yarn verify
+cd apps/web && yarn verify
+cd apps/mobile && yarn verify
 ```
 
-### All Commands
+## CI
 
-```bash
-# Start all services (shows only API + Web + Mobile logs)
-rp start
+GitHub Actions live in `.github/workflows/ci.yml`.
 
-# Start all services (shows all logs)
-rp start-verbose  # or rp start-v
+- Root changes run the root sanity checks
+- `services/api/**` changes run API build, lint, format, and tests against the root DB/tooling stack
+- `apps/web/**` changes run the web verify and format checks
+- `apps/mobile/**` changes run the mobile verify checks
 
-# Start all services in detached mode
-rp start-detached  # or rp start-d
-
-# Start just the API service (shows only API logs)
-rp start-api
-
-# Start just the API service (shows all logs)
-rp start-api-v
-
-# Start just the Web service (requires API to be running)
-rp start-web
-
-# Start the mobile Expo container
-rp start-mobile
-
-# Start the mobile Expo container with a cleared cache
-rp start-mobile-clear
-
-# Start the mobile app in web mode via Docker
-rp start-mobile-web
-
-# Update .env files
-rp update
-
-# See the status of all docker containers
-rp status
-
-# Stop all services
-rp stop
-
-# Stop and remove volumes (WARNING: This will delete all data)
-rp clean
-
-# View logs
-rp logs
-
-# View API logs
-rp logs-api
-
-# View Web logs
-rp logs-web
-
-# View Mobile logs
-rp logs-mobile
-
-# View infrastructure logs (db, studio, kong, rest, meta)
-rp logs-infra
-
-# Access the database
-rp db
-
-# Enter the API container
-rp enter  # or rp enter-api
-
-# Enter the Web container
-rp enter-web
-
-# Open a shell in the mobile Docker image
-rp enter-mobile
-```
-
-These commands can also be run with `docker compose` instead of `rp` if you prefer. A reference for common commands using `docker compose` is [below](#common-commands-docker-compose).
-
-### Common Commands (Docker Compose)
-
-```bash
-# Start all services (shows only API + Web + Mobile logs)
-docker compose up --build --attach api --attach web --attach mobile
-
-# Start all services (shows all logs)
-docker compose up --build
-
-# Start all services in detached mode
-docker compose up --build -d
-
-# Start just the API service (shows only API logs)
-docker compose up --build --attach api api db studio kong rest meta
-
-# Start just the API service (shows all logs)
-docker compose up --build api db studio kong rest meta
-
-# Start just the Web service
-docker compose up --build web
-
-# Start the mobile Expo container
-docker compose up --build mobile
-
-# Start the mobile Expo container with a cleared cache
-MOBILE_COMMAND=start-clear docker compose up --build mobile
-
-# Start the mobile app in web mode via Docker
-MOBILE_COMMAND=start-web docker compose up --build mobile
-
-# See the status of all docker containers
-docker compose ps
-
-# Stop all services
-docker compose down
-
-# Stop and remove volumes (WARNING: This will delete all data)
-docker compose down -v
-
-# View logs
-docker compose logs -f api  # API logs
-docker compose logs -f web  # Web logs
-docker compose logs -f mobile  # Mobile logs
-docker compose logs -f db studio kong rest meta  # Infrastructure logs
-
-# Enter the API container
-docker compose exec api bash
-
-# Enter the Web container
-docker compose exec web bash
-
-# Open a shell in the mobile Docker image
-docker compose run --rm mobile bash
-
-# Access the database
-docker compose exec db psql -U postgres
-```
-
-### Git Operations
-
-You can manage the branches in each repo by going into the repo in `dev/rp-api`, `dev/rp-web`, and `dev/rp-mobile` and running `git branch` to see the branches and `git checkout <branch-name>` to switch to a branch. 
-
-Should you need to fast-forward all repos to main, you can run the following script. This will lose any uncommitted changes.
-
-```bash
-# Fast-forward all repos to main (WARNING: Will lose uncommitted changes)
-sh fast-forward.sh
-```
-
-## Troubleshooting
-
-### Container Issues
-```bash
-# Reset the database
-rp clean
-# or docker compose down -v
-
-rp start
-# or docker compose up --build --attach api --attach web --attach mobile
-```
-
-### Service Dependencies
-- Use `rp start` to start everything together with clean logs
-- Use `rp start-verbose` (or `rp start-v`) if you need to see infrastructure logs for debugging
-- Or use `rp start-api` first, then `rp start-web` if you want to start them separately
-
-## Updating Environment Variables
-
-You can customize the development environment by setting your variables in the `.env` file. `rp update` copies that file into any available local API, Web, and Mobile repos. After making changes, rebuild the Docker environment or restart the Expo server to apply the updates:
-
-```bash
-# Stop all services
-rp stop 
-# or `docker compose down`
-
-# Rebuild and start the services
-rp start
-# or docker compose up --build --attach api --attach web --attach mobile
-```
-
-For API targeting, `ENV` is the primary switch:
-
-- `ENV=DEVELOPMENT` makes the wrapper web apps and mobile app use the local development API by default
-- `ENV=PRODUCTION` makes the wrapper web apps and mobile app use `https://api.reflectionsprojections.org` by default
-- `API_URL` is only used by the mobile app outside production, for cases like a LAN IP target for Expo Go
-
-## Notes
-
-- Always commit your changes before running `fast-forward.sh` (but use this with caution)
-- The database data persists between restarts unless you use `rp clean` (or `docker compose down -v`)
-- Use `Ctrl+C` to stop the development environment, and then wait for all containers to gracefully shut down. Alternatively, you can use `Ctrl+C` again to force stop the containers. Finally, you can use `rp stop` to stop any remaining services.
-- The API service includes all Supabase infrastructure (db, studio, kong, rest, meta), so starting it will start everything needed.
-- By default, most commands show clean logs focused on your development. Use `-verbose` or `-v` variants to see all logs including infrastructure.
-- Use `rp logs-infra` to view infrastructure logs if needed for debugging.
-- `rp enter` and `rp enter-api` both enter the API container since that's most commonly needed.
-- `rp start-mobile` and `rp start-mobile-clear` run Expo inside Docker using Expo tunnel mode so the QR code is reachable from your phone.
-- `rp start-mobile-web` serves the Expo web build from the mobile container on port `19006`.
-- The root `.env` is the source of truth for wrapper-managed env vars; `rp update` and `rp start*` copy it into available repos under `dev/`.
-- Direct edits to `dev/rp-api/.env`, `dev/rp-web/.env`, or `dev/rp-mobile/.env` are temporary in the wrapper flow and will be overwritten.
+The final `ci` job is the branch-protection surface for pull requests.
