@@ -4,9 +4,11 @@ import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const sharedEnv = loadEnv(mode, resolve(__dirname, "../../.."), "");
+  const appEnv = loadEnv(mode, __dirname, "");
+  const rootEnv = loadEnv(mode, resolve(__dirname, "../../../.."), "");
+  const mergedEnv = { ...rootEnv, ...appEnv };
 
-  for (const [key, value] of Object.entries(sharedEnv)) {
+  for (const [key, value] of Object.entries(mergedEnv)) {
     if (process.env[key] === undefined) {
       process.env[key] = value;
     }
