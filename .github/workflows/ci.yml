@@ -79,6 +79,8 @@ jobs:
           ENV=GITHUB_CI
           ANON_KEY=${{ secrets.ANON_KEY }}
           SERVICE_ROLE_KEY=${{ secrets.SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_KEY=${{ secrets.SERVICE_ROLE_KEY }}
+          SUPABASE_URL=http://localhost:8000
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           DASHBOARD_USERNAME=${{ vars.DASHBOARD_USERNAME }}
           DASHBOARD_PASSWORD=${{ vars.DASHBOARD_PASSWORD }}
