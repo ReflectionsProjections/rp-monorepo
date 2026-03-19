@@ -1,5 +1,3 @@
-import { WebSocket } from "ws";
-
 process.env.ENV = "TESTING";
 
 process.env.DATABASE_USERNAME = "urmom";
@@ -30,9 +28,3 @@ process.env.S3_REGION = "aok";
 process.env.USERID_ENCRYPTION_KEY = "whatissecurity";
 
 process.env.SUPABASE_URL = "http://localhost:8000";
-
-(
-    globalThis as typeof globalThis & {
-        WebSocket: typeof WebSocket;
-    }
-).WebSocket = WebSocket;
