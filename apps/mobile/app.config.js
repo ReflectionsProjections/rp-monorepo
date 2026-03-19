@@ -1,3 +1,4 @@
+/* global __dirname */
 const dotenv = require('dotenv');
 const path = require('path');
 
@@ -6,6 +7,12 @@ dotenv.config({
   path: path.resolve(__dirname, '../../.env'),
   override: false,
 });
+
+const appEnv = process.env.ENV || process.env.VITE_ENV || 'PRODUCTION';
+const isDevelopment = appEnv === 'DEVELOPMENT';
+const apiUrl =
+  process.env.API_URL ||
+  (isDevelopment ? 'http://localhost:3000' : 'https://api.reflectionsprojections.org');
 
 module.exports = {
   expo: {
@@ -70,8 +77,9 @@ module.exports = {
       typedRoutes: true,
     },
     extra: {
+      env: appEnv,
       googleClientId: process.env.OAUTH_GOOGLE_CLIENT_ID,
-      apiUrl: process.env.API_URL || 'https://api.reflectionsprojections.org',
+      apiUrl,
     },
   },
 };

@@ -1,18 +1,19 @@
 import Constants from 'expo-constants';
 
+const appConfig = Constants.expoConfig?.extra ?? {};
+const appEnv = appConfig.env || process.env.ENV || process.env.VITE_ENV || 'PRODUCTION';
+const fallbackApiUrl =
+  appEnv === 'DEVELOPMENT' ? 'http://localhost:3000' : 'https://api.reflectionsprojections.org';
+
 export const OAUTH_CONFIG = {
-  IOS_GOOGLE_CLIENT_ID:
-    Constants.expoConfig?.extra?.googleClientId ||
-    process.env.OAUTH_GOOGLE_CLIENT_ID ||
-    'YOUR_GOOGLE_CLIENT_ID',
+  IOS_GOOGLE_CLIENT_ID: appConfig.googleClientId || process.env.OAUTH_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
   REDIRECT_SCHEME: 'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
   REDIRECT_PATH: '/(auth)/callback',
 };
 
 export const API_CONFIG = {
   BASE_URL:
-    //Constants.expoConfig?.extra?.apiUrl ||
-    process.env.API_URL || 'https://api.reflectionsprojections.org',
+    appConfig.apiUrl || process.env.API_URL || fallbackApiUrl,
   TIMEOUT: 10000,
 };
 
@@ -20,7 +21,7 @@ export function validateEnvironment() {
   const requiredVars = ['OAUTH_GOOGLE_CLIENT_ID'];
 
   const missing = requiredVars.filter((varName) => {
-    const value = Constants.expoConfig?.extra?.[varName.toLowerCase()] || process.env[varName];
+    const value = appConfig[varName.toLowerCase()] || process.env[varName];
     return !value || value === `YOUR_${varName}`;
   });
 
