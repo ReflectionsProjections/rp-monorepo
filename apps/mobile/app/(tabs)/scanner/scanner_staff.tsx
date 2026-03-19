@@ -23,16 +23,18 @@ const SCAN_BOX_TOP_OFFSET = SCREEN_HEIGHT * 0.15; // Position box in upper-middl
 
 const DEMO_ACCOUNT_ID = 'demoacct-bd2c-6535-89b7-reflect12334';
 
-const parseQrCode = (qrData: string): { userId: string; expTime: number; isValid: boolean; error?: string } => {
+const parseQrCode = (
+  qrData: string,
+): { userId: string; expTime: number; isValid: boolean; error?: string } => {
   try {
     const parts = qrData.split('#');
-    
+
     if (parts.length !== 3) {
       return {
         userId: '',
         expTime: 0,
         isValid: false,
-        error: 'Invalid QR code format. Expected: hash#expTime#userId'
+        error: 'Invalid QR code format. Expected: hash#expTime#userId',
       };
     }
 
@@ -44,7 +46,7 @@ const parseQrCode = (qrData: string): { userId: string; expTime: number; isValid
         userId: '',
         expTime: 0,
         isValid: false,
-        error: 'Invalid expiration time in QR code'
+        error: 'Invalid expiration time in QR code',
       };
     }
 
@@ -53,21 +55,21 @@ const parseQrCode = (qrData: string): { userId: string; expTime: number; isValid
         userId,
         expTime,
         isValid: false,
-        error: 'QR code has expired'
+        error: 'QR code has expired',
       };
     }
 
     return {
       userId,
       expTime,
-      isValid: true
+      isValid: true,
     };
   } catch (error) {
     return {
       userId: '',
       expTime: 0,
       isValid: false,
-      error: 'Failed to parse QR code'
+      error: 'Failed to parse QR code',
     };
   }
 };
@@ -96,7 +98,8 @@ export default function ScannerScreen() {
       try {
         const res = await api.get('/events');
         setEvents(res.data);
-        if (res.data.length) setSelectedEvent({eventId: res.data[0].eventId, name: res.data[0].name});
+        if (res.data.length)
+          setSelectedEvent({ eventId: res.data[0].eventId, name: res.data[0].name });
       } catch (e) {
         console.error(e);
         Alert.alert('Error', 'Failed to load events');
@@ -123,11 +126,11 @@ export default function ScannerScreen() {
     if (errorOccurred || isProcessingRef.current) {
       return;
     }
-    
+
     if (data === lastScannedCodeRef.current) {
       return;
     }
-    
+
     if (loading || scanned || !scanReady || scanDisabled) {
       return;
     }
@@ -137,7 +140,7 @@ export default function ScannerScreen() {
     setLastScannedCode(data);
     setScanned(true);
     setLoading(true);
-    
+
     try {
       if (!selectedEvent) {
         setErrorMessage('Please select an event first');
@@ -147,7 +150,7 @@ export default function ScannerScreen() {
       }
 
       const parsedQr = parseQrCode(data);
-      
+
       if (!parsedQr.isValid) {
         setErrorMessage(parsedQr.error || 'QR code is invalid');
         setErrorOccurred(true);
@@ -166,16 +169,15 @@ export default function ScannerScreen() {
         eventId: selectedEvent.eventId,
         qrCode: data,
       });
-      
+
       setSuccessMessage(`Successfully checked in user into ${selectedEvent.name}!`);
       setShowSuccess(true);
       setTimeout(resetScan, 2000);
-      
     } catch (err: any) {
       console.error('Scan error:', err);
-      
+
       let errorMsg = 'Scan failed';
-      
+
       if (err.response?.status === 401) {
         errorMsg = 'QR code has expired';
       } else if (err.response?.status === 403 && err.response?.data?.error === 'IsDuplicate') {
@@ -185,7 +187,7 @@ export default function ScannerScreen() {
       } else if (err.message) {
         errorMsg = err.message;
       }
-      
+
       setErrorMessage(errorMsg);
       setErrorOccurred(true);
       setScanDisabled(true);
@@ -236,9 +238,7 @@ export default function ScannerScreen() {
           className="bg-[#333] rounded-lg p-3"
           onPress={() => setPickerVisible(true)}
         >
-          <Text className="text-white">
-            {selectedEvent.name || 'Select an event'}
-          </Text>
+          <Text className="text-white">{selectedEvent.name || 'Select an event'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -248,7 +248,9 @@ export default function ScannerScreen() {
             ref={cameraRef}
             style={{ flex: 1 }}
             facing="back"
-            onBarcodeScanned={scanReady && !scanned && !loading && !scanDisabled ? handleBarCodeScanned : undefined}
+            onBarcodeScanned={
+              scanReady && !scanned && !loading && !scanDisabled ? handleBarCodeScanned : undefined
+            }
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
             }}
@@ -258,15 +260,13 @@ export default function ScannerScreen() {
             <Text className="text-white text-lg text-center">Scanner disabled due to error</Text>
           </View>
         )}
-        
+
         {/* Status overlay */}
         {!loading && !scanned && (
           <View className="absolute top-20 left-0 right-0 items-center z-10 px-4">
             {scanReady && (
               <View className="bg-black/50 rounded-lg px-4 py-2">
-                <Text className="text-white text-lg font-bold text-center">
-                  Ready to scan
-                </Text>
+                <Text className="text-white text-lg font-bold text-center">Ready to scan</Text>
               </View>
             )}
           </View>
@@ -280,13 +280,13 @@ export default function ScannerScreen() {
         )}
 
         {/* Scan box overlay */}
-        <View 
+        <View
           className="absolute items-center justify-center"
-          style={{ 
+          style={{
             top: SCAN_BOX_TOP_OFFSET,
             left: 0,
             right: 0,
-            width: '100%'
+            width: '100%',
           }}
         >
           <TouchableWithoutFeedback onPress={() => setScanReady(true)}>
@@ -308,7 +308,7 @@ export default function ScannerScreen() {
                 <View className="absolute bottom-0 right-0 w-8 h-1 bg-[#00adb5]" />
                 <View className="absolute bottom-0 right-0 w-1 h-8 bg-[#00adb5]" />
               </View>
-              
+
               {/* Scan status indicator */}
               {scanReady && (
                 <View className="absolute inset-0 items-center justify-center">
@@ -332,7 +332,6 @@ export default function ScannerScreen() {
             </Text>
           </View>
         </View>
-
       </View>
 
       <Modal visible={showSuccess} transparent animationType="fade">
@@ -352,10 +351,7 @@ export default function ScannerScreen() {
           <View className="bg-red-900/90 p-6 rounded-lg mx-6 max-w-sm min-w-[200px]">
             <Text className="text-red-200 text-xl font-bold text-center mb-4">Oops!</Text>
             <Text className="text-white text-center mb-6">{errorMessage}</Text>
-            <TouchableOpacity 
-              className="bg-red-600 px-6 py-3 rounded-lg" 
-              onPress={resetScan}
-            >
+            <TouchableOpacity className="bg-red-600 px-6 py-3 rounded-lg" onPress={resetScan}>
               <Text className="text-white text-center font-semibold">OK</Text>
             </TouchableOpacity>
           </View>
@@ -376,7 +372,10 @@ export default function ScannerScreen() {
                 <Picker
                   selectedValue={selectedEvent.eventId}
                   onValueChange={(val) => {
-                    setSelectedEvent({eventId: val, name: events.find((e) => e.eventId === val)?.name || ''});
+                    setSelectedEvent({
+                      eventId: val,
+                      name: events.find((e) => e.eventId === val)?.name || '',
+                    });
                     setPickerVisible(false);
                   }}
                   style={{ color: 'white' }}

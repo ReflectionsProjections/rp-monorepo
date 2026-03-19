@@ -158,8 +158,8 @@ jobs:
           cache-dependency-path: apps/mobile/yarn.lock
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Lint
-        run: yarn lint
+      - name: Verify
+        run: yarn verify
 
   ci:
     runs-on: ubuntu-latest

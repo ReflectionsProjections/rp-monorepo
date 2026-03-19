@@ -6,14 +6,14 @@ const fallbackApiUrl =
   appEnv === 'DEVELOPMENT' ? 'http://localhost:3000' : 'https://api.reflectionsprojections.org';
 
 export const OAUTH_CONFIG = {
-  IOS_GOOGLE_CLIENT_ID: appConfig.googleClientId || process.env.OAUTH_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
+  IOS_GOOGLE_CLIENT_ID:
+    appConfig.googleClientId || process.env.OAUTH_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
   REDIRECT_SCHEME: 'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
   REDIRECT_PATH: '/(auth)/callback',
 };
 
 export const API_CONFIG = {
-  BASE_URL:
-    appConfig.apiUrl || process.env.API_URL || fallbackApiUrl,
+  BASE_URL: appConfig.apiUrl || process.env.API_URL || fallbackApiUrl,
   TIMEOUT: 10000,
 };
 
