@@ -164,7 +164,9 @@ describe("GET /dashboard", () => {
 
             expect(wsResult?.code).toBe(1005);
             expect(wsResult?.received.length).toBeGreaterThanOrEqual(2);
-            expect(wsResult?.received.every((message) => message === PING_MESSAGE)).toBe(true);
+            expect(
+                wsResult?.received.every((message) => message === PING_MESSAGE)
+            ).toBe(true);
             expect(beforeTimeoutResult.body).toEqual([
                 {
                     id: 0,
