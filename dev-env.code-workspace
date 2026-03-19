@@ -4,13 +4,13 @@
 			"path": "."
 		},
 		{
-			"path": "dev/rp-web"
+			"path": "apps/web"
 		},
 		{
-			"path": "dev/rp-api"
+			"path": "services/api"
 		},
 		{
-			"path": "dev/rp-mobile"
+			"path": "apps/mobile"
 		}
 	],
 	"settings": {}

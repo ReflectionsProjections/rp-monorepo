@@ -1,0 +1,52 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+ROOT_DIR="$(cd "$(dirname "$SCRIPT_PATH")/.." && pwd)"
+
+compose() {
+  (cd "$ROOT_DIR" && docker compose "$@")
+}
+
+case "${1:-help}" in
+  start)
+    compose up --build --attach db --attach studio --attach kong --attach rest --attach meta
+    ;;
+  start-verbose|start-v)
+    compose up --build
+    ;;
+  start-detached|start-d)
+    compose up --build -d
+    ;;
+  status)
+    compose ps
+    ;;
+  stop)
+    compose down
+    ;;
+  clean)
+    compose down -v
+    ;;
+  logs)
+    compose logs -f
+    ;;
+  logs-infra)
+    compose logs -f db studio kong rest meta
+    ;;
+  db)
+    compose exec db psql -U postgres
+    ;;
+  help|--help|-h|*)
+    cat <<'EOF'
+rp start              Start local database and Supabase tooling with focused logs
+rp start-verbose      Start local database and Supabase tooling with all logs
+rp start-detached     Start local database and Supabase tooling in the background
+rp status             Show docker compose status
+rp stop               Stop the local database and Supabase tooling
+rp clean              Stop the local database/tooling stack and remove volumes
+rp logs               Tail all local database and Supabase tooling logs
+rp logs-infra         Tail infra logs
+rp db                 Open a psql shell in the db container
+EOF
+    ;;
+esac

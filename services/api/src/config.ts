@@ -1,10 +1,16 @@
 import dotenv from "dotenv";
+import path from "path";
 
 import { z } from "zod";
 
 import { SES } from "@aws-sdk/client-ses";
 
 dotenv.config({ quiet: true });
+dotenv.config({
+    path: path.resolve(__dirname, "../../../.env"),
+    quiet: true,
+    override: false,
+});
 
 export enum EnvironmentEnum {
     PRODUCTION = "PRODUCTION",
