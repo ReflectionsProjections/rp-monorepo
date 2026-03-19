@@ -1,8 +1,13 @@
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
+dotenv.config({
+  path: path.resolve(__dirname, '../../.env'),
+  override: false,
+});
 
-export default {
+module.exports = {
   expo: {
     name: 'reflectionsprojections',
     slug: 'reflectionsprojections',
@@ -46,6 +51,8 @@ export default {
     },
     plugins: [
       'expo-router',
+      'expo-secure-store',
+      'expo-web-browser',
       [
         'expo-splash-screen',
         {
