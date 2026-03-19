@@ -42,6 +42,3 @@ echo "  1. Add the root .env file"
 echo "  2. Install dependencies in the app directories with yarn"
 echo "  3. Run rp start"
 echo "  4. Start the API, web, and mobile apps locally with yarn"
-
-echo "${YELLOW}💡 Tip:${RESET} Just type '${BOLD}rp --help${RESET}' to see all available commands."
-echo "${GREEN}${BOLD}Run 'source $SHELL_RC' or restart your terminal to use the 'rp' command.${RESET}"

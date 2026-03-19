@@ -57,6 +57,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.api == 'true'
+    env:
+      POSTGRES_HOST: db
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PORT: 5432
+      JWT_SECRET: ci-supabase-jwt-secret-2026-long-enough-for-tests
+      JWT_EXPIRY: 3600
+      PGRST_DB_SCHEMAS: public
+      SUPABASE_URL: http://localhost:8000
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTcwNDA2NzIwMCwiZXhwIjoyNTI0NjA4MDAwLCJyb2xlIjoiYW5vbiJ9.V56Fx5RS_LQpdttJ9BN1dnes_jr7orfFeDgAMNhpqT0
+      SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTcwNDA2NzIwMCwiZXhwIjoyNTI0NjA4MDAwLCJyb2xlIjoic2VydmljZV9yb2xlIn0.hqx87nxUtsYgFHpIDf2gLYOV6L8QTQJc3JgVmn4r_28
+      SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTcwNDA2NzIwMCwiZXhwIjoyNTI0NjA4MDAwLCJyb2xlIjoic2VydmljZV9yb2xlIn0.hqx87nxUtsYgFHpIDf2gLYOV6L8QTQJc3JgVmn4r_28
+      DASHBOARD_USERNAME: ci
+      DASHBOARD_PASSWORD: ci
+      FORCE_COLOR: true
     defaults:
       run:
         working-directory: services/api
@@ -68,39 +83,6 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: services/api/yarn.lock
       - uses: docker/setup-buildx-action@v4
-      - name: Create .env
-        run: |
-          cat <<EOF > ../../.env
-          ENV=GITHUB_CI
-          ANON_KEY=${{ secrets.ANON_KEY }}
-          SERVICE_ROLE_KEY=${{ secrets.SERVICE_ROLE_KEY }}
-          SUPABASE_SERVICE_KEY=${{ secrets.SERVICE_ROLE_KEY }}
-          SUPABASE_URL=http://localhost:8000
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          DASHBOARD_USERNAME=${{ vars.DASHBOARD_USERNAME }}
-          DASHBOARD_PASSWORD=${{ vars.DASHBOARD_PASSWORD }}
-          POSTGRES_HOST=${{ vars.POSTGRES_HOST }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ vars.POSTGRES_DB }}
-          POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
-          TYPE=service_account
-          PROJECT_ID=reflections-projections
-          PRIVATE_KEY_ID=${{ secrets.PRIVATE_KEY_ID }}
-          PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}
-          CLIENT_EMAIL=${{ secrets.CLIENT_EMAIL }}
-          CLIENT_ID=${{ secrets.CLIENT_ID }}
-          AUTH_URI=${{ secrets.AUTH_URI }}
-          TOKEN_URI=${{ secrets.TOKEN_URI }}
-          AUTH_PROVIDER_X509_CERT_URL=${{ secrets.AUTH_PROVIDER_X509_CERT_URL }}
-          CLIENT_X509_CERT_URL=${{ secrets.CLIENT_X509_CERT_URL }}
-          UNIVERSE_DOMAIN=googleapis.com
-          AWS_REGION=us-east-2
-          AWS_ACCESS_KEY_ID=${{ vars.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          PGRST_DB_SCHEMAS=public
-          JWT_EXPIRY=3600
-          FORCE_COLOR=true
-          EOF
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build
