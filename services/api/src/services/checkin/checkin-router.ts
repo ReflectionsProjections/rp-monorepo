@@ -7,7 +7,11 @@ import {
 } from "./checkin-schema";
 import RoleChecker from "../../middleware/role-checker";
 import { Role } from "../auth/auth-models";
-import { validateQrHash, checkInUserToEvent, undoCheckInUserToEvent } from "./checkin-utils";
+import {
+    validateQrHash,
+    checkInUserToEvent,
+    undoCheckInUserToEvent,
+} from "./checkin-utils";
 
 const checkinRouter = Router();
 
@@ -49,7 +53,7 @@ checkinRouter.post(
 
         const { userId, expTime } = validateQrHash(qrCode);
 
-        // Even if QR is expired, we might want to let them undo? 
+        // Even if QR is expired, we might want to let them undo?
         // Let's check expiration just like the scan endpoint.
         if (Date.now() / 1000 > expTime) {
             return res
@@ -61,7 +65,10 @@ checkinRouter.post(
             await undoCheckInUserToEvent(eventId, userId);
         } catch (error: unknown) {
             console.error("Undo check-in failed:", error);
-            if (error instanceof Error && error.message === "AttendanceNotFound") {
+            if (
+                error instanceof Error &&
+                error.message === "AttendanceNotFound"
+            ) {
                 return res
                     .status(StatusCodes.NOT_FOUND)
                     .json({ error: "AttendanceNotFound" });
@@ -102,7 +109,10 @@ checkinRouter.post(
         try {
             await undoCheckInUserToEvent(eventId, userId);
         } catch (error: unknown) {
-            if (error instanceof Error && error.message === "AttendanceNotFound") {
+            if (
+                error instanceof Error &&
+                error.message === "AttendanceNotFound"
+            ) {
                 return res
                     .status(StatusCodes.NOT_FOUND)
                     .json({ error: "AttendanceNotFound" });

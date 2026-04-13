@@ -119,7 +119,7 @@ async function undoAttendanceRecords(eventId: string, userId: string) {
     const eventsAttended = attendeeAttendance?.eventsAttended || [];
 
     if (eventsAttended.includes(eventId)) {
-        const newEventsAttended = eventsAttended.filter(id => id !== eventId);
+        const newEventsAttended = eventsAttended.filter((id) => id !== eventId);
         await SupabaseDB.ATTENDEE_ATTENDANCES.upsert({
             userId: userId,
             eventsAttended: newEventsAttended,
