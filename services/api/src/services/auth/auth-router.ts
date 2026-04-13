@@ -64,8 +64,8 @@ authRouter.use("/sponsor", authSponsorRouter);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -128,8 +128,8 @@ authRouter.delete(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -227,8 +227,8 @@ const getAuthPayloadFromCode = async (
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "InvalidToken"
+ *             example:
+ *               error: "InvalidToken"
  *     security: []
  */
 authRouter.post("/login/:PLATFORM", async (req, res) => {
@@ -340,8 +340,8 @@ authRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "AlreadyExists"
+ *             example:
+ *               error: "AlreadyExists"
  *     security:
  *       - bearerAuth: []
  */
@@ -392,8 +392,8 @@ authRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -479,8 +479,8 @@ authRouter.get("/info", RoleChecker([]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Failed to fetch team members"
+ *             example:
+ *               error: "Failed to fetch team members"
  *     security:
  *       - bearerAuth: []
  */

@@ -46,8 +46,8 @@ registrationRouter.use(cors());
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: {}
+ *             example:
+ *               error: {}
  *     security:
  *       - bearerAuth: []
  */
@@ -96,8 +96,8 @@ registrationRouter.post("/draft", RoleChecker([]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "DoesNotExist"
+ *             example:
+ *               error: "DoesNotExist"
  *     security:
  *       - bearerAuth: []
  */
@@ -147,8 +147,8 @@ registrationRouter.get("/draft", RoleChecker([]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: {}
+ *             example:
+ *               error: {}
  *     security:
  *       - bearerAuth: []
  */

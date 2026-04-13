@@ -41,16 +41,16 @@ const checkinRouter = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "QR code has expired"
+ *             example:
+ *               error: "QR code has expired"
  *       403:
  *         description: Attendee already checked in to this event
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "IsDuplicate"
+ *             example:
+ *               error: "IsDuplicate"
  *     security:
  *       - bearerAuth: []
  */
@@ -114,8 +114,8 @@ checkinRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "IsDuplicate"
+ *             example:
+ *               error: "IsDuplicate"
  *     security:
  *       - bearerAuth: []
  */
@@ -169,8 +169,8 @@ checkinRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "QR code has expired"
+ *             example:
+ *               error: "QR code has expired"
  *     security:
  *       - bearerAuth: []
  */

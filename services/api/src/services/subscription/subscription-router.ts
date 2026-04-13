@@ -48,8 +48,8 @@ const sesClient = new SESv2Client({
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "User not found."
+ *             example:
+ *               error: "User not found."
  *     security: []
  */
 // Create a new subscription
@@ -193,8 +193,8 @@ subscriptionRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "No subscribers found for this mailing list."
+ *             example:
+ *               error: "No subscribers found for this mailing list."
  *     security:
  *       - bearerAuth: []
  */
@@ -345,8 +345,8 @@ subscriptionRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "No subscribers found for this mailing list."
+ *             example:
+ *               error: "No subscribers found for this mailing list."
  *     security:
  *       - bearerAuth: []
  */
@@ -423,8 +423,8 @@ subscriptionRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Access denied."
+ *             example:
+ *               error: "Access denied."
  *     security:
  *       - bearerAuth: []
  */
@@ -488,16 +488,16 @@ subscriptionRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Access denied."
+ *             example:
+ *               error: "Access denied."
  *       404:
  *         description: Subscription not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Subscription not found."
+ *             example:
+ *               error: "Subscription not found."
  *     security:
  *       - bearerAuth: []
  */

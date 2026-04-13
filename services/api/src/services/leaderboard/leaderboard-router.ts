@@ -194,8 +194,8 @@ leaderboardRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Leaderboard already submitted"
+ *             example:
+ *               error: "Leaderboard already submitted"
  *     security:
  *       - bearerAuth: []
  */

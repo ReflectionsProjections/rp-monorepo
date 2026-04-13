@@ -97,8 +97,8 @@ statsRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "PRICE must be non-negative"
+ *             example:
+ *               error: "PRICE must be non-negative"
  *     security:
  *       - bearerAuth: []
  */
@@ -216,8 +216,8 @@ statsRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "N must be greater than 0"
+ *             example:
+ *               error: "N must be greater than 0"
  *     security:
  *       - bearerAuth: []
  */
@@ -421,16 +421,16 @@ statsRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Invalid uuid"
+ *             example:
+ *               error: "Invalid uuid"
  *       404:
  *         description: Event not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Event not found"
+ *             example:
+ *               error: "Event not found"
  *     security:
  *       - bearerAuth: []
  */
@@ -631,8 +631,8 @@ statsRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "N must be greater equal than 0"
+ *             example:
+ *               error: "N must be greater equal than 0"
  *     security:
  *       - bearerAuth: []
  */

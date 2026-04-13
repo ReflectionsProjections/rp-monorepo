@@ -54,13 +54,14 @@ const TIER_HIERARCHY = {
  *         content:
  *           application/json:
  *             schema:
- *               oneOf:
- *                 - $ref: '#/components/schemas/Error'
- *                     example:
- *                       error: "UserNotFound"
- *                 - $ref: '#/components/schemas/Error'
- *                     example:
- *                       error: "EventNotFound"
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
+ *               UserNotFound:
+ *                 value:
+ *                   error: "UserNotFound"
+ *               EventNotFound:
+ *                 value:
+ *                   error: "EventNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -156,13 +157,14 @@ attendeeRouter.post(
  *         content:
  *           application/json:
  *             schema:
- *               oneOf:
- *                 - $ref: '#/components/schemas/Error'
- *                     example:
- *                       error: "UserNotFound"
- *                 - $ref: '#/components/schemas/Error'
- *                     example:
- *                       error: "EventNotFound"
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
+ *               UserNotFound:
+ *                 value:
+ *                   error: "UserNotFound"
+ *               EventNotFound:
+ *                 value:
+ *                   error: "EventNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -251,8 +253,8 @@ attendeeRouter.delete(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -338,8 +340,8 @@ attendeeRouter.get("/qr/", RoleChecker([Role.Enum.USER]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -391,8 +393,8 @@ attendeeRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -458,8 +460,8 @@ attendeeRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -511,8 +513,8 @@ attendeeRouter.get("/", RoleChecker([Role.Enum.USER]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -602,8 +604,8 @@ attendeeRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -677,21 +679,23 @@ attendeeRouter.get(
  *         content:
  *           application/json:
  *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             examples:
  *               oneOf:
- *                 - $ref: '#/components/schemas/Error'
- *                     example:
- *                       error: "TierAlreadyRedeemed"
- *                 - $ref: '#/components/schemas/Error'
- *                     example:
- *                       error: "UserTierTooLow"
+ *                  TierAlreadyRedeemed:
+ *                    value:
+ *                      error: "TierAlreadyRedeemed"
+ *                  UserTierTooLow:
+ *                    value:
+ *                      error: "UserTierTooLow"
  *       404:
  *         description: Attendee not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -776,8 +780,8 @@ attendeeRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -842,8 +846,8 @@ attendeeRouter.patch(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -950,8 +954,8 @@ attendeeRouter.patch(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */

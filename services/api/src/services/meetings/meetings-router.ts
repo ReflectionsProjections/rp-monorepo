@@ -78,8 +78,8 @@ meetingsRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   message: "Meeting not found"
+ *             example:
+ *               message: "Meeting not found"
  *     security:
  *       - bearerAuth: []
  */
@@ -183,8 +183,8 @@ meetingsRouter.post("/", RoleChecker([Role.enum.ADMIN]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   message: "Meeting not found"
+ *             example:
+ *               message: "Meeting not found"
  *     security:
  *       - bearerAuth: []
  */
@@ -240,8 +240,8 @@ meetingsRouter.put(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   message: "Meeting not found"
+ *             example:
+ *               message: "Meeting not found"
  *     security:
  *       - bearerAuth: []
  */

@@ -44,16 +44,16 @@ puzzlebangRouter.use(PuzzlebangChecker);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *       409:
  *         description: Puzzle already completed by this user
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "AlreadyCompleted"
+ *             example:
+ *               error: "AlreadyCompleted"
  *     security: []
  */
 puzzlebangRouter.post("/", async (req, res) => {

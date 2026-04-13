@@ -44,16 +44,16 @@ const staffRouter = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "AlreadyCheckedIn"
+ *             example:
+ *               error: "AlreadyCheckedIn"
  *       404:
  *         description: Meeting not found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -167,8 +167,8 @@ staffRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -293,8 +293,8 @@ staffRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -352,8 +352,8 @@ staffRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserAlreadyExists"
+ *             example:
+ *               error: "UserAlreadyExists"
  *     security:
  *       - bearerAuth: []
  */
@@ -419,8 +419,8 @@ staffRouter.post("/", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "UserNotFound"
+ *             example:
+ *               error: "UserNotFound"
  *     security:
  *       - bearerAuth: []
  */

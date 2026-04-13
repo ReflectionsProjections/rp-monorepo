@@ -396,8 +396,8 @@ shiftsRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "Shift assignment not found"
+ *             example:
+ *               error: "Shift assignment not found"
  *     security:
  *       - bearerAuth: []
  */

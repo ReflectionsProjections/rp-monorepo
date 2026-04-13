@@ -187,8 +187,8 @@ dashboardRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -255,8 +255,8 @@ dashboardRouter.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *     security:
  *       - bearerAuth: []
  */
@@ -334,8 +334,8 @@ dashboardRouter.post("/message", RoleChecker([Role.Enum.ADMIN]), (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "NotFound"
+ *             example:
+ *               error: "NotFound"
  *     security:
  *       - bearerAuth: []
  */

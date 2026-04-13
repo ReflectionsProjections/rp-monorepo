@@ -105,8 +105,8 @@ authSponsorRouter.post("/login", async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *                 example:
- *                   error: "InvalidCode"
+ *             example:
+ *               error: "InvalidCode"
  *     security: []
  */
 authSponsorRouter.post("/verify", async (req, res) => {
