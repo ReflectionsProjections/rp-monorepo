@@ -119,10 +119,12 @@ jobs:
         run: corepack enable
       - name: Install dependencies
         run: yarn install --immutable
-      - name: Verify
-        run: yarn verify
+      - name: Type-Check
+        run: yarn type-check
+      - name: Lint
+        run: yarn lint
       - name: Format
-        run: npx prettier . --check
+        run: yarn format:check
 
   mobile:
     runs-on: ubuntu-latest

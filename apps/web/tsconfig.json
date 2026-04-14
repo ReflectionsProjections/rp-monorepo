@@ -12,18 +12,23 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["vite/client"],
 
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@rp/shared": ["shared/src"]
+      "@rp/shared": ["./src/shared"],
+      "@rp/shared/*": ["./src/shared/*"],
+      "@admin/*": ["./src/admin/*"],
+      "@site/*": ["./src/site/*"],
+      "@dashboard/*": ["./src/dashboard/*"],
+      "@info/*": ["./src/info/*"],
+      "@sponsor/*": ["./src/sponsor/*"],
+      "@hype/*": ["./src/hype/*"]
     }
   },
-  "include": ["src", "vite.config.ts"],
-  "references": [{ "path": "./shared" }]
+  "include": ["src", "vite.config.ts"]
 }

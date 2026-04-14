@@ -1,8 +1,7 @@
-**/.git
-**/node_modules
-**/.husky
-**/.github
-**/README.md
-LICENSE
+.yarn
+node_modules
+dist
+public
+*.md
 .prettierignore
 .gitignore
