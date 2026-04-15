@@ -136,23 +136,43 @@ export type Database = {
                     },
                 ];
             };
-            authCodes: {
+            authTokens: {
                 Row: {
-                    email: string;
-                    expTime: string;
-                    hashedVerificationCode: string;
+                    id: string;
+                    userId: string;
+                    tokenHash: string;
+                    expiresAt: string;
+                    createdAt: string;
+                    usedAt: string | null;
+                    path: string;
                 };
                 Insert: {
-                    email: string;
-                    expTime: string;
-                    hashedVerificationCode: string;
+                    id?: string;
+                    userId: string;
+                    tokenHash: string;
+                    expiresAt: string;
+                    createdAt?: string;
+                    usedAt?: string | null;
+                    path: string;
                 };
                 Update: {
-                    email?: string;
-                    expTime?: string;
-                    hashedVerificationCode?: string;
+                    id?: string;
+                    userId?: string;
+                    tokenHash?: string;
+                    expiresAt?: string;
+                    createdAt?: string;
+                    usedAt?: string | null;
+                    path?: string;
                 };
-                Relationships: [];
+                Relationships: [
+                    {
+                        foreignKeyName: "authTokens_user_id_fkey";
+                        columns: ["userId"];
+                        isOneToOne: false;
+                        referencedRelation: "authInfo";
+                        referencedColumns: ["userId"];
+                    },
+                ];
             };
             authInfo: {
                 Row: {

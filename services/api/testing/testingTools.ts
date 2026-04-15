@@ -182,7 +182,7 @@ export async function clearSupabaseTables(supabase: SupabaseClient) {
         "registrations",
         "authRoles",
         "shiftAssignments",
-        "authCodes",
+        "authTokens",
         "events",
         "corporate",
         "meetings",

@@ -231,11 +231,15 @@ CREATE TABLE public."authRoles" (
     CONSTRAINT "authRoles_pkey" PRIMARY KEY ("userId", "role")
 );
 
-CREATE TABLE public."authCodes" (
-    "email" character varying NOT NULL,
-    "hashedVerificationCode" text NOT NULL,
-    "expTime" timestamp with time zone NOT NULL,
-    CONSTRAINT "authCodes_pkey" PRIMARY KEY ("email")
+CREATE TABLE public."authTokens" (
+    "id" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "userId" character varying NOT NULL,
+    "tokenHash" text NOT NULL,
+    "expiresAt" timestamp with time zone NOT NULL,
+    "createdAt" timestamp with time zone DEFAULT now() NOT NULL,
+    "usedAt" timestamp with time zone,
+    "path" text NOT NULL,
+    CONSTRAINT "authTokens_pkey" PRIMARY KEY ("id")
 );
 
 -- Indexes for auth tables
@@ -314,6 +318,9 @@ ALTER TABLE ONLY public."redemptions"
 
 ALTER TABLE ONLY public."subscriptions"
     ADD CONSTRAINT "subscriptions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+
+ALTER TABLE ONLY public."authTokens"
+    ADD CONSTRAINT "authTokens_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
 
 -- PostgreSQL function for atomic tier promotions
 CREATE OR REPLACE FUNCTION public.promote_users_batch(user_ids text[])
