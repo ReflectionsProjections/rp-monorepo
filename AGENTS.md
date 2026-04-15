@@ -1,67 +1,49 @@
 # Agent Guide
 
-This repository is the canonical Reflections | Projections monorepo.
+This repository is the canonical Reflections | Projections monorepo. Product code for the API, web site, and mobile app lives here, while the repo root owns shared development tooling and local infrastructure.
 
-## Paths
+## Repo Layout
 
-- Prefer repo-relative paths in commands and explanations.
-- Use absolute paths only for tool-required clickable references.
+- `services/api`: API service code
+- `apps/web`: web workspace for the unified Vite site
+- `apps/mobile`: Expo mobile app
+- `db`: local database bootstrap files and Kong config used by Docker
+- `scripts`: root helper scripts for verification and local orchestration
+- `.github/workflows`: CI and automation
 
 ## Default Working Rule
 
-If the task is about product code, work in the owning monorepo area:
+When a task is about product behavior, work in the owning area:
 
-- `services/api` for API application code
-- `apps/web` for the web workspace root and shared web tooling
-- `apps/web/apps/*` for individual web apps
-- `apps/mobile` for the mobile app
+- `services/api` for backend/API behavior
+- `apps/web` for all website behavior and web tooling
+- `apps/mobile` for mobile app behavior
 
-Do not default to editing the repo root for product behavior changes.
+Do not default to editing the repo root for product changes.
 
 ## When To Edit The Repo Root
 
-Only edit the repo root for shared monorepo concerns, such as:
+Edit the repo root only for monorepo-wide concerns, such as:
 
 - `README.md`
 - `docker-compose.yml`
-- `setup.sh`
-- `dev-env.code-workspace`
 - `.github/workflows/*`
 - `scripts/*`
-- development database and Supabase stack wiring
-- root `.env` usage and shared developer workflow
+- `setup.sh`
+- shared developer environment docs
+- root `.env` usage
+- local database and Supabase stack wiring
 
-## Environment Files
+## Environment And Infrastructure
 
 - Treat the root `.env` as the shared local environment file.
-- Do not add repo automation that copies `.env` into service directories.
-- The repo root is the source of truth for local database and Supabase environment wiring.
-- If a service needs env access during local Docker development, prefer wiring the root `.env` through Compose or service-local config.
-
-## Development Database
-
-- The repo root owns the development database and Supabase-related Docker stack.
-- Treat the root `docker-compose.yml`, `scripts/rp`, and root `.env` as the control plane for local DB/tooling behavior.
-- Do not move development database startup instructions into service READMEs or service-local automation.
-- API code in `services/api` may depend on the local database, but the database itself is started and managed from the repo root.
-
-## Verification
-
-Prefer the root helper commands when they match the change:
-
-- `./scripts/verify-root.sh`
-
-For service-local checks, run them from the owning directory:
-
-- `cd services/api && yarn verify`
-- `cd services/api && yarn test`
-- `cd apps/web && yarn verify`
-- `cd apps/mobile && yarn lint`
-- `cd apps/mobile && yarn verify`
+- Do not add automation that copies the root `.env` into service directories.
+- The root `docker-compose.yml`, `db/*`, and `scripts/rp` are the control plane for the local database and Supabase-related services.
+- API, web, and mobile apps run directly on the host machine from their own directories.
 
 ## Running The Stack
 
-Run development database and stack-level commands from the repo root.
+Run local infrastructure from the repo root:
 
 - `rp start`
 - `rp start-verbose`
@@ -69,17 +51,45 @@ Run development database and stack-level commands from the repo root.
 - `rp stop`
 - `rp logs`
 
-These commands are the supported way to start and manage the local development database and Supabase-related tooling in Docker. Run the API, web, and mobile apps directly on the host machine from their owning directories.
+Then run product apps from their owning directories:
 
-Expected local URLs:
+- `cd services/api && yarn dev`
+- `cd apps/web && yarn dev`
+- `cd apps/mobile && yarn start`
+
+## Verification
+
+Prefer the narrowest matching verification for the area you changed.
+
+Root-level checks:
+
+- `./scripts/verify-root.sh`
+
+Service-level checks:
+
+- `cd services/api && yarn verify`
+- `cd services/api && yarn test`
+- `cd apps/web && yarn verify`
+- `cd apps/web && yarn lint`
+- `cd apps/web && yarn type-check`
+- `cd apps/web && yarn build`
+- `cd apps/mobile && yarn verify`
+- `cd apps/mobile && yarn lint`
+
+## Local URLs
+
+Expected local URLs today:
 
 - API: `http://localhost:3000`
-- Site: `http://localhost:3001`
-- Admin: `http://localhost:3002`
-- Info: `http://localhost:3003`
-- Hype: `http://localhost:3004`
-- Sponsor: `http://localhost:3005`
-- Dashboard: `http://localhost:3006`
+- Web site: `http://localhost:3001`
+- Kong Gateway: `http://localhost:8000`
 - Supabase Studio: `http://localhost:8001`
 - Expo Metro: `http://localhost:8081`
 - Expo Web: `http://localhost:19006`
+
+## Guidance For Agents
+
+- Prefer repo-relative paths in commands and explanations.
+- Use absolute paths only when a tool requires them, such as clickable file links.
+- Check for deeper `AGENTS.md` files before editing inside a subproject.
+- Keep service-specific guidance in the owning directory rather than expanding the root guide with implementation details.
