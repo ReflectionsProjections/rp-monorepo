@@ -21,8 +21,8 @@ function mockSupabase(supabaseUrl: string, supabaseServiceKey: string) {
                 get AUTH_ROLES() {
                     return supabase.from("authRoles");
                 },
-                get AUTH_CODES() {
-                    return supabase.from("authCodes");
+                get AUTH_TOKENS() {
+                    return supabase.from("authTokens");
                 },
                 get CORPORATE() {
                     return supabase.from("corporate");

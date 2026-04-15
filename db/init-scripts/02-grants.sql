@@ -22,7 +22,7 @@ GRANT ALL ON TABLE public."shifts"              TO anon, authenticated, service_
 GRANT ALL ON TABLE public."shiftAssignments"    TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."subscriptions"       TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."mailingLists"        TO anon, authenticated, service_role;
-GRANT ALL ON TABLE public."authCodes"			TO anon, authenticated, service_role; 
+GRANT ALL ON TABLE public."authTokens"			TO anon, authenticated, service_role; 
 GRANT ALL ON TABLE public."customTopics"        TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."redemptions"         TO anon, authenticated, service_role;
 
