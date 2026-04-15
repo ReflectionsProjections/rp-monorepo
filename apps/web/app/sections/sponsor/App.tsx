@@ -28,7 +28,10 @@ function App() {
             element={<Page showNav={false} pageContent={<ResumeAllPDF />} />}
           />
         </Route>
-        <Route path="*" element={<Page showNav={true} pageContent={<Home />} />} />
+        <Route
+          path="*"
+          element={<Page showNav={true} pageContent={<Home />} />}
+        />
       </Routes>
     </ChakraProvider>
   );

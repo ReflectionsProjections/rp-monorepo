@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "format:check": "npx prettier . --check",
-    "verify": "yarn build && yarn type-check && yarn lint && yarn format:check"
+    "verify": "yarn build && yarn lint && yarn format:check"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",

@@ -52,7 +52,10 @@ const MainContent = () => {
       return;
     }
 
-    if (location.pathname === "/admin/unauthorized" && roles.includes("STAFF")) {
+    if (
+      location.pathname === "/admin/unauthorized" &&
+      roles.includes("STAFF")
+    ) {
       void navigate("/admin", { replace: true });
       return;
     }
