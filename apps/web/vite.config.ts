@@ -14,18 +14,19 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      port: 3000
+      port: 3001
     },
     plugins: [react(), svgr()],
     resolve: {
       alias: {
-        "@rp/shared": resolve(import.meta.dirname, "src/shared"),
-        "@admin": resolve(import.meta.dirname, "src/admin"),
-        "@site": resolve(import.meta.dirname, "src/site"),
-        "@dashboard": resolve(import.meta.dirname, "src/dashboard"),
-        "@info": resolve(import.meta.dirname, "src/info"),
-        "@sponsor": resolve(import.meta.dirname, "src/sponsor"),
-        "@hype": resolve(import.meta.dirname, "src/hype")
+        "@app": resolve(import.meta.dirname, "app"),
+        "@components": resolve(import.meta.dirname, "components"),
+        "@hooks": resolve(import.meta.dirname, "hooks"),
+        "@constants": resolve(import.meta.dirname, "constants"),
+        "@assets": resolve(import.meta.dirname, "assets"),
+        "@api": resolve(import.meta.dirname, "api"),
+        "@lib": resolve(import.meta.dirname, "lib"),
+        "@types": resolve(import.meta.dirname, "types")
       }
     }
   };

@@ -18,17 +18,33 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0",
 
+    "baseUrl": ".",
     "paths": {
-      "@rp/shared": ["./src/shared"],
-      "@rp/shared/*": ["./src/shared/*"],
-      "@admin/*": ["./src/admin/*"],
-      "@site/*": ["./src/site/*"],
-      "@dashboard/*": ["./src/dashboard/*"],
-      "@info/*": ["./src/info/*"],
-      "@sponsor/*": ["./src/sponsor/*"],
-      "@hype/*": ["./src/hype/*"]
+      "@app": ["./app/index.ts"],
+      "@app/*": ["./app/*"],
+      "@components/*": ["./components/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@constants/*": ["./constants/*"],
+      "@assets/*": ["./assets/*"],
+      "@api/*": ["./api/*"],
+      "@lib": ["./lib/index.ts"],
+      "@lib/*": ["./lib/*"],
+      "@types/*": ["./types/*"]
     }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [
+    "app",
+    "components",
+    "hooks",
+    "constants",
+    "assets",
+    "api",
+    "lib",
+    "types",
+    "main.tsx",
+    "vite-env.d.ts",
+    "vite.config.ts"
+  ]
 }
