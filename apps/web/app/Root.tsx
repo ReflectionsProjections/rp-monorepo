@@ -1,5 +1,6 @@
 import { Suspense, lazy, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Fallback from "./Fallback";
 import AuthCallback from "./routes/auth/AuthCallback";
 import AuthRefresh from "./routes/auth/AuthRefresh";
 import SiteApp from "./sections/home/App";
@@ -12,7 +13,7 @@ const InfoApp = lazy(() => import("./sections/info/App"));
 const SponsorApp = lazy(() => import("./sections/sponsor/App"));
 
 function LazySection({ children }: { children: ReactNode }) {
-  return <Suspense fallback={null}>{children}</Suspense>;
+  return <Suspense fallback={<Fallback />}>{children}</Suspense>;
 }
 
 export default function Root() {
