@@ -1,4 +1,3 @@
-document.title = "R|P Dashboard";
 import "./index.css";
 
 import type { ThemeConfig } from "@chakra-ui/react";
@@ -10,6 +9,8 @@ import { Sponsors } from "./components/Sponsors";
 import Title from "./components/Title";
 import useTimeSyncedReload from "./hooks/TimeSynchedReload";
 import WebSocketPopup from "./components/WebSocketPopup";
+
+document.title = "R|P Dashboard";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",

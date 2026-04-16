@@ -1,5 +1,3 @@
-document.title = "R|P 2025";
-
 import "./index.css";
 import { Box, ChakraProvider, Link, VStack } from "@chakra-ui/react";
 import { customTheme } from "@app/theme";
@@ -14,6 +12,8 @@ import Resume from "./routes/Resume";
 import Speakers from "./routes/Speakers/Speakers";
 import AppScreen from "./routes/AppScreen";
 import NotFound from "./routes/NotFound";
+
+document.title = "R|P 2025";
 
 function App() {
   return (
