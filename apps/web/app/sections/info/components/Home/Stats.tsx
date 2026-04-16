@@ -139,11 +139,11 @@ export const Stats = () => {
             </Flex>
             <AnimatedPillarsSection
               icons={[
-                "icon_person.svg",
-                "icon_calendar.svg",
-                "icon_building.svg",
-                "icon_speaker.svg",
-                "icon_location.svg"
+                "/info/icon_person.svg",
+                "/info/icon_calendar.svg",
+                "/info/icon_building.svg",
+                "/info/icon_speaker.svg",
+                "/info/icon_location.svg"
               ]}
             />
           </div>
