@@ -82,6 +82,7 @@ export const AnimatedLogoConstant = () => {
         animate={{ rotate: rotation, opacity: topOpacity }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         src={CONSTANT_IMAGES[topCurrentImage]}
+        alt="logo"
         style={{
           zIndex: 2,
           position: "absolute",
@@ -93,6 +94,7 @@ export const AnimatedLogoConstant = () => {
         animate={{ rotate: rotation }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         src={CONSTANT_IMAGES[bottomCurrentImage % CONSTANT_IMAGES.length]}
+        alt="logo"
         style={{
           zIndex: 1,
           position: "absolute",
