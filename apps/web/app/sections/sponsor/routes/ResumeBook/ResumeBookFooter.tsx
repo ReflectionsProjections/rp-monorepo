@@ -1,5 +1,5 @@
 import { Box, Button, Flex, HStack, Input, Text } from "@chakra-ui/react";
-import { Resume } from "./ResumeBook";
+import type { Resume } from "./ResumeBook";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 export function ResumeBookFooter({

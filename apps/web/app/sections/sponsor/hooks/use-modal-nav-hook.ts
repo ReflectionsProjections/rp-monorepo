@@ -1,4 +1,4 @@
-import { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
+import type { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
 import { useDisclosure } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

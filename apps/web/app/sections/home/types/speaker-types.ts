@@ -1,4 +1,4 @@
-import { Speaker } from "@app";
+import type { Speaker } from "@app";
 
 export type SpeakerRow = {
   speakers: Speaker[];

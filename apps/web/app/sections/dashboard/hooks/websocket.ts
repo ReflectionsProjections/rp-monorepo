@@ -1,4 +1,5 @@
-import { Config, DashboardMessageRequest } from "@app";
+import type { DashboardMessageRequest } from "@app";
+import { Config } from "@app";
 import { useEffect, useRef, useState } from "react";
 
 const RETRY_CONNECTION_MS = 5 * 1000;

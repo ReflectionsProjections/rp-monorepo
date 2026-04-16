@@ -26,8 +26,10 @@ import {
   Box,
   Text
 } from "@chakra-ui/react";
-import { Form, Formik, FormikHelpers } from "formik";
-import { EventFormValues, EventFormSchema } from "./EventSchema";
+import type { FormikHelpers } from "formik";
+import { Form, Formik } from "formik";
+import type { EventFormValues } from "./EventSchema";
+import { EventFormSchema } from "./EventSchema";
 import React from "react";
 import moment from "moment-timezone";
 

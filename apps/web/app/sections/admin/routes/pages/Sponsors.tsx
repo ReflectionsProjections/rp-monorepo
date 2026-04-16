@@ -15,14 +15,15 @@ import {
 } from "@chakra-ui/react";
 import { api, usePolling } from "@app";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { Formik, FormikHelpers } from "formik";
+import type { FormikHelpers } from "formik";
+import { Formik } from "formik";
+import type { SponsorFormValues } from "@app/sections/admin/components/Sponsors/SponsorSchema";
 import {
   SponsorFormInitialValues,
-  SponsorFormSchema,
-  SponsorFormValues
+  SponsorFormSchema
 } from "@app/sections/admin/components/Sponsors/SponsorSchema";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main";
+import type { MainContext } from "../Main";
 
 const Sponsors = () => {
   const { authorized } = useOutletContext<MainContext>();

@@ -2,7 +2,8 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import Navbar from "@app/sections/admin/components/Navbar";
-import { api, Role } from "@app";
+import type { Role } from "@app";
+import { api } from "@app";
 import Unauthorized from "@app/sections/admin/components/Unauthorized";
 import Login from "@app/sections/admin/components/Login";
 import {

@@ -9,7 +9,8 @@ import {
   useToast,
   useDisclosure
 } from "@chakra-ui/react";
-import { api, Display, path, useTime } from "@app";
+import type { Display } from "@app";
+import { api, path, useTime } from "@app";
 import InfoModal from "./InfoModal";
 import MessageModal from "./MessageModal";
 

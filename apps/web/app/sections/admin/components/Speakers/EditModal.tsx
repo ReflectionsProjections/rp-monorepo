@@ -1,9 +1,10 @@
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import { EditIcon } from "@chakra-ui/icons";
 import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
-import { FormikHelpers } from "formik";
-import { Speaker, api, path } from "@app";
-import { SpeakerFormValues } from "./SpeakerSchema";
+import type { FormikHelpers } from "formik";
+import type { Speaker } from "@app";
+import { api, path } from "@app";
+import type { SpeakerFormValues } from "./SpeakerSchema";
 import SpeakerForm from "./SpeakerForm";
 
 type EditModalProps = {

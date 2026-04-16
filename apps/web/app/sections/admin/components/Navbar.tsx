@@ -24,14 +24,15 @@ import {
 } from "@chakra-ui/react";
 import { NavLink, useLocation } from "react-router-dom";
 import rpLogo from "/rp_logo.svg";
-import { ReactNode, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import "../App.css";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import StatusMonitor from "./StatusMonitor";
 import { MdDarkMode, MdLightMode, MdPalette } from "react-icons/md";
 import ColorProfileSelector from "./ColorProfileSelector";
 import { useColorTheme } from "@app/sections/admin/contexts/ColorThemeContext";
-import { Role } from "@app";
+import type { Role } from "@app";
 
 const linkMap: Record<string, { path: string; role: Role }> = {
   Home: { path: "/admin", role: "STAFF" },

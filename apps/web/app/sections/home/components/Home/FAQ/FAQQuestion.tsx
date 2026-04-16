@@ -1,4 +1,4 @@
-import { FAQItem } from "@app/sections/home/constants/faq-questions";
+import type { FAQItem } from "@app/sections/home/constants/faq-questions";
 import { Box, Collapse, Image, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { parseRichText } from "@app/sections/home/utils/textParser";

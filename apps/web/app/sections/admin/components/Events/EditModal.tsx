@@ -7,11 +7,12 @@ import {
   ModalContent,
   useToast
 } from "@chakra-ui/react";
-import { api, Event, path } from "@app";
+import type { Event } from "@app";
+import { api, path } from "@app";
 import React from "react";
 import EventForm from "./EventForm";
-import { EventFormValues } from "./EventSchema";
-import { FormikHelpers } from "formik";
+import type { EventFormValues } from "./EventSchema";
+import type { FormikHelpers } from "formik";
 
 type EditModalProps = {
   event: Event;

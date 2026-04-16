@@ -1,4 +1,5 @@
-import { Text, TextProps } from "@chakra-ui/react";
+import type { TextProps } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 

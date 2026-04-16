@@ -1,11 +1,12 @@
 import { Heading, Flex } from "@chakra-ui/react";
-import { Speaker, usePolling } from "@app";
+import type { Speaker } from "@app";
+import { usePolling } from "@app";
 import SpeakerCard, {
   SpeakerCardSkeleton
 } from "@app/sections/admin/components/Speakers/SpeakerCard.tsx";
 import AddModal from "@app/sections/admin/components/Speakers/AddModal.tsx";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main.tsx";
+import type { MainContext } from "../Main.tsx";
 
 function Speakers() {
   const { authorized } = useOutletContext<MainContext>();

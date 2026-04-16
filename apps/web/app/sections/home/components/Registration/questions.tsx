@@ -12,7 +12,7 @@ import {
   graduationDates,
   educationLevels
 } from "@app";
-import { RegistrationValues } from "./schema";
+import type { RegistrationValues } from "./schema";
 import { employmentOpportunities } from "@app";
 
 export const NameField = () => (

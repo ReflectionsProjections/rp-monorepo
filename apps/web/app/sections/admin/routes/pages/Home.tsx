@@ -14,7 +14,7 @@ import EventCard from "@app/sections/admin/components/EventCard";
 import Section from "@app/sections/admin/components/Section";
 import MyShifts from "@app/sections/admin/components/MyShifts";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main";
+import type { MainContext } from "../Main";
 
 const MotionHeader = motion(Heading);
 

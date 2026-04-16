@@ -1,6 +1,7 @@
 import { Box, Button, Icon, Wrap, WrapItem } from "@chakra-ui/react";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { parseLinks, LinkData } from "./link-utils";
+import type { LinkData } from "./link-utils";
+import { parseLinks } from "./link-utils";
 
 export function LinkButtonsGrid({ linkData }: { linkData: LinkData }) {
   return (

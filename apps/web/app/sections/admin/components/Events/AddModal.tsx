@@ -8,8 +8,9 @@ import {
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
-import { FormikHelpers } from "formik";
-import { EventFormInitialValues, EventFormValues } from "./EventSchema";
+import type { FormikHelpers } from "formik";
+import type { EventFormValues } from "./EventSchema";
+import { EventFormInitialValues } from "./EventSchema";
 import EventForm from "./EventForm";
 import { api } from "@app";
 

@@ -1,5 +1,5 @@
 import { Config } from "@app/sections/sponsor/config";
-import { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
+import type { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
 import { downloadResumes } from "@app/sections/sponsor/util/download-functions";
 import { saveAs } from "file-saver";
 import { useState } from "react";

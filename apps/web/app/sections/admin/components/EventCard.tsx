@@ -12,7 +12,7 @@ import {
   Text
 } from "@chakra-ui/react";
 import rpLogo from "/rp_logo.svg";
-import { Event } from "@app";
+import type { Event } from "@app";
 import moment from "moment";
 
 const readable = "MMMM Do YYYY, h:mm a";

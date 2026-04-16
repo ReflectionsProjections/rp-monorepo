@@ -1,5 +1,5 @@
 import { Stack, StackDivider, Text, useColorModeValue } from "@chakra-ui/react";
-import { LeaderboardUser } from "@app";
+import type { LeaderboardUser } from "@app";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 
 export const ExtendedLeaderboardStats: React.FC<{

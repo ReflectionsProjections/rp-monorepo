@@ -15,7 +15,8 @@ import {
   Text,
   useColorModeValue
 } from "@chakra-ui/react";
-import { Speaker, api, path } from "@app";
+import type { Speaker } from "@app";
+import { api, path } from "@app";
 
 type DeleteModalProps = {
   speaker: Speaker;

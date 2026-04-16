@@ -1,6 +1,8 @@
 import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
-import { FastField, FieldProps } from "formik";
-import { Select, MultiValue, SingleValue } from "chakra-react-select";
+import type { FieldProps } from "formik";
+import { FastField } from "formik";
+import type { MultiValue, SingleValue } from "chakra-react-select";
+import { Select } from "chakra-react-select";
 import { useState, useMemo, useCallback, useEffect } from "react";
 
 type SelectOption = {

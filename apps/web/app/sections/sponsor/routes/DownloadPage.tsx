@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { useParams } from "react-router-dom";
-import { Resume } from "./ResumeBook/ResumeBook";
+import type { Resume } from "./ResumeBook/ResumeBook";
 import { api } from "@app";
 import { Config } from "@app/sections/sponsor/config";
 

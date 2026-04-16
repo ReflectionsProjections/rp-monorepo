@@ -1,7 +1,8 @@
 import SpeakerCardRow from "@app/sections/home/components/Speakers/SpeakerCardRow";
-import { SpeakerRow } from "@app/sections/home/types/speaker-types";
+import type { SpeakerRow } from "@app/sections/home/types/speaker-types";
 import { Text, useMediaQuery, VStack } from "@chakra-ui/react";
-import { api, Speaker } from "@app";
+import type { Speaker } from "@app";
+import { api } from "@app";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const COLORS = [

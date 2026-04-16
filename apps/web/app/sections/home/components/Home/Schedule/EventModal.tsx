@@ -10,7 +10,7 @@ import {
   ModalOverlay,
   Text
 } from "@chakra-ui/react";
-import { Event } from "@app";
+import type { Event } from "@app";
 import moment from "moment-timezone";
 import { FaAward, FaClock, FaMapPin, FaTag } from "react-icons/fa";
 import { AudioVisualizer } from "./AudioVisualizer";

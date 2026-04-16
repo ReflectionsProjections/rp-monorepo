@@ -32,7 +32,7 @@ import { path, usePolling } from "@app";
 import StatCard from "@app/sections/admin/components/StatCard";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main";
+import type { MainContext } from "../Main";
 
 const eventTags = [
   "Career Readiness",

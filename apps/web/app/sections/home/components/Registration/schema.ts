@@ -1,4 +1,4 @@
-import { RegistrationDraft, UploadFile } from "@app";
+import type { RegistrationDraft, UploadFile } from "@app";
 import * as yup from "yup";
 
 export type RegistrationValues = Omit<

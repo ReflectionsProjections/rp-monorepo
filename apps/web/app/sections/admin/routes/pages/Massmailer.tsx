@@ -1,5 +1,5 @@
+import type { EmailFormValues } from "@app/sections/admin/components/EmailMaker/EmailSchema";
 import {
-  EmailFormValues,
   EmailFormSchema,
   EmailFormInitialValues
 } from "@app/sections/admin/components/EmailMaker/EmailSchema";
@@ -25,7 +25,8 @@ import {
   Tooltip
 } from "@chakra-ui/react";
 import { api, path } from "@app";
-import { Formik, FormikHelpers } from "formik";
+import type { FormikHelpers } from "formik";
+import { Formik } from "formik";
 import { useEffect, useRef, useState } from "react";
 import { marked } from "marked";
 import {

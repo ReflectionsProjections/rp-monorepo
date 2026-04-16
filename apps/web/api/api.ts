@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiError, TypedAxiosInstance } from "./type-wrapper";
+import type { ApiError, TypedAxiosInstance } from "./type-wrapper";
 import Config from "../constants/config";
 import { authRefresh } from "./auth";
 

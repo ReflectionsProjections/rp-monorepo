@@ -7,7 +7,8 @@ import {
   Text,
   useToast
 } from "@chakra-ui/react";
-import { api, circleColors, DayEvent, Event, path } from "@app";
+import type { Event } from "@app";
+import { api, circleColors, DayEvent, path } from "@app";
 import moment from "moment-timezone";
 import { useCallback, useEffect, useState } from "react";
 

@@ -14,7 +14,7 @@ import React from "react";
 import { FaFilePdf } from "react-icons/fa6";
 import PortfolioLinks from "../../components/PortfolioLinks";
 import { Config } from "../../config";
-import { Resume } from "./ResumeBook";
+import type { Resume } from "./ResumeBook";
 
 interface ResumeComponentProps {
   resume: Resume;

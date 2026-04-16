@@ -10,9 +10,9 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import AttendanceView from "./AttendanceView";
-import { Meeting, StaffAttendance } from "./useAttendanceViewHook";
+import type { Meeting, StaffAttendance } from "./useAttendanceViewHook";
 import moment from "moment";
-import { Staff, CommitteeType } from "@app";
+import type { Staff, CommitteeType } from "@app";
 
 const TEAM_DISPLAY_NAME: Record<CommitteeType, string> = {
   DEV: "💻 Development Team",

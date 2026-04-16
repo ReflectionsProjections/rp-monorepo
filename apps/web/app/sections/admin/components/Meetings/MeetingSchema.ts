@@ -1,5 +1,5 @@
 import { Config } from "@app/sections/admin/config";
-import { Meeting, CommitteeType } from "@app";
+import type { Meeting, CommitteeType } from "@app";
 import * as yup from "yup";
 
 export type MeetingFormValues = Omit<Meeting, "meetingId">;

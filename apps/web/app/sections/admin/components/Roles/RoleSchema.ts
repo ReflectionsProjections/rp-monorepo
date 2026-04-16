@@ -1,5 +1,5 @@
 import { Config } from "@app/sections/admin/config";
-import { CommitteeType, Role } from "@app";
+import type { CommitteeType, Role } from "@app";
 import * as yup from "yup";
 
 export type RoleFormValues = {

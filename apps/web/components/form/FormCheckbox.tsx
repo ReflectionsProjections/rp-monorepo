@@ -4,7 +4,8 @@ import {
   FormErrorMessage,
   Checkbox
 } from "@chakra-ui/react";
-import { FastField, FieldProps } from "formik";
+import type { FieldProps } from "formik";
+import { FastField } from "formik";
 
 type Props<TValues, TFieldName extends keyof TValues> = {
   name: TFieldName;

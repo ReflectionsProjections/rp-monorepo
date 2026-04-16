@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
+import type { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { api } from "@app";

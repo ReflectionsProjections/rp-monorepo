@@ -1,4 +1,4 @@
-import { MainContext } from "@app/sections/admin/routes/Main";
+import type { MainContext } from "@app/sections/admin/routes/Main";
 import {
   Button,
   Modal,
@@ -11,7 +11,8 @@ import {
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
-import { api, Event, path } from "@app";
+import type { Event } from "@app";
+import { api, path } from "@app";
 import { useOutletContext } from "react-router-dom";
 
 type DeleteModalProps = {

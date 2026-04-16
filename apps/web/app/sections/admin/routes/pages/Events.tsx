@@ -1,15 +1,15 @@
 import { Heading, Flex, VStack } from "@chakra-ui/react";
-import { Event, usePolling } from "@app";
+import type { Event } from "@app";
+import { usePolling } from "@app";
 import EventCard, {
   EventCardSkeleton
 } from "@app/sections/admin/components/Events/EventCard.tsx";
 import AddModal from "@app/sections/admin/components/Events/AddModal.tsx";
-import ViewToggle, {
-  ViewMode
-} from "@app/sections/admin/components/Events/ViewToggle.tsx";
+import type { ViewMode } from "@app/sections/admin/components/Events/ViewToggle.tsx";
+import ViewToggle from "@app/sections/admin/components/Events/ViewToggle.tsx";
 import EventCalendar from "@app/sections/admin/components/Events/EventCalendar.tsx";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main.tsx";
+import type { MainContext } from "../Main.tsx";
 import { useState } from "react";
 
 function Events() {

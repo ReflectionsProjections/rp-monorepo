@@ -1,8 +1,9 @@
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import { AddIcon } from "@chakra-ui/icons";
 import { Button, useDisclosure, useToast } from "@chakra-ui/react";
-import { FormikHelpers } from "formik";
-import { SpeakerFormInitialValues, SpeakerFormValues } from "./SpeakerSchema";
+import type { FormikHelpers } from "formik";
+import type { SpeakerFormValues } from "./SpeakerSchema";
+import { SpeakerFormInitialValues } from "./SpeakerSchema";
 import SpeakerForm from "./SpeakerForm";
 import { api } from "@app";
 

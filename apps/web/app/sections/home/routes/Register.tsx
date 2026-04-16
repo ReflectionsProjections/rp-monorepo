@@ -15,20 +15,21 @@ import {
 import { Form, Formik } from "formik";
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { api, RoleObject, useFormAutosave } from "@app";
+import type { RoleObject } from "@app";
+import { api, useFormAutosave } from "@app";
 // import successAnimation from "../assets/animations/success.json";
 import confirmationAnimation from "../assets/animations/confirmation.json";
+import type { RegistrationValues } from "@app/sections/home/components/Registration/schema";
 import {
   finalRegistrationSchema,
   initialValues,
-  registrationSchema,
-  RegistrationValues
+  registrationSchema
 } from "@app/sections/home/components/Registration/schema";
 import { useOutletContext } from "react-router-dom";
+import type { MotionValue } from "framer-motion";
 import {
   AnimatePresence,
   motion,
-  MotionValue,
   useScroll,
   useSpring,
   useTransform

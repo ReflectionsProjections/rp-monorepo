@@ -1,4 +1,4 @@
-import { AttendanceType } from "@app";
+import type { AttendanceType } from "@app";
 import moment from "moment";
 import React, { useCallback } from "react";
 

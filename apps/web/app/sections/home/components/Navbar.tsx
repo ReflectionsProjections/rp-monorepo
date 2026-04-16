@@ -8,7 +8,8 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import rpLogo from "/rp_logo.svg";
 

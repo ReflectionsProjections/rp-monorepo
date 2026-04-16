@@ -8,7 +8,8 @@ import {
   HStack,
   VStack
 } from "@chakra-ui/react";
-import { FastField, Field, FieldProps } from "formik";
+import type { FieldProps } from "formik";
+import { FastField, Field } from "formik";
 
 type Props<
   TValues,

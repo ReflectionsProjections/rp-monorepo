@@ -1,5 +1,5 @@
-import { EventType } from "@app";
-import { IconType } from "react-icons";
+import type { EventType } from "@app";
+import type { IconType } from "react-icons";
 
 import {
   FaBriefcase,

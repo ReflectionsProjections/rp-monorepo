@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
-import { Role, RoleObject } from "@api/types";
+import type { Role, RoleObject } from "@api/types";
 import api from "@api/api";
 import { authRefresh } from "@api/auth";
 

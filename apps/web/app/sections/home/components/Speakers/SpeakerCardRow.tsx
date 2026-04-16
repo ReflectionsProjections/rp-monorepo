@@ -1,5 +1,5 @@
 import { useElementHeight } from "@app/sections/home/hooks/use-element-height-hook";
-import { SpeakerRow } from "@app/sections/home/types/speaker-types";
+import type { SpeakerRow } from "@app/sections/home/types/speaker-types";
 import { CloseIcon } from "@chakra-ui/icons";
 import {
   Box,

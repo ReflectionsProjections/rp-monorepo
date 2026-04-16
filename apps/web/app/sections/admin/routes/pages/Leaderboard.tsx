@@ -16,10 +16,10 @@ import {
   VStack
 } from "@chakra-ui/react";
 import { api } from "@app";
-import { LeaderboardUser } from "@app";
+import type { LeaderboardUser } from "@app";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main";
+import type { MainContext } from "../Main";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import LeaderboardView from "@app/sections/admin/components/Leaderboard/LeaderboardView";

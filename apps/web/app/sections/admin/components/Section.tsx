@@ -1,4 +1,5 @@
-import { Card, CardProps } from "@chakra-ui/react";
+import type { CardProps } from "@chakra-ui/react";
+import { Card } from "@chakra-ui/react";
 
 const Section = (props: CardProps) => {
   return (

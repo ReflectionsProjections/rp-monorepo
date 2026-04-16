@@ -16,11 +16,13 @@ import {
   Select,
   HStack
 } from "@chakra-ui/react";
-import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
-import { api, Event, usePolling } from "@app";
+import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import { Scanner } from "@yudiel/react-qr-scanner";
+import type { Event } from "@app";
+import { api, usePolling } from "@app";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main.tsx";
-import { ApiError } from "@api/type-wrapper";
+import type { MainContext } from "../Main.tsx";
+import type { ApiError } from "@api/type-wrapper";
 import MerchModal from "@app/sections/admin/components/Checkin/MerchModal.tsx";
 
 export type BasicAttendee = {

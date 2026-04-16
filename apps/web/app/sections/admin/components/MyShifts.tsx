@@ -13,7 +13,8 @@ import {
   useToast,
   IconButton
 } from "@chakra-ui/react";
-import { api, ShiftAssignment } from "@app";
+import type { ShiftAssignment } from "@app";
+import { api } from "@app";
 import moment from "moment-timezone";
 import { useState, useEffect } from "react";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";

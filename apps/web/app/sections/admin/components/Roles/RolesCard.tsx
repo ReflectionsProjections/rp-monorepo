@@ -22,14 +22,16 @@ import {
   Button
 } from "@chakra-ui/react";
 import React from "react";
-import { path, Role, usePolling, RoleObject, api, CommitteeType } from "@app";
+import type { Role, RoleObject, CommitteeType } from "@app";
+import { path, usePolling, api } from "@app";
 import { Config } from "@app/sections/admin/config";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { Formik, FormikHelpers } from "formik";
-import { RoleFormValues } from "./RoleSchema";
-import { MainContext } from "@app/sections/admin/routes/Main";
+import type { FormikHelpers } from "formik";
+import { Formik } from "formik";
+import type { RoleFormValues } from "./RoleSchema";
+import type { MainContext } from "@app/sections/admin/routes/Main";
 import { useOutletContext } from "react-router-dom";
-import { Staff } from "@app";
+import type { Staff } from "@app";
 
 type RolesCardProps = Record<string, never>;
 

@@ -7,10 +7,8 @@ import {
   useColorModeValue,
   Divider
 } from "@chakra-ui/react";
-import {
-  useColorTheme,
-  ColorProfile
-} from "@app/sections/admin/contexts/ColorThemeContext";
+import type { ColorProfile } from "@app/sections/admin/contexts/ColorThemeContext";
+import { useColorTheme } from "@app/sections/admin/contexts/ColorThemeContext";
 
 type ColorProfileSelectorProps = {
   onClose?: () => void;

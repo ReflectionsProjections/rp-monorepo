@@ -17,12 +17,10 @@ import {
   HStack,
   useColorModeValue
 } from "@chakra-ui/react";
-import { Formik, FormikHelpers } from "formik";
-import {
-  SpeakerFormInitialValues,
-  SpeakerFormSchema,
-  SpeakerFormValues
-} from "./SpeakerSchema";
+import type { FormikHelpers } from "formik";
+import { Formik } from "formik";
+import type { SpeakerFormValues } from "./SpeakerSchema";
+import { SpeakerFormInitialValues, SpeakerFormSchema } from "./SpeakerSchema";
 
 interface SpeakerFormProps {
   initialValues?: SpeakerFormValues;

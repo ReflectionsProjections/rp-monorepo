@@ -10,10 +10,10 @@ import {
   ModalHeader,
   Switch
 } from "@chakra-ui/react";
-import { Meeting } from "@app";
+import type { Meeting } from "@app";
 import React from "react";
 import { QRCode } from "react-qrcode-logo";
-import { Moment } from "moment";
+import type { Moment } from "moment";
 import rpLogo from "/rp_logo.svg";
 
 type QrModalProps = {

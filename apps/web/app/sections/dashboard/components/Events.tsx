@@ -1,5 +1,6 @@
 import { Box, Flex, Text, useToast } from "@chakra-ui/react";
-import { api, Event, DayEvent, useTime } from "@app";
+import type { Event } from "@app";
+import { api, DayEvent, useTime } from "@app";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 

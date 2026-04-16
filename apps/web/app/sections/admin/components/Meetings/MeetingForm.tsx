@@ -12,8 +12,10 @@ import {
   ModalFooter,
   Button
 } from "@chakra-ui/react";
-import { Form, Formik, FormikHelpers } from "formik";
-import { MeetingFormValues, MeetingFormSchema } from "./MeetingSchema";
+import type { FormikHelpers } from "formik";
+import { Form, Formik } from "formik";
+import type { MeetingFormValues } from "./MeetingSchema";
+import { MeetingFormSchema } from "./MeetingSchema";
 import React from "react";
 import moment from "moment-timezone";
 

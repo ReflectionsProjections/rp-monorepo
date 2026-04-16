@@ -11,7 +11,8 @@ import {
   Box,
   Link
 } from "@chakra-ui/react";
-import { FastField, FieldArray, FieldProps } from "formik";
+import type { FieldProps } from "formik";
+import { FastField, FieldArray } from "formik";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { FaGithub, FaLinkedin, FaGlobe } from "react-icons/fa";
 

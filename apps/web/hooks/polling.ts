@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { GettablePaths } from "../api/type-wrapper";
-import { APIRoutes } from "../api/types";
+import type { GettablePaths } from "../api/type-wrapper";
+import type { APIRoutes } from "../api/types";
 import api from "../api/api";
 
 const usePolling = <T extends GettablePaths>(

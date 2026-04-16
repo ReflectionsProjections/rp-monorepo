@@ -8,8 +8,9 @@ import {
   useDisclosure,
   useToast
 } from "@chakra-ui/react";
-import { FormikHelpers } from "formik";
-import { MeetingFormInitialValues, MeetingFormValues } from "./MeetingSchema";
+import type { FormikHelpers } from "formik";
+import type { MeetingFormValues } from "./MeetingSchema";
+import { MeetingFormInitialValues } from "./MeetingSchema";
 import MeetingForm from "./MeetingForm";
 import { api } from "@app";
 

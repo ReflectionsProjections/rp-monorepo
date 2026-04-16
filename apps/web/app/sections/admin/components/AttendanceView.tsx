@@ -1,13 +1,15 @@
 import { Box, Skeleton, Text, Tooltip, VStack } from "@chakra-ui/react";
 import moment from "moment";
+import type {
+  AttendanceItem,
+  StaffAttendance,
+  WeekData
+} from "./useAttendanceViewHook";
 import {
   ATTENDANCE_STATUS_COLORS,
   ATTENDANCE_STATUS_COLORS_DARK,
-  AttendanceItem,
   BOX_SIZE,
-  StaffAttendance,
-  useAttendanceViewHook,
-  WeekData
+  useAttendanceViewHook
 } from "./useAttendanceViewHook";
 
 const BOX_SIZE_PX = `${BOX_SIZE}px`;

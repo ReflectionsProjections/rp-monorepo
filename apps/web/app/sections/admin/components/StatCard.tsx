@@ -1,8 +1,9 @@
 import { Stat, StatLabel, StatNumber } from "@chakra-ui/react";
-import { APIRoutes, usePolling } from "@app";
+import type { APIRoutes } from "@app";
+import { usePolling } from "@app";
 import { AnimatedCounter } from "@app";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { GettablePaths } from "@api/type-wrapper";
+import type { GettablePaths } from "@api/type-wrapper";
 
 type Transformer<T extends GettablePaths> = (
   data: APIRoutes[T]["GET"]["response"]

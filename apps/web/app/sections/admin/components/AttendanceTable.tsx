@@ -29,17 +29,10 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import AttendanceModal from "./AttendanceModal";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  AttendanceType,
-  Meeting,
-  path,
-  Staff,
-  CommitteeType,
-  usePolling,
-  api
-} from "@app";
+import type { AttendanceType, Meeting, Staff, CommitteeType } from "@app";
+import { path, usePolling, api } from "@app";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { MainContext } from "@app/sections/admin/routes/Main";
+import type { MainContext } from "@app/sections/admin/routes/Main";
 import { useOutletContext } from "react-router-dom";
 
 type StaffStatistics = Record<

@@ -11,7 +11,7 @@ import {
   Skeleton,
   SkeletonText
 } from "@chakra-ui/react";
-import { Meeting } from "@app";
+import type { Meeting } from "@app";
 import moment from "moment";
 import React from "react";
 import EditModal from "./EditModal";

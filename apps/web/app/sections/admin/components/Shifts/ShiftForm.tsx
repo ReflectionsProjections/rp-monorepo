@@ -10,10 +10,12 @@ import {
   Select,
   useToast
 } from "@chakra-ui/react";
-import { Formik, Form, Field, FieldProps, FormikHelpers } from "formik";
+import type { FieldProps, FormikHelpers } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import moment from "moment-timezone";
-import { api, Shift, ShiftRoleType, Event } from "@app";
+import type { Shift, ShiftRoleType, Event } from "@app";
+import { api } from "@app";
 
 // Set timezone to Chicago (Central Time)
 moment.tz.setDefault("America/Chicago");

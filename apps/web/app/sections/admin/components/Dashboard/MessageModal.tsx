@@ -1,4 +1,5 @@
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import type { UseDisclosureReturn } from "@chakra-ui/react";
 import {
   Button,
   Checkbox,
@@ -14,10 +15,10 @@ import {
   Switch,
   Textarea,
   useDisclosure,
-  UseDisclosureReturn,
   useToast
 } from "@chakra-ui/react";
-import { api, DashboardMessageRequest, path } from "@app";
+import type { DashboardMessageRequest } from "@app";
+import { api, path } from "@app";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 

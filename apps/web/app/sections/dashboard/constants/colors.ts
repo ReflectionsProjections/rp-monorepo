@@ -1,4 +1,4 @@
-import { IconColor } from "@app";
+import type { IconColor } from "@app";
 
 export const ICON_COLOR_TO_COLOR: Record<IconColor, string> = {
   BLUE: "#0059ff",

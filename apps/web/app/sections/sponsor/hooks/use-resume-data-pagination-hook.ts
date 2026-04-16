@@ -1,6 +1,6 @@
 import { RESUMES_PER_PAGE } from "@app/sections/sponsor/routes/ResumeBook/constants";
-import { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
-import { SingleCol } from "@app/sections/sponsor/routes/ResumeBook/ResumeList";
+import type { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
+import type { SingleCol } from "@app/sections/sponsor/routes/ResumeBook/ResumeList";
 import { formatMajorsMinors } from "@app/sections/sponsor/util/natural-stringify-list";
 import {
   api,

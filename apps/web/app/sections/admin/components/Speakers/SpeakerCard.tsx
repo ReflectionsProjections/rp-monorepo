@@ -13,7 +13,7 @@ import {
   SkeletonText,
   Avatar
 } from "@chakra-ui/react";
-import { Speaker } from "@app";
+import type { Speaker } from "@app";
 import React from "react";
 import EditModal from "./EditModal";
 import DeleteModal from "./DeleteModal";

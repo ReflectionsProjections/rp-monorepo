@@ -6,10 +6,11 @@ import {
   useColorModeValue,
   VStack
 } from "@chakra-ui/react";
-import ResumeList, { SingleCol } from "./ResumeList";
+import type { SingleCol } from "./ResumeList";
+import ResumeList from "./ResumeList";
 import ResumeGrid from "./ResumeGrid";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { Resume } from "./ResumeBook";
+import type { Resume } from "./ResumeBook";
 
 export type ResumeBookProps = {
   loading: boolean;

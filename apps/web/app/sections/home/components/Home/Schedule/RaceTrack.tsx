@@ -1,9 +1,7 @@
-import {
-  TRACK_PATHS,
-  TrackLocation
-} from "@app/sections/home/constants/track-paths";
+import type { TrackLocation } from "@app/sections/home/constants/track-paths";
+import { TRACK_PATHS } from "@app/sections/home/constants/track-paths";
 import { Box, Text, Tooltip } from "@chakra-ui/react";
-import { Event } from "@app";
+import type { Event } from "@app";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export function RaceTrack({

@@ -1,5 +1,6 @@
 import { Box, Flex, Text, VStack } from "@chakra-ui/react";
-import { dayColors, Event } from "@app";
+import type { Event } from "@app";
+import { dayColors } from "@app";
 import { useMemo } from "react";
 
 import { motion, useInView } from "framer-motion";

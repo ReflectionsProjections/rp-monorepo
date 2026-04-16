@@ -1,5 +1,5 @@
 import { Box, Flex, Grid, Icon, Text, Tooltip } from "@chakra-ui/react";
-import { Event } from "../api/types";
+import type { Event } from "../api/types";
 import { circleColors } from "../constants/event-circle-colors";
 import { eventIcons } from "../constants/event-icons";
 

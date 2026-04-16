@@ -13,8 +13,9 @@ import {
   Button,
   useToast
 } from "@chakra-ui/react";
-import { BasicAttendee } from "@app/sections/admin/routes/pages/Checkin";
-import { api, path, Tier, usePolling } from "@app";
+import type { BasicAttendee } from "@app/sections/admin/routes/pages/Checkin";
+import type { Tier } from "@app";
+import { api, path, usePolling } from "@app";
 
 const ITEMS = {
   TIER1: "T-Shirt",

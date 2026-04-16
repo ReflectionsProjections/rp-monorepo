@@ -1,4 +1,5 @@
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import type { UseDisclosureReturn } from "@chakra-ui/react";
 import {
   Button,
   Modal,
@@ -9,10 +10,9 @@ import {
   ModalOverlay,
   Stack,
   Text,
-  useDisclosure,
-  UseDisclosureReturn
+  useDisclosure
 } from "@chakra-ui/react";
-import { Display } from "@app";
+import type { Display } from "@app";
 
 export default function InfoModal({
   display: { id, metadata, lastUpdate },

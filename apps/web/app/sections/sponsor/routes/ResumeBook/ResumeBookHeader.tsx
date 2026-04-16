@@ -12,8 +12,9 @@ import { BiSelectMultiple } from "react-icons/bi";
 import { FaDownload } from "react-icons/fa";
 import { FaFileCsv, FaRegFilePdf } from "react-icons/fa6";
 import { TiDocumentDelete } from "react-icons/ti";
-import { FilterModal, FilterModalProps } from "./FilterModal";
-import { Resume } from "./ResumeBook";
+import type { FilterModalProps } from "./FilterModal";
+import { FilterModal } from "./FilterModal";
+import type { Resume } from "./ResumeBook";
 
 export type ResumeBookHeaderProps = {
   filtering: {

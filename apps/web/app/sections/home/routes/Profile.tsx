@@ -9,7 +9,8 @@ import {
   useToast,
   VStack
 } from "@chakra-ui/react";
-import { api, Attendee, path, RoleObject, TierTypes } from "@app";
+import type { Attendee, RoleObject, TierTypes } from "@app";
+import { api, path } from "@app";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";

@@ -1,14 +1,8 @@
 document.title = "R|P Dashboard";
 import "./index.css";
 
-import {
-  Box,
-  ChakraProvider,
-  extendTheme,
-  Flex,
-  Text,
-  ThemeConfig
-} from "@chakra-ui/react";
+import type { ThemeConfig } from "@chakra-ui/react";
+import { Box, ChakraProvider, extendTheme, Flex, Text } from "@chakra-ui/react";
 import Events from "./components/Events";
 import Leaderboard from "./components/Leaderboard";
 import { RegisterNow } from "./components/RegisterNow";

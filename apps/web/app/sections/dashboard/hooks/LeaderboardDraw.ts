@@ -7,7 +7,8 @@ This won't fit into 2026 theme so when you do delete this make sure to archive 2
 
 */
 
-import { IconColor, LeaderboardEntry, rad } from "@app";
+import type { IconColor, LeaderboardEntry } from "@app";
+import { rad } from "@app";
 import { useEffect } from "react";
 import seedrandom from "seedrandom";
 

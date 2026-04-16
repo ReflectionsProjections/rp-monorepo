@@ -7,11 +7,12 @@ import {
   ModalContent,
   useToast
 } from "@chakra-ui/react";
-import { api, Meeting, path } from "@app";
+import type { Meeting } from "@app";
+import { api, path } from "@app";
 import React from "react";
 import MeetingForm from "./MeetingForm";
-import { MeetingFormValues } from "./MeetingSchema";
-import { FormikHelpers } from "formik";
+import type { MeetingFormValues } from "./MeetingSchema";
+import type { FormikHelpers } from "formik";
 
 type EditModalProps = {
   meeting: Meeting;

@@ -25,7 +25,7 @@ import {
   Wrap,
   WrapItem
 } from "@chakra-ui/react";
-import { Event } from "@app";
+import type { Event } from "@app";
 import moment from "moment-timezone";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import EditModal from "./EditModal";

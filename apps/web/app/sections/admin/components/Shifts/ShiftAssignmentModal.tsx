@@ -27,7 +27,8 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon, EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import moment from "moment-timezone";
-import { api, Shift, Staff, ShiftAssignment, CommitteeType } from "@app";
+import type { Shift, Staff, ShiftAssignment, CommitteeType } from "@app";
+import { api } from "@app";
 
 // Set timezone to Chicago (Central Time)
 moment.tz.setDefault("America/Chicago");

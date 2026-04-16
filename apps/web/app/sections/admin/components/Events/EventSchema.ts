@@ -1,4 +1,4 @@
-import { Event, EventType } from "@app";
+import type { Event, EventType } from "@app";
 import * as yup from "yup";
 import moment from "moment-timezone";
 

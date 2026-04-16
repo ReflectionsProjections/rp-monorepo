@@ -5,7 +5,7 @@ import MeetingCard, {
   MeetingCardSkeleton
 } from "@app/sections/admin/components/Meetings/MeetingCard.tsx";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main.tsx";
+import type { MainContext } from "../Main.tsx";
 
 function Meetings() {
   const { authorized } = useOutletContext<MainContext>();

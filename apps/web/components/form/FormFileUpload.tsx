@@ -13,7 +13,8 @@ import {
   Text,
   useToast
 } from "@chakra-ui/react";
-import { FastField, FieldProps } from "formik";
+import type { FieldProps } from "formik";
+import { FastField } from "formik";
 import { FiUpload } from "react-icons/fi";
 
 export type UploadFile = {

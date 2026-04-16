@@ -1,5 +1,5 @@
 import { Box, Image } from "@chakra-ui/react";
-import { Speaker } from "@app";
+import type { Speaker } from "@app";
 import { useMemo } from "react";
 
 type SpeakerImageCardProps = {

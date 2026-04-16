@@ -1,6 +1,7 @@
 import { ICON_COLOR_TO_COLOR } from "@app/sections/dashboard/constants/colors";
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
-import { api, IconColor, IconColors, LeaderboardEntry } from "@app";
+import type { IconColor, LeaderboardEntry } from "@app";
+import { api, IconColors } from "@app";
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import useUpdateAnimationLoop, {
   DRAW_CARS_IN_CANVAS

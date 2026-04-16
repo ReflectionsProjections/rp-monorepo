@@ -38,16 +38,9 @@ import {
 } from "@chakra-ui/icons";
 import moment from "moment-timezone";
 import { useOutletContext } from "react-router-dom";
-import { MainContext } from "../Main.tsx";
-import {
-  usePolling,
-  Shift,
-  Staff,
-  ShiftAssignment,
-  ShiftRoleType,
-  api,
-  Event
-} from "@app";
+import type { MainContext } from "../Main.tsx";
+import type { Shift, Staff, ShiftAssignment, ShiftRoleType, Event } from "@app";
+import { usePolling, api } from "@app";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
 import ShiftForm from "../../components/Shifts/ShiftForm";
 import ShiftAssignmentModal from "../../components/Shifts/ShiftAssignmentModal";

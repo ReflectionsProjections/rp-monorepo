@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ExtendedLeaderboardStats } from "./LeaderboardStats";
-import { LeaderboardUser } from "@app";
+import type { LeaderboardUser } from "@app";
 
 const ConfirmButton: React.FC<{
   disabled: boolean;

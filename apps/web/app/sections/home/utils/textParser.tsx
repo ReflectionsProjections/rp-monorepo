@@ -1,5 +1,5 @@
 import { Text, Link } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export const parseRichText = (text: string): ReactNode => {
   // First, handle bold text by splitting and processing
