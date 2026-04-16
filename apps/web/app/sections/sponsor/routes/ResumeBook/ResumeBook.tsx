@@ -1,6 +1,5 @@
 import {
   Box,
-  ChakraProvider,
   Flex,
   useColorModeValue,
   useMediaQuery,
@@ -57,7 +56,7 @@ export function ResumeBook() {
   });
 
   return (
-    <ChakraProvider>
+    <>
       <Flex
         flexDirection={"column"}
         h="100dvh"
@@ -136,7 +135,7 @@ export function ResumeBook() {
         numPrevious={modalNavHook.numPrevious}
         numNext={modalNavHook.numNext}
       />
-    </ChakraProvider>
+    </>
   );
 }
 
