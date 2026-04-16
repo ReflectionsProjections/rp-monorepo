@@ -1,9 +1,6 @@
 import { Box, Heading, Text, useMediaQuery } from "@chakra-ui/react";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import greenCar from "@app/sections/home/assets/Description/cars/green.svg";
-import redCar from "@app/sections/home/assets/Description/cars/red.svg";
-import blueCar from "@app/sections/home/assets/Description/cars/blue.svg";
 
 const MotionBox = motion(Box);
 const MotionHeading = motion(Heading);
@@ -11,7 +8,7 @@ const MotionText = motion(Text);
 
 const CARS = [
   {
-    car: blueCar,
+    car: "/site/description/cars/blue.svg",
     from: {
       desktop: { left: "33%", top: "-10%", opacity: 0 },
       mobile: { left: "20%", top: "-10%", opacity: 0 }
@@ -26,7 +23,7 @@ const CARS = [
     trailColor: "#3B82F6"
   },
   {
-    car: redCar,
+    car: "/site/description/cars/red.svg",
     from: {
       desktop: { left: "57%", top: "-10%", opacity: 0 },
       mobile: { left: "60%", top: "-10%", opacity: 0 }
@@ -41,7 +38,7 @@ const CARS = [
     trailColor: "#EF4444"
   },
   {
-    car: greenCar,
+    car: "/site/description/cars/green.svg",
     from: {
       desktop: { left: "80%", top: "-10%", opacity: 0 },
       mobile: { left: "95%", top: "-10%", opacity: 0 }

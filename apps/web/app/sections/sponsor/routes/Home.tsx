@@ -25,7 +25,7 @@ export function Home() {
         right="0"
         height="50%"
         zIndex="1"
-        backgroundImage="/pink_grid_horizontal.svg"
+        backgroundImage="/sponsor/pink_grid_horizontal.svg"
         backgroundSize="cover"
       />
 
@@ -219,7 +219,7 @@ export function Home() {
             zIndex={"1"}
             _hover={{ bg: "#FFEF64" }}
             as="a"
-            href="/R_P_2025_Corporate_Sponsor_Packet.pdf"
+            href="/sponsor/R_P_2025_Corporate_Sponsor_Packet.pdf"
           >
             {" "}
             Sponsorship Packet{" "}

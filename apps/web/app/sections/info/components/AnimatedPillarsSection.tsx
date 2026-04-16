@@ -8,6 +8,12 @@ interface AnimatedPillarsSectionProps {
   icons: string[];
 }
 
+const normalizeInfoAssetPath = (path: string) => {
+  if (path.startsWith("/info/")) return path;
+  if (path.startsWith("/")) return `/info${path}`;
+  return `/info/${path}`;
+};
+
 const MotionBox = motion(Box);
 const MotionContainer = motion(Container);
 const spotlightHeight = "975px";
@@ -131,7 +137,7 @@ export const AnimatedPillarsSection: React.FC<AnimatedPillarsSectionProps> = ({
                 time={2}
               >
                 <Image
-                  src={icon}
+                  src={normalizeInfoAssetPath(icon)}
                   w="75px"
                   h="75px"
                   filter="drop-shadow(5px 20px 10px gray)"

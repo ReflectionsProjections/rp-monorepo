@@ -93,7 +93,7 @@ const StoolsSceneWrapper: React.FC = () => {
             }}
           >
             <Image
-              src={`/sponsors/${STOOL_SPONSOR_IMAGES[0].filename}`}
+              src={`/site/sponsors/car_images/${STOOL_SPONSOR_IMAGES[0].filename}`}
               alt="Jane Street"
               h={STOOL_SPONSOR_IMAGES[0].heights}
               maxW="500px"
@@ -123,7 +123,7 @@ const StoolsSceneWrapper: React.FC = () => {
               }}
             >
               <Image
-                src={`/sponsors/${img.filename}`}
+                src={`/site/sponsors/car_images/${img.filename}`}
                 alt={img.filename.replace(/\.(png|svg)$/, "")}
                 h={img.heights}
                 maxW="500px"
@@ -154,7 +154,7 @@ const StoolsSceneWrapper: React.FC = () => {
               }}
             >
               <Image
-                src={`/sponsors/${img.filename}`}
+                src={`/site/sponsors/car_images/${img.filename}`}
                 alt={img.filename.replace(/\.(png|svg)$/, "")}
                 h={img.heights}
                 maxW="500px"

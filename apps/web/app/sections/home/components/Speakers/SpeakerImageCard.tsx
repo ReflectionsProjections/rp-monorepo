@@ -32,7 +32,7 @@ export default function SpeakerImageCard({
     ) {
       return speaker.imgUrl;
     }
-    return `/speakers/${speaker.name
+    return `/site/speakers/${speaker.name
       .split(" ")
       .join("_")
       .split(".")
@@ -99,7 +99,7 @@ export default function SpeakerImageCard({
         opacity={isAnySelected ? 0 : 1}
         transition="transform 0.5s ease, opacity 0.1s"
         src={imgUrl}
-        fallbackSrc="/speakers/fallback.svg"
+        fallbackSrc="/site/speakers/fallback.svg"
         _groupHover={
           isClickable
             ? {

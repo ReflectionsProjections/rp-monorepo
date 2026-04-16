@@ -4,14 +4,14 @@ import { NavLink } from "react-router-dom";
 
 export const TeamSection = () => {
   const teamCards: { title: string; image: string }[] = [
-    { title: "Ops", image: "/Ops/Full.JPG" },
-    { title: "Design", image: "/Design/Full.JPG" },
-    { title: "Marketing", image: "Marketing/Full.JPG" },
-    { title: "Content", image: "/Content/Full.JPG" },
-    { title: "Corporate", image: "/Corporate/Full.JPG" },
+    { title: "Ops", image: "/info/Ops/Full.JPG" },
+    { title: "Design", image: "/info/Design/Full.JPG" },
+    { title: "Marketing", image: "/info/Marketing/Full.JPG" },
+    { title: "Content", image: "/info/Content/Full.JPG" },
+    { title: "Corporate", image: "/info/Corporate/Full.JPG" },
     {
       title: "Dev",
-      image: "/Dev/Full.JPG"
+      image: "/info/Dev/Full.JPG"
     }
   ];
 
@@ -32,7 +32,7 @@ export const TeamSection = () => {
         >
           <CircularCarousel
             items={teamCards}
-            centerItem={{ title: "Directors", image: "DIRECTORS.JPG" }}
+            centerItem={{ title: "Directors", image: "/info/DIRECTORS.JPG" }}
           />
         </Flex>
         <Flex justify="center" w="100%">

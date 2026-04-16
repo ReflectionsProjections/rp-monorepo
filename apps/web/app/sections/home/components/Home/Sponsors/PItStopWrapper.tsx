@@ -110,7 +110,7 @@ const PitStopSceneWrapper = () => {
             />
             <Link href="https://www.hudsonrivertrading.com/" isExternal>
               <Image
-                src="/site/sponsors/car_new/hrt.png"
+                src="/site/sponsors/car_images/hrt.png"
                 pos="absolute"
                 top="30%"
                 left="2%"
@@ -135,7 +135,7 @@ const PitStopSceneWrapper = () => {
               isExternal
             >
               <Image
-                src="/site/sponsors/car_new/deere.png"
+                src="/site/sponsors/car_images/deere_car.png"
                 pos="absolute"
                 top="8%"
                 left="48%"
@@ -157,7 +157,7 @@ const PitStopSceneWrapper = () => {
             </Link>
             <Link href="https://www.caterpillar.com" isExternal>
               <Image
-                src="/site/sponsors/car_new/cat.png"
+                src="/site/sponsors/car_images/cat.png"
                 pos="absolute"
                 top="10%"
                 left="20%"
@@ -179,7 +179,7 @@ const PitStopSceneWrapper = () => {
             </Link>
             <Link href="https://www.qualcomm.com/" isExternal>
               <Image
-                src="/site/sponsors/car_new/qual.png"
+                src="/site/sponsors/car_images/qual.png"
                 pos="absolute"
                 top="60%"
                 left="18%"
@@ -201,7 +201,7 @@ const PitStopSceneWrapper = () => {
             </Link>
             <Link href="https://www.aechelon.com" isExternal>
               <Image
-                src="/site/sponsors/car_new/aech.png"
+                src="/site/sponsors/car_images/aech.png"
                 pos="absolute"
                 bottom="10%"
                 left="49%"
@@ -285,7 +285,7 @@ const PitStopSceneWrapper = () => {
             />
             <Link href="https://www.hudsonrivertrading.com/" isExternal>
               <Image
-                src="/site/sponsors/car_new/hrt.png"
+                src="/site/sponsors/car_images/hrt.png"
                 pos="absolute"
                 top="30%"
                 left="-10%"
@@ -310,7 +310,7 @@ const PitStopSceneWrapper = () => {
               isExternal
             >
               <Image
-                src="/site/sponsors/car_new/deere.png"
+                src="/site/sponsors/car_images/deere_car.png"
                 pos="absolute"
                 top="-4%"
                 left="55%"
@@ -332,7 +332,7 @@ const PitStopSceneWrapper = () => {
             </Link>
             <Link href="https://www.caterpillar.com" isExternal>
               <Image
-                src="/site/sponsors/car_new/cat.png"
+                src="/site/sponsors/car_images/cat.png"
                 pos="absolute"
                 top="-2%"
                 left="10%"
@@ -354,7 +354,7 @@ const PitStopSceneWrapper = () => {
             </Link>
             <Link href="https://www.qualcomm.com/" isExternal>
               <Image
-                src="/site/sponsors/car_new/qual.png"
+                src="/site/sponsors/car_images/qual.png"
                 pos="absolute"
                 top="80%"
                 left="18%"
@@ -376,7 +376,7 @@ const PitStopSceneWrapper = () => {
             </Link>
             <Link href="https://www.aechelon.com" isExternal>
               <Image
-                src="/site/sponsors/car_new/aech.png"
+                src="/site/sponsors/car_images/aech.png"
                 pos="absolute"
                 bottom="0%"
                 left="64%"

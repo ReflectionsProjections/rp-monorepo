@@ -58,7 +58,7 @@ export const SponsorSection = () => {
                   border="3px solid black"
                 >
                   <VStack w="60%" height="100%" justifyContent="space-between">
-                    <Image w="30px" h="30px" src="card_icon_1.svg" />
+                    <Image w="30px" h="30px" src="/info/card_icon_1.svg" />
                     <Text as="b" fontSize="lg" my="10px" textAlign="center">
                       Gain Access to Targeted Marketing Channels
                     </Text>
@@ -89,7 +89,7 @@ export const SponsorSection = () => {
                   border="3px solid black"
                 >
                   <VStack w="60%" height="100%" justifyContent="space-between">
-                    <Image w="30px" h="30px" src="card_icon_2.svg" />
+                    <Image w="30px" h="30px" src="/info/card_icon_2.svg" />
                     <Text as="b" fontSize="lg" my="10px" textAlign="center">
                       Enhance Brand Recognition and Loyalty
                     </Text>
@@ -125,7 +125,7 @@ export const SponsorSection = () => {
                   border="3px solid black"
                 >
                   <VStack w="60%" height="100%" justifyContent="space-between">
-                    <Image w="30px" h="30px" src="card_icon_3.svg" />
+                    <Image w="30px" h="30px" src="/info/card_icon_3.svg" />
                     <Text as="b" fontSize="lg" my="10px" textAlign="center">
                       Receive Comprehensive Support and Resources
                     </Text>
@@ -163,7 +163,7 @@ export const SponsorSection = () => {
                       height="100%"
                       justifyContent="space-between"
                     >
-                      <Image w="30px" h="30px" src="card_icon_1.svg" />
+                      <Image w="30px" h="30px" src="/info/card_icon_1.svg" />
                       <Text as="b" fontSize="lg" my="10px" textAlign="center">
                         Gain Access to Targeted Marketing Channels
                       </Text>
@@ -188,7 +188,7 @@ export const SponsorSection = () => {
                       height="100%"
                       justifyContent="space-between"
                     >
-                      <Image w="30px" h="30px" src="card_icon_2.svg" />
+                      <Image w="30px" h="30px" src="/info/card_icon_2.svg" />
                       <Text as="b" fontSize="lg" my="10px" textAlign="center">
                         Enhance Brand Recognition and Loyalty
                       </Text>
@@ -213,7 +213,7 @@ export const SponsorSection = () => {
                       height="100%"
                       justifyContent="space-between"
                     >
-                      <Image w="30px" h="30px" src="card_icon_3.svg" />
+                      <Image w="30px" h="30px" src="/info/card_icon_3.svg" />
                       <Text as="b" fontSize="lg" my="10px" textAlign="center">
                         Receive Comprehensive Support and Resources
                       </Text>

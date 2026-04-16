@@ -1,17 +1,23 @@
 import { ICON_COLOR_TO_COLOR } from "@app/sections/dashboard/constants/colors";
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { api, IconColor, IconColors, LeaderboardEntry } from "@app";
-import CarSvg from "@app/sections/dashboard/assets/car.svg?raw";
-import Car from "@app/sections/dashboard/assets/car.svg?react";
-import Icon from "@app/sections/dashboard/assets/icon.svg?react";
-import Road from "@app/sections/dashboard/assets/road.png";
-import RoadSiding from "@app/sections/dashboard/assets/road-side.png";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import useUpdateAnimationLoop, {
   DRAW_CARS_IN_CANVAS
 } from "../hooks/LeaderboardDraw";
 
 const TOP_CARS_NUMBER = 10;
+const ROAD_SRC = "/dashboard/road.png";
+const ROAD_SIDING_SRC = "/dashboard/road-side.png";
+const CAR_SVG_SRC = "/dashboard/car.svg";
+const ICON_SVG_SRC = "/dashboard/icon.svg";
+
+const svgToDataUrl = (svg: string, color?: string) => {
+  const content = color ? svg.replace(/currentColor/g, color) : svg;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(content)}`;
+};
+
+const createBrowserImage = () => new window.Image();
 
 export default function Leaderboard({
   trackPercent
@@ -31,6 +37,8 @@ export default function Leaderboard({
   const [roadSidingImage, setRoadSidingImage] = useState<
     HTMLImageElement | undefined
   >(undefined);
+  const [carSvgMarkup, setCarSvgMarkup] = useState<string>();
+  const [iconSvgMarkup, setIconSvgMarkup] = useState<string>();
   const entryRefs = useRef<(HTMLDivElement | null)[]>([]);
   useUpdateAnimationLoop({
     entryRefs,
@@ -77,16 +85,13 @@ export default function Leaderboard({
   }, []);
 
   // Preload images for each color
-  async function loadImages() {
+  const loadImages = useCallback(async () => {
+    if (!carSvgMarkup) return;
     const loadedEntries = await Promise.all(
       Object.values(IconColors).map(async (color: IconColor) => {
         return new Promise<[IconColor, HTMLImageElement]>((resolve, reject) => {
-          const img = new Image();
-          const coloredSvg = CarSvg.replace(
-            /currentColor/g,
-            ICON_COLOR_TO_COLOR[color]
-          );
-          img.src = "data:image/svg+xml;utf8," + encodeURIComponent(coloredSvg);
+          const img = createBrowserImage();
+          img.src = svgToDataUrl(carSvgMarkup, ICON_COLOR_TO_COLOR[color]);
 
           img.onload = () => resolve([color, img]);
           img.onerror = reject;
@@ -100,24 +105,36 @@ export default function Leaderboard({
     >;
 
     setCarImages(images);
-  }
+  }, [carSvgMarkup]);
 
   useEffect(() => {
     if (!DRAW_CARS_IN_CANVAS) return;
     loadImages().catch(console.error);
-  }, []);
+  }, [loadImages]);
 
   useEffect(() => {
-    const image = new Image();
-    image.src = Road;
+    const image = createBrowserImage();
+    image.src = ROAD_SRC;
     image.onload = () => {
       setRoadImage(image);
     };
-    const image2 = new Image();
-    image2.src = RoadSiding;
+    const image2 = createBrowserImage();
+    image2.src = ROAD_SIDING_SRC;
     image2.onload = () => {
       setRoadSidingImage(image2);
     };
+  }, []);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(CAR_SVG_SRC).then((response) => response.text()),
+      fetch(ICON_SVG_SRC).then((response) => response.text())
+    ])
+      .then(([carSvg, iconSvg]) => {
+        setCarSvgMarkup(carSvg);
+        setIconSvgMarkup(iconSvg);
+      })
+      .catch(console.error);
   }, []);
 
   return (
@@ -137,6 +154,8 @@ export default function Leaderboard({
                   ref={(element) => (entryRefs.current[i] = element)}
                   key={i}
                   entry={entry}
+                  carSvgMarkup={carSvgMarkup}
+                  iconSvgMarkup={iconSvgMarkup}
                 />
               );
             })}
@@ -150,11 +169,20 @@ const LeaderboardEntryDisplay = forwardRef<
   HTMLDivElement,
   {
     entry: LeaderboardEntry;
+    carSvgMarkup?: string;
+    iconSvgMarkup?: string;
   }
->(function LeaderboardEntryDisplay({ entry }, ref) {
+>(function LeaderboardEntryDisplay(
+  { entry, carSvgMarkup, iconSvgMarkup },
+  ref
+) {
+  const carSrc = carSvgMarkup
+    ? svgToDataUrl(carSvgMarkup, ICON_COLOR_TO_COLOR[entry.icon])
+    : undefined;
+
   return (
     <Box ref={ref}>
-      {!DRAW_CARS_IN_CANVAS && (
+      {!DRAW_CARS_IN_CANVAS && carSrc && (
         <Box
           position={"absolute"}
           left={"var(--drawX)"}
@@ -163,23 +191,24 @@ const LeaderboardEntryDisplay = forwardRef<
           height={"var(--height)"}
           transform={"translate(-50%, -50%) rotate(var(--drawAngle))"}
         >
-          <Car
-            width={"100%"}
-            height={"100%"}
-            color={ICON_COLOR_TO_COLOR[entry.icon]}
-          />
+          <Image src={carSrc} width={"100%"} height={"100%"} />
         </Box>
       )}
-      <LeaderboardScorecard entry={entry} />
+      <LeaderboardScorecard entry={entry} iconSvgMarkup={iconSvgMarkup} />
     </Box>
   );
 });
 
 function LeaderboardScorecard({
-  entry: { rank, displayName, points, icon }
+  entry: { rank, displayName, points, icon },
+  iconSvgMarkup
 }: {
   entry: LeaderboardEntry;
+  iconSvgMarkup?: string;
 }) {
+  const iconSrc = iconSvgMarkup
+    ? svgToDataUrl(iconSvgMarkup, ICON_COLOR_TO_COLOR[icon])
+    : undefined;
   let placePostfix = "th";
   if (rank % 10 == 1 && (rank < 10 || rank > 20)) {
     placePostfix = "st";
@@ -224,13 +253,9 @@ function LeaderboardScorecard({
           {rank}
           <small>{placePostfix}</small>
         </Text>
-        <Box marginRight={"0.5vh"}>
-          <Icon
-            width={"4vh"}
-            height={"4vh"}
-            color={ICON_COLOR_TO_COLOR[icon]}
-          />
-        </Box>
+        {iconSrc && (
+          <Image src={iconSrc} width={"4vh"} height={"4vh"} mr={"0.5vh"} />
+        )}
         <Flex flexDirection={"column"}>
           <Text fontWeight={"black"} fontFamily={"Magistral"} fontSize={"2vh"}>
             {displayName}

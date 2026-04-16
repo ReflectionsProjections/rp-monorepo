@@ -10,7 +10,6 @@ import {
   Box,
   Link
 } from "@chakra-ui/react";
-import yourGif from "./assets/RPREC.gif"; // adjust path as needed
 
 function App() {
   const [isSmall] = useMediaQuery("(max-width: 480px)");
@@ -33,7 +32,11 @@ function App() {
         <div className="background-grid" />
         <div className="app-container">
           <div className="gif-container">
-            <img src={yourGif} alt="Centered GIF" className="centered-gif" />
+            <img
+              src="/hype/RPREC.gif"
+              alt="Centered GIF"
+              className="centered-gif"
+            />
           </div>
           <div className="title-container">
             <HStack

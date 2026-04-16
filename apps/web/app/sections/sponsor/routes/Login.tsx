@@ -46,7 +46,7 @@ export function Login() {
         right="0"
         height="50%"
         zIndex="1"
-        backgroundImage="/pink_grid_horizontal.svg"
+        backgroundImage="/sponsor/pink_grid_horizontal.svg"
         backgroundSize="cover"
       />
 

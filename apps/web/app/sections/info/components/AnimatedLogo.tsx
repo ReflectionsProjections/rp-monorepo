@@ -1,37 +1,27 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import logo2025 from "../assets/logos/logo_2025.svg?raw";
-import logo2024 from "../assets/logos/logo_2024.svg?raw";
-import logo2023 from "../assets/logos/logo_2023.svg?raw";
-import logo2022 from "../assets/logos/logo_2022.svg?raw";
-import logo2021 from "../assets/logos/logo_2021.svg?raw";
-import logo2020 from "../assets/logos/logo_2020.svg?raw";
-import logo2019 from "../assets/logos/logo_2019.svg?raw";
-import logo2018 from "../assets/logos/logo_2018.svg?raw";
-import logoInfo from "../assets/logos/logo_info.svg?raw";
-
 const CONSTANT_IMAGES = [
-  logo2025,
-  logo2024,
-  logo2023,
-  logo2022,
-  logo2021,
-  logo2020,
-  logo2019,
-  logo2018
+  "/info/logos/logo_2025.svg",
+  "/info/logos/logo_2024.svg",
+  "/info/logos/logo_2023.svg",
+  "/info/logos/logo_2022.svg",
+  "/info/logos/logo_2021.svg",
+  "/info/logos/logo_2020.svg",
+  "/info/logos/logo_2019.svg",
+  "/info/logos/logo_2018.svg"
 ];
 
 const HOVER_IMAGES = [
-  logoInfo,
-  logo2025,
-  logo2024,
-  logo2023,
-  logo2022,
-  logo2021,
-  logo2020,
-  logo2019,
-  logo2018
+  "/info/logos/logo_info.svg",
+  "/info/logos/logo_2025.svg",
+  "/info/logos/logo_2024.svg",
+  "/info/logos/logo_2023.svg",
+  "/info/logos/logo_2022.svg",
+  "/info/logos/logo_2021.svg",
+  "/info/logos/logo_2020.svg",
+  "/info/logos/logo_2019.svg",
+  "/info/logos/logo_2018.svg"
 ];
 
 export const AnimatedLogoConstant = () => {
@@ -88,28 +78,26 @@ export const AnimatedLogoConstant = () => {
 
   return (
     <>
-      <motion.div
+      <motion.img
         animate={{ rotate: rotation, opacity: topOpacity }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
+        src={CONSTANT_IMAGES[topCurrentImage]}
         style={{
           zIndex: 2,
           position: "absolute",
           width: "100%",
           height: "100%"
         }}
-        dangerouslySetInnerHTML={{ __html: CONSTANT_IMAGES[topCurrentImage] }}
       />
-      <motion.div
+      <motion.img
         animate={{ rotate: rotation }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
+        src={CONSTANT_IMAGES[bottomCurrentImage % CONSTANT_IMAGES.length]}
         style={{
           zIndex: 1,
           position: "absolute",
           width: "100%",
           height: "100%"
-        }}
-        dangerouslySetInnerHTML={{
-          __html: CONSTANT_IMAGES[bottomCurrentImage % CONSTANT_IMAGES.length]
         }}
       />
     </>
@@ -165,30 +153,28 @@ export const AnimatedLogoHover = () => {
 
   return (
     <>
-      <motion.div
+      <motion.img
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         animate={{ rotate: rotation, opacity: topOpacity }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
+        src={HOVER_IMAGES[topCurrentImage]}
         style={{
           zIndex: 2,
           position: "absolute",
           width: "100%",
           height: "100%"
         }}
-        dangerouslySetInnerHTML={{ __html: HOVER_IMAGES[topCurrentImage] }}
       />
-      <motion.div
+      <motion.img
         animate={{ rotate: rotation }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
+        src={HOVER_IMAGES[bottomCurrentImage % HOVER_IMAGES.length]}
         style={{
           zIndex: 1,
           position: "absolute",
           width: "100%",
           height: "100%"
-        }}
-        dangerouslySetInnerHTML={{
-          __html: HOVER_IMAGES[bottomCurrentImage % HOVER_IMAGES.length]
         }}
       />
     </>

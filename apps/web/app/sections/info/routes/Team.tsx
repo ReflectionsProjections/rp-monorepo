@@ -104,6 +104,10 @@ const ProfileBox = ({
     lg: isLead ? "md" : "sm"
   });
 
+  const normalizedImagePath = imagePath.startsWith("/info/")
+    ? imagePath
+    : `/info${imagePath}`;
+
   return (
     <Box
       w={isLead ? leadBoxSize : boxSize}
@@ -121,7 +125,7 @@ const ProfileBox = ({
       m={2}
     >
       <Image
-        src={imagePath}
+        src={normalizedImagePath}
         alt={name}
         w={imageSize}
         h={imageSize}

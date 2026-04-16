@@ -24,18 +24,62 @@ const SPONSORS: {
   logo: string;
   height?: string;
 }[] = [
-  { name: "Aechelon", logo: "/sponsors/aechelon.png", height: "6vh" },
-  { name: "Capital One", logo: "/sponsors/capitalone.png", height: "4vh" },
-  { name: "Caterpillar", logo: "/sponsors/caterpillar.svg", height: "2.5vh" },
-  { name: "Cloudflare", logo: "/sponsors/cloudflare.png", height: "4vh" },
-  { name: "John Deere", logo: "/sponsors/deere.png", height: "6vh" },
-  { name: "Everfox", logo: "/sponsors/everfox.svg", height: "4.5vh" },
-  { name: "Hudson River Trading", logo: "/sponsors/hrt.svg", height: "4vh" },
-  { name: "Jane Street", logo: "/sponsors/janestreet.png", height: "4vh" },
-  { name: "Magna", logo: "/sponsors/magna.svg", height: "3vh" },
-  { name: "OpenAI", logo: "/sponsors/openai.svg", height: "3vh" },
-  { name: "State Farm", logo: "/sponsors/statefarm.png", height: "2.5vh" },
-  { name: "Qualcomm", logo: "/sponsors/qualcomm.png", height: "3vh" }
+  {
+    name: "Aechelon",
+    logo: "/site/sponsors/car_images/aechelon.png",
+    height: "6vh"
+  },
+  {
+    name: "Capital One",
+    logo: "/site/sponsors/car_images/capitalone.png",
+    height: "4vh"
+  },
+  {
+    name: "Caterpillar",
+    logo: "/site/sponsors/car_images/caterpillar.svg",
+    height: "2.5vh"
+  },
+  {
+    name: "Cloudflare",
+    logo: "/site/sponsors/car_images/cloudflare.png",
+    height: "4vh"
+  },
+  {
+    name: "John Deere",
+    logo: "/site/sponsors/car_images/deere.png",
+    height: "6vh"
+  },
+  {
+    name: "Everfox",
+    logo: "/site/sponsors/car_images/everfox.svg",
+    height: "4.5vh"
+  },
+  {
+    name: "Hudson River Trading",
+    logo: "/site/sponsors/car_images/hrt.svg",
+    height: "4vh"
+  },
+  {
+    name: "Jane Street",
+    logo: "/site/sponsors/car_images/janestreet.png",
+    height: "4vh"
+  },
+  { name: "Magna", logo: "/site/sponsors/car_images/magna.svg", height: "3vh" },
+  {
+    name: "OpenAI",
+    logo: "/site/sponsors/car_images/openai.svg",
+    height: "3vh"
+  },
+  {
+    name: "State Farm",
+    logo: "/site/sponsors/car_images/statefarm.png",
+    height: "2.5vh"
+  },
+  {
+    name: "Qualcomm",
+    logo: "/site/sponsors/car_images/qualcomm.png",
+    height: "3vh"
+  }
 ];
 
 export const Sponsors = () => {

@@ -7,7 +7,7 @@ export const ExhibitSection = () => {
   return (
     <section data-label="exhibit section">
       <Image
-        src="exhibit_background.png"
+        src="/info/exhibit_background.png"
         w="100vw"
         h="900px"
         fit="fill"
