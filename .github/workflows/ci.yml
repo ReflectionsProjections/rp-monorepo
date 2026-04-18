@@ -119,6 +119,8 @@ jobs:
         run: corepack enable
       - name: Install dependencies
         run: yarn install --immutable
+      - name: Typecheck
+        run: yarn type-check
       - name: Lint
         run: yarn lint
       - name: Format
