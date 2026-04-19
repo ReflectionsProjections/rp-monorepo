@@ -56,13 +56,11 @@ export const StatsTierCountsResponse = registry.register(
 
 export const StatsTagCountsResponse = registry.register(
     "StatsTagCountsResponse",
-    z
-        .record(z.number().int().min(0))
-        .openapi("StatsTagCountsResponse", {
-            description:
-                "Map of tag name to the number of attendees who selected it.",
-            example: { AI: 85, Cybersecurity: 40, Networking: 60 },
-        })
+    z.record(z.number().int().min(0)).openapi("StatsTagCountsResponse", {
+        description:
+            "Map of tag name to the number of attendees who selected it.",
+        example: { AI: 85, Cybersecurity: 40, Networking: 60 },
+    })
 );
 
 export const StatsEventAttendanceResponse = registry.register(

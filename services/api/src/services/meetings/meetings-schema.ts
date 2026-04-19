@@ -75,9 +75,7 @@ export const createMeetingValidator = registry.register(
 
 export const updateMeetingValidator = registry.register(
     "UpdateMeetingValidator",
-    createMeetingValidator
-        .partial()
-        .openapi("UpdateMeetingValidator", {
-            example: { startTime: new Date("2025-04-02T18:00:00Z") },
-        })
+    createMeetingValidator.partial().openapi("UpdateMeetingValidator", {
+        example: { startTime: new Date("2025-04-02T18:00:00Z") },
+    })
 );

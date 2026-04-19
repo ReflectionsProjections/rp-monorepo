@@ -36,14 +36,12 @@ export const S3UploadUrlResponse = registry.register(
 
 export const S3DownloadUrlResponse = registry.register(
     "S3DownloadUrlResponse",
-    z
-        .object({ url: z.string() })
-        .openapi("S3DownloadUrlResponse", {
-            description: "Presigned GET URL for downloading a resume from S3.",
-            example: {
-                url: "https://s3.amazonaws.com/bucket-name/user_abc123.pdf?X-Amz-Signature=...",
-            },
-        })
+    z.object({ url: z.string() }).openapi("S3DownloadUrlResponse", {
+        description: "Presigned GET URL for downloading a resume from S3.",
+        example: {
+            url: "https://s3.amazonaws.com/bucket-name/user_abc123.pdf?X-Amz-Signature=...",
+        },
+    })
 );
 
 export const S3BatchDownloadResponse = registry.register(

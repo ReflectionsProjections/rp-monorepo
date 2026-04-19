@@ -73,10 +73,7 @@ export const ShiftUpdateValidator = registry.register(
                 .string()
                 .datetime("Invalid start time format")
                 .optional(),
-            endTime: z
-                .string()
-                .datetime("Invalid end time format")
-                .optional(),
+            endTime: z.string().datetime("Invalid end time format").optional(),
             location: z
                 .string()
                 .min(1, "Location is required")
