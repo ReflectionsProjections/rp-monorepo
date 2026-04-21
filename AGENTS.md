@@ -92,4 +92,6 @@ Expected local URLs today:
 - Prefer repo-relative paths in commands and explanations.
 - Use absolute paths only when a tool requires them, such as clickable file links.
 - Check for deeper `AGENTS.md` files before editing inside a subproject.
+- Use `services/api/AGENTS.md` for backend and API authoring guidance.
+- Use `apps/web/AGENTS.md` for web workspace guidance.
 - Keep service-specific guidance in the owning directory rather than expanding the root guide with implementation details.
