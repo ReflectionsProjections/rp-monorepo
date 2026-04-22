@@ -59,7 +59,7 @@ rp start
 
 ```bash
 cd services/api && yarn dev
-cd apps/web && yarn workspace @rp/site dev
+cd apps/web && yarn dev
 cd apps/mobile && yarn start
 ```
 
@@ -87,11 +87,6 @@ rp db
 | --- | --- |
 | API | http://localhost:3000 |
 | Site | http://localhost:3001 |
-| Admin | http://localhost:3002 |
-| Info | http://localhost:3003 |
-| Hype | http://localhost:3004 |
-| Sponsor | http://localhost:3005 |
-| Dashboard | http://localhost:3006 |
 | Kong Gateway | http://localhost:8000 |
 | Supabase Studio | http://localhost:8001 |
 | Expo Metro | http://localhost:8081 |

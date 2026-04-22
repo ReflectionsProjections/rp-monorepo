@@ -9,21 +9,42 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["vite/client"],
 
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0",
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@rp/shared": ["shared/src"]
+      "@app": ["./app/index.ts"],
+      "@app/*": ["./app/*"],
+      "@components/*": ["./components/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@constants/*": ["./constants/*"],
+      "@assets/*": ["./assets/*"],
+      "@api/*": ["./api/*"],
+      "@lib": ["./lib/index.ts"],
+      "@lib/*": ["./lib/*"],
+      "@types/*": ["./types/*"]
     }
   },
-  "include": ["src", "vite.config.ts"],
-  "references": [{ "path": "./shared" }]
+  "include": [
+    "app",
+    "components",
+    "hooks",
+    "constants",
+    "assets",
+    "api",
+    "lib",
+    "types",
+    "main.tsx",
+    "vite-env.d.ts",
+    "vite.config.ts"
+  ]
 }

@@ -11,6 +11,8 @@ permissions:
   pull-requests: read
 
 jobs:
+  # Detect which parts of the monorepo changed. Each downstream job reads one
+  # of these outputs and skips itself when its area was untouched.
   changes:
     runs-on: ubuntu-latest
     outputs:
@@ -23,6 +25,8 @@ jobs:
       - id: filter
         uses: dorny/paths-filter@v4
         with:
+          # Each filter becomes a "true" or "false" output. The rest of the
+          # workflow uses those booleans to avoid running unrelated checks.
           filters: |
             root:
               - '.github/workflows/**'
@@ -44,6 +48,8 @@ jobs:
               - 'apps/mobile/**'
               - '.github/workflows/**'
 
+  # Only runs when shared tooling, repo docs, workflow files, or local infra
+  # wiring changes.
   root:
     runs-on: ubuntu-latest
     needs: changes
@@ -53,10 +59,14 @@ jobs:
       - name: Verify root scripts
         run: ./scripts/verify-root.sh
 
+  # Only runs when API code changes, or when workflow / local DB stack changes
+  # could affect API verification.
   api:
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.api == 'true'
+    # The credentials below are fixture values for the ephemeral local
+    # Supabase-style test stack started inside CI, not shared production creds.
     env:
       POSTGRES_HOST: db
       POSTGRES_PASSWORD: postgres
@@ -93,14 +103,19 @@ jobs:
         run: yarn format:check
       - name: Lint
         run: yarn lint:check
+      # These containers provide the local Postgres + Kong + PostgREST stack
+      # that Jest uses during API tests.
       - name: Start local database stack
         run: docker compose -f ../../docker-compose.yml up -d db kong rest
       - name: Test
         run: yarn test
+      # Always clean up the local stack, even if build, lint, or tests fail.
       - name: Stop local database stack
         if: always()
         run: docker compose -f ../../docker-compose.yml down -v
 
+  # Only runs when the web workspace changes, or when workflow changes could
+  # affect how web checks are executed.
   web:
     runs-on: ubuntu-latest
     needs: changes
@@ -119,11 +134,15 @@ jobs:
         run: corepack enable
       - name: Install dependencies
         run: yarn install --immutable
-      - name: Verify
-        run: yarn verify
+      - name: Typecheck
+        run: yarn type-check
+      - name: Lint
+        run: yarn lint
       - name: Format
-        run: npx prettier . --check
+        run: yarn format:check
 
+  # Only runs when the mobile workspace changes, or when workflow changes could
+  # affect how mobile checks are executed.
   mobile:
     runs-on: ubuntu-latest
     needs: changes
@@ -145,6 +164,9 @@ jobs:
       - name: Verify
         run: yarn verify
 
+  # This final job always runs so branch protection can depend on one stable
+  # check name. It fails only when a conditional job actually failed; jobs that
+  # were skipped because their filter was false are treated as expected.
   ci:
     runs-on: ubuntu-latest
     needs:

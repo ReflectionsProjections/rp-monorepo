@@ -6,11 +6,12 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 
 export default defineConfig([
+  { ignores: ["dist/**", ".yarn/**", "node_modules/**"] },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
-  reactHooks.configs["recommended-latest"],
   {
     plugins: {
+      "react-hooks": reactHooks,
       "react-refresh": reactRefresh
     },
     languageOptions: {
@@ -20,17 +21,20 @@ export default defineConfig([
       },
 
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["eslint.config.mjs"]
+        },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         tsconfigRootDir: import.meta.dirname
       }
     },
     rules: {
-      "react-refresh/only-export-components": [
-        "warn",
-        {
-          allowConstantExport: true
-        }
-      ]
+      ...reactHooks.configs["recommended-latest"].rules,
+      // TODO: The below should all be errors
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/refs": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/preserve-manual-memoization": "warn"
     }
   }
 ]);
