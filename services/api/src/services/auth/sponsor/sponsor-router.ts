@@ -8,7 +8,7 @@ import { Role } from "../../auth/auth-models";
 import mustache from "mustache";
 import templates from "../../../templates/templates";
 
-import { createSixDigitCode, encryptSixDigitCode } from "./sponsor-utils";
+import { createRandomHexCode, encryptRandomHexCode } from "./sponsor-utils";
 import * as bcrypt from "bcrypt";
 import {
     AuthSponsorLoginValidator,
@@ -18,30 +18,42 @@ import { SupabaseDB } from "../../../database";
 
 const authSponsorRouter = Router();
 
+authSponsorRouter.post("/login", async (req, res) => {
+    const { email } = AuthSponsorLoginValidator.parse(req.body);
+    const { data: existing } = await SupabaseDB.CORPORATE.select()
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+    if (!existing) {
+        return res.sendStatus(StatusCodes.UNAUTHORIZED);
+    }
+
+    const randomHexCode = createRandomHexCode();
+
+    const expTime = new Date(
+        Date.now() + Config.VERIFY_EXP_TIME_MS
+    ).toISOString();
+    const hashedHexCode = encryptRandomHexCode(randomHexCode);
+    await SupabaseDB.AUTH_CODES.upsert(
+        {
+            email,
+            hashedVerificationCode: hashedHexCode,
+            expTime,
+        },
+        {
+            onConflict: "email",
+        }
+    ).throwOnError();
+
+    const emailBody = mustache.render(templates.SPONSOR_VERIFICATION_LINK, {
+        link: `reflectionsprojections.org/auth?token=${randomHexCode}`,
+    });
+
+    await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
+    return res.sendStatus(StatusCodes.CREATED);
+});
+
 /**
- * @swagger
- * /auth/sponsor/login:
- *   post:
- *     summary: Request a sponsor verification code
- *     description: |
- *       Sends a 6-digit email verification code to the given corporate sponsor
- *       email address. The email must already exist in the corporate sponsors list.
- *
- *       **Required roles: none**
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/AuthSponsorLoginValidator'
- *     responses:
- *       201:
- *         description: Verification code sent successfully
- *       401:
- *         description: Email not found in corporate sponsors list
- *     security: []
- */
 authSponsorRouter.post("/login", async (req, res) => {
     const { email } = AuthSponsorLoginValidator.parse(req.body);
     const { data: existing } = await SupabaseDB.CORPORATE.select()
@@ -76,43 +88,9 @@ authSponsorRouter.post("/login", async (req, res) => {
     });
     return res.sendStatus(StatusCodes.CREATED);
 });
-
-/**
- * @swagger
- * /auth/sponsor/verify:
- *   post:
- *     summary: Verify a sponsor code and receive a JWT
- *     description: |
- *       Verifies the 6-digit code sent to the sponsor's email. Returns a signed
- *       JWT with the CORPORATE role on success.
- *
- *       **Required roles: none**
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/AuthSponsorVerifyValidator'
- *     responses:
- *       200:
- *         description: A signed JWT with the CORPORATE role
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthJwtResponse'
- *       401:
- *         description: Invalid or expired verification code
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error: "InvalidCode"
- *     security: []
- */
+**/
 authSponsorRouter.post("/verify", async (req, res) => {
-    const { email, sixDigitCode } = AuthSponsorVerifyValidator.parse(req.body);
+    const { email, randomHexCode } = AuthSponsorVerifyValidator.parse(req.body);
     const { data: sponsorData } = await SupabaseDB.AUTH_CODES.delete()
         .eq("email", email)
         .select()
@@ -129,7 +107,7 @@ authSponsorRouter.post("/verify", async (req, res) => {
     }
 
     const match = bcrypt.compareSync(
-        sixDigitCode,
+        randomHexCode,
         sponsorData.hashedVerificationCode
     );
     if (!match) {
