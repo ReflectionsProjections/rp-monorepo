@@ -7,7 +7,7 @@ import { Role } from "../../auth/auth-models";
 import mustache from "mustache";
 import templates from "../../../templates/templates";
 
-import { createSixDigitCode, encryptSixDigitCode } from "./sponsor-utils";
+import { createRandomHexCode, encryptRandomHexCode } from "./sponsor-utils";
 import * as bcrypt from "bcrypt";
 import {
     AuthSponsorLoginValidator,
@@ -17,6 +17,42 @@ import { SupabaseDB } from "../../../database";
 
 const authSponsorRouter = Router();
 
+authSponsorRouter.post("/login", async (req, res) => {
+    const { email } = AuthSponsorLoginValidator.parse(req.body);
+    const { data: existing } = await SupabaseDB.CORPORATE.select()
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+    if (!existing) {
+        return res.sendStatus(StatusCodes.UNAUTHORIZED);
+    }
+
+    const randomHexCode = createRandomHexCode();
+
+    const expTime = new Date(
+        Date.now() + Config.VERIFY_EXP_TIME_MS
+    ).toISOString();
+    const hashedHexCode = encryptRandomHexCode(randomHexCode);
+    await SupabaseDB.AUTH_CODES.upsert(
+        {
+            email,
+            hashedVerificationCode: hashedHexCode,
+            expTime,
+        },
+        {
+            onConflict: "email",
+        }
+    ).throwOnError();
+
+    const emailBody = mustache.render(templates.SPONSOR_VERIFICATION_LINK, {
+        link: `reflectionsprojections.org/auth?token=${randomHexCode}`,
+    });
+
+    await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
+    return res.sendStatus(StatusCodes.CREATED);
+});
+
+/**
 authSponsorRouter.post("/login", async (req, res) => {
     const { email } = AuthSponsorLoginValidator.parse(req.body);
     const { data: existing } = await SupabaseDB.CORPORATE.select()
@@ -50,9 +86,9 @@ authSponsorRouter.post("/login", async (req, res) => {
     await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
     return res.sendStatus(StatusCodes.CREATED);
 });
-
+**/
 authSponsorRouter.post("/verify", async (req, res) => {
-    const { email, sixDigitCode } = AuthSponsorVerifyValidator.parse(req.body);
+    const { email, randomHexCode } = AuthSponsorVerifyValidator.parse(req.body);
     const { data: sponsorData } = await SupabaseDB.AUTH_CODES.delete()
         .eq("email", email)
         .select()
@@ -69,7 +105,7 @@ authSponsorRouter.post("/verify", async (req, res) => {
     }
 
     const match = bcrypt.compareSync(
-        sixDigitCode,
+        randomHexCode,
         sponsorData.hashedVerificationCode
     );
     if (!match) {
