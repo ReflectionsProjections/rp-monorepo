@@ -42,71 +42,86 @@ import path from "path";
 
 const app = express();
 
-// generate openapi schemas from zod
-const generator = new OpenApiGeneratorV3(registry.definitions);
-const openApiComponents = generator.generateComponents();
+// only if we aren't running in a testing environment, generate api docs at /docs
+if (
+    Config.ENV !== EnvironmentEnum.TESTING &&
+    Config.ENV !== EnvironmentEnum.GITHUB_CI
+) {
+    // TESTING NOTE: currently, tests are not run on docs generation. if tests are ever written for
+    // the docs endpoint, you (may) have to lazy initialize the openapi generation -- wrap the creation
+    // of swaggerSpec in a function and call it before swaggerUi.setup() in the app.use("/docs") statement
+    // swaggerSpec doesn't exist yet. This is because tests allegedly can load modules out of order, which
+    // means the schemas might not have been initialized in the registry by the time this file runs.
 
-// set up swagger-ui docs
-const swaggerOptions: swaggerJsdoc.Options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "R|P API",
-            version: "1.0.0",
-            description: "Documentation for the Reflections|Projections API",
-        },
-        // configures the "Authorize" button for JWTs
-        components: {
-            ...openApiComponents.components,
-            securitySchemes: {
-                USER: {
-                    type: "http",
-                    scheme: "bearer",
-                    bearerFormat: "JWT",
-                },
-                STAFF: {
-                    type: "http",
-                    scheme: "bearer",
-                    bearerFormat: "JWT",
-                    description: "Requires the 'staff' role in the JWT payload",
-                },
-                ADMIN: {
-                    type: "http",
-                    scheme: "bearer",
-                    bearerFormat: "JWT",
-                    description: "Requires the 'admin' role in the JWT payload",
+    // generate openapi schemas from zod
+    const generator = new OpenApiGeneratorV3(registry.definitions);
+    const openApiComponents = generator.generateComponents();
+
+    // set up swagger-ui docs
+    const swaggerOptions: swaggerJsdoc.Options = {
+        definition: {
+            openapi: "3.0.0",
+            info: {
+                title: "R|P API",
+                version: "1.0.0",
+                description:
+                    "Documentation for the Reflections|Projections API",
+            },
+            // configures the "Authorize" button for JWTs
+            components: {
+                ...openApiComponents.components,
+                securitySchemes: {
+                    USER: {
+                        type: "http",
+                        scheme: "bearer",
+                        bearerFormat: "JWT",
+                    },
+                    STAFF: {
+                        type: "http",
+                        scheme: "bearer",
+                        bearerFormat: "JWT",
+                        description:
+                            "Requires the 'staff' role in the JWT payload",
+                    },
+                    ADMIN: {
+                        type: "http",
+                        scheme: "bearer",
+                        bearerFormat: "JWT",
+                        description:
+                            "Requires the 'admin' role in the JWT payload",
+                    },
                 },
             },
+            // sets default needed authorization for endpoints (in docs)
+            security: [
+                {
+                    bearerAuth: [],
+                },
+            ],
         },
-        // sets default needed authorization for endpoints (in docs)
-        security: [
-            {
-                bearerAuth: [],
-            },
-        ],
-    },
-    // Tells Swagger to look for JSDoc comments in all TypeScript files inside your services folder
-    apis: [path.join(__dirname, "./services/**/*-router.ts")],
-};
+        // Tells Swagger to look for JSDoc comments in all TypeScript files inside your services folder
+        apis: [path.join(__dirname, "./services/**/*-router.ts")],
+    };
 
-// console.log("Swagger scanned APIs:", swaggerOptions.apis);
+    // console.log("Swagger scanned APIs:", swaggerOptions.apis);
 
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+    const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.use(
-    "/docs",
-    swaggerUi.serve as unknown as RequestHandler,
-    swaggerUi.setup(swaggerSpec) as unknown as RequestHandler
-);
+    app.use(
+        "/docs",
+        swaggerUi.serve as unknown as RequestHandler,
+        swaggerUi.setup(swaggerSpec) as unknown as RequestHandler
+    );
 
-// do we only want to serve docs in development (in that case wrap the whole thing to avoid generating schemas etc)
-// if (Config.ENV !== EnvironmentEnum.PRODUCTION) {
-//     app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-//     app.get("/docs.json", (req, res) => {
-//         res.setHeader("Content-Type", "application/json");
-//         res.send(swaggerSpec);
-//     });
-// }
+    // do we only want to serve docs in development (in that case wrap the whole thing to avoid generating schemas etc)
+    // if (Config.ENV !== EnvironmentEnum.PRODUCTION) {
+    //     app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    //     app.get("/docs.json", (req, res) => {
+    //         res.setHeader("Content-Type", "application/json");
+    //         res.send(swaggerSpec);
+    //     });
+    // }
+}
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
