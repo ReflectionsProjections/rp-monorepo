@@ -107,9 +107,11 @@ CREATE TABLE public."attendees" (
 );
 
 CREATE TABLE public."corporate" (
+    "id" uuid DEFAULT gen_random_uuid () NOT NULL,
+    "userId" character varying NOT NULL,
     "email" text NOT NULL,
     "name" text NOT NULL,
-    CONSTRAINT "corporate_pkey" PRIMARY KEY ("email")
+    CONSTRAINT "corporate_pkey" PRIMARY KEY ("id")
 );
 
 CREATE TABLE public."eventAttendances" (
@@ -320,7 +322,8 @@ ALTER TABLE ONLY public."subscriptions"
     ADD CONSTRAINT "subscriptions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
 
 ALTER TABLE ONLY public."authTokens"
-    ADD CONSTRAINT "authTokens_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
+    ADD CONSTRAINT "authTokens_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE,
+    ADD CONSTRAINT unique_user_path UNIQUE ("userId", "path");
 
 -- PostgreSQL function for atomic tier promotions
 CREATE OR REPLACE FUNCTION public.promote_users_batch(user_ids text[])
