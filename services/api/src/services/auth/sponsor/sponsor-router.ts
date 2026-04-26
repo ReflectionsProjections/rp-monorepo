@@ -20,36 +20,51 @@ const authSponsorRouter = Router();
 
 authSponsorRouter.post("/login", async (req, res) => {
     const { email } = AuthSponsorLoginValidator.parse(req.body);
-    const { data: existing } = await SupabaseDB.CORPORATE.select()
+    
+    const corporateUserResponse = await SupabaseDB.CORPORATE
+        .select("userId")
         .eq("email", email)
         .maybeSingle()
         .throwOnError();
-    if (!existing) {
+    const corporateUser = corporateUserResponse.data;
+
+    if (!corporateUser) { 
         return res.sendStatus(StatusCodes.UNAUTHORIZED);
     }
 
     const randomHexCode = createRandomHexCode();
+    const tokenHash = encryptRandomHexCode(randomHexCode);
 
-    const expTime = new Date(
+    const expiresAt = new Date(
         Date.now() + Config.VERIFY_EXP_TIME_MS
     ).toISOString();
-    const hashedHexCode = encryptRandomHexCode(randomHexCode);
-    await SupabaseDB.AUTH_CODES.upsert(
+
+    await SupabaseDB.AUTH_TOKENS.upsert(
+    {
+        userId: corporateUser.userId,
+        tokenHash,
+        expiresAt,
+        path: "sponsor-login",
+        usedAt: null,
+    },
+    {
+        onConflict: "userId,path",
+    }
+).throwOnError();
+
+    const emailBody = mustache.render(
+        templates.SPONSOR_VERIFICATION_LINK,
         {
-            email,
-            hashedVerificationCode: hashedHexCode,
-            expTime,
-        },
-        {
-            onConflict: "email",
+            link: `reflectionsprojections.org/auth?token=${randomHexCode}`,
         }
-    ).throwOnError();
+    );
 
-    const emailBody = mustache.render(templates.SPONSOR_VERIFICATION_LINK, {
-        link: `reflectionsprojections.org/auth?token=${randomHexCode}`,
-    });
+    await sendHTMLEmail(
+        email,
+        "R|P Resume Book Email Verification",
+        emailBody
+    );
 
-    await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
     return res.sendStatus(StatusCodes.CREATED);
 });
 
@@ -91,7 +106,7 @@ authSponsorRouter.post("/login", async (req, res) => {
 **/
 authSponsorRouter.post("/verify", async (req, res) => {
     const { email, randomHexCode } = AuthSponsorVerifyValidator.parse(req.body);
-    const { data: sponsorData } = await SupabaseDB.AUTH_CODES.delete()
+    const { data: sponsorData } = await SupabaseDB.AUTH.delete()
         .eq("email", email)
         .select()
         .maybeSingle()
