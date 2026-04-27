@@ -42,7 +42,7 @@ export const externalEventView = registry.register(
                 isVirtual: false,
                 imageUrl: "example.com/image.png",
                 location: "Siebel Center for CS",
-                eventType: "SPEAKER",
+                eventType: EventType.Enum.SPEAKER,
                 tags: [],
             },
         })
@@ -62,14 +62,14 @@ export const internalEventView = registry.register(
                 startTime: new Date("2025-03-31T19:30:00Z"),
                 endTime: new Date("2025-03-31T23:30:00Z"),
                 points: 0,
-                description: "Awesome test event",
+                description: "Cool hidden event",
                 isVirtual: false,
                 imageUrl: "example.com/image.png",
                 location: "Siebel Center for CS",
-                eventType: "SPEAKER",
+                eventType: EventType.Enum.SPEAKER,
                 tags: [],
                 attendanceCount: 0,
-                isVisible: true,
+                isVisible: false,
             },
         })
 );
