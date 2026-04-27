@@ -1,7 +1,7 @@
 import express, { Request, Response, RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Config, EnvironmentEnum } from "./config";
-import { isTest } from "./utilities";
+import { injectOneOfExamples, isTest } from "./utilities";
 import "./firebase";
 import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 
@@ -35,14 +35,7 @@ import { JwtPayloadValidator } from "./services/auth/auth-models";
 import swaggerJsdoc from "swagger-jsdoc";
 import { registry } from "./middleware/openapi-registry";
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
-import type {
-    OpenAPIObject,
-    OperationObject,
-    ResponseObject,
-    MediaTypeObject,
-    SchemaObject,
-    ReferenceObject,
-} from "openapi3-ts/oas30";
+import type { OpenAPIObject } from "openapi3-ts/oas30";
 import swaggerUi from "swagger-ui-express";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
@@ -79,24 +72,11 @@ if (
             components: {
                 ...openApiComponents.components,
                 securitySchemes: {
-                    USER: {
+                    // defines available auth mechanisms
+                    bearerAuth: {
                         type: "http",
                         scheme: "bearer",
                         bearerFormat: "JWT",
-                    },
-                    STAFF: {
-                        type: "http",
-                        scheme: "bearer",
-                        bearerFormat: "JWT",
-                        description:
-                            "Requires the 'staff' role in the JWT payload",
-                    },
-                    ADMIN: {
-                        type: "http",
-                        scheme: "bearer",
-                        bearerFormat: "JWT",
-                        description:
-                            "Requires the 'admin' role in the JWT payload",
                     },
                 },
             },
@@ -113,63 +93,8 @@ if (
 
     const swaggerSpec = swaggerJsdoc(swaggerOptions) as OpenAPIObject;
 
-    // because we're using jsdoc, we can't use plain ts objects as examples in endpoint docs, so the easiest
-    // solution is to add them in post-processing here because it ensures they exist (endpoints that can
-    // return multiple schemas will only show the first unless examples are manually defined using this or
-    // another method such as registering them to swaggerOptions and referencing #/components/examples in docs)
-    // tbh it would probably be nicer to do that and check that none are missing in tests/CI
-    function injectOneOfExamples(spec: OpenAPIObject): void {
-        const schemas = spec.components?.schemas ?? {};
-
-        // walk all responses: for every path, for every operation, for every response,
-        // grab the application/json media type, check if its schema uses oneOf, and if so,
-        // pull the example from each referenced schema and inject it into mediaType.examples
-        for (const pathObj of Object.values(spec.paths ?? {})) {
-            for (const operation of Object.values(
-                pathObj as Record<string, OperationObject>
-            )) {
-                for (const response of Object.values(
-                    operation.responses ?? {}
-                )) {
-                    const mediaType: MediaTypeObject | undefined = (
-                        response as ResponseObject
-                    )?.content?.["application/json"];
-
-                    if (!mediaType?.schema) continue;
-                    const schema = mediaType.schema as SchemaObject;
-                    if (!schema.oneOf) continue;
-                    // skip if examples were manually provided (which shouldn't
-                    // happen, but this is less confusing behavior)
-                    if (mediaType.examples) continue;
-
-                    const examples: Record<
-                        string,
-                        { summary: string; value: unknown }
-                    > = {};
-
-                    for (const variant of schema.oneOf) {
-                        const ref = (variant as ReferenceObject).$ref;
-                        if (!ref) continue;
-
-                        const schemaName = ref.split("/").pop()!;
-                        const resolved = schemas[schemaName] as
-                            | SchemaObject
-                            | undefined;
-                        if (!resolved?.example) continue;
-
-                        examples[schemaName] = {
-                            summary: schemaName,
-                            value: resolved.example,
-                        };
-                    }
-                    if (Object.keys(examples).length > 0) {
-                        mediaType.examples = examples;
-                    }
-                }
-            }
-        }
-    }
-
+    // could also be used to inject proper examples into all endpoint docs,
+    // but that doesn't add any functionality at the moment
     injectOneOfExamples(swaggerSpec);
 
     app.use(

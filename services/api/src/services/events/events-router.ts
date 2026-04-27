@@ -35,8 +35,8 @@ const eventsRouter = Router();
  *           application/json:
  *             schema:
  *               oneOf:
- *                 - $ref: '#/components/schemas/InternalEventView'
  *                 - $ref: '#/components/schemas/ExternalEventView'
+ *                 - $ref: '#/components/schemas/InternalEventView'
  *       204:
  *         description: No upcoming events exist
  *     security: []
@@ -88,11 +88,13 @@ eventsRouter.get("/currentOrNext", RoleChecker([], true), async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 oneOf:
- *                   - $ref: '#/components/schemas/InternalEventView'
- *                   - $ref: '#/components/schemas/ExternalEventView'
+ *               oneOf:
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ExternalEventView'
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/InternalEventView'
  *     security: []
  */
 eventsRouter.get("/", RoleChecker([], true), async (req, res) => {
@@ -144,8 +146,8 @@ eventsRouter.get("/", RoleChecker([], true), async (req, res) => {
  *           application/json:
  *             schema:
  *               oneOf:
- *                 - $ref: '#/components/schemas/InternalEventView'
  *                 - $ref: '#/components/schemas/ExternalEventView'
+ *                 - $ref: '#/components/schemas/InternalEventView'
  *       404:
  *         description: Couldn't find the requested event
  *         content:
