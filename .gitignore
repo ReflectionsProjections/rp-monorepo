@@ -1,5 +1,11 @@
 .env
 
+# Yarn workspace files
+**/.yarn/*
+!**/.yarn/releases
+!**/.yarn/releases/**
+**/.yarn/install-state.gz
+
 # OS metadata
 .DS_Store
 Thumbs.db
