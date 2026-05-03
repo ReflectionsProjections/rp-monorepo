@@ -25,14 +25,7 @@ export const AuthSponsorLoginValidator = registry.register(
         })
 );
 
-export const AuthSponsorVerifyValidator = registry.register(
-    "AuthSponsorVerifyValidator",
-    z
-        .object({
-            email: z.string().email(),
-            sixDigitCode: z.string().length(6),
-        })
-        .openapi("AuthSponsorVerifyValidator", {
-            example: { email: "sponsor@acme.com", sixDigitCode: "123456" },
-        })
-);
+export const AuthSponsorVerifyValidator = z.object({
+    email: z.string().email(),
+    randomHexCode: z.string().length(6),
+});
