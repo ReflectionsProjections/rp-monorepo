@@ -366,7 +366,7 @@ export interface APIRoutes {
   "/auth/sponsor/verify": {
     POST: {
       request: {
-        sixDigitCode: string;
+        randomHexCode: string;
         email: string;
       };
       response: { token: string };

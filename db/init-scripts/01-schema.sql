@@ -322,7 +322,6 @@ ALTER TABLE ONLY public."subscriptions"
     ADD CONSTRAINT "subscriptions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
 
 ALTER TABLE ONLY public."authTokens"
-    ADD CONSTRAINT "authTokens_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE,
     ADD CONSTRAINT unique_user_path UNIQUE ("userId", "path");
 
 -- PostgreSQL function for atomic tier promotions

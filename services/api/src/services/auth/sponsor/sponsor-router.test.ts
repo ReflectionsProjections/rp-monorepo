@@ -19,7 +19,7 @@ const VALID_CODE = "AAABBB";
 beforeEach(async () => {
     await SupabaseDB.CORPORATE.insert(CORPORATE_USER);
     await SupabaseDB.AUTH_CODES.insert({
-        hashedVerificationCode: sponsorUtils.encryptSixDigitCode(VALID_CODE),
+        hashedVerificationCode: sponsorUtils.encryptRandomHexCode(VALID_CODE),
         expTime: new Date(Date.now() + 60 * 1000).toISOString(),
         email: CORPORATE_USER.email,
     });
@@ -31,14 +31,14 @@ describe("POST /auth/sponsor/login", () => {
         .mockImplementation((_emailId, _subject, _emailHTML) =>
             Promise.resolve({} as unknown as SendEmailCommandOutput)
         );
-    const mockCreateSixDigitCode = jest.spyOn(
+    const mockCreateRandomHexCode = jest.spyOn(
         sponsorUtils,
-        "createSixDigitCode"
+        "createRandomHexCode"
     );
 
     beforeEach(async () => {
         mockSendHTMLEmail.mockClear();
-        mockCreateSixDigitCode.mockClear();
+        mockCreateRandomHexCode.mockClear();
     });
 
     it("should send a login code", async () => {
@@ -47,12 +47,12 @@ describe("POST /auth/sponsor/login", () => {
                 email: CORPORATE_USER.email,
             })
             .expect(StatusCodes.CREATED);
-        expect(mockCreateSixDigitCode).toHaveBeenCalled();
-        const sixDigitCode = `${mockCreateSixDigitCode.mock.results.at(-1)?.value}`;
+        expect(mockCreateRandomHexCode).toHaveBeenCalled();
+        const randomHexCode = `${mockCreateRandomHexCode.mock.results.at(-1)?.value}`;
         expect(mockSendHTMLEmail).toHaveBeenCalledWith(
             CORPORATE_USER.email,
             expect.stringContaining("Email Verification"),
-            expect.stringContaining(sixDigitCode)
+            expect.stringContaining(randomHexCode)
         );
 
         const { data } = await SupabaseDB.AUTH_CODES.select()
@@ -61,7 +61,7 @@ describe("POST /auth/sponsor/login", () => {
             .throwOnError();
         expect(data).toHaveProperty("hashedVerificationCode");
         expect(
-            compareSync(sixDigitCode, `${data.hashedVerificationCode}`)
+            compareSync(randomHexCode, `${data.hashedVerificationCode}`)
         ).toBe(true);
     });
 
@@ -72,7 +72,7 @@ describe("POST /auth/sponsor/login", () => {
                 email,
             })
             .expect(StatusCodes.UNAUTHORIZED);
-        expect(mockCreateSixDigitCode).not.toHaveBeenCalled();
+        expect(mockCreateRandomHexCode).not.toHaveBeenCalled();
         expect(mockSendHTMLEmail).not.toHaveBeenCalled();
 
         const { data } = await SupabaseDB.AUTH_CODES.select()
@@ -88,7 +88,7 @@ describe("POST /auth/sponsor/verify", () => {
         const response = await post("/auth/sponsor/verify")
             .send({
                 email: CORPORATE_USER.email,
-                sixDigitCode: VALID_CODE,
+                randomHexCode: VALID_CODE,
             })
             .expect(StatusCodes.OK);
 
@@ -110,7 +110,7 @@ describe("POST /auth/sponsor/verify", () => {
         const badResponse = await post("/auth/sponsor/verify")
             .send({
                 email: CORPORATE_USER.email,
-                sixDigitCode: "BADCOD",
+                randomHexCode: "BADCOD",
             })
             .expect(StatusCodes.UNAUTHORIZED);
         expect(badResponse.body).toHaveProperty("error", "InvalidCode");
@@ -118,7 +118,7 @@ describe("POST /auth/sponsor/verify", () => {
         const validResponse = await post("/auth/sponsor/verify")
             .send({
                 email: CORPORATE_USER.email,
-                sixDigitCode: VALID_CODE,
+                randomHexCode: VALID_CODE,
             })
             .expect(StatusCodes.UNAUTHORIZED);
         expect(validResponse.body).toHaveProperty("error", "InvalidCode");
@@ -134,7 +134,7 @@ describe("POST /auth/sponsor/verify", () => {
         const response = await post("/auth/sponsor/verify")
             .send({
                 email: CORPORATE_USER.email,
-                sixDigitCode: VALID_CODE,
+                randomHexCode: VALID_CODE,
             })
             .expect(StatusCodes.UNAUTHORIZED);
 
@@ -145,7 +145,7 @@ describe("POST /auth/sponsor/verify", () => {
         const response = await post("/auth/sponsor/verify")
             .send({
                 email: CORPORATE_USER.email,
-                sixDigitCode: "BADCOD",
+                randomHexCode: "BADCOD",
             })
             .expect(StatusCodes.UNAUTHORIZED);
 
@@ -156,7 +156,7 @@ describe("POST /auth/sponsor/verify", () => {
         const response = await post("/auth/sponsor/verify")
             .send({
                 email: "invalid@nonexistent.com",
-                sixDigitCode: VALID_CODE,
+                randomHexCode: VALID_CODE,
             })
             .expect(StatusCodes.UNAUTHORIZED);
 

@@ -21,7 +21,7 @@ authSponsorRouter.post("/login", async (req, res) => {
     const { email } = AuthSponsorLoginValidator.parse(req.body);
     
     const corporateUserResponse = await SupabaseDB.CORPORATE
-        .select("userId")
+        .select()
         .eq("email", email)
         .maybeSingle()
         .throwOnError();
