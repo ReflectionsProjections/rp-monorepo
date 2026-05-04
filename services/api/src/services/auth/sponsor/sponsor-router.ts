@@ -15,17 +15,29 @@ import {
 } from "./sponsor-schema";
 import { SupabaseDB } from "../../../database";
 
+type SponsorAuthInfo = {
+    userId: string;
+    email: string;
+    displayName: string;
+};
+
+type SponsorAuthToken = {
+    tokenHash: string;
+    expiresAt: string;
+    usedAt: string | null;
+};
+
 const authSponsorRouter = Router();
 
 authSponsorRouter.post("/login", async (req, res) => {
     const { email } = AuthSponsorLoginValidator.parse(req.body);
-    
-    const corporateUserResponse = await SupabaseDB.CORPORATE
-        .select()
+    const corporateUserResponse = await SupabaseDB.AUTH_INFO
+        .select("userId, email, displayName")
         .eq("email", email)
+        .eq("role", Role.Enum.CORPORATE)
         .maybeSingle()
         .throwOnError();
-    const corporateUser = corporateUserResponse.data;
+    const corporateUser = corporateUserResponse.data as SponsorAuthInfo | null;
 
     if (!corporateUser) { 
         return res.sendStatus(StatusCodes.UNAUTHORIZED);
@@ -39,17 +51,17 @@ authSponsorRouter.post("/login", async (req, res) => {
     ).toISOString();
 
     await SupabaseDB.AUTH_TOKENS.upsert(
-    {
-        userId: corporateUser.userId,
-        tokenHash,
-        expiresAt,
-        path: "sponsor-login",
-        usedAt: null,
-    },
-    {
-        onConflict: "userId,path",
-    }
-).throwOnError();
+        {
+            userId: corporateUser.userId,
+            tokenHash,
+            expiresAt,
+            path: "sponsor-login",
+            usedAt: null,
+        },
+        {
+            onConflict: "userId,path",
+        }
+    ).throwOnError();
 
     const emailBody = mustache.render(
         templates.SPONSOR_VERIFICATION_LINK,
@@ -67,50 +79,29 @@ authSponsorRouter.post("/login", async (req, res) => {
     return res.sendStatus(StatusCodes.CREATED);
 });
 
-/**
-authSponsorRouter.post("/login", async (req, res) => {
-    const { email } = AuthSponsorLoginValidator.parse(req.body);
-    const { data: existing } = await SupabaseDB.CORPORATE.select()
-        .eq("email", email)
-        .maybeSingle()
-        .throwOnError();
-    if (!existing) {
-        return res.sendStatus(StatusCodes.UNAUTHORIZED);
-    }
-
-    const sixDigitCode = createSixDigitCode();
-    const expTime = new Date(
-        Date.now() + Config.VERIFY_EXP_TIME_MS
-    ).toISOString();
-    const hashedVerificationCode = encryptSixDigitCode(sixDigitCode);
-    await SupabaseDB.AUTH_CODES.upsert(
-        {
-            email,
-            hashedVerificationCode,
-            expTime,
-        },
-        {
-            onConflict: "email",
-        }
-    ).throwOnError();
-
-    const emailBody = mustache.render(templates.SPONSOR_VERIFICATION, {
-        code: sixDigitCode,
-    });
-
-    await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
-    return res.sendStatus(StatusCodes.CREATED);
-});
-**/
 authSponsorRouter.post("/verify", async (req, res) => {
     const { email, randomHexCode } = AuthSponsorVerifyValidator.parse(req.body);
-    const { data: sponsorData } = await SupabaseDB.AUTH.delete()
+    const { data: sponsorUser } = await SupabaseDB.AUTH_INFO.select(
+        "userId, email, displayName"
+    )
         .eq("email", email)
-        .select()
+        .eq("role", Role.Enum.CORPORATE)
         .maybeSingle()
         .throwOnError();
-    const { data: corpResponse } = await SupabaseDB.CORPORATE.select()
-        .eq("email", email)
+    const corporateUser = sponsorUser as SponsorAuthInfo | null;
+
+    if (!corporateUser) {
+        return res.status(StatusCodes.UNAUTHORIZED).send({
+            error: "InvalidCode",
+        });
+    }
+
+    const { data: sponsorData } = await SupabaseDB.AUTH_TOKENS.select(
+        "tokenHash, expiresAt, usedAt"
+    )
+        .eq("userId", corporateUser.userId)
+        .eq("path", "sponsor-login")
+        .is("usedAt", null)
         .maybeSingle();
 
     if (!sponsorData) {
@@ -121,26 +112,41 @@ authSponsorRouter.post("/verify", async (req, res) => {
 
     const match = bcrypt.compareSync(
         randomHexCode,
-        sponsorData.hashedVerificationCode
+        (sponsorData as SponsorAuthToken).tokenHash
     );
     if (!match) {
+        await SupabaseDB.AUTH_TOKENS.update({
+            usedAt: new Date().toISOString(),
+        })
+            .eq("userId", corporateUser.userId)
+            .eq("path", "sponsor-login")
+            .is("usedAt", null)
+            .throwOnError();
         return res.status(StatusCodes.UNAUTHORIZED).send({
             error: "InvalidCode",
         });
     }
 
-    const expTimeDate = new Date(sponsorData.expTime);
+    const expTimeDate = new Date((sponsorData as SponsorAuthToken).expiresAt);
     if (Date.now() > expTimeDate.getTime()) {
         return res.status(StatusCodes.UNAUTHORIZED).send({
             error: "ExpiredCode",
         });
     }
 
+    await SupabaseDB.AUTH_TOKENS.update({
+        usedAt: new Date().toISOString(),
+    })
+        .eq("userId", corporateUser.userId)
+        .eq("path", "sponsor-login")
+        .is("usedAt", null)
+        .throwOnError();
+
     const token = jsonwebtoken.sign(
         {
-            userId: email,
-            displayName: corpResponse?.name,
-            email: email,
+            userId: corporateUser.userId,
+            displayName: corporateUser.displayName,
+            email,
             roles: [Role.Enum.CORPORATE],
         },
         Config.JWT_SIGNING_SECRET,
