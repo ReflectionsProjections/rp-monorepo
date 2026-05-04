@@ -2,7 +2,6 @@ import * as sesUtils from "../../ses/ses-utils";
 import * as sponsorUtils from "./sponsor-utils";
 import { post } from "../../../../testing/testingTools";
 import { StatusCodes } from "http-status-codes";
-import { Corporate } from "../corporate-schema";
 import { compareSync } from "bcrypt";
 import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
 import Config from "../../../config";
@@ -11,17 +10,25 @@ import { SupabaseDB } from "../../../database";
 
 const CORPORATE_USER = {
     email: "sponsor@big-man.corp",
-    name: "Big Corporate Man",
-} satisfies Corporate;
+    displayName: "Big Corporate Man",
+};
+const CORPORATE_AUTH_USER = {
+    userId: CORPORATE_USER.email,
+    email: CORPORATE_USER.email,
+    displayName: CORPORATE_USER.displayName,
+    role: Role.Enum.CORPORATE,
+};
 const VALID_CODE = "AAABBB";
 
 beforeEach(async () => {
-    await SupabaseDB.CORPORATE.insert(CORPORATE_USER);
-    await SupabaseDB.AUTH_CODES.insert({
-        hashedVerificationCode: sponsorUtils.encryptRandomHexCode(VALID_CODE),
-        expTime: new Date(Date.now() + 60 * 1000).toISOString(),
-        email: CORPORATE_USER.email,
-    });
+    await SupabaseDB.AUTH_INFO.insert(CORPORATE_AUTH_USER as never);
+    await SupabaseDB.AUTH_TOKENS.insert({
+        userId: CORPORATE_USER.email,
+        tokenHash: sponsorUtils.encryptRandomHexCode(VALID_CODE),
+        expiresAt: new Date(Date.now() + 60 * 1000).toISOString(),
+        path: "sponsor-login",
+        usedAt: null,
+    } as never);
 });
 
 describe("POST /auth/sponsor/login", () => {
@@ -54,13 +61,14 @@ describe("POST /auth/sponsor/login", () => {
             expect.stringContaining(randomHexCode)
         );
 
-        const { data } = await SupabaseDB.AUTH_CODES.select()
-            .eq("email", CORPORATE_USER.email)
+        const { data } = await SupabaseDB.AUTH_TOKENS.select()
+            .eq("userId", CORPORATE_USER.email)
+            .eq("path", "sponsor-login")
             .single()
             .throwOnError();
-        expect(data).toHaveProperty("hashedVerificationCode");
+        expect(data).toHaveProperty("tokenHash");
         expect(
-            compareSync(randomHexCode, `${data.hashedVerificationCode}`)
+            compareSync(randomHexCode, `${data.tokenHash}`)
         ).toBe(true);
     });
 
@@ -74,8 +82,9 @@ describe("POST /auth/sponsor/login", () => {
         expect(mockCreateRandomHexCode).not.toHaveBeenCalled();
         expect(mockSendHTMLEmail).not.toHaveBeenCalled();
 
-        const { data } = await SupabaseDB.AUTH_CODES.select()
-            .eq("email", email)
+        const { data } = await SupabaseDB.AUTH_TOKENS.select()
+            .eq("userId", email)
+            .eq("path", "sponsor-login")
             .throwOnError();
         expect(data.length).toBe(0);
     });
@@ -98,7 +107,7 @@ describe("POST /auth/sponsor/verify", () => {
         ) as JwtPayload;
         expect(payload).toMatchObject({
             userId: CORPORATE_USER.email,
-            displayName: CORPORATE_USER.name,
+            displayName: CORPORATE_USER.displayName,
             email: CORPORATE_USER.email,
             roles: [Role.Enum.CORPORATE],
         });
@@ -124,11 +133,11 @@ describe("POST /auth/sponsor/verify", () => {
     });
 
     it("fails for expired codes", async () => {
-        await SupabaseDB.AUTH_CODES.update({
-            email: CORPORATE_USER.email,
-            expTime: new Date(Date.now() - 30 * 1000).toISOString(),
+        await SupabaseDB.AUTH_TOKENS.update({
+            expiresAt: new Date(Date.now() - 30 * 1000).toISOString(),
         })
-            .eq("email", CORPORATE_USER.email)
+            .eq("userId", CORPORATE_USER.email)
+            .eq("path", "sponsor-login")
             .throwOnError();
         const response = await post("/auth/sponsor/verify")
             .send({

@@ -106,14 +106,6 @@ CREATE TABLE public."attendees" (
     CONSTRAINT "attendees_pkey" PRIMARY KEY ("userId")
 );
 
-CREATE TABLE public."corporate" (
-    "id" uuid DEFAULT gen_random_uuid () NOT NULL,
-    "userId" character varying NOT NULL,
-    "email" text NOT NULL,
-    "name" text NOT NULL,
-    CONSTRAINT "corporate_pkey" PRIMARY KEY ("id")
-);
-
 CREATE TABLE public."eventAttendances" (
     "eventId" uuid NOT NULL,
     "attendee" character varying NOT NULL,
@@ -165,7 +157,6 @@ CREATE TABLE public."notifications" (
     "deviceId" text NOT NULL,
     CONSTRAINT "notifications_pkey" PRIMARY KEY ("userId")
 );
-
 CREATE TABLE public."draftRegistrations" (
     "allergies" text[] DEFAULT '{}'::text[] NOT NULL,
     "allergiesOther" text NOT NULL,
@@ -219,18 +210,13 @@ CREATE TABLE public."registrations" (
 );
 
 CREATE TABLE public."authInfo" (
-    "userId" character varying NOT NULL,
-    "authId" text NOT NULL,
+    "id" uuid DEFAULT gen_random_uuid() NOT NULL,
+    "userId" text NOT NULL,
     "email" text NOT NULL,
     "displayName" text NOT NULL,
-    CONSTRAINT "authInfo_pkey" PRIMARY KEY ("userId"),
-    CONSTRAINT "authInfo_authId_key" UNIQUE ("authId")
-);
-
-CREATE TABLE public."authRoles" (
-    "userId" character varying NOT NULL,
     "role" public."roleType" NOT NULL,
-    CONSTRAINT "authRoles_pkey" PRIMARY KEY ("userId", "role")
+    CONSTRAINT "authInfo_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "authInfo_userId_key" UNIQUE ("userId")
 );
 
 CREATE TABLE public."authTokens" (
@@ -245,9 +231,8 @@ CREATE TABLE public."authTokens" (
 );
 
 -- Indexes for auth tables
-CREATE INDEX "authRoles_userId_idx" ON public."authRoles" ("userId");
-CREATE INDEX "authRoles_role_idx"   ON public."authRoles" ("role");
-CREATE INDEX "authInfo_authId_idx"  ON public."authInfo"  ("authId");
+CREATE INDEX "authInfo_userId_idx" ON public."authInfo" ("userId");
+CREATE INDEX "authInfo_role_idx" ON public."authInfo" ("role");
 
 CREATE TABLE public."speakers" (
     "speakerId" uuid DEFAULT gen_random_uuid() NOT NULL,
