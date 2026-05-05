@@ -1,8 +1,8 @@
-import type { TrackLocation } from "@app/sections/home/constants/track-paths";
-import { TRACK_PATHS } from "@app/sections/home/constants/track-paths";
-import { Box, Text, Tooltip } from "@chakra-ui/react";
-import type { Event } from "@app";
-import { useEffect, useMemo, useRef, useState } from "react";
+import type { TrackLocation } from '@app/sections/home/constants/track-paths'
+import { TRACK_PATHS } from '@app/sections/home/constants/track-paths'
+import { Box, Text, Tooltip } from '@chakra-ui/react'
+import type { Event } from '@app'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 export function RaceTrack({
   selectedDayIndex,
@@ -12,58 +12,58 @@ export function RaceTrack({
   onHover,
   onClick
 }: {
-  selectedDayIndex: number;
-  dayEvents: Event[];
-  colors: string[];
-  hoveredIndex: number | null;
-  onHover?: (index: number) => void;
-  onClick: (event: Event) => void;
+  selectedDayIndex: number
+  dayEvents: Event[]
+  colors: string[]
+  hoveredIndex: number | null
+  onHover?: (index: number) => void
+  onClick: (event: Event) => void
 }) {
-  const pathRef = useRef<SVGPathElement>(null);
+  const pathRef = useRef<SVGPathElement>(null)
 
   const trackPath = useMemo(() => {
-    return TRACK_PATHS[(selectedDayIndex - 1) % TRACK_PATHS.length];
-  }, [selectedDayIndex]);
+    return TRACK_PATHS[(selectedDayIndex - 1) % TRACK_PATHS.length]
+  }, [selectedDayIndex])
 
   const [selectedLocations, setSelectedLocations] = useState<TrackLocation[]>(
     []
-  );
+  )
 
   const [finishLineLocation, setFinishLineLocation] =
-    useState<TrackLocation | null>(null);
+    useState<TrackLocation | null>(null)
 
   useEffect(() => {
-    if (!pathRef?.current) return;
+    if (!pathRef?.current) return
 
-    const pathEl = pathRef.current;
-    const totalLen = pathEl.getTotalLength();
-    const numLocations = dayEvents.length; // Ensure at least one location
-    if (numLocations === 0) return;
+    const pathEl = pathRef.current
+    const totalLen = pathEl.getTotalLength()
+    const numLocations = dayEvents.length // Ensure at least one location
+    if (numLocations === 0) return
 
-    const locations: TrackLocation[] = [];
+    const locations: TrackLocation[] = []
     for (let i = 0; i < numLocations; i++) {
-      const t = i / numLocations;
-      const { x, y } = pathEl.getPointAtLength(t * totalLen);
+      const t = i / numLocations
+      const { x, y } = pathEl.getPointAtLength(t * totalLen)
       if (i === numLocations - 1) {
-        const t_final = (i + 0.5) / numLocations;
+        const t_final = (i + 0.5) / numLocations
         const { x: finalX, y: finalY } = pathEl.getPointAtLength(
           t_final * totalLen
-        );
-        setFinishLineLocation({ x: finalX, y: finalY, order: i });
+        )
+        setFinishLineLocation({ x: finalX, y: finalY, order: i })
       }
-      locations.push({ x, y, order: i });
+      locations.push({ x, y, order: i })
     }
 
-    setSelectedLocations(locations);
-  }, [trackPath.path, dayEvents.length]);
+    setSelectedLocations(locations)
+  }, [trackPath.path, dayEvents.length])
 
   return (
     <Box
       position="relative"
       width="100%"
       height={{
-        base: "200px",
-        md: "300px"
+        base: '200px',
+        md: '300px'
       }}
       overflow="visible"
     >
@@ -74,8 +74,8 @@ export function RaceTrack({
         as="svg"
         width="100%"
         height={{
-          base: "200px",
-          md: "300px"
+          base: '200px',
+          md: '300px'
         }}
         overflow="visible"
         viewBox={`0 0 ${trackPath.width} ${trackPath.height}`}
@@ -85,7 +85,7 @@ export function RaceTrack({
         <RaceTrackPath pathRef={pathRef} path={trackPath.path} />
         {selectedLocations &&
           selectedLocations.map((location, index) => {
-            const hovered = hoveredIndex ? hoveredIndex - 1 === index : false;
+            const hovered = hoveredIndex ? hoveredIndex - 1 === index : false
 
             return (
               <RaceTrackLocation
@@ -98,12 +98,12 @@ export function RaceTrack({
                 onClick={onClick}
                 onHover={onHover}
               />
-            );
+            )
           })}
         {finishLineLocation && <FinishLocation location={finishLineLocation} />}
       </Box>
     </Box>
-  );
+  )
 }
 
 function FinishLocation({ location }: { location: TrackLocation }) {
@@ -122,20 +122,20 @@ function FinishLocation({ location }: { location: TrackLocation }) {
         justifyContent="center"
         w="100%"
         h="100%"
-        pointerEvents={"none"}
+        pointerEvents={'none'}
       >
         <img
           src="/site/finish-line.svg"
           alt="Finish Line"
           style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain"
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain'
           }}
         />
       </Box>
     </foreignObject>
-  );
+  )
 }
 
 function RaceTrackLocation({
@@ -147,13 +147,13 @@ function RaceTrackLocation({
   onClick,
   onHover
 }: {
-  index: number;
-  color: string;
-  location: TrackLocation;
-  hovered: boolean;
-  dayEvent: Event;
-  onClick: (event: Event) => void;
-  onHover?: (index: number) => void;
+  index: number
+  color: string
+  location: TrackLocation
+  hovered: boolean
+  dayEvent: Event
+  onClick: (event: Event) => void
+  onHover?: (index: number) => void
 }) {
   return (
     <foreignObject
@@ -172,7 +172,7 @@ function RaceTrackLocation({
         h="100%"
       >
         <Tooltip
-          label={dayEvent.location || "Siebel Center for CS"}
+          label={dayEvent.location || 'Siebel Center for CS'}
           placement="bottom"
           hasArrow
           openDelay={200}
@@ -181,15 +181,15 @@ function RaceTrackLocation({
           fontFamily="Magistral"
           fontSize="lg"
           fontWeight={600}
-          hideBelow={"md"} // Hide on mobile to prevent the tooltip from being visible in the modal
+          hideBelow={'md'} // Hide on mobile to prevent the tooltip from being visible in the modal
         >
           <Box
-            width={hovered ? "60px" : "40px"}
-            height={hovered ? "60px" : "40px"}
+            width={hovered ? '60px' : '40px'}
+            height={hovered ? '60px' : '40px'}
             borderRadius="full"
             bg={color}
-            borderWidth={hovered ? "3px" : "3px"}
-            borderColor={"white"}
+            borderWidth={hovered ? '3px' : '3px'}
+            borderColor={'white'}
             boxShadow="lg"
             display="flex"
             alignItems="center"
@@ -199,10 +199,10 @@ function RaceTrackLocation({
             onMouseLeave={() => onHover && onHover(-1)}
           >
             <Text
-              fontSize={hovered ? "4xl" : "xl"}
+              fontSize={hovered ? '4xl' : 'xl'}
               fontFamily="Magistral"
               color="white"
-              fontWeight={"bold"}
+              fontWeight={'bold'}
             >
               {index + 1}
             </Text>
@@ -210,15 +210,15 @@ function RaceTrackLocation({
         </Tooltip>
       </Box>
     </foreignObject>
-  );
+  )
 }
 
 function RaceTrackPath({
   path,
   pathRef
 }: {
-  path: string;
-  pathRef?: React.Ref<SVGPathElement>;
+  path: string
+  pathRef?: React.Ref<SVGPathElement>
 }) {
   return (
     <path
@@ -229,5 +229,5 @@ function RaceTrackPath({
       strokeLinecap="round"
       fill="none"
     />
-  );
+  )
 }

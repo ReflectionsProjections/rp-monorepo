@@ -5,35 +5,35 @@ import {
   Text,
   useColorModeValue,
   VStack
-} from "@chakra-ui/react";
-import type { SingleCol } from "./ResumeList";
-import ResumeList from "./ResumeList";
-import ResumeGrid from "./ResumeGrid";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import type { Resume } from "./ResumeBook";
+} from '@chakra-ui/react'
+import type { SingleCol } from './ResumeList'
+import ResumeList from './ResumeList'
+import ResumeGrid from './ResumeGrid'
+import { FaMagnifyingGlass } from 'react-icons/fa6'
+import type { Resume } from './ResumeBook'
 
 export type ResumeBookProps = {
-  loading: boolean;
-  showList: boolean;
+  loading: boolean
+  showList: boolean
   resumeData: {
-    filteredResumes: Resume[];
-  };
+    filteredResumes: Resume[]
+  }
   selection: {
-    selectedResumes: string[];
-    toggleResume: (id: string) => void;
-  };
+    selectedResumes: string[]
+    toggleResume: (id: string) => void
+  }
   sorting: {
-    sortByColumn?: SingleCol;
-    sortDirection: "asc" | "desc";
-    handleToggleSort: (column: SingleCol) => void;
-  };
-  handleOpenResume: (resume: Resume) => void;
-};
+    sortByColumn?: SingleCol
+    sortDirection: 'asc' | 'desc'
+    handleToggleSort: (column: SingleCol) => void
+  }
+  handleOpenResume: (resume: Resume) => void
+}
 
 export function ResumeBookContent(props: ResumeBookProps) {
-  const viewColor = useColorModeValue("200", "700");
+  const viewColor = useColorModeValue('200', '700')
   return (
-    <Box w="100%" px={3} overflowY={"auto"}>
+    <Box w="100%" px={3} overflowY={'auto'}>
       {props.resumeData.filteredResumes.length > 0 || props.loading ? (
         props.showList ? (
           <ResumeList
@@ -78,5 +78,5 @@ export function ResumeBookContent(props: ResumeBookProps) {
         </Center>
       )}
     </Box>
-  );
+  )
 }

@@ -1,43 +1,43 @@
-import { Box, SimpleGrid, Image, Link } from "@chakra-ui/react";
-import { keyframes } from "@emotion/react";
-import { AnimatedHeader } from "../shared/AnimatedHeader";
+import { Box, SimpleGrid, Image, Link } from '@chakra-ui/react'
+import { keyframes } from '@emotion/react'
+import { AnimatedHeader } from '../shared/AnimatedHeader'
 
 const slideInLeft = keyframes`
 from { transform: translateX(-100px); opacity: 0; }
 to { transform: translateX( 0px); opacity: 1; }
-`;
+`
 
 const slideInRight = keyframes`
 from { transform: translateX( 100px); opacity: 0; }
 to { transform: translateX( 0px); opacity: 1; }
-`;
+`
 
 const slideInUp = keyframes`
 from { transform: translateY( 50px); opacity: 0; }
 to { transform: translateY( 0px); opacity: 1; }
-`;
+`
 
 const slideInDown = keyframes`
 from { transform: translateY(-50px); opacity: 0; }
 to { transform: translateY( 0px); opacity: 1; }
-`;
+`
 
 const PitStopSceneWrapper = () => {
   const getGlowFilter = (color: string) => {
-    return `drop-shadow(0 0 15px ${color}) drop-shadow(0 0 25px ${color}88) drop-shadow(0 0 35px ${color}44)`;
-  };
+    return `drop-shadow(0 0 15px ${color}) drop-shadow(0 0 25px ${color}88) drop-shadow(0 0 35px ${color}44)`
+  }
 
   const getSubtleGlowFilter = (color: string) => {
-    return `drop-shadow(0 0 8px ${color}AA) drop-shadow(0 0 25px ${color}88) drop-shadow(0 0 35px ${color}66)`;
-  };
+    return `drop-shadow(0 0 8px ${color}AA) drop-shadow(0 0 25px ${color}88) drop-shadow(0 0 35px ${color}66)`
+  }
 
   const sponsorGlows = {
-    hrt: "#ff6600",
-    cat: "#E4D00A",
-    qual: "#0066cc",
-    aech: "#808080",
-    deere: "#3B8927"
-  };
+    hrt: '#ff6600',
+    cat: '#E4D00A',
+    qual: '#0066cc',
+    aech: '#808080',
+    deere: '#3B8927'
+  }
 
   return (
     <Box
@@ -51,19 +51,19 @@ const PitStopSceneWrapper = () => {
     >
       {/* Desktop Version */}
       <Box
-        display={{ base: "none", xl: "flex" }}
+        display={{ base: 'none', xl: 'flex' }}
         w="100%"
         // bgColor="#100E0E"
         pos="relative"
         alignItems="center"
         justifyContent="center"
         sx={{
-          minHeight: "100vh", // Base height
-          "@media screen and (max-height: 800px)": {
-            minHeight: "120vh" // Shorter desktop screens need more height
+          minHeight: '100vh', // Base height
+          '@media screen and (max-height: 800px)': {
+            minHeight: '120vh' // Shorter desktop screens need more height
           },
-          "@media screen and (min-height: 801px)": {
-            minHeight: "500px" // Taller desktop screens are fine with 100vh
+          '@media screen and (min-height: 801px)': {
+            minHeight: '500px' // Taller desktop screens are fine with 100vh
           }
         }}
       >
@@ -96,16 +96,16 @@ const PitStopSceneWrapper = () => {
               w="1100px"
               h="auto"
               animation={`${slideInUp} 1s ease-out`}
-              css={{ animationDelay: "0.5s", animationFillMode: "both" }}
+              css={{ animationDelay: '0.5s', animationFillMode: 'both' }}
               transition="all 0.3s ease"
               _hover={{
-                transform: "translate(-50%, -50%) scale(1.05)",
+                transform: 'translate(-50%, -50%) scale(1.05)',
                 filter:
-                  "brightness(1.2) drop-shadow(0 0 30px rgba(255,0,0,0.5))",
-                cursor: "pointer",
-                outline: "none"
+                  'brightness(1.2) drop-shadow(0 0 30px rgba(255,0,0,0.5))',
+                cursor: 'pointer',
+                outline: 'none'
               }}
-              _focus={{ outline: "none" }}
+              _focus={{ outline: 'none' }}
               zIndex={2}
             />
             <Link href="https://www.hudsonrivertrading.com/" isExternal>
@@ -118,15 +118,15 @@ const PitStopSceneWrapper = () => {
                 w="200px"
                 h="auto"
                 animation={`${slideInLeft} 1.2s ease-out`}
-                css={{ animationDelay: "0.2s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.2s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.5) translateX(-15px)",
+                  transform: 'scale(1.5) translateX(-15px)',
                   filter: getGlowFilter(sponsorGlows.hrt),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -143,15 +143,15 @@ const PitStopSceneWrapper = () => {
                 w="300px"
                 h="auto"
                 animation={`${slideInLeft} 1.2s ease-out`}
-                css={{ animationDelay: "0.2s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.2s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.5) translateX(-15px)",
+                  transform: 'scale(1.5) translateX(-15px)',
                   filter: getGlowFilter(sponsorGlows.deere),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -165,15 +165,15 @@ const PitStopSceneWrapper = () => {
                 w="300px"
                 h="auto"
                 animation={`${slideInLeft} 1.6s ease-out`}
-                css={{ animationDelay: "0.4s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.4s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.5) translate(15px, 10px)",
+                  transform: 'scale(1.5) translate(15px, 10px)',
                   filter: getGlowFilter(sponsorGlows.cat),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -187,15 +187,15 @@ const PitStopSceneWrapper = () => {
                 w="370px"
                 h="auto"
                 animation={`${slideInRight} 1.8s ease-out`}
-                css={{ animationDelay: "0.5s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.5s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.5) translate(15px, -15px)",
+                  transform: 'scale(1.5) translate(15px, -15px)',
                   filter: getGlowFilter(sponsorGlows.qual),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -210,15 +210,15 @@ const PitStopSceneWrapper = () => {
                 w="300px"
                 h="auto"
                 animation={`${slideInDown} 2s ease-out`}
-                css={{ animationDelay: "0.6s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.6s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "translateX(-50%) scale(1.5) translateY(-15px)",
+                  transform: 'translateX(-50%) scale(1.5) translateY(-15px)',
                   filter: getGlowFilter(sponsorGlows.aech),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -229,16 +229,16 @@ const PitStopSceneWrapper = () => {
 
       {/* Large Tablet View */}
       <Box
-        display={{ base: "none", lg: "flex", xl: "none" }}
+        display={{ base: 'none', lg: 'flex', xl: 'none' }}
         w="100%"
         // bgColor="#100E0E"
         pos="relative"
         alignItems="center"
         justifyContent="center"
         sx={{
-          minHeight: "400px", // Ensure all sponsors are visible
-          "@media screen and (max-height: 700px)": {
-            minHeight: "130vh" // Shorter tablet screens need more height
+          minHeight: '400px', // Ensure all sponsors are visible
+          '@media screen and (max-height: 700px)': {
+            minHeight: '130vh' // Shorter tablet screens need more height
           }
         }}
       >
@@ -271,16 +271,16 @@ const PitStopSceneWrapper = () => {
               w="1300px"
               h="auto"
               animation={`${slideInUp} 1s ease-out`}
-              css={{ animationDelay: "0.5s", animationFillMode: "both" }}
+              css={{ animationDelay: '0.5s', animationFillMode: 'both' }}
               transition="all 0.3s ease"
               _hover={{
-                transform: "translate(-50%, -50%) scale(1.1)",
+                transform: 'translate(-50%, -50%) scale(1.1)',
                 filter:
-                  "brightness(1.2) drop-shadow(0 0 30px rgba(255,0,0,0.5))",
-                cursor: "pointer",
-                outline: "none"
+                  'brightness(1.2) drop-shadow(0 0 30px rgba(255,0,0,0.5))',
+                cursor: 'pointer',
+                outline: 'none'
               }}
-              _focus={{ outline: "none" }}
+              _focus={{ outline: 'none' }}
               zIndex={2}
             />
             <Link href="https://www.hudsonrivertrading.com/" isExternal>
@@ -293,15 +293,15 @@ const PitStopSceneWrapper = () => {
                 w="220px"
                 h="auto"
                 animation={`${slideInLeft} 1.2s ease-out`}
-                css={{ animationDelay: "0.2s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.2s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.3) translateX(-10px)",
+                  transform: 'scale(1.3) translateX(-10px)',
                   filter: getGlowFilter(sponsorGlows.hrt),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -318,15 +318,15 @@ const PitStopSceneWrapper = () => {
                 w="320px"
                 h="auto"
                 animation={`${slideInLeft} 1.2s ease-out`}
-                css={{ animationDelay: "0.2s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.2s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.3) translateX(-10px)",
+                  transform: 'scale(1.3) translateX(-10px)',
                   filter: getGlowFilter(sponsorGlows.deere),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -340,15 +340,15 @@ const PitStopSceneWrapper = () => {
                 w="320px"
                 h="auto"
                 animation={`${slideInLeft} 1.6s ease-out`}
-                css={{ animationDelay: "0.4s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.4s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.3) translate(12px, 8px)",
+                  transform: 'scale(1.3) translate(12px, 8px)',
                   filter: getGlowFilter(sponsorGlows.cat),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -362,15 +362,15 @@ const PitStopSceneWrapper = () => {
                 w="340px"
                 h="auto"
                 animation={`${slideInRight} 1.8s ease-out`}
-                css={{ animationDelay: "0.5s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.5s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "scale(1.3) translate(12px, -12px)",
+                  transform: 'scale(1.3) translate(12px, -12px)',
                   filter: getGlowFilter(sponsorGlows.qual),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -385,15 +385,15 @@ const PitStopSceneWrapper = () => {
                 w="320px"
                 h="auto"
                 animation={`${slideInDown} 2s ease-out`}
-                css={{ animationDelay: "0.6s", animationFillMode: "both" }}
+                css={{ animationDelay: '0.6s', animationFillMode: 'both' }}
                 transition="all 0.3s ease"
                 _hover={{
-                  transform: "translateX(-50%) scale(1.3) translateY(-12px)",
+                  transform: 'translateX(-50%) scale(1.3) translateY(-12px)',
                   filter: getGlowFilter(sponsorGlows.aech),
-                  cursor: "pointer",
-                  outline: "none"
+                  cursor: 'pointer',
+                  outline: 'none'
                 }}
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 zIndex={3}
               />
             </Link>
@@ -403,7 +403,7 @@ const PitStopSceneWrapper = () => {
       </Box>
 
       <Box
-        display={{ base: "block", lg: "none" }}
+        display={{ base: 'block', lg: 'none' }}
         pos="relative"
         w="100%"
         overflow="hidden"
@@ -416,7 +416,7 @@ const PitStopSceneWrapper = () => {
           inset="0"
           top="46%"
           left="50%"
-          transform={{ base: "translate(-50%, -50%) scale(0.7)" }}
+          transform={{ base: 'translate(-50%, -50%) scale(0.7)' }}
           w="100%"
           h="100%"
           transition="transform 0.5s ease"
@@ -434,7 +434,7 @@ const PitStopSceneWrapper = () => {
             minW="400px"
             h="auto"
             animation={`${slideInUp} 1s ease-out both`}
-            style={{ animationDelay: "0.5s" }}
+            style={{ animationDelay: '0.5s' }}
           />
           <Image
             src="/site/sponsors/car/5.png"
@@ -445,7 +445,7 @@ const PitStopSceneWrapper = () => {
             w="250px"
             h="auto"
             animation={`${slideInRight} 1.8s ease-out both`}
-            style={{ animationDelay: "0.5s" }}
+            style={{ animationDelay: '0.5s' }}
           />
           <Image
             src="/site/sponsors/car/2.png"
@@ -456,7 +456,7 @@ const PitStopSceneWrapper = () => {
             w="250px"
             h="auto"
             animation={`${slideInLeft} 1.2s ease-out both`}
-            style={{ animationDelay: "0.2s" }}
+            style={{ animationDelay: '0.2s' }}
           />
           <Image
             src="/site/sponsors/car/4.png"
@@ -467,7 +467,7 @@ const PitStopSceneWrapper = () => {
             w="200px"
             h="auto"
             animation={`${slideInLeft} 1.6s ease-out both`}
-            style={{ animationDelay: "0.4s" }}
+            style={{ animationDelay: '0.4s' }}
           />
           <Image
             src="/site/sponsors/car/3.png"
@@ -478,7 +478,7 @@ const PitStopSceneWrapper = () => {
             w="200px"
             h="auto"
             animation={`${slideInRight} 1.4s ease-out both`}
-            style={{ animationDelay: "0.3s" }}
+            style={{ animationDelay: '0.3s' }}
           />
           <Image
             src="/site/sponsors/car/6.png"
@@ -490,7 +490,7 @@ const PitStopSceneWrapper = () => {
             w="200px"
             h="auto"
             animation={`${slideInDown} 2s ease-out both`}
-            style={{ animationDelay: "0.6s" }}
+            style={{ animationDelay: '0.6s' }}
           />
           <Image
             src="/site/sponsors/car/6.png"
@@ -502,7 +502,7 @@ const PitStopSceneWrapper = () => {
             w="200px"
             h="auto"
             animation={`${slideInDown} 2s ease-out both`}
-            style={{ animationDelay: "0.6s" }}
+            style={{ animationDelay: '0.6s' }}
           />
         </Box>
 
@@ -521,8 +521,8 @@ const PitStopSceneWrapper = () => {
           flexDir="column"
           alignItems="center"
           // this is the only vertical spacer under the header; it scales sanely
-          pt={{ base: "clamp(48px, 12vh, 70px)" }}
-          pb={{ base: "clamp(48px, 12vh, 70px)" }}
+          pt={{ base: 'clamp(48px, 12vh, 70px)' }}
+          pb={{ base: 'clamp(48px, 12vh, 70px)' }}
         >
           <SimpleGrid columns={1} spacing={10} w="100%">
             <Box
@@ -530,7 +530,7 @@ const PitStopSceneWrapper = () => {
               alignItems="center"
               justifyContent="center"
               animation={`${slideInUp} 1.2s ease-out both`}
-              style={{ animationDelay: "1s" }}
+              style={{ animationDelay: '1s' }}
             >
               <Link href="https://www.caterpillar.com" isExternal>
                 <Image
@@ -541,7 +541,7 @@ const PitStopSceneWrapper = () => {
                   transition="all 0.3s ease"
                   _hover={{
                     filter: getGlowFilter(sponsorGlows.cat),
-                    transform: "scale(1.1)"
+                    transform: 'scale(1.1)'
                   }}
                 />
               </Link>
@@ -552,7 +552,7 @@ const PitStopSceneWrapper = () => {
               alignItems="center"
               justifyContent="center"
               animation={`${slideInUp} 1.2s ease-out both`}
-              style={{ animationDelay: "1s" }}
+              style={{ animationDelay: '1s' }}
             >
               <Link
                 href="https://about.deere.com/en-us/our-company-and-purpose"
@@ -566,7 +566,7 @@ const PitStopSceneWrapper = () => {
                   transition="all 0.3s ease"
                   _hover={{
                     filter: getGlowFilter(sponsorGlows.deere),
-                    transform: "scale(1.1)"
+                    transform: 'scale(1.1)'
                   }}
                 />
               </Link>
@@ -577,7 +577,7 @@ const PitStopSceneWrapper = () => {
               alignItems="center"
               justifyContent="center"
               animation={`${slideInUp} 1.2s ease-out both`}
-              style={{ animationDelay: "1.2s" }}
+              style={{ animationDelay: '1.2s' }}
             >
               <Link href="https://www.hudsonrivertrading.com/" isExternal>
                 <Image
@@ -588,7 +588,7 @@ const PitStopSceneWrapper = () => {
                   transition="all 0.3s ease"
                   _hover={{
                     filter: getGlowFilter(sponsorGlows.hrt),
-                    transform: "scale(1.1)"
+                    transform: 'scale(1.1)'
                   }}
                 />
               </Link>
@@ -599,7 +599,7 @@ const PitStopSceneWrapper = () => {
               alignItems="center"
               justifyContent="center"
               animation={`${slideInUp} 1.2s ease-out both`}
-              style={{ animationDelay: "1.4s" }}
+              style={{ animationDelay: '1.4s' }}
             >
               <Link href="https://www.qualcomm.com/" isExternal>
                 <Image
@@ -610,7 +610,7 @@ const PitStopSceneWrapper = () => {
                   transition="all 0.3s ease"
                   _hover={{
                     filter: getGlowFilter(sponsorGlows.qual),
-                    transform: "scale(1.1)"
+                    transform: 'scale(1.1)'
                   }}
                 />
               </Link>
@@ -621,7 +621,7 @@ const PitStopSceneWrapper = () => {
               alignItems="center"
               justifyContent="center"
               animation={`${slideInUp} 1.2s ease-out both`}
-              style={{ animationDelay: "1.6s" }}
+              style={{ animationDelay: '1.6s' }}
             >
               <Link href="https://www.aechelon.com" isExternal>
                 <Image
@@ -632,7 +632,7 @@ const PitStopSceneWrapper = () => {
                   transition="all 0.3s ease"
                   _hover={{
                     filter: getGlowFilter(sponsorGlows.aech),
-                    transform: "scale(1.1)"
+                    transform: 'scale(1.1)'
                   }}
                 />
               </Link>
@@ -641,7 +641,7 @@ const PitStopSceneWrapper = () => {
         </Box>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default PitStopSceneWrapper;
+export default PitStopSceneWrapper

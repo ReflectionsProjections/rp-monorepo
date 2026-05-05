@@ -1,39 +1,39 @@
-import { Box, Text, useToast } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { api, path } from "@app";
+import { Box, Text, useToast } from '@chakra-ui/react'
+import { useEffect } from 'react'
+import { api, path } from '@app'
 
 export function ResumeAllPDF() {
-  const toast = useToast();
+  const toast = useToast()
 
   const showToast = (message: string) => {
     toast({
       title: message,
-      status: "error",
+      status: 'error',
       duration: 9000,
       isClosable: true
-    });
-  };
+    })
+  }
 
   const openResume = () => {
     api
-      .get(path("/s3/download/user/:userId", { userId: "" }))
+      .get(path('/s3/download/user/:userId', { userId: '' }))
       .then(function (response) {
-        window.location.replace(response.data.url);
+        window.location.replace(response.data.url)
       })
       .catch(function () {
-        showToast("Failed to open resume. Please try again later.");
-      });
-  };
+        showToast('Failed to open resume. Please try again later.')
+      })
+  }
 
   useEffect(() => {
-    openResume();
-  }, []);
+    openResume()
+  }, [])
 
   return (
     <Box>
       <Text>Loading All PDFs</Text>
     </Box>
-  );
+  )
 }
 
-export default ResumeAllPDF;
+export default ResumeAllPDF

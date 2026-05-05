@@ -1,4 +1,4 @@
-import { Config } from "@app/sections/admin/config";
+import { Config } from '@app/sections/admin/config'
 import {
   ModalHeader,
   ModalCloseButton,
@@ -11,24 +11,24 @@ import {
   Select,
   ModalFooter,
   Button
-} from "@chakra-ui/react";
-import type { FormikHelpers } from "formik";
-import { Form, Formik } from "formik";
-import type { MeetingFormValues } from "./MeetingSchema";
-import { MeetingFormSchema } from "./MeetingSchema";
-import React from "react";
-import moment from "moment-timezone";
+} from '@chakra-ui/react'
+import type { FormikHelpers } from 'formik'
+import { Form, Formik } from 'formik'
+import type { MeetingFormValues } from './MeetingSchema'
+import { MeetingFormSchema } from './MeetingSchema'
+import React from 'react'
+import moment from 'moment-timezone'
 
 type MeetingFormProps = {
   onSubmit: (
     values: MeetingFormValues,
     formikHelpers: FormikHelpers<MeetingFormValues>
-  ) => Promise<unknown>;
-  onCancel: () => void;
-  initialValues: MeetingFormValues;
-  title: string;
-  submitText: string;
-};
+  ) => Promise<unknown>
+  onCancel: () => void
+  initialValues: MeetingFormValues
+  title: string
+  submitText: string
+}
 
 const MeetingForm: React.FC<MeetingFormProps> = ({
   onSubmit,
@@ -41,9 +41,9 @@ const MeetingForm: React.FC<MeetingFormProps> = ({
     values: MeetingFormValues,
     formikHelpers: FormikHelpers<MeetingFormValues>
   ) => {
-    values.startTime = moment(values.startTime).format();
-    return onSubmit(values, formikHelpers);
-  };
+    values.startTime = moment(values.startTime).format()
+    return onSubmit(values, formikHelpers)
+  }
 
   return (
     <Formik<MeetingFormValues>
@@ -85,8 +85,8 @@ const MeetingForm: React.FC<MeetingFormProps> = ({
                   type="datetime-local"
                   name="startTime"
                   value={moment
-                    .tz(values.startTime, "America/Chicago")
-                    .format("yyyy-MM-DDTHH:mm")}
+                    .tz(values.startTime, 'America/Chicago')
+                    .format('yyyy-MM-DDTHH:mm')}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
@@ -108,7 +108,7 @@ const MeetingForm: React.FC<MeetingFormProps> = ({
         </Form>
       )}
     </Formik>
-  );
-};
+  )
+}
 
-export default MeetingForm;
+export default MeetingForm

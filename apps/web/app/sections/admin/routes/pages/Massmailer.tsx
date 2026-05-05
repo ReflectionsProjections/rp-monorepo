@@ -1,10 +1,10 @@
-import type { EmailFormValues } from "@app/sections/admin/components/EmailMaker/EmailSchema";
+import type { EmailFormValues } from '@app/sections/admin/components/EmailMaker/EmailSchema'
 import {
   EmailFormSchema,
   EmailFormInitialValues
-} from "@app/sections/admin/components/EmailMaker/EmailSchema";
-import Section from "@app/sections/admin/components/Section";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+} from '@app/sections/admin/components/EmailMaker/EmailSchema'
+import Section from '@app/sections/admin/components/Section'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 import {
   Button,
   Flex,
@@ -23,132 +23,132 @@ import {
   Image,
   Box,
   Tooltip
-} from "@chakra-ui/react";
-import { api, path } from "@app";
-import type { FormikHelpers } from "formik";
-import { Formik } from "formik";
-import { useEffect, useRef, useState } from "react";
-import { marked } from "marked";
+} from '@chakra-ui/react'
+import { api, path } from '@app'
+import type { FormikHelpers } from 'formik'
+import { Formik } from 'formik'
+import { useEffect, useRef, useState } from 'react'
+import { marked } from 'marked'
 import {
   rpMainTemplate,
   rpEmptyTemplate,
   rpNoneTemplate
-} from "@app/sections/admin/components/EmailMaker/EmailTemplate";
-import DOMPurify from "dompurify";
+} from '@app/sections/admin/components/EmailMaker/EmailTemplate'
+import DOMPurify from 'dompurify'
 
 marked.use({
   renderer: {
     heading({ tokens, depth }) {
-      const text = this.parser.parseInline(tokens);
+      const text = this.parser.parseInline(tokens)
 
       if (depth == 2) {
         return `
             <h2 class="section-title">
               ${text}
-            </h2>`;
+            </h2>`
       }
 
       return `
             <h${depth}>
               ${text}
-            </h${depth}>`;
+            </h${depth}>`
       // default
     }
   }
-});
+})
 
 function generateHtmlEmail(mdContent: string, templateName: string) {
   const emailTemplate = rpEmailTemplates.find(
     (template) => template.key === templateName
-  );
+  )
   const generateTemplate = emailTemplate
     ? emailTemplate.templateFn
-    : rpNoneTemplate;
-  const markdownHtml = marked(mdContent, { async: false });
-  const sanitizedHtml = DOMPurify.sanitize(markdownHtml);
-  const compiledHtmlEmail = generateTemplate(sanitizedHtml);
-  return compiledHtmlEmail;
+    : rpNoneTemplate
+  const markdownHtml = marked(mdContent, { async: false })
+  const sanitizedHtml = DOMPurify.sanitize(markdownHtml)
+  const compiledHtmlEmail = generateTemplate(sanitizedHtml)
+  return compiledHtmlEmail
 }
 
-const NOTIF_TITLE_PREVIEW_LENGTH: number = 50;
-const NOTIF_PREVIEW_CUTOFF_LENGTH: number = 110;
-const NOTIF_MAX_LENGTH: number = 220;
+const NOTIF_TITLE_PREVIEW_LENGTH: number = 50
+const NOTIF_PREVIEW_CUTOFF_LENGTH: number = 110
+const NOTIF_MAX_LENGTH: number = 220
 
 const rpEmailTemplates = [
   {
-    key: "main",
-    displayName: "R|P 2025 Main Template",
+    key: 'main',
+    displayName: 'R|P 2025 Main Template',
     templateFn: rpMainTemplate
   },
   {
-    key: "empty",
-    displayName: "R|P 2025 Empty Template",
+    key: 'empty',
+    displayName: 'R|P 2025 Empty Template',
     templateFn: rpEmptyTemplate
   },
-  { key: "none", displayName: "Unformatted", templateFn: rpNoneTemplate }
-];
+  { key: 'none', displayName: 'Unformatted', templateFn: rpNoneTemplate }
+]
 
 function HtmlPreviewIframe({ markdownHtml }: { markdownHtml: string }) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
-    const iframeDoc = iframeRef?.current?.contentDocument;
-    if (!iframeDoc) return;
+    const iframeDoc = iframeRef?.current?.contentDocument
+    if (!iframeDoc) return
 
-    iframeDoc.body.innerHTML = markdownHtml;
-  }, [markdownHtml]);
+    iframeDoc.body.innerHTML = markdownHtml
+  }, [markdownHtml])
 
   return (
     <iframe
       ref={iframeRef}
       style={{
-        width: "100%",
-        height: "100%",
-        overflowY: "visible"
+        width: '100%',
+        height: '100%',
+        overflowY: 'visible'
       }}
       title="Email Preview"
     />
-  );
+  )
 }
 
 function EmailMaker() {
-  const toast = useToast();
-  const mirrorStyle = useMirrorStyles();
+  const toast = useToast()
+  const mirrorStyle = useMirrorStyles()
 
-  const [emailGroups, setEmailGroups] = useState<string[]>([]);
-  const [notifGroups, setNotifGroups] = useState<string[]>([]);
+  const [emailGroups, setEmailGroups] = useState<string[]>([])
+  const [notifGroups, setNotifGroups] = useState<string[]>([])
   const [showExtendedNotifPreview, setShowExtendedEmailPreview] =
-    useState<boolean>(false);
+    useState<boolean>(false)
 
   useEffect(() => {
     api
-      .get("/subscription/lists")
+      .get('/subscription/lists')
       .then((response) => setEmailGroups(response.data))
       .catch(() => {
         toast({
-          title: "Failed to load mailing lists!",
-          description: "Try reloading, signing in again, or checking the api",
-          status: "error",
+          title: 'Failed to load mailing lists!',
+          description: 'Try reloading, signing in again, or checking the api',
+          status: 'error',
           duration: 4000,
           isClosable: true
-        });
-      });
-  }, []);
+        })
+      })
+  }, [])
 
   useEffect(() => {
     api
-      .get("/notifications/topics")
+      .get('/notifications/topics')
       .then((response) => setNotifGroups(response.data?.topics))
       .catch(() => {
         toast({
-          title: "Failed to load notification topics!",
-          description: "Try reloading, signing in again, or checking the api",
-          status: "error",
+          title: 'Failed to load notification topics!',
+          description: 'Try reloading, signing in again, or checking the api',
+          status: 'error',
           duration: 4000,
           isClosable: true
-        });
-      });
-  }, []);
+        })
+      })
+  }, [])
 
   const sendMassmail = (
     values: EmailFormValues,
@@ -156,77 +156,77 @@ function EmailMaker() {
   ) => {
     if (
       !window.confirm(
-        `Are you sure you want to send this ${values.isMobileNotification ? "notification" : "email"}?`
+        `Are you sure you want to send this ${values.isMobileNotification ? 'notification' : 'email'}?`
       )
     ) {
-      helpers.setSubmitting(false);
-      return;
+      helpers.setSubmitting(false)
+      return
     }
     if (values.isMobileNotification) {
       const notifData = {
         title: values.subject,
         body: values.body
-      };
-      const topic = values.recipient;
+      }
+      const topic = values.recipient
 
       const request = api
-        .post(path("/notifications/topics/:topic", { topic }), notifData)
+        .post(path('/notifications/topics/:topic', { topic }), notifData)
         .then(async () => {
-          helpers.resetForm();
-          await helpers.setFieldValue("isMobileNotification", true);
+          helpers.resetForm()
+          await helpers.setFieldValue('isMobileNotification', true)
         })
-        .finally(() => helpers.setSubmitting(false));
+        .finally(() => helpers.setSubmitting(false))
 
       toast.promise(request, {
         success: { title: `Notification sent to topic "${topic}"!` },
-        error: { title: "Failed to send notification. Try again soon!" },
-        loading: { title: "Requesting notification..." }
-      });
-      return;
+        error: { title: 'Failed to send notification. Try again soon!' },
+        loading: { title: 'Requesting notification...' }
+      })
+      return
     }
     if (values.isIndividualEmail) {
       const emailData = {
         email: values.recipient,
         subject: values.subject,
         htmlBody: generateHtmlEmail(values.body, values.template)
-      };
+      }
 
       const request = api
-        .post("/subscription/send-email/single", emailData)
+        .post('/subscription/send-email/single', emailData)
         .then(async () => {
-          helpers.resetForm();
-          await helpers.setFieldValue("isMobileNotification", false);
+          helpers.resetForm()
+          await helpers.setFieldValue('isMobileNotification', false)
         })
-        .finally(() => helpers.setSubmitting(false));
+        .finally(() => helpers.setSubmitting(false))
 
       toast.promise(request, {
         success: { title: `Email sent to ${values.recipient}!` },
-        error: { title: "Failed to send email. Try again soon!" },
-        loading: { title: "Requesting email..." }
-      });
-      return;
+        error: { title: 'Failed to send email. Try again soon!' },
+        loading: { title: 'Requesting email...' }
+      })
+      return
     }
     const emailData = {
       mailingList: values.recipient,
       subject: values.subject,
       htmlBody: generateHtmlEmail(values.body, values.template)
-    };
+    }
 
     const request = api
-      .post("/subscription/send-email", emailData)
+      .post('/subscription/send-email', emailData)
       .then(async () => {
-        helpers.resetForm();
-        await helpers.setFieldValue("isMobileNotification", false);
+        helpers.resetForm()
+        await helpers.setFieldValue('isMobileNotification', false)
       })
-      .finally(() => helpers.setSubmitting(false));
+      .finally(() => helpers.setSubmitting(false))
 
     toast.promise(request, {
       success: { title: `Email sent to ${values.recipient}!` },
-      error: { title: "Failed to send email. Try again soon!" },
-      loading: { title: "Requesting email..." }
-    });
-    return;
-  };
+      error: { title: 'Failed to send email. Try again soon!' },
+      loading: { title: 'Requesting email...' }
+    })
+    return
+  }
   // note -- the markdown rendering for the preview takes place inside
   // the <Formik /> component to interact with its values
 
@@ -246,21 +246,21 @@ function EmailMaker() {
         errors,
         touched
       }) => {
-        const markdownHtml = generateHtmlEmail(values.body, values.template);
+        const markdownHtml = generateHtmlEmail(values.body, values.template)
         // const { compiledHtmlEmail, compiledHtmlErrors } = generateHtmlEmail(values.body);
         const resetRecipient = () => {
-          void setFieldValue("recipient", "").then(
-            void setFieldTouched("recipient", false)
-          );
-        };
+          void setFieldValue('recipient', '').then(
+            void setFieldTouched('recipient', false)
+          )
+        }
 
         return (
           <>
             <Flex justifyContent="center" alignItems="center">
               <Heading size="lg">
                 {values.isMobileNotification
-                  ? "Send a Notification"
-                  : "Send an Email"}
+                  ? 'Send a Notification'
+                  : 'Send an Email'}
               </Heading>
             </Flex>
             <br />
@@ -269,7 +269,7 @@ function EmailMaker() {
                 <CardBody>
                   <form
                     onSubmit={handleSubmit}
-                    style={{ height: "calc(100% - 40px)" }}
+                    style={{ height: 'calc(100% - 40px)' }}
                   >
                     {/* Email "to: " bar header */}
                     <FormControl
@@ -327,16 +327,16 @@ function EmailMaker() {
                             type="button"
                             name="isIndividualEmail"
                             onClick={() => {
-                              resetRecipient();
+                              resetRecipient()
                               void setFieldValue(
-                                "isIndividualEmail",
+                                'isIndividualEmail',
                                 !values.isIndividualEmail
-                              );
+                              )
                             }}
                           >
                             {values.isIndividualEmail
-                              ? "Send to mailing list"
-                              : "Send to individual"}
+                              ? 'Send to mailing list'
+                              : 'Send to individual'}
                           </Button>
                         )}
                       </Flex>
@@ -350,15 +350,15 @@ function EmailMaker() {
                       pt={8}
                       flexWrap="wrap"
                       justifyContent="space-between"
-                      direction={{ base: "column", xl: "row" }}
+                      direction={{ base: 'column', xl: 'row' }}
                       gap={4}
                       flex={1}
                     >
                       {/* Left Side: Text Input */}
                       <Flex
                         direction="column"
-                        w={{ base: "100%", xl: "49%" }}
-                        h={{ base: "fit-content", xl: "100%" }}
+                        w={{ base: '100%', xl: '49%' }}
+                        h={{ base: 'fit-content', xl: '100%' }}
                         gap={4}
                         alignItems="center"
                       >
@@ -375,8 +375,8 @@ function EmailMaker() {
                             name="isMobileNotification"
                             isChecked={values.isMobileNotification}
                             onChange={(e) => {
-                              resetRecipient();
-                              handleChange(e);
+                              resetRecipient()
+                              handleChange(e)
                             }}
                           />
                           <FormLabel mb={0} marginInlineStart={3}>
@@ -391,7 +391,7 @@ function EmailMaker() {
                           <Input
                             name="subject"
                             placeholder={
-                              values.isMobileNotification ? "Title" : "Subject"
+                              values.isMobileNotification ? 'Title' : 'Subject'
                             }
                             value={values.subject}
                             onChange={handleChange}
@@ -409,8 +409,8 @@ function EmailMaker() {
                             name="body"
                             placeholder={
                               values.isMobileNotification
-                                ? "Notification body"
-                                : "Message body (markdown)"
+                                ? 'Notification body'
+                                : 'Message body (markdown)'
                             }
                             value={values.body}
                             onChange={handleChange}
@@ -448,17 +448,17 @@ function EmailMaker() {
                           w="fit-content"
                           flexShrink={0}
                         >
-                          Send{" "}
+                          Send{' '}
                           {values.isMobileNotification
-                            ? "Notification"
-                            : "Email"}
+                            ? 'Notification'
+                            : 'Email'}
                         </Button>
                       </Flex>
 
                       {/* Right Side: Preview */}
                       <Flex
-                        w={{ base: "100%", xl: "49%" }}
-                        h={{ base: "fit-content", xl: "100%" }}
+                        w={{ base: '100%', xl: '49%' }}
+                        h={{ base: 'fit-content', xl: '100%' }}
                         direction="column"
                         gap={2}
                         alignItems="start"
@@ -521,9 +521,9 @@ function EmailMaker() {
                                           ? values.subject.slice(
                                               0,
                                               NOTIF_TITLE_PREVIEW_LENGTH
-                                            ) + "..."
+                                            ) + '...'
                                           : values.subject
-                                        : "Notification title"}
+                                        : 'Notification title'}
                                     </Text>
                                     <Text>
                                       {values.body.length > 0
@@ -532,9 +532,9 @@ function EmailMaker() {
                                           ? values.body.slice(
                                               0,
                                               NOTIF_PREVIEW_CUTOFF_LENGTH
-                                            ) + "..."
+                                            ) + '...'
                                           : values.body
-                                        : "Share some info!"}
+                                        : 'Share some info!'}
                                     </Text>
                                     {values.body.length >
                                     NOTIF_PREVIEW_CUTOFF_LENGTH ? (
@@ -582,10 +582,10 @@ function EmailMaker() {
               </Card>
             </Flex>
           </>
-        );
+        )
       }}
     </Formik>
-  );
+  )
 }
 
-export default EmailMaker;
+export default EmailMaker

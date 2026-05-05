@@ -1,38 +1,41 @@
 // screens/PointsScreen.tsx
-import React, { useEffect, useState } from 'react';
-import { View, Text, Dimensions } from 'react-native';
-import Background from '../../assets/pointshop/point_background.svg';
-import { PointsGauge } from '@/components/pointshop/PointsGuage';
-import { QuestionMarker } from '@/components/pointshop/QuestionMarker';
-import { api } from '@/api/api';
+import React, { useEffect, useState } from 'react'
+import { View, Text, Dimensions } from 'react-native'
+import Background from '../../assets/pointshop/point_background.svg'
+import { PointsGauge } from '@/components/pointshop/PointsGuage'
+import { QuestionMarker } from '@/components/pointshop/QuestionMarker'
+import { api } from '@/api/api'
 
-const { width, height } = Dimensions.get('window');
-const SPEEDO_WIDTH = width * 0.7;
+const { width, height } = Dimensions.get('window')
+const SPEEDO_WIDTH = width * 0.7
 
 export default function PointsScreen() {
-  const [points, setPoints] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [errorString, setErrorString] = useState<string | null>(null);
+  const [points, setPoints] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [errorString, setErrorString] = useState<string | null>(null)
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout>
 
     const fetchPoints = async () => {
-      const start = Date.now();
+      const start = Date.now()
       try {
-        const response = await api.get('/attendee/points');
-        setPoints(response.data.points || 0);
+        const response = await api.get('/attendee/points')
+        setPoints(response.data.points || 0)
       } catch (err) {
-        setError('Failed to fetch points');
-        console.error('Failed to fetch points:', err);
+        setError('Failed to fetch points')
+        console.error('Failed to fetch points:', err)
       } finally {
-        const elapsed = Date.now() - start;
-        const remaining = 500 - elapsed;
-        timeoutId = setTimeout(() => setLoading(false), remaining > 0 ? remaining : 0);
+        const elapsed = Date.now() - start
+        const remaining = 500 - elapsed
+        timeoutId = setTimeout(
+          () => setLoading(false),
+          remaining > 0 ? remaining : 0
+        )
       }
-    };
-    fetchPoints();
-  }, []);
+    }
+    fetchPoints()
+  }, [])
 
   return (
     <View className="flex-1 bg-rpRed relative">
@@ -68,7 +71,7 @@ export default function PointsScreen() {
         style={{
           top: height * 0.63,
           left: width * 0.64,
-          width: width * 0.33,
+          width: width * 0.33
         }}
       >
         {error
@@ -76,5 +79,5 @@ export default function PointsScreen() {
           : 'Attend events to earn points and unlock prizes!'}
       </Text>
     </View>
-  );
+  )
 }

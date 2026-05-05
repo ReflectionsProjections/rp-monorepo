@@ -1,4 +1,4 @@
-import { Config } from "@app/sections/admin/config";
+import { Config } from '@app/sections/admin/config'
 import {
   ModalHeader,
   ModalCloseButton,
@@ -25,27 +25,27 @@ import {
   WrapItem,
   Box,
   Text
-} from "@chakra-ui/react";
-import type { FormikHelpers } from "formik";
-import { Form, Formik } from "formik";
-import type { EventFormValues } from "./EventSchema";
-import { EventFormSchema } from "./EventSchema";
-import React from "react";
-import moment from "moment-timezone";
+} from '@chakra-ui/react'
+import type { FormikHelpers } from 'formik'
+import { Form, Formik } from 'formik'
+import type { EventFormValues } from './EventSchema'
+import { EventFormSchema } from './EventSchema'
+import React from 'react'
+import moment from 'moment-timezone'
 
 // Set timezone to Chicago (Central Time)
-moment.tz.setDefault("America/Chicago");
+moment.tz.setDefault('America/Chicago')
 
 type EventFormProps = {
   onSubmit: (
     values: EventFormValues,
     formikHelpers: FormikHelpers<EventFormValues>
-  ) => Promise<unknown>;
-  onCancel: () => void;
-  initialValues: EventFormValues;
-  title: string;
-  submitText: string;
-};
+  ) => Promise<unknown>
+  onCancel: () => void
+  initialValues: EventFormValues
+  title: string
+  submitText: string
+}
 
 const EventForm: React.FC<EventFormProps> = ({
   onSubmit,
@@ -59,10 +59,10 @@ const EventForm: React.FC<EventFormProps> = ({
     formikHelpers: FormikHelpers<EventFormValues>
   ) => {
     // Convert to Chicago timezone when submitting
-    values.startTime = moment.tz(values.startTime, "America/Chicago").format();
-    values.endTime = moment.tz(values.endTime, "America/Chicago").format();
-    return onSubmit(values, formikHelpers);
-  };
+    values.startTime = moment.tz(values.startTime, 'America/Chicago').format()
+    values.endTime = moment.tz(values.endTime, 'America/Chicago').format()
+    return onSubmit(values, formikHelpers)
+  }
 
   return (
     <Formik<EventFormValues>
@@ -114,9 +114,9 @@ const EventForm: React.FC<EventFormProps> = ({
                 <FormLabel>Virtual or In-Person</FormLabel>
                 <Select
                   name="isVirtual"
-                  value={values.isVirtual ? "true" : "false"}
+                  value={values.isVirtual ? 'true' : 'false'}
                   onChange={(e) =>
-                    void setFieldValue("isVirtual", e.target.value === "true")
+                    void setFieldValue('isVirtual', e.target.value === 'true')
                   }
                 >
                   <option value="true">Virtual</option>
@@ -130,8 +130,8 @@ const EventForm: React.FC<EventFormProps> = ({
                   type="datetime-local"
                   name="startTime"
                   value={moment
-                    .tz(values.startTime, "America/Chicago")
-                    .format("yyyy-MM-DDTHH:mm")}
+                    .tz(values.startTime, 'America/Chicago')
+                    .format('yyyy-MM-DDTHH:mm')}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
@@ -144,8 +144,8 @@ const EventForm: React.FC<EventFormProps> = ({
                   type="datetime-local"
                   name="endTime"
                   value={moment
-                    .tz(values.endTime, "America/Chicago")
-                    .format("yyyy-MM-DDTHH:mm")}
+                    .tz(values.endTime, 'America/Chicago')
+                    .format('yyyy-MM-DDTHH:mm')}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
@@ -157,7 +157,7 @@ const EventForm: React.FC<EventFormProps> = ({
                 <NumberInput
                   min={0}
                   value={values.points}
-                  onChange={(_, val) => void setFieldValue("points", val)}
+                  onChange={(_, val) => void setFieldValue('points', val)}
                 >
                   <NumberInputField name="points" />
                   <NumberInputStepper>
@@ -185,7 +185,7 @@ const EventForm: React.FC<EventFormProps> = ({
                 <FormLabel>Image URL</FormLabel>
                 <Input
                   name="imageUrl"
-                  value={values.imageUrl ?? ""}
+                  value={values.imageUrl ?? ''}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
@@ -225,8 +225,8 @@ const EventForm: React.FC<EventFormProps> = ({
                                 onClick={() => {
                                   const newTags = (values.tags || []).filter(
                                     (_, i) => i !== index
-                                  );
-                                  void setFieldValue("tags", newTags);
+                                  )
+                                  void setFieldValue('tags', newTags)
                                 }}
                               />
                             </Tag>
@@ -243,17 +243,17 @@ const EventForm: React.FC<EventFormProps> = ({
                     </Text>
                     <Wrap>
                       {[
-                        "Career Readiness",
-                        "AI",
-                        "Research",
-                        "Interactive Events",
-                        "HCI",
-                        "Ethics",
-                        "Art/Media",
-                        "Autonomous Vehicles",
-                        "Networking",
-                        "Company Talk",
-                        "Cybersecurity"
+                        'Career Readiness',
+                        'AI',
+                        'Research',
+                        'Interactive Events',
+                        'HCI',
+                        'Ethics',
+                        'Art/Media',
+                        'Autonomous Vehicles',
+                        'Networking',
+                        'Company Talk',
+                        'Cybersecurity'
                       ]
                         .filter(
                           (suggestedTag) =>
@@ -266,12 +266,12 @@ const EventForm: React.FC<EventFormProps> = ({
                               colorScheme="gray"
                               borderRadius="full"
                               cursor="pointer"
-                              _hover={{ bg: "gray.200" }}
+                              _hover={{ bg: 'gray.200' }}
                               onClick={() => {
-                                void setFieldValue("tags", [
+                                void setFieldValue('tags', [
                                   ...(values.tags || []),
                                   suggestedTag
-                                ]);
+                                ])
                               }}
                             >
                               <TagLabel>+ {suggestedTag}</TagLabel>
@@ -287,7 +287,7 @@ const EventForm: React.FC<EventFormProps> = ({
                 <Checkbox
                   isChecked={values.isVisible}
                   onChange={(e) =>
-                    void setFieldValue("isVisible", e.target.checked)
+                    void setFieldValue('isVisible', e.target.checked)
                   }
                 >
                   Is Visible
@@ -309,7 +309,7 @@ const EventForm: React.FC<EventFormProps> = ({
         </Form>
       )}
     </Formik>
-  );
-};
+  )
+}
 
-export default EventForm;
+export default EventForm

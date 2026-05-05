@@ -1,8 +1,8 @@
-import { Box, VStack, Text, Button, Heading, Image } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Box, VStack, Text, Button, Heading, Image } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 
 export default function NotFound() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <Box
@@ -51,17 +51,17 @@ export default function NotFound() {
           </Heading>
           <Text fontSize="lg" color="#D1D5DB" textAlign="center" opacity="0.9">
             Sorry, this page didn't make it to the finish line. It might have
-            been moved, deleted, or you took a wrong turn on the URL track.{" "}
+            been moved, deleted, or you took a wrong turn on the URL track.{' '}
           </Text>
           <Text fontSize="lg" color="#D1D5DB" textAlign="center" opacity="0.9">
-            Don't worry—no penalty for cutting the corner this time.{" "}
+            Don't worry—no penalty for cutting the corner this time.{' '}
           </Text>
         </VStack>
 
         <VStack spacing={4}>
           <Button
             onClick={() => {
-              void navigate("/");
+              void navigate('/')
             }}
             bg="#f5bc43"
             color="black"
@@ -72,13 +72,13 @@ export default function NotFound() {
             px={8}
             py={6}
             _hover={{
-              bg: "#EAA001",
-              transform: "translateY(-2px)",
-              boxShadow: "0 8px 25px rgba(245, 188, 67, 0.3)"
+              bg: '#EAA001',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 25px rgba(245, 188, 67, 0.3)'
             }}
             _active={{
-              bg: "#D4900A",
-              transform: "translateY(0)"
+              bg: '#D4900A',
+              transform: 'translateY(0)'
             }}
             transition="all 0.2s"
             boxShadow="0 4px 15px rgba(245, 188, 67, 0.2)"
@@ -88,5 +88,5 @@ export default function NotFound() {
         </VStack>
       </VStack>
     </Box>
-  );
+  )
 }

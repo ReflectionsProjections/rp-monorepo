@@ -1,56 +1,56 @@
-import MultiSelectDropdown from "@app/sections/sponsor/components/MultiSelectDropdown";
+import MultiSelectDropdown from '@app/sections/sponsor/components/MultiSelectDropdown'
 import {
   Button,
   Popover,
   PopoverContent,
   PopoverTrigger,
   VStack
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 import {
   educationLevels,
   graduationDates,
   majors,
   minors,
   employmentOpportunities
-} from "@app";
-import { FaFilter } from "react-icons/fa";
+} from '@app'
+import { FaFilter } from 'react-icons/fa'
 
 export type FilterModalProps = {
-  isMediumScreen: boolean;
+  isMediumScreen: boolean
   filtering: {
-    selectedMajors: string[];
-    majorToMajorWithCount: Record<string, string>;
-    selectedMinors: string[];
-    minorToMinorWithCount: Record<string, string>;
-    selectedDegrees: string[];
-    degreesWithCounts: Record<string, string>;
-    selectedYears: string[];
-    yearsWithCounts: Record<string, string>;
-    selectedJobInterests: string[];
-    jobInterestsWithCounts: Record<string, string>;
-    setSelectedMajors: (majors: string[]) => void;
-    setSelectedMinors: (minors: string[]) => void;
-    setSelectedDegrees: (degrees: string[]) => void;
-    setSelectedYears: (years: string[]) => void;
-    setSelectedJobInterests: (jobInterests: string[]) => void;
-  };
-};
+    selectedMajors: string[]
+    majorToMajorWithCount: Record<string, string>
+    selectedMinors: string[]
+    minorToMinorWithCount: Record<string, string>
+    selectedDegrees: string[]
+    degreesWithCounts: Record<string, string>
+    selectedYears: string[]
+    yearsWithCounts: Record<string, string>
+    selectedJobInterests: string[]
+    jobInterestsWithCounts: Record<string, string>
+    setSelectedMajors: (majors: string[]) => void
+    setSelectedMinors: (minors: string[]) => void
+    setSelectedDegrees: (degrees: string[]) => void
+    setSelectedYears: (years: string[]) => void
+    setSelectedJobInterests: (jobInterests: string[]) => void
+  }
+}
 
 export function FilterModal(props: FilterModalProps) {
   const handleClear = () => {
-    props.filtering.setSelectedMajors([]);
-    props.filtering.setSelectedMinors([]);
-    props.filtering.setSelectedDegrees([]);
-    props.filtering.setSelectedYears([]);
-    props.filtering.setSelectedJobInterests([]);
-  };
+    props.filtering.setSelectedMajors([])
+    props.filtering.setSelectedMinors([])
+    props.filtering.setSelectedDegrees([])
+    props.filtering.setSelectedYears([])
+    props.filtering.setSelectedJobInterests([])
+  }
 
   const anySelectedFilters =
     props.filtering.selectedMajors.length > 0 ||
     props.filtering.selectedMinors.length > 0 ||
     props.filtering.selectedDegrees.length > 0 ||
     props.filtering.selectedYears.length > 0 ||
-    props.filtering.selectedJobInterests.length > 0;
+    props.filtering.selectedJobInterests.length > 0
   return (
     <Popover>
       <PopoverTrigger>
@@ -64,7 +64,7 @@ export function FilterModal(props: FilterModalProps) {
           variant="solid"
         >
           {props.isMediumScreen ? (
-            "Filter"
+            'Filter'
           ) : (
             <FaFilter opacity={anySelectedFilters ? 1 : 0.5} />
           )}
@@ -134,5 +134,5 @@ export function FilterModal(props: FilterModalProps) {
         </VStack>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

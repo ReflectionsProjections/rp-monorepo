@@ -1,11 +1,11 @@
-import { Box, Image, Link } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import React from "react";
+import { Box, Image, Link } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import React from 'react'
 
 interface HoverIconLinkProps {
-  link: string;
-  src: string;
-  title?: string;
+  link: string
+  src: string
+  title?: string
 }
 
 export const HoverIconLink: React.FC<HoverIconLinkProps> = ({
@@ -34,7 +34,7 @@ export const HoverIconLink: React.FC<HoverIconLinkProps> = ({
       position="relative"
       zIndex="1"
       sx={{
-        perspective: "600px"
+        perspective: '600px'
       }}
     >
       <Link href={link} isExternal title={title} pos="absolute" zIndex="3">
@@ -59,45 +59,45 @@ export const HoverIconLink: React.FC<HoverIconLinkProps> = ({
           }}
           transition={{
             opacity: { duration: 0.5 },
-            scale: { type: "spring", stiffness: 100, damping: 5 },
-            rotateZ: { duration: 8, repeat: Infinity, ease: "linear" }
+            scale: { type: 'spring', stiffness: 100, damping: 5 },
+            rotateZ: { duration: 8, repeat: Infinity, ease: 'linear' }
           }}
           // onMouseEnter={() => setIsHovered(true)}
           // onMouseLeave={() => setIsHovered(false)}
           style={{
-            width: "60px",
-            height: "60px",
-            zIndex: "2",
-            position: "absolute",
-            top: "0px",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            transformStyle: "preserve-3d"
+            width: '60px',
+            height: '60px',
+            zIndex: '2',
+            position: 'absolute',
+            top: '0px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+            transformStyle: 'preserve-3d'
           }}
         >
           <Image
             src={src}
             style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "200px",
-              position: "absolute",
-              zIndex: "1"
+              width: '100%',
+              height: '100%',
+              borderRadius: '200px',
+              position: 'absolute',
+              zIndex: '1'
             }}
           />
           <Box
             style={{
-              width: "92%",
-              height: "92%",
-              borderRadius: "200px",
-              background: "white",
-              position: "absolute",
-              zIndex: "3"
+              width: '92%',
+              height: '92%',
+              borderRadius: '200px',
+              background: 'white',
+              position: 'absolute',
+              zIndex: '3'
             }}
           />
         </motion.div>
       </Link>
     </Box>
-  );
-};
+  )
+}

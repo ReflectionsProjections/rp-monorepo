@@ -1,34 +1,34 @@
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
-import type { Event } from "@app";
-import { dayColors } from "@app";
-import { useMemo } from "react";
+import { Box, Flex, Text, VStack } from '@chakra-ui/react'
+import type { Event } from '@app'
+import { dayColors } from '@app'
+import { useMemo } from 'react'
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
 
-const MotionFlex = motion(Flex);
+const MotionFlex = motion(Flex)
 
 export default function ScheduleDaySelector({
   selectedDay,
   eventsByDay,
   onSelectDay
 }: {
-  selectedDay: string | null;
-  eventsByDay: { [key: string]: Event[] };
-  onSelectDay: (date: string) => void;
+  selectedDay: string | null
+  eventsByDay: { [key: string]: Event[] }
+  onSelectDay: (date: string) => void
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
     <Flex
       ref={ref}
       gap={{ base: 2, md: 5 }}
-      maxWidth={{ md: "700px", lg: "1000px" }}
+      maxWidth={{ md: '700px', lg: '1000px' }}
       mx="auto"
       px={{ base: 3, md: undefined }}
       pb={{ base: 4, lg: 0 }}
-      justifyContent={{ base: "flex-start", sm: "center" }}
+      justifyContent={{ base: 'flex-start', sm: 'center' }}
       overflowX="auto"
       zIndex={10}
     >
@@ -42,7 +42,7 @@ export default function ScheduleDaySelector({
           transition={{
             duration: 0.5,
             delay: 0.2 * index, // stagger by index
-            ease: "easeOut"
+            ease: 'easeOut'
           }}
         >
           <ScheduleDayButton
@@ -54,7 +54,7 @@ export default function ScheduleDaySelector({
         </MotionFlex>
       ))}
     </Flex>
-  );
+  )
 }
 
 function ScheduleDayButton({
@@ -63,33 +63,33 @@ function ScheduleDayButton({
   selected,
   onSelectDay
 }: {
-  color: string;
-  date: string;
-  selected?: boolean;
-  onSelectDay: (date: string) => void;
+  color: string
+  date: string
+  selected?: boolean
+  onSelectDay: (date: string) => void
 }) {
   const { displayedDay, displayedDate } = useMemo(() => {
-    const splitDate = date.split(" ");
+    const splitDate = date.split(' ')
     if (splitDate.length < 2) {
-      return { displayedDay: date, displayedDate: "" };
+      return { displayedDay: date, displayedDate: '' }
     }
     return {
       displayedDay: splitDate[0],
       displayedDate: splitDate[1]
-    };
-  }, [date]);
+    }
+  }, [date])
   return (
     <Box
       flex={{
         base: 1,
-        md: "unset"
+        md: 'unset'
       }}
       role="group"
-      bgColor={selected ? "white" : "black"}
+      bgColor={selected ? 'white' : 'black'}
       borderRightRadius="lg"
       border="1px solid"
-      borderColor={selected ? "orange.300" : "gray.600"}
-      borderLeftWidth={"8px"}
+      borderColor={selected ? 'orange.300' : 'gray.600'}
+      borderLeftWidth={'8px'}
       borderLeftColor={color}
       px={{ base: 2, md: 3 }}
       py={{ base: 2, md: 1 }}
@@ -97,18 +97,18 @@ function ScheduleDayButton({
       onClick={() => onSelectDay(date)}
       transition="all 0.2s"
       _hover={{
-        cursor: "pointer"
+        cursor: 'pointer'
       }}
       boxShadow="md"
     >
       <Text
         display={{
-          base: "none",
-          md: "block"
+          base: 'none',
+          md: 'block'
         }}
         fontFamily="ProRacing"
-        fontSize={"xl"}
-        textColor={selected ? "black" : "white"}
+        fontSize={'xl'}
+        textColor={selected ? 'black' : 'white'}
         transition="all 0.2s, transform 0.2s"
         transformOrigin="center left"
       >
@@ -116,37 +116,37 @@ function ScheduleDayButton({
       </Text>
       <VStack
         display={{
-          base: "flex",
-          md: "none"
+          base: 'flex',
+          md: 'none'
         }}
         alignItems="flex-start"
         gap={0}
       >
         <Text
           display={{
-            base: "block",
-            md: "none"
+            base: 'block',
+            md: 'none'
           }}
           fontFamily="ProRacing"
-          fontSize={"lg"}
-          textColor={selected ? "black" : "white"}
+          fontSize={'lg'}
+          textColor={selected ? 'black' : 'white'}
           transition="all 0.2s, transform 0.2s"
         >
           {displayedDay.toUpperCase()}
         </Text>
         <Text
           display={{
-            base: "block",
-            md: "none"
+            base: 'block',
+            md: 'none'
           }}
           fontFamily="ProRacing"
-          fontSize={"md"}
-          textColor={selected ? "gray.600" : "gray.400"}
+          fontSize={'md'}
+          textColor={selected ? 'gray.600' : 'gray.400'}
           transition="all 0.2s, transform 0.2s"
         >
           {displayedDate.toUpperCase()}
         </Text>
       </VStack>
     </Box>
-  );
+  )
 }

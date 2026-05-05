@@ -1,37 +1,37 @@
-import { FAQS } from "@app/sections/home/constants/faq-questions";
-import { Box, HStack, Image, VStack } from "@chakra-ui/react";
-import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { StopLight } from "./StopLight";
-import { AnimatedHeader } from "../shared/AnimatedHeader";
+import { FAQS } from '@app/sections/home/constants/faq-questions'
+import { Box, HStack, Image, VStack } from '@chakra-ui/react'
+import React, { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { StopLight } from './StopLight'
+import { AnimatedHeader } from '../shared/AnimatedHeader'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 export const FAQHeader: React.FC<{
-  selectedFaqIndices: Set<number>;
+  selectedFaqIndices: Set<number>
 }> = ({ selectedFaqIndices }) => {
   // ref to trigger when header comes into view
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
     <Box position="relative" w="100%" overflow="hidden" ref={ref}>
       <Image
-        src={"/site/faq/faq-header-left-bars.svg"}
+        src={'/site/faq/faq-header-left-bars.svg'}
         position="absolute"
         top={{ base: 0, md: -30 }}
         left={{ base: -5, md: 0 }}
-        h={{ base: "50px", sm: "75px", md: "100px", lg: "140px" }}
+        h={{ base: '50px', sm: '75px', md: '100px', lg: '140px' }}
         opacity={0.5}
         zIndex={0}
       />
 
       <Image
-        src={"/site/faq/faq-header-right-bars.svg"}
+        src={'/site/faq/faq-header-right-bars.svg'}
         position="absolute"
         top={{ base: 0, md: -30 }}
         right={{ base: -14, sm: -14, md: -90 }}
-        h={{ base: "50px", sm: "75px", md: "100px", lg: "140px" }}
+        h={{ base: '50px', sm: '75px', md: '100px', lg: '140px' }}
         opacity={0.5}
         zIndex={0}
       />
@@ -57,7 +57,7 @@ export const FAQHeader: React.FC<{
                 transition={{
                   duration: 0.5,
                   delay: 0.4 + (FAQS.length - index) * 0.1,
-                  ease: "easeOut"
+                  ease: 'easeOut'
                 }}
               >
                 <StopLight
@@ -70,5 +70,5 @@ export const FAQHeader: React.FC<{
         </VStack>
       </HStack>
     </Box>
-  );
-};
+  )
+}

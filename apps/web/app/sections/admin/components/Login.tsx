@@ -1,4 +1,4 @@
-import rpLogo from "/rp_logo.svg";
+import rpLogo from '/rp_logo.svg'
 
 import {
   Box,
@@ -10,8 +10,8 @@ import {
   Center,
   HStack,
   Heading
-} from "@chakra-ui/react";
-import { googleAuth } from "@app";
+} from '@chakra-ui/react'
+import { googleAuth } from '@app'
 
 export default function Login() {
   return (
@@ -24,8 +24,8 @@ export default function Login() {
     >
       <Center>
         <Image
-          transition={"all 0.4s ease-in-out"}
-          _hover={{ transform: "scale(1.2) rotate(360deg)" }}
+          transition={'all 0.4s ease-in-out'}
+          _hover={{ transform: 'scale(1.2) rotate(360deg)' }}
           src={rpLogo}
           alt="R|P Logo"
           boxSize="200px"
@@ -36,28 +36,28 @@ export default function Login() {
       <VStack spacing={4} mb={8}>
         <Center>
           <Box p="4">
-            <HStack justifyContent="center" spacing={4} textAlign={"center"}>
+            <HStack justifyContent="center" spacing={4} textAlign={'center'}>
               <Heading
-                size={{ base: "lg", md: "3xl" }}
-                fontFamily={"Roboto Slab"}
-                fontWeight={"700"}
-                letterSpacing={"0.08em"}
+                size={{ base: 'lg', md: '3xl' }}
+                fontFamily={'Roboto Slab'}
+                fontWeight={'700'}
+                letterSpacing={'0.08em'}
               >
                 reflections
               </Heading>
               <Heading
-                size={{ base: "xl", md: "4xl" }}
-                fontFamily={"Roboto Slab"}
-                fontWeight={"300"}
-                letterSpacing={"0.08em"}
+                size={{ base: 'xl', md: '4xl' }}
+                fontFamily={'Roboto Slab'}
+                fontWeight={'300'}
+                letterSpacing={'0.08em'}
               >
                 |
               </Heading>
               <Heading
-                size={{ base: "lg", md: "3xl" }}
-                fontFamily={"Roboto Slab"}
-                fontWeight={"700"}
-                letterSpacing={"0.08em"}
+                size={{ base: 'lg', md: '3xl' }}
+                fontFamily={'Roboto Slab'}
+                fontWeight={'700'}
+                letterSpacing={'0.08em'}
               >
                 projections
               </Heading>
@@ -66,11 +66,11 @@ export default function Login() {
           </Box>
         </Center>
         <Text
-          fontFamily={"Nunito"}
-          fontSize={"40"}
+          fontFamily={'Nunito'}
+          fontSize={'40'}
           as="h1"
           size="xl"
-          fontWeight={"900"}
+          fontWeight={'900'}
         >
           Admin Site
         </Text>
@@ -81,12 +81,12 @@ export default function Login() {
         size="lg"
         fontWeight="bold"
         onClick={() => {
-          googleAuth(true);
+          googleAuth(true)
         }}
-        fontFamily={"Nunito"}
+        fontFamily={'Nunito'}
       >
         Log In
       </Button>
     </Flex>
-  );
+  )
 }

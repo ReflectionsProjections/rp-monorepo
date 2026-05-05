@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Box,
   Text,
@@ -6,24 +6,24 @@ import {
   HStack,
   useColorModeValue,
   Divider
-} from "@chakra-ui/react";
-import type { ColorProfile } from "@app/sections/admin/contexts/ColorThemeContext";
-import { useColorTheme } from "@app/sections/admin/contexts/ColorThemeContext";
+} from '@chakra-ui/react'
+import type { ColorProfile } from '@app/sections/admin/contexts/ColorThemeContext'
+import { useColorTheme } from '@app/sections/admin/contexts/ColorThemeContext'
 
 type ColorProfileSelectorProps = {
-  onClose?: () => void;
-};
+  onClose?: () => void
+}
 
 const ColorProfileSelector: React.FC<ColorProfileSelectorProps> = ({
   onClose
 }) => {
-  const { currentProfile, setCurrentProfile, colorProfiles } = useColorTheme();
-  const borderColor = useColorModeValue("gray.200", "gray.600");
+  const { currentProfile, setCurrentProfile, colorProfiles } = useColorTheme()
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
 
   const handleProfileSelect = (profile: ColorProfile) => {
-    setCurrentProfile(profile);
-    onClose?.();
-  };
+    setCurrentProfile(profile)
+    onClose?.()
+  }
 
   return (
     <VStack spacing={2} align="stretch" minW="200px">
@@ -40,11 +40,11 @@ const ColorProfileSelector: React.FC<ColorProfileSelectorProps> = ({
           borderRadius="md"
           border="1px solid"
           borderColor={
-            currentProfile.id === profile.id ? "blue.300" : "transparent"
+            currentProfile.id === profile.id ? 'blue.300' : 'transparent'
           }
-          bg={currentProfile.id === profile.id ? "blue.300" : "transparent"}
+          bg={currentProfile.id === profile.id ? 'blue.300' : 'transparent'}
           _hover={{
-            bg: "gray.300"
+            bg: 'gray.300'
           }}
           onClick={() => handleProfileSelect(profile)}
           transition="all 0.2s"
@@ -74,7 +74,7 @@ const ColorProfileSelector: React.FC<ColorProfileSelectorProps> = ({
         </Box>
       ))}
     </VStack>
-  );
-};
+  )
+}
 
-export default ColorProfileSelector;
+export default ColorProfileSelector

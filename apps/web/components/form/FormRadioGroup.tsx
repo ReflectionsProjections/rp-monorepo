@@ -7,22 +7,22 @@ import {
   Radio,
   HStack,
   VStack
-} from "@chakra-ui/react";
-import type { FieldProps } from "formik";
-import { FastField, Field } from "formik";
+} from '@chakra-ui/react'
+import type { FieldProps } from 'formik'
+import { FastField, Field } from 'formik'
 
 type Props<
   TValues,
   TFieldName extends keyof TValues & string,
   TOtherName extends (keyof TValues & string) | undefined = undefined
 > = {
-  name: TFieldName;
-  label: string;
-  options: string[];
-  isRequired?: boolean;
+  name: TFieldName
+  label: string
+  options: string[]
+  isRequired?: boolean
 } & (TOtherName extends undefined
   ? { custom?: undefined }
-  : { custom: { name: TOtherName; label: string; maxLength?: number } });
+  : { custom: { name: TOtherName; label: string; maxLength?: number } })
 
 const FormRadioGroup = <
   TValues extends Record<string, unknown> & Record<TFieldName, string>,
@@ -89,23 +89,23 @@ const FormRadioGroup = <
                     TValues[TOtherName & keyof TValues],
                     TValues
                   >) => {
-                    const showCustomInput = field.value === custom.label;
+                    const showCustomInput = field.value === custom.label
 
                     return (
                       <Input
                         {...customField}
                         h="fit-content"
-                        placeholder={showCustomInput ? "Please specify" : ""}
-                        _placeholder={{ color: "#CCCCCC" }}
+                        placeholder={showCustomInput ? 'Please specify' : ''}
+                        _placeholder={{ color: '#CCCCCC' }}
                         disabled={!showCustomInput}
-                        variant={showCustomInput ? "outline" : "flushed"}
+                        variant={showCustomInput ? 'outline' : 'flushed'}
                         backgroundColor={
-                          showCustomInput ? "#12131A" : "transparent"
+                          showCustomInput ? '#12131A' : 'transparent'
                         }
                         py={0.5}
                         maxLength={custom.maxLength}
                       />
-                    );
+                    )
                   }}
                 </Field>
               </HStack>
@@ -119,6 +119,6 @@ const FormRadioGroup = <
       </FormControl>
     )}
   </FastField>
-);
+)
 
-export default FormRadioGroup;
+export default FormRadioGroup

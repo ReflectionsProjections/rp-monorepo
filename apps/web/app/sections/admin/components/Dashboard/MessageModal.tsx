@@ -1,5 +1,5 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import type { UseDisclosureReturn } from "@chakra-ui/react";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import type { UseDisclosureReturn } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -16,50 +16,50 @@ import {
   Textarea,
   useDisclosure,
   useToast
-} from "@chakra-ui/react";
-import type { DashboardMessageRequest } from "@app";
-import { api, path } from "@app";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
+} from '@chakra-ui/react'
+import type { DashboardMessageRequest } from '@app'
+import { api, path } from '@app'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 
 type MessageForm = {
-  isEmbed: boolean;
-  embedFullscreen: boolean;
-  embedIframe: boolean;
-  message: string;
-};
+  isEmbed: boolean
+  embedFullscreen: boolean
+  embedIframe: boolean
+  message: string
+}
 
 const validationSchema = Yup.object().shape({
   isEmbed: Yup.boolean(),
   embedFullscreen: Yup.boolean(),
   embedIframe: Yup.boolean(),
-  message: Yup.string().when("isEmbed", {
+  message: Yup.string().when('isEmbed', {
     is: true,
-    then: (s) => s.url("Must be a valid URL").required("URL is required"),
-    otherwise: (s) => s.required("Message is required")
+    then: (s) => s.url('Must be a valid URL').required('URL is required'),
+    otherwise: (s) => s.required('Message is required')
   })
-});
+})
 
 const initialValues: MessageForm = {
   isEmbed: false,
   embedFullscreen: false,
   embedIframe: false,
-  message: ""
-};
+  message: ''
+}
 
 export default function MessageModal({
   target,
   disclosure: disclosureOverride
 }: {
-  target: number | null;
-  disclosure?: UseDisclosureReturn;
+  target: number | null
+  disclosure?: UseDisclosureReturn
 }) {
-  const disclosure = useDisclosure();
+  const disclosure = useDisclosure()
   const { isOpen, onOpen, onClose } = disclosureOverride
     ? disclosureOverride
-    : disclosure;
-  const mirrorStyle = useMirrorStyles();
-  const toast = useToast();
+    : disclosure
+  const mirrorStyle = useMirrorStyles()
+  const toast = useToast()
 
   function onSubmit({
     isEmbed,
@@ -69,42 +69,42 @@ export default function MessageModal({
   }: MessageForm) {
     const data: DashboardMessageRequest = !isEmbed
       ? { message }
-      : { url: message, fullscreen: embedFullscreen, iframe: embedIframe };
-    onClose();
+      : { url: message, fullscreen: embedFullscreen, iframe: embedIframe }
+    onClose()
     api
       .post(
         target !== null
-          ? path("/dashboard/message/:id", { id: target })
-          : "/dashboard/message",
+          ? path('/dashboard/message/:id', { id: target })
+          : '/dashboard/message',
         data
       )
       .then(() => {
         toast({
-          title: `Sent message to ${target !== null ? `display #${target}` : "all displays"}`,
-          status: "success"
-        });
+          title: `Sent message to ${target !== null ? `display #${target}` : 'all displays'}`,
+          status: 'success'
+        })
       })
       .catch((err) => {
-        console.error(err);
+        console.error(err)
         toast({
-          title: `Failed to send message to ${target !== null ? `display #${target}` : "all displays"}`,
-          status: "error"
-        });
-      });
+          title: `Failed to send message to ${target !== null ? `display #${target}` : 'all displays'}`,
+          status: 'error'
+        })
+      })
   }
 
   return (
     <>
       <Button variant="outline" colorScheme="orange" onClick={onOpen}>
-        {target !== null ? "Message" : "Message All"}
+        {target !== null ? 'Message' : 'Message All'}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         messageModalDisclosure
         <ModalOverlay />
         <ModalContent sx={mirrorStyle}>
           <ModalHeader>
-            Send a message to{" "}
-            {target !== null ? `display #${target}` : "all displays"}
+            Send a message to{' '}
+            {target !== null ? `display #${target}` : 'all displays'}
           </ModalHeader>
           <ModalBody>
             <Formik<MessageForm>
@@ -188,5 +188,5 @@ export default function MessageModal({
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }

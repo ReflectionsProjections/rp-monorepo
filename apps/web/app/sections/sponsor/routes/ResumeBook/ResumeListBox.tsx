@@ -9,22 +9,22 @@ import {
   Text,
   Tooltip,
   VStack
-} from "@chakra-ui/react";
-import React from "react";
-import { FaFilePdf } from "react-icons/fa6";
-import PortfolioLinks from "../../components/PortfolioLinks";
-import { Config } from "../../config";
-import type { Resume } from "./ResumeBook";
+} from '@chakra-ui/react'
+import React from 'react'
+import { FaFilePdf } from 'react-icons/fa6'
+import PortfolioLinks from '../../components/PortfolioLinks'
+import { Config } from '../../config'
+import type { Resume } from './ResumeBook'
 
 interface ResumeComponentProps {
-  resume: Resume;
-  isSelected: boolean;
-  screenIsLarge: boolean;
-  screenIsLargeButton: boolean;
-  openResume: (resume: Resume) => void;
-  toggleResume: (resumeId: string) => void;
-  baseColor: string;
-  bgColor: string;
+  resume: Resume
+  isSelected: boolean
+  screenIsLarge: boolean
+  screenIsLargeButton: boolean
+  openResume: (resume: Resume) => void
+  toggleResume: (resumeId: string) => void
+  baseColor: string
+  bgColor: string
 }
 
 const ResumeListBox: React.FC<ResumeComponentProps> = ({
@@ -41,40 +41,40 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
       key={resume.id}
       padding="10px"
       pr="20px"
-      background={isSelected ? "blue." + baseColor : bgColor}
+      background={isSelected ? 'blue.' + baseColor : bgColor}
       overflow="visible"
       position="relative"
       cursor="pointer"
-      borderBottom={"1px solid"}
-      borderColor={"gray.300"}
+      borderBottom={'1px solid'}
+      borderColor={'gray.300'}
       py={screenIsLarge ? 3 : 2}
       w="100%"
       minH="fit-content"
       _hover={{
-        background: isSelected ? "blue.300" : "gray.200"
+        background: isSelected ? 'blue.300' : 'gray.200'
       }}
       onClick={() => {
-        toggleResume(resume.id);
+        toggleResume(resume.id)
       }}
       transition="all 0.2s ease"
     >
       <Grid
         templateColumns={
           screenIsLarge
-            ? "80px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.2fr) 100px"
-            : "60px minmax(0, 1.5fr) minmax(0, 1fr) 100px"
+            ? '80px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.2fr) 100px'
+            : '60px minmax(0, 1.5fr) minmax(0, 1fr) 100px'
         }
         gap={4}
         alignItems="center"
         overflow="hidden"
       >
         <GridItem>
-          <HStack gap={4} justifyContent={"space-between"} pr={1}>
+          <HStack gap={4} justifyContent={'space-between'} pr={1}>
             <Checkbox
               size="lg"
               isChecked={isSelected}
               onChange={() => toggleResume(resume.id)}
-              borderColor={"gray.400"}
+              borderColor={'gray.400'}
             />
             {Config.STAFF_UIDs.includes(resume.id) && (
               <Tooltip label="Staff Member" fontSize="md">
@@ -94,8 +94,8 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
               <Text
                 fontWeight="bold"
                 fontSize={{
-                  base: "sm",
-                  lg: "md"
+                  base: 'sm',
+                  lg: 'md'
                 }}
               >
                 {resume.name}
@@ -105,8 +105,8 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
               <Text
                 color="gray.700"
                 fontSize={{
-                  base: "sm",
-                  lg: "md"
+                  base: 'sm',
+                  lg: 'md'
                 }}
               >
                 {resume.degree}
@@ -118,7 +118,7 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
                   <Text
                     key={major}
                     color="gray.700"
-                    fontSize={{ base: "sm", lg: "md" }}
+                    fontSize={{ base: 'sm', lg: 'md' }}
                   >
                     {major}
                     <Text
@@ -132,7 +132,7 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
                   <Text
                     key={minor}
                     color="gray.700"
-                    fontSize={{ base: "sm", lg: "md" }}
+                    fontSize={{ base: 'sm', lg: 'md' }}
                   >
                     {minor}
                     <Text
@@ -148,8 +148,8 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
               <Text
                 color="gray.700"
                 fontSize={{
-                  base: "sm",
-                  lg: "md"
+                  base: 'sm',
+                  lg: 'md'
                 }}
               >
                 {resume.graduationYear}
@@ -168,12 +168,12 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
 
               <VStack alignItems="flex-start" gap={0}>
                 {resume.majors.map((major) => (
-                  <Text key={major} color="gray.570" fontSize={"sm"}>
-                    {`${major} ${resume.minors.length > 0 ? "(Major)" : ""}`}
+                  <Text key={major} color="gray.570" fontSize={'sm'}>
+                    {`${major} ${resume.minors.length > 0 ? '(Major)' : ''}`}
                   </Text>
                 ))}
                 {resume.minors.map((minor) => (
-                  <Text key={minor} color="gray.570" fontSize={"sm"}>
+                  <Text key={minor} color="gray.570" fontSize={'sm'}>
                     {`${minor} (Minor)`}
                   </Text>
                 ))}
@@ -187,7 +187,7 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
         <GridItem zIndex="5" overflow="visible">
           <HStack spacing={2} overflow="visible">
             <Tooltip
-              label={"Preview Resume"}
+              label={'Preview Resume'}
               placement="top"
               hasArrow
               bg="gray.700"
@@ -200,21 +200,21 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
             >
               <IconButton
                 backgroundColor="blue.500"
-                w={"100%"}
-                mx={screenIsLarge ? "auto" : ""}
+                w={'100%'}
+                mx={screenIsLarge ? 'auto' : ''}
                 color="white"
                 size={
                   screenIsLarge
                     ? {
-                        base: "sm",
-                        lg: "lg"
+                        base: 'sm',
+                        lg: 'lg'
                       }
-                    : "md"
+                    : 'md'
                 }
-                _hover={{ color: "gray.700", backgroundColor: "blue.400" }}
+                _hover={{ color: 'gray.700', backgroundColor: 'blue.400' }}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  openResume(resume);
+                  e.stopPropagation()
+                  openResume(resume)
                 }}
                 aria-label=""
                 icon={<FaFilePdf />}
@@ -224,7 +224,7 @@ const ResumeListBox: React.FC<ResumeComponentProps> = ({
         </GridItem>
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default ResumeListBox;
+export default ResumeListBox

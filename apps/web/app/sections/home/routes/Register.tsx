@@ -11,30 +11,30 @@ import {
   Center,
   Spinner,
   Link
-} from "@chakra-ui/react";
-import { Form, Formik } from "formik";
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import type { RoleObject } from "@app";
-import { api, useFormAutosave } from "@app";
+} from '@chakra-ui/react'
+import { Form, Formik } from 'formik'
+import React, { useEffect, useState, useRef } from 'react'
+import axios from 'axios'
+import type { RoleObject } from '@app'
+import { api, useFormAutosave } from '@app'
 // import successAnimation from "../assets/animations/success.json";
-import confirmationAnimation from "../assets/animations/confirmation.json";
-import type { RegistrationValues } from "@app/sections/home/components/Registration/schema";
+import confirmationAnimation from '../assets/animations/confirmation.json'
+import type { RegistrationValues } from '@app/sections/home/components/Registration/schema'
 import {
   finalRegistrationSchema,
   initialValues,
   registrationSchema
-} from "@app/sections/home/components/Registration/schema";
-import { useOutletContext } from "react-router-dom";
-import type { MotionValue } from "framer-motion";
+} from '@app/sections/home/components/Registration/schema'
+import { useOutletContext } from 'react-router-dom'
+import type { MotionValue } from 'framer-motion'
 import {
   AnimatePresence,
   motion,
   useScroll,
   useSpring,
   useTransform
-} from "framer-motion";
-import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+} from 'framer-motion'
+import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 import {
   NameField,
   EmailField,
@@ -55,71 +55,71 @@ import {
   PersonalLinksField,
   ResumeField,
   Over18Checkbox
-} from "@app/sections/home/components/Registration/questions";
-import Lottie from "lottie-react";
+} from '@app/sections/home/components/Registration/questions'
+import Lottie from 'lottie-react'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 const uploadResume = async (
   url: string,
   fields: Record<string, unknown>,
   file: File
 ) => {
-  const form = new FormData();
+  const form = new FormData()
 
   for (const [key, value] of Object.entries(fields)) {
-    if (value instanceof Blob || typeof value === "string") {
-      form.append(key, value);
+    if (value instanceof Blob || typeof value === 'string') {
+      form.append(key, value)
     } else {
-      console.error(`Unexpected value type for key "${key}":`, value);
+      console.error(`Unexpected value type for key "${key}":`, value)
     }
   }
 
-  form.append("file", file);
+  form.append('file', file)
 
   await axios.post(url, form, {
     headers: {
-      "Content-Type": "multipart/form-data"
+      'Content-Type': 'multipart/form-data'
       // ...fields,
     }
-  });
-};
+  })
+}
 
 type RegisterFormProps = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ children }) => {
-  const toast = useToast();
+  const toast = useToast()
 
   useFormAutosave<RegistrationValues>((values) => {
     toast.promise(
-      api.post("/registration/draft", {
+      api.post('/registration/draft', {
         ...values,
         resume: undefined
       }),
       {
-        success: { title: "Autosave Successful!" },
-        loading: { title: "Autosaving..." },
-        error: { title: "Autosave failed" }
+        success: { title: 'Autosave Successful!' },
+        loading: { title: 'Autosaving...' },
+        error: { title: 'Autosave failed' }
       }
-    );
-  });
+    )
+  })
 
-  return children;
-};
+  return children
+}
 
 const Register = () => {
-  const { displayName, email } = useOutletContext<RoleObject>();
-  const [confirmation, setConfirmation] = useState(false);
-  const [values, setValues] = useState<RegistrationValues | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { displayName, email } = useOutletContext<RoleObject>()
+  const [confirmation, setConfirmation] = useState(false)
+  const [values, setValues] = useState<RegistrationValues | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ container: containerRef });
-  const mobile = useBreakpointValue({ base: true, "2xl": false });
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: containerRef })
+  const mobile = useBreakpointValue({ base: true, '2xl': false })
 
-  const toast = useToast();
+  const toast = useToast()
 
   const processFinalRegistration = (values: RegistrationValues) => {
     const processedValues = finalRegistrationSchema.validateSync(
@@ -130,68 +130,68 @@ const Register = () => {
       {
         stripUnknown: true
       }
-    );
+    )
 
-    if (values.allergiesOther !== "") {
+    if (values.allergiesOther !== '') {
       processedValues.allergies = processedValues.allergies.map((item) =>
-        item === "Other" ? values.allergiesOther : item
-      );
+        item === 'Other' ? values.allergiesOther : item
+      )
     }
 
-    if (values.dietaryOther !== "") {
+    if (values.dietaryOther !== '') {
       processedValues.dietaryRestrictions =
         processedValues.dietaryRestrictions.map((item) =>
-          item === "Other" ? values.dietaryOther : item
-        );
+          item === 'Other' ? values.dietaryOther : item
+        )
     }
 
     if (
-      processedValues.educationLevel === "Other" &&
-      values.educationOther !== ""
+      processedValues.educationLevel === 'Other' &&
+      values.educationOther !== ''
     ) {
-      processedValues.educationLevel = values.educationOther;
+      processedValues.educationLevel = values.educationOther
     }
 
-    if (values.ethnicityOther !== "") {
+    if (values.ethnicityOther !== '') {
       processedValues.ethnicity = processedValues.ethnicity.map((item) =>
-        item === "Other" ? values.ethnicityOther : item
-      );
+        item === 'Other' ? values.ethnicityOther : item
+      )
     }
 
-    if (processedValues.gender === "Other" && values.genderOther !== "") {
-      processedValues.gender = values.genderOther;
+    if (processedValues.gender === 'Other' && values.genderOther !== '') {
+      processedValues.gender = values.genderOther
     }
 
-    return processedValues;
-  };
+    return processedValues
+  }
 
   useEffect(() => {
     api
-      .get("/registration/draft")
+      .get('/registration/draft')
       .then((response) => {
         setValues({
           ...response.data,
           resume:
-            response.data.resume !== ""
+            response.data.resume !== ''
               ? {
                   name: response.data.resume,
                   open: async () => {
                     await api
-                      .get("/s3/download")
-                      .then((response) => window.open(response.data.url));
+                      .get('/s3/download')
+                      .then((response) => window.open(response.data.url))
                   }
                 }
               : null,
           over18: false
-        });
+        })
       })
       .catch(() => {
-        setValues({ ...initialValues(), name: displayName, email });
+        setValues({ ...initialValues(), name: displayName, email })
       })
       .finally(() => {
-        setIsLoading(false);
-      });
-  }, [displayName, email]);
+        setIsLoading(false)
+      })
+  }, [displayName, email])
 
   const LoadingIndicator = () => (
     <Center
@@ -205,45 +205,45 @@ const Register = () => {
     >
       <Spinner size="xl" thickness="6px" color="red.500" />
     </Center>
-  );
+  )
 
   const Background = () => {
     const PageBackground: React.FC<{
-      backgroundImage: string;
-      opacity: MotionValue<number>;
-      initialOpacity: number;
+      backgroundImage: string
+      opacity: MotionValue<number>
+      initialOpacity: number
     }> = ({ backgroundImage, opacity, initialOpacity }) => (
       <MotionBox
-        w={{ base: "min(100%, 800px)", "2xl": "100%" }}
-        h={{ base: "100%", "2xl": "125%" }}
+        w={{ base: 'min(100%, 800px)', '2xl': '100%' }}
+        h={{ base: '100%', '2xl': '125%' }}
         backgroundImage={backgroundImage}
-        backgroundSize={{ base: "cover", md: "contain" }}
+        backgroundSize={{ base: 'cover', md: 'contain' }}
         backgroundPosition="center"
         backgroundRepeat="no-repeat"
         initial={{ opacity: initialOpacity }}
         style={{ opacity, zIndex: 1 }}
         position="absolute"
-        top={{ "2xl": "-12.5%" }}
-        left={{ base: "50%", "2xl": 0 }}
+        top={{ '2xl': '-12.5%' }}
+        left={{ base: '50%', '2xl': 0 }}
         transform="translateX(-50%)"
       />
-    );
+    )
 
-    const finalOpacity = useBreakpointValue({ base: 0.2, "2xl": 0.4 }) ?? 0.2;
+    const finalOpacity = useBreakpointValue({ base: 0.2, '2xl': 0.4 }) ?? 0.2
 
     const image1Opacity = useTransform(
       scrollYProgress,
       [0, 0.5],
       [finalOpacity, 0]
-    );
+    )
     const image2Opacity = useTransform(
       scrollYProgress,
       [0.5, 1],
       [0, finalOpacity]
-    );
+    )
 
-    const image1ShadowOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-    const image2ShadowOpacity = useTransform(scrollYProgress, [0.5, 1], [0, 1]);
+    const image1ShadowOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+    const image2ShadowOpacity = useTransform(scrollYProgress, [0.5, 1], [0, 1])
 
     return (
       <Box
@@ -252,8 +252,8 @@ const Register = () => {
         position="absolute"
         top="32px"
         background={{
-          base: "#12131A",
-          "2xl": "linear-gradient(90deg, #12131Ac0 0%, #7B0201c0 30%)"
+          base: '#12131A',
+          '2xl': 'linear-gradient(90deg, #12131Ac0 0%, #7B0201c0 30%)'
         }}
       >
         <PageBackground
@@ -291,40 +291,40 @@ const Register = () => {
           inset={0}
         />
       </Box>
-    );
-  };
+    )
+  }
 
   const ProgressBar = () => {
-    const [hasScrolled, setHasScrolled] = useState(false);
+    const [hasScrolled, setHasScrolled] = useState(false)
 
     useEffect(() => {
       const handleScroll = () => {
         if (containerRef.current && containerRef.current.scrollTop > 0) {
-          setHasScrolled(true);
+          setHasScrolled(true)
         }
-      };
-
-      const container = containerRef.current;
-      if (container) {
-        container.addEventListener("scroll", handleScroll);
-        return () => container.removeEventListener("scroll", handleScroll);
       }
-    }, []);
+
+      const container = containerRef.current
+      if (container) {
+        container.addEventListener('scroll', handleScroll)
+        return () => container.removeEventListener('scroll', handleScroll)
+      }
+    }, [])
 
     const controlledProgress = useTransform(scrollYProgress, (value) => {
-      return hasScrolled ? value : 0;
-    });
+      return hasScrolled ? value : 0
+    })
 
     const width = useSpring(controlledProgress, {
       stiffness: 100,
       damping: 30,
       restDelta: 0.001
-    });
-    const initialProgress = "48px";
+    })
+    const initialProgress = '48px'
     const progress = useTransform(
       width,
       (v) => `calc(${v * 100}% + ${initialProgress})`
-    );
+    )
 
     const roadMarkers = Array.from({ length: 50 }, (_, i) => (
       <Box
@@ -340,7 +340,7 @@ const Register = () => {
         zIndex={1}
         opacity={0.8}
       />
-    ));
+    ))
 
     return (
       <Box
@@ -390,13 +390,13 @@ const Register = () => {
             <img
               src="/site/registration/progress-icon.svg"
               alt="Progress"
-              style={{ display: "block", height: "22px" }}
+              style={{ display: 'block', height: '22px' }}
             />
           </MotionBox>
         </Box>
       </Box>
-    );
-  };
+    )
+  }
 
   const DesktopForm = () => (
     <VStack gap={64} w="100%" h="100%" justifyContent="space-between">
@@ -446,7 +446,7 @@ const Register = () => {
         </Box>
       </VStack>
     </VStack>
-  );
+  )
 
   const ConfirmationScreen = () => (
     <MotionBox
@@ -459,22 +459,22 @@ const Register = () => {
       h="100%"
       position="relative"
       overflow="hidden"
-      bg={"linear-gradient(90deg, #7B0201c0 0%, #12131Ac0 80%)"}
+      bg={'linear-gradient(90deg, #7B0201c0 0%, #12131Ac0 80%)'}
     >
       <Lottie
         animationData={confirmationAnimation}
         loop={false}
         autoplay
         rendererSettings={{
-          preserveAspectRatio: "xMidYMax slice"
+          preserveAspectRatio: 'xMidYMax slice'
         }}
         style={{
-          position: "absolute",
+          position: 'absolute',
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
-          pointerEvents: "none",
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
           zIndex: 0
         }}
       />
@@ -504,24 +504,24 @@ const Register = () => {
         </Text>
         <HStack
           spacing={6}
-          flexDir={{ base: "column", sm: "row" }}
+          flexDir={{ base: 'column', sm: 'row' }}
           align="center"
           justify="center"
         >
           <Link
             href="https://apps.apple.com/us/app/r-p-2025/id6744465190"
             isExternal
-            _hover={{ transform: "scale(1.05)" }}
+            _hover={{ transform: 'scale(1.05)' }}
             transition="all 0.3s ease"
           >
             <Image
               src="/site/appscreen/app_store.png"
               alt="Download on the App Store"
-              h={{ base: "50px", md: "60px" }}
+              h={{ base: '50px', md: '60px' }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{
-                filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"
+                filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))'
               }}
             />
           </Link>
@@ -529,24 +529,24 @@ const Register = () => {
           <Link
             href="https://play.google.com/store/apps/details?id=com.reflectionsprojections&utm_source=na_Med"
             isExternal
-            _hover={{ transform: "scale(1.05)" }}
+            _hover={{ transform: 'scale(1.05)' }}
             transition="all 0.3s ease"
           >
             <Image
               src="/site/appscreen/google_play.png"
               alt="Get it on Google Play"
-              h={{ base: "50px", md: "60px" }}
+              h={{ base: '50px', md: '60px' }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{
-                filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"
+                filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))'
               }}
             />
           </Link>
         </HStack>
       </VStack>
     </MotionBox>
-  );
+  )
 
   const MobileForm = () => (
     <VStack gap={16} width="min(100%, 800px)" alignItems="center">
@@ -570,7 +570,7 @@ const Register = () => {
       <PersonalLinksField />
       <Over18Checkbox />
     </VStack>
-  );
+  )
 
   return (
     <AnimatePresence>
@@ -599,48 +599,48 @@ const Register = () => {
                 initialValues={values}
                 validationSchema={registrationSchema}
                 onSubmit={(values, helpers) => {
-                  setIsLoading(true);
-                  const registration = processFinalRegistration(values);
+                  setIsLoading(true)
+                  const registration = processFinalRegistration(values)
                   toast.promise(
                     Promise.all([
-                      api.post("/registration/submit", registration),
-                      api.post("/registration/draft", {
+                      api.post('/registration/submit', registration),
+                      api.post('/registration/draft', {
                         ...values,
-                        resume: values.resume?.name ?? ""
+                        resume: values.resume?.name ?? ''
                       }),
                       (async () => {
                         if (!values.resume?.file) {
-                          return;
+                          return
                         }
-                        const { data: download } = await api.get("/s3/upload");
+                        const { data: download } = await api.get('/s3/upload')
                         await uploadResume(
                           download.url,
                           download.fields,
                           values.resume.file
-                        );
+                        )
                       })()
                     ])
                       .then(() => {
-                        setConfirmation(true);
+                        setConfirmation(true)
                       })
                       .catch(() => {
-                        helpers.setSubmitting(false);
+                        helpers.setSubmitting(false)
                       })
                       .finally(() => {
-                        setIsLoading(false);
+                        setIsLoading(false)
                       }),
                     {
-                      success: { title: "Form Submitted!" },
-                      loading: { title: "Submitting..." },
-                      error: { title: "Submission failed" }
+                      success: { title: 'Form Submitted!' },
+                      loading: { title: 'Submitting...' },
+                      error: { title: 'Submission failed' }
                     }
-                  );
+                  )
                 }}
               >
                 {({ isSubmitting }) => (
                   <Box
-                    w={{ "2xl": "75%" }}
-                    ml={{ "2xl": "25%" }}
+                    w={{ '2xl': '75%' }}
+                    ml={{ '2xl': '25%' }}
                     display="flex"
                     justifyContent="center"
                     px={4}
@@ -653,7 +653,7 @@ const Register = () => {
                         color="white"
                         gap={16}
                         h="fit-content"
-                        mb={{ base: "10vh", "2xl": 8 }}
+                        mb={{ base: '10vh', '2xl': 8 }}
                       >
                         {mobile ? <MobileForm /> : <DesktopForm />}
                         <IconButton
@@ -687,7 +687,7 @@ const Register = () => {
         </VStack>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

@@ -1,25 +1,25 @@
-import { FAQ } from "@app/sections/home/components/Home/FAQ/FAQ";
-import Footer from "@app/sections/home/components/Home/Footer/Footer";
-import Schedule from "@app/sections/home/components/Home/Schedule/Schedule";
-import SponsorSection from "@app/sections/home/components/Home/Sponsors/SponsorSection";
-import { Box } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import Description from "../components/Home/Description/Description";
-import Landing from "../components/Home/Landing/Landing";
+import { FAQ } from '@app/sections/home/components/Home/FAQ/FAQ'
+import Footer from '@app/sections/home/components/Home/Footer/Footer'
+import Schedule from '@app/sections/home/components/Home/Schedule/Schedule'
+import SponsorSection from '@app/sections/home/components/Home/Sponsors/SponsorSection'
+import { Box } from '@chakra-ui/react'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import Description from '../components/Home/Description/Description'
+import Landing from '../components/Home/Landing/Landing'
 
 const Home = () => {
-  const { hash } = useLocation();
+  const { hash } = useLocation()
 
   useEffect(() => {
-    const section = document.getElementById(hash.slice(1));
+    const section = document.getElementById(hash.slice(1))
     if (section) {
       section.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+        behavior: 'smooth',
+        block: 'start'
+      })
     }
-  }, [hash]);
+  }, [hash])
 
   return (
     <Box bg="#100E0E">
@@ -30,7 +30,7 @@ const Home = () => {
       <SponsorSection />
       <Footer />
     </Box>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

@@ -1,66 +1,66 @@
-import { Stack, StackDivider, Text, useColorModeValue } from "@chakra-ui/react";
-import type { LeaderboardUser } from "@app";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import { Stack, StackDivider, Text, useColorModeValue } from '@chakra-ui/react'
+import type { LeaderboardUser } from '@app'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 
 export const ExtendedLeaderboardStats: React.FC<{
-  leaderboardUsers: LeaderboardUser[];
-  effectiveNumberAwards: number;
-  minimumPointsThreshold: number;
-  showExtendedStats?: boolean;
+  leaderboardUsers: LeaderboardUser[]
+  effectiveNumberAwards: number
+  minimumPointsThreshold: number
+  showExtendedStats?: boolean
 }> = ({ leaderboardUsers, effectiveNumberAwards, minimumPointsThreshold }) => {
-  const mirrorStyles = useMirrorStyles(true);
-  const textColor = useColorModeValue("gray.700", "gray.300");
-  const accentColor = useColorModeValue("blue.600", "blue.400");
-  const subtextColor = useColorModeValue("gray.500", "gray.400");
+  const mirrorStyles = useMirrorStyles(true)
+  const textColor = useColorModeValue('gray.700', 'gray.300')
+  const accentColor = useColorModeValue('blue.600', 'blue.400')
+  const subtextColor = useColorModeValue('gray.500', 'gray.400')
   // Calculate current tier distribution (cumulative - each tier includes all higher tiers)
   const currentTier1Count = leaderboardUsers.filter((user) =>
-    ["TIER1", "TIER2", "TIER3", "TIER4"].includes(user.currentTier)
-  ).length;
+    ['TIER1', 'TIER2', 'TIER3', 'TIER4'].includes(user.currentTier)
+  ).length
   const currentTier2Count = leaderboardUsers.filter((user) =>
-    ["TIER2", "TIER3", "TIER4"].includes(user.currentTier)
-  ).length;
+    ['TIER2', 'TIER3', 'TIER4'].includes(user.currentTier)
+  ).length
   const currentTier3Count = leaderboardUsers.filter((user) =>
-    ["TIER3", "TIER4"].includes(user.currentTier)
-  ).length;
+    ['TIER3', 'TIER4'].includes(user.currentTier)
+  ).length
   const currentTier4Count = leaderboardUsers.filter(
-    (user) => user.currentTier === "TIER4"
-  ).length;
+    (user) => user.currentTier === 'TIER4'
+  ).length
 
   // Calculate qualified users (those who meet the threshold)
   const qualifiedUsers = leaderboardUsers.filter(
     (user) => user.points >= minimumPointsThreshold
-  );
+  )
 
   // Calculate how many will be promoted to each tier after prizes
   const willPromoteToTier2 = qualifiedUsers.filter(
-    (user) => user.currentTier === "TIER1"
-  ).length;
+    (user) => user.currentTier === 'TIER1'
+  ).length
   const willPromoteToTier3 = qualifiedUsers.filter(
-    (user) => user.currentTier === "TIER2"
-  ).length;
+    (user) => user.currentTier === 'TIER2'
+  ).length
   const willPromoteToTier4 = qualifiedUsers.filter(
-    (user) => user.currentTier === "TIER3"
-  ).length;
+    (user) => user.currentTier === 'TIER3'
+  ).length
 
   // Calculate new tier distribution after promotions (cumulative)
-  const newTier1Count = currentTier1Count; // Total stays the same
-  const newTier2Count = currentTier2Count + willPromoteToTier2; // Add promotions from TIER1
-  const newTier3Count = currentTier3Count + willPromoteToTier3; // Add promotions from TIER2
-  const newTier4Count = currentTier4Count + willPromoteToTier4; // Add promotions from TIER3
+  const newTier1Count = currentTier1Count // Total stays the same
+  const newTier2Count = currentTier2Count + willPromoteToTier2 // Add promotions from TIER1
+  const newTier3Count = currentTier3Count + willPromoteToTier3 // Add promotions from TIER2
+  const newTier4Count = currentTier4Count + willPromoteToTier4 // Add promotions from TIER3
 
   // Calculate percentages
-  const totalAttendees = leaderboardUsers.length;
+  const totalAttendees = leaderboardUsers.length
   const attendeesWithPoints = leaderboardUsers.filter(
     (user) => user.points > 0
-  ).length;
+  ).length
   const percentageOfTotal =
     totalAttendees > 0
       ? Math.round((effectiveNumberAwards / totalAttendees) * 100)
-      : 0;
+      : 0
   const percentageWithPoints =
     attendeesWithPoints > 0
       ? Math.round((effectiveNumberAwards / attendeesWithPoints) * 100)
-      : 0;
+      : 0
 
   return (
     <Stack
@@ -76,7 +76,7 @@ export const ExtendedLeaderboardStats: React.FC<{
       <Text fontSize="lg" color={textColor} textAlign="center">
         <Text as="b" color={accentColor} fontSize="xl">
           {minimumPointsThreshold}
-        </Text>{" "}
+        </Text>{' '}
         points required
       </Text>
       <Text fontSize="sm" color={subtextColor} mt={2}>
@@ -180,7 +180,7 @@ export const ExtendedLeaderboardStats: React.FC<{
           textAlign="center"
           mt={2}
         >
-          Awarding prizes to{" "}
+          Awarding prizes to{' '}
           <Text as="b" color={accentColor}>
             {effectiveNumberAwards} attendees
           </Text>
@@ -189,18 +189,18 @@ export const ExtendedLeaderboardStats: React.FC<{
         </Text>
       </Stack>
     </Stack>
-  );
-};
+  )
+}
 
 export const LeaderboardStats: React.FC<{
-  leaderboardUsers: LeaderboardUser[];
-  effectiveNumberAwards: number;
-  minimumPointsThreshold: number;
-  showExtendedStats?: boolean;
+  leaderboardUsers: LeaderboardUser[]
+  effectiveNumberAwards: number
+  minimumPointsThreshold: number
+  showExtendedStats?: boolean
 }> = ({ leaderboardUsers, minimumPointsThreshold }) => {
-  const mirrorStyles = useMirrorStyles(true);
-  const textColor = useColorModeValue("gray.700", "gray.300");
-  const accentColor = useColorModeValue("blue.600", "blue.400");
+  const mirrorStyles = useMirrorStyles(true)
+  const textColor = useColorModeValue('gray.700', 'gray.300')
+  const accentColor = useColorModeValue('blue.600', 'blue.400')
   return (
     <Stack
       w="100%"
@@ -215,7 +215,7 @@ export const LeaderboardStats: React.FC<{
       <Text fontSize="lg" color={textColor} textAlign="center">
         <Text as="b" color={accentColor} fontSize="xl">
           {minimumPointsThreshold}
-        </Text>{" "}
+        </Text>{' '}
         points required
       </Text>
       <Text fontSize="sm" color={textColor} opacity={0.8} mt={2}>
@@ -235,38 +235,38 @@ export const LeaderboardStats: React.FC<{
             <Text as="b" color="green.600">
               {
                 leaderboardUsers.filter((user) =>
-                  ["TIER1", "TIER2", "TIER3", "TIER4"].includes(
+                  ['TIER1', 'TIER2', 'TIER3', 'TIER4'].includes(
                     user.currentTier
                   )
                 ).length
               }
-            </Text>{" "}
+            </Text>{' '}
             TIER1+
           </Text>
           <Text fontSize="sm" color={textColor}>
             <Text as="b" color="blue.600">
               {
                 leaderboardUsers.filter((user) =>
-                  ["TIER2", "TIER3", "TIER4"].includes(user.currentTier)
+                  ['TIER2', 'TIER3', 'TIER4'].includes(user.currentTier)
                 ).length
               }
-            </Text>{" "}
+            </Text>{' '}
             TIER2+
           </Text>
           <Text fontSize="sm" color={textColor}>
             <Text as="b" color="purple.600">
               {
                 leaderboardUsers.filter((user) =>
-                  ["TIER3", "TIER4"].includes(user.currentTier)
+                  ['TIER3', 'TIER4'].includes(user.currentTier)
                 ).length
               }
-            </Text>{" "}
+            </Text>{' '}
             TIER3+
           </Text>
         </Stack>
       </Stack>
     </Stack>
-  );
-};
+  )
+}
 
-export default LeaderboardStats;
+export default LeaderboardStats

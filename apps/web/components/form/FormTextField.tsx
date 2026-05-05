@@ -3,18 +3,18 @@ import {
   FormLabel,
   Input,
   FormErrorMessage
-} from "@chakra-ui/react";
-import type { FieldProps } from "formik";
-import { FastField } from "formik";
+} from '@chakra-ui/react'
+import type { FieldProps } from 'formik'
+import { FastField } from 'formik'
 
 type Props<TValues, TFieldName extends keyof TValues> = {
-  name: TFieldName;
-  label: string;
-  placeholder?: string;
-  isRequired?: boolean;
-  type?: React.HTMLInputTypeAttribute;
-  maxLength?: number;
-};
+  name: TFieldName
+  label: string
+  placeholder?: string
+  isRequired?: boolean
+  type?: React.HTMLInputTypeAttribute
+  maxLength?: number
+}
 
 const FormTextField = <
   TValues extends Record<string, unknown> & Record<TFieldName, string>,
@@ -43,7 +43,7 @@ const FormTextField = <
             id={name}
             type={type}
             placeholder={placeholder}
-            _placeholder={{ color: "#CCCCCC" }}
+            _placeholder={{ color: '#CCCCCC' }}
             backgroundColor="#12131A"
             maxLength={maxLength}
           />
@@ -52,7 +52,7 @@ const FormTextField = <
         </FormControl>
       )}
     </FastField>
-  );
-};
+  )
+}
 
-export default FormTextField;
+export default FormTextField

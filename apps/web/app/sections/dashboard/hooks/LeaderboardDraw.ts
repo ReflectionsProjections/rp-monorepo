@@ -7,78 +7,78 @@ This won't fit into 2026 theme so when you do delete this make sure to archive 2
 
 */
 
-import type { IconColor, LeaderboardEntry } from "@app";
-import { rad } from "@app";
-import { useEffect } from "react";
-import seedrandom from "seedrandom";
+import type { IconColor, LeaderboardEntry } from '@app'
+import { rad } from '@app'
+import { useEffect } from 'react'
+import seedrandom from 'seedrandom'
 
-type TrackSegment = { angle: number; radius: number } | { distance: number };
+type TrackSegment = { angle: number; radius: number } | { distance: number }
 type TrackDrawSegmentCommon = {
-  distance: number;
-  x: number;
-  y: number;
-  angle: number;
-  trees: [number, number, number][];
-  fX: number;
-  fY: number;
-  fAngle: number;
-};
+  distance: number
+  x: number
+  y: number
+  angle: number
+  trees: [number, number, number][]
+  fX: number
+  fY: number
+  fAngle: number
+}
 type StraightTrackDrawSegment = TrackDrawSegmentCommon & {
-  type: "straight";
-};
+  type: 'straight'
+}
 type ArcTrackDrawSegment = TrackDrawSegmentCommon & {
-  type: "arc";
-  radius: number;
-  cx: number;
-  cy: number;
-  startDrawAngle: number;
-  endDrawAngle: number;
-  right: boolean;
-};
-type TrackDrawSegment = StraightTrackDrawSegment | ArcTrackDrawSegment;
+  type: 'arc'
+  radius: number
+  cx: number
+  cy: number
+  startDrawAngle: number
+  endDrawAngle: number
+  right: boolean
+}
+type TrackDrawSegment = StraightTrackDrawSegment | ArcTrackDrawSegment
 export type CarPosition = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  drawX: number;
-  drawY: number;
-  drawAngle: number;
-};
+  x: number
+  y: number
+  width: number
+  height: number
+  drawX: number
+  drawY: number
+  drawAngle: number
+}
 
 // If we should draw cars directly on the canvas
 // Perf testing found drawing cars directly to take a lot of perf
 // If disabled, cars are drawn in the dom as svgs instead
 // Not sure which is better so leaving this as a toggle
-export const DRAW_CARS_IN_CANVAS = true;
+export const DRAW_CARS_IN_CANVAS = true
 
-const CAR_SPEED = 2000;
-const CAR_SPACING = 150;
-const TRACK_WIDTH = 200;
-const SIDE_WIDTH = 35;
-const CONNECTOR_SEGMENT_WIDTH = 10;
-const FINISH_LINE_SQUARE_ROWS = 4;
-const FINISH_LINE_SQUARE_COLS = 20;
-const CAR_PERCENT = 0.35;
+const CAR_SPEED = 2000
+const CAR_SPACING = 150
+const TRACK_WIDTH = 200
+const SIDE_WIDTH = 35
+const CONNECTOR_SEGMENT_WIDTH = 10
+const FINISH_LINE_SQUARE_ROWS = 4
+const FINISH_LINE_SQUARE_COLS = 20
+const CAR_PERCENT = 0.35
 // car svg viewBox = 49 55 236 109
-const CAR_WIDTH = Math.floor(TRACK_WIDTH * 2 * CAR_PERCENT);
-const CAR_HEIGHT = Math.floor(CAR_WIDTH * (109 / 236));
-const TREE_SPACING = 500;
-const TREE_SIZE = 50;
-const TREE_SEED = "#teamtreees";
-const TREE_CHANCE = 0.25;
-const TREE_MAX_OFFSET = TREE_SIZE * 3;
-const TREE_COLOR = "rgba(0, 155, 0, 1)";
-const FIRST_CAR_CAMERA_X_SCALE = 0.5;
-const FIRST_CAR_CAMERA_Y_SCALE = 0.115;
-const PAN_DOWN_TIME = 2.5;
-const PAN_DOWN_PAUSE = 30;
-const PAN_DOWN_TO_CAR = 3.1; // 0-indexed
-const RENDER_DISTANCE = 5000;
-const CAMERA_MOVE_SPEED = CAR_SPEED;
-const CAMERA_ZOOM_SPEED = 1.125;
+const CAR_WIDTH = Math.floor(TRACK_WIDTH * 2 * CAR_PERCENT)
+const CAR_HEIGHT = Math.floor(CAR_WIDTH * (109 / 236))
+const TREE_SPACING = 500
+const TREE_SIZE = 50
+const TREE_SEED = '#teamtreees'
+const TREE_CHANCE = 0.25
+const TREE_MAX_OFFSET = TREE_SIZE * 3
+const TREE_COLOR = 'rgba(0, 155, 0, 1)'
+const FIRST_CAR_CAMERA_X_SCALE = 0.5
+const FIRST_CAR_CAMERA_Y_SCALE = 0.115
+const PAN_DOWN_TIME = 2.5
+const PAN_DOWN_PAUSE = 30
+const PAN_DOWN_TO_CAR = 3.1 // 0-indexed
+const RENDER_DISTANCE = 5000
+const CAMERA_MOVE_SPEED = CAR_SPEED
+const CAMERA_ZOOM_SPEED = 1.125
 
-const SCALE = 20;
+const SCALE = 20
 // The track defined as straight and angled segments
 const TRACK: TrackSegment[] = [
   { distance: 100 * SCALE },
@@ -107,95 +107,95 @@ const TRACK: TrackSegment[] = [
   { distance: 183.5875 * SCALE },
   { angle: 90, radius: 75 * SCALE },
   { distance: 100 * SCALE }
-];
+]
 
 // Camera position
-let cameraFollowing = true;
-let cameraX: number = 0;
-let cameraY: number = 0;
-let cameraAngle: number = 0;
-let cameraScale: number = 1;
+let cameraFollowing = true
+let cameraX: number = 0
+let cameraY: number = 0
+let cameraAngle: number = 0
+let cameraScale: number = 1
 
 // We need to resize the canvas to match the space it takes up
 function resizeCanvas(canvas: HTMLCanvasElement) {
-  const realSize = canvas.getBoundingClientRect();
-  canvas.width = realSize.width;
-  canvas.height = realSize.height;
+  const realSize = canvas.getBoundingClientRect()
+  canvas.width = realSize.width
+  canvas.height = realSize.height
 }
 
 // Handle camera input
 function useCameraInput() {
   useEffect(() => {
-    const pressed: Record<string, boolean | undefined> = {};
+    const pressed: Record<string, boolean | undefined> = {}
     function keydown(event: KeyboardEvent) {
-      pressed[event.code] = true;
+      pressed[event.code] = true
     }
     function keyup(event: KeyboardEvent) {
-      pressed[event.code] = false;
+      pressed[event.code] = false
 
-      if (event.code === "KeyF") {
+      if (event.code === 'KeyF') {
         if (cameraFollowing) {
-          cameraFollowing = false;
+          cameraFollowing = false
         } else {
-          cameraFollowing = true;
-          cameraScale = 1;
+          cameraFollowing = true
+          cameraScale = 1
         }
       }
     }
     function wheel(event: WheelEvent) {
       if (event.deltaY > 0) {
-        cameraScale *= 1 / CAMERA_ZOOM_SPEED;
+        cameraScale *= 1 / CAMERA_ZOOM_SPEED
       } else if (event.deltaY < 0) {
-        cameraScale *= CAMERA_ZOOM_SPEED;
+        cameraScale *= CAMERA_ZOOM_SPEED
       }
 
       if (Math.abs(cameraScale - 1) < 0.01) {
-        cameraScale = 1;
+        cameraScale = 1
       }
     }
-    window.addEventListener("keydown", keydown);
-    window.addEventListener("keyup", keyup);
-    window.addEventListener("wheel", wheel);
+    window.addEventListener('keydown', keydown)
+    window.addEventListener('keyup', keyup)
+    window.addEventListener('wheel', wheel)
 
-    let frame: number;
-    let prev: number;
+    let frame: number
+    let prev: number
     function updateInput() {
-      const now = Date.now();
+      const now = Date.now()
       if (!prev) {
-        prev = now;
+        prev = now
       }
-      const delta = (now - prev) / 1000;
+      const delta = (now - prev) / 1000
 
-      if (pressed["KeyW"]) {
-        cameraFollowing = false;
-        cameraY -= delta * (CAMERA_MOVE_SPEED / cameraScale);
+      if (pressed['KeyW']) {
+        cameraFollowing = false
+        cameraY -= delta * (CAMERA_MOVE_SPEED / cameraScale)
       }
-      if (pressed["KeyS"]) {
-        cameraFollowing = false;
-        cameraY += delta * (CAMERA_MOVE_SPEED / cameraScale);
+      if (pressed['KeyS']) {
+        cameraFollowing = false
+        cameraY += delta * (CAMERA_MOVE_SPEED / cameraScale)
       }
-      if (pressed["KeyA"]) {
-        cameraFollowing = false;
-        cameraX -= delta * (CAMERA_MOVE_SPEED / cameraScale);
+      if (pressed['KeyA']) {
+        cameraFollowing = false
+        cameraX -= delta * (CAMERA_MOVE_SPEED / cameraScale)
       }
-      if (pressed["KeyD"]) {
-        cameraFollowing = false;
-        cameraX += delta * (CAMERA_MOVE_SPEED / cameraScale);
+      if (pressed['KeyD']) {
+        cameraFollowing = false
+        cameraX += delta * (CAMERA_MOVE_SPEED / cameraScale)
       }
 
-      prev = now;
+      prev = now
 
-      frame = requestAnimationFrame(updateInput);
+      frame = requestAnimationFrame(updateInput)
     }
-    frame = requestAnimationFrame(updateInput);
+    frame = requestAnimationFrame(updateInput)
 
     return () => {
-      window.removeEventListener("keydown", keydown);
-      window.removeEventListener("keyup", keyup);
-      window.removeEventListener("wheel", wheel);
-      cancelAnimationFrame(frame);
-    };
-  }, []);
+      window.removeEventListener('keydown', keydown)
+      window.removeEventListener('keyup', keyup)
+      window.removeEventListener('wheel', wheel)
+      cancelAnimationFrame(frame)
+    }
+  }, [])
 }
 
 // A hook which connects to the update animation loop
@@ -210,22 +210,22 @@ export default function useUpdateAnimationLoop({
   roadSidingImage,
   leaderboard
 }: {
-  entryRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
-  trackPercent: number;
-  carImages: Record<IconColor, HTMLImageElement> | undefined;
-  roadImage: HTMLImageElement | undefined;
-  roadSidingImage: HTMLImageElement | undefined;
-  leaderboard: LeaderboardEntry[] | undefined;
+  entryRefs: React.RefObject<(HTMLDivElement | null)[]>
+  canvasRef: React.RefObject<HTMLCanvasElement>
+  trackPercent: number
+  carImages: Record<IconColor, HTMLImageElement> | undefined
+  roadImage: HTMLImageElement | undefined
+  roadSidingImage: HTMLImageElement | undefined
+  leaderboard: LeaderboardEntry[] | undefined
 }) {
-  useCameraInput();
+  useCameraInput()
 
   useEffect(() => {
-    let frame: number;
+    let frame: number
     async function init() {
-      if (!roadImage || !roadSidingImage) return;
+      if (!roadImage || !roadSidingImage) return
 
-      const { trackDrawSegments, totalDistance } = getTrackDrawSegments(TRACK);
+      const { trackDrawSegments, totalDistance } = getTrackDrawSegments(TRACK)
       const bitmaps = {
         cars: carImages && (await generateCarBitmaps(carImages)),
         road: await createBitmapFromImage(
@@ -238,13 +238,13 @@ export default function useUpdateAnimationLoop({
           roadSidingImage.width * 0.025,
           roadSidingImage.height * 0.025
         )
-      };
+      }
 
       function update() {
         // Resize the canvas so it matches the actual css space it takes up
         if (canvasRef.current) {
-          resizeCanvas(canvasRef.current);
-          const ctx = canvasRef.current.getContext("2d");
+          resizeCanvas(canvasRef.current)
+          const ctx = canvasRef.current.getContext('2d')
           if (ctx) {
             const result = draw(
               ctx,
@@ -253,71 +253,68 @@ export default function useUpdateAnimationLoop({
               totalDistance,
               bitmaps,
               leaderboard
-            );
+            )
             if (result) {
-              const { positions, transform, zoomedOut } = result;
+              const { positions, transform, zoomedOut } = result
               for (const [i, pos] of positions.entries()) {
-                const entryRef = entryRefs.current && entryRefs.current[i];
-                if (!entryRef) continue;
+                const entryRef = entryRefs.current && entryRefs.current[i]
+                if (!entryRef) continue
 
                 const transformed = transform.transformPoint(
                   new DOMPoint(pos.x, pos.y)
-                );
-                const scaleX = Math.hypot(transform.a, transform.b);
-                const scaleY = Math.hypot(transform.c, transform.d);
-                const widthTransformed = pos.width * scaleX;
-                const heightTransformed = pos.height * scaleY;
+                )
+                const scaleX = Math.hypot(transform.a, transform.b)
+                const scaleY = Math.hypot(transform.c, transform.d)
+                const widthTransformed = pos.width * scaleX
+                const heightTransformed = pos.height * scaleY
                 const drawTransformed = transform.transformPoint(
                   new DOMPoint(pos.drawX, pos.drawY)
-                );
+                )
                 const drawAngleTransformed =
-                  pos.drawAngle + Math.atan2(transform.b, transform.a);
+                  pos.drawAngle + Math.atan2(transform.b, transform.a)
                 const stagerOffset =
-                  (0.6 + (i % 2 == 0 ? 0.3 : -0.3)) * widthTransformed;
-                const scorecardX = transformed.x + stagerOffset;
-                const scorecardY = transformed.y;
+                  (0.6 + (i % 2 == 0 ? 0.3 : -0.3)) * widthTransformed
+                const scorecardX = transformed.x + stagerOffset
+                const scorecardY = transformed.y
                 const scorecardVisible =
                   !zoomedOut &&
                   !!canvasRef.current &&
                   transformed.x > canvasRef.current.width * 0.05 &&
                   transformed.x < canvasRef.current.width * 0.95 &&
                   transformed.y > canvasRef.current.height * 0.05 &&
-                  transformed.y < canvasRef.current.height * 0.95;
+                  transformed.y < canvasRef.current.height * 0.95
 
                 // We update the entries using css variables instead of using state
                 // to avoid a component re-render every frame from positions changing
-                entryRef.style.setProperty("--drawX", `${drawTransformed.x}px`);
-                entryRef.style.setProperty("--drawY", `${drawTransformed.y}px`);
+                entryRef.style.setProperty('--drawX', `${drawTransformed.x}px`)
+                entryRef.style.setProperty('--drawY', `${drawTransformed.y}px`)
                 entryRef.style.setProperty(
-                  "--drawAngle",
+                  '--drawAngle',
                   `${drawAngleTransformed}rad`
-                );
-                entryRef.style.setProperty("--width", `${widthTransformed}px`);
+                )
+                entryRef.style.setProperty('--width', `${widthTransformed}px`)
+                entryRef.style.setProperty('--height', `${heightTransformed}px`)
+                entryRef.style.setProperty('--scorecardX', `${scorecardX}px`)
+                entryRef.style.setProperty('--scorecardY', `${scorecardY}px`)
                 entryRef.style.setProperty(
-                  "--height",
-                  `${heightTransformed}px`
-                );
-                entryRef.style.setProperty("--scorecardX", `${scorecardX}px`);
-                entryRef.style.setProperty("--scorecardY", `${scorecardY}px`);
-                entryRef.style.setProperty(
-                  "--scorecardOpacity",
-                  scorecardVisible ? "1" : "0"
-                );
+                  '--scorecardOpacity',
+                  scorecardVisible ? '1' : '0'
+                )
               }
             }
           }
         }
 
-        frame = requestAnimationFrame(update);
+        frame = requestAnimationFrame(update)
       }
 
-      frame = requestAnimationFrame(update);
+      frame = requestAnimationFrame(update)
     }
 
-    init().catch(console.error);
+    init().catch(console.error)
 
     // On cancel, make sure to cancel the previous frame loop
-    return () => cancelAnimationFrame(frame);
+    return () => cancelAnimationFrame(frame)
   }, [
     entryRefs,
     canvasRef,
@@ -326,7 +323,7 @@ export default function useUpdateAnimationLoop({
     roadImage,
     roadSidingImage,
     leaderboard
-  ]);
+  ])
 }
 
 // createImageBitmap isn't supported properly for svgs on some browsers, so we implement it ourselves
@@ -335,13 +332,13 @@ async function createBitmapFromImage(
   width: number,
   height: number
 ) {
-  const canvas = new OffscreenCanvas(width, height);
-  const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const canvas = new OffscreenCanvas(width, height)
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
 
   // Now create a bitmap from the resized canvas
-  const bitmap = await createImageBitmap(canvas);
-  return bitmap;
+  const bitmap = await createImageBitmap(canvas)
+  return bitmap
 }
 
 async function generateCarBitmaps(
@@ -352,23 +349,23 @@ async function generateCarBitmaps(
       color,
       await createBitmapFromImage(img, CAR_WIDTH * 2, CAR_HEIGHT * 2)
     ])
-  );
+  )
 
-  return Object.fromEntries(entries) as Record<IconColor, ImageBitmap>;
+  return Object.fromEntries(entries) as Record<IconColor, ImageBitmap>
 }
 
 function getTrackDrawSegments(track: TrackSegment[]) {
   // The starting position and angle
-  let x = 125;
-  let y = 125;
-  let angle = 0;
-  let totalDistance = 0;
+  let x = 125
+  let y = 125
+  let angle = 0
+  let totalDistance = 0
 
-  const rng = seedrandom(TREE_SEED);
-  const trackDrawSegments: TrackDrawSegment[] = [];
+  const rng = seedrandom(TREE_SEED)
+  const trackDrawSegments: TrackDrawSegment[] = []
   for (const segment of track) {
     const trackDrawSegment: TrackDrawSegment =
-      "distance" in segment
+      'distance' in segment
         ? getStraightTrackDrawSegment(x, y, angle, rng, segment.distance)
         : getArcTrackDrawSegment(
             x,
@@ -377,16 +374,16 @@ function getTrackDrawSegments(track: TrackSegment[]) {
             rng,
             segment.angle,
             segment.radius
-          );
+          )
 
-    trackDrawSegments.push(trackDrawSegment);
-    x = trackDrawSegment.fX;
-    y = trackDrawSegment.fY;
-    angle = trackDrawSegment.fAngle;
-    totalDistance += trackDrawSegment.distance;
+    trackDrawSegments.push(trackDrawSegment)
+    x = trackDrawSegment.fX
+    y = trackDrawSegment.fY
+    angle = trackDrawSegment.fAngle
+    totalDistance += trackDrawSegment.distance
   }
 
-  return { trackDrawSegments, totalDistance };
+  return { trackDrawSegments, totalDistance }
 }
 
 function getStraightTrackDrawSegment(
@@ -396,11 +393,11 @@ function getStraightTrackDrawSegment(
   rng: seedrandom.PRNG,
   distance: number
 ): TrackDrawSegment {
-  const fX = x + distance * Math.cos(rad(angle));
-  const fY = y + distance * Math.sin(rad(angle));
-  const fAngle = angle;
+  const fX = x + distance * Math.cos(rad(angle))
+  const fY = y + distance * Math.sin(rad(angle))
+  const fAngle = angle
 
-  const maxTrees = Math.floor(distance / TREE_SPACING);
+  const maxTrees = Math.floor(distance / TREE_SPACING)
   const trees = Array.from(
     { length: maxTrees },
     () =>
@@ -409,10 +406,10 @@ function getStraightTrackDrawSegment(
         rng() * Math.PI - Math.PI / 2,
         rng() * TREE_MAX_OFFSET
       ] satisfies [number, number, number]
-  );
+  )
 
   return {
-    type: "straight",
+    type: 'straight',
     distance,
     x,
     y,
@@ -421,7 +418,7 @@ function getStraightTrackDrawSegment(
     fX,
     fY,
     fAngle
-  };
+  }
 }
 
 function getArcTrackDrawSegment(
@@ -432,22 +429,22 @@ function getArcTrackDrawSegment(
   arcAngle: number,
   radius: number
 ): TrackDrawSegment {
-  const fAngle = angle + arcAngle;
-  const right = arcAngle > 0;
-  const sign = right ? 1 : -1;
-  const cx = x + radius * Math.cos(rad(angle) + (sign * Math.PI) / 2);
-  const cy = y + radius * Math.sin(rad(angle) + (sign * Math.PI) / 2);
-  const startDrawAngle = rad(angle) - (sign * Math.PI) / 2;
-  const endDrawAngle = rad(fAngle) - (sign * Math.PI) / 2;
+  const fAngle = angle + arcAngle
+  const right = arcAngle > 0
+  const sign = right ? 1 : -1
+  const cx = x + radius * Math.cos(rad(angle) + (sign * Math.PI) / 2)
+  const cy = y + radius * Math.sin(rad(angle) + (sign * Math.PI) / 2)
+  const startDrawAngle = rad(angle) - (sign * Math.PI) / 2
+  const endDrawAngle = rad(fAngle) - (sign * Math.PI) / 2
 
-  const fX = cx + radius * Math.cos(endDrawAngle);
-  const fY = cy + radius * Math.sin(endDrawAngle);
+  const fX = cx + radius * Math.cos(endDrawAngle)
+  const fY = cy + radius * Math.sin(endDrawAngle)
   const angleDiff = right
     ? endDrawAngle - startDrawAngle
-    : startDrawAngle - endDrawAngle;
-  const distance = 2 * Math.PI * radius * (angleDiff / (Math.PI * 2));
+    : startDrawAngle - endDrawAngle
+  const distance = 2 * Math.PI * radius * (angleDiff / (Math.PI * 2))
 
-  const maxTrees = Math.floor(distance / TREE_SPACING);
+  const maxTrees = Math.floor(distance / TREE_SPACING)
   const trees = Array.from(
     { length: maxTrees },
     () =>
@@ -456,11 +453,11 @@ function getArcTrackDrawSegment(
         rng() * Math.PI - Math.PI / 2,
         rng() * TREE_MAX_OFFSET
       ] satisfies [number, number, number]
-  );
+  )
 
   // Create the metadata
   return {
-    type: "arc",
+    type: 'arc',
     distance,
     x,
     y,
@@ -475,7 +472,7 @@ function getArcTrackDrawSegment(
     startDrawAngle,
     endDrawAngle,
     right
-  };
+  }
 }
 
 function getTrackPosition(
@@ -483,56 +480,56 @@ function getTrackPosition(
   totalDistance: number,
   position: number
 ) {
-  let distance = position % totalDistance;
+  let distance = position % totalDistance
 
   if (distance < 0) {
-    distance = (distance + totalDistance) % totalDistance;
+    distance = (distance + totalDistance) % totalDistance
   }
 
   // Figure out which segment the provided position is at, then draw at the right position along that
   for (const [i, segment] of trackDrawSegments.entries()) {
     // If it's not the next segment, we need to draw it somewhere in this segment
     if (distance < segment.distance) {
-      const alpha = distance / segment.distance;
-      if (segment.type == "straight") {
+      const alpha = distance / segment.distance
+      if (segment.type == 'straight') {
         // Straight, linearly interpolate
         return {
           x: segment.x * (1 - alpha) + segment.fX * alpha,
           y: segment.y * (1 - alpha) + segment.fY * alpha,
           angle: rad(segment.angle) - Math.PI / 2,
           i
-        };
-      } else if (segment.type == "arc") {
+        }
+      } else if (segment.type == 'arc') {
         // Arc, interpolate the arc
-        const right = segment.startDrawAngle < segment.endDrawAngle;
+        const right = segment.startDrawAngle < segment.endDrawAngle
         const posAngle =
           rad(segment.angle) * (1 - alpha) +
           rad(segment.fAngle) * alpha +
-          (right ? -Math.PI / 2 : Math.PI / 2);
+          (right ? -Math.PI / 2 : Math.PI / 2)
         return {
           x: segment.cx + segment.radius * Math.cos(posAngle),
           y: segment.cy + segment.radius * Math.sin(posAngle),
           angle: right ? posAngle : posAngle - Math.PI,
           i
-        };
+        }
       }
-      break;
+      break
     }
 
     // It's not this segment, move on
-    distance -= segment.distance;
+    distance -= segment.distance
   }
 
   // If it's not on the track, give up
-  throw Error(`Invalid position: ${position}`);
+  throw Error(`Invalid position: ${position}`)
 }
 
 const carCycles: {
-  offsetX: number;
-  cycleX: number;
-  offsetY: number;
-  cycleY: number;
-}[] = [];
+  offsetX: number
+  cycleX: number
+  offsetY: number
+  cycleY: number
+}[] = []
 
 // The main draw function - called every frame to draw the track & cars
 function draw(
@@ -541,20 +538,20 @@ function draw(
   trackDrawSegments: TrackDrawSegment[],
   totalDistance: number,
   bitmaps: {
-    cars?: Record<IconColor, ImageBitmap>;
-    road?: ImageBitmap;
-    roadSiding?: ImageBitmap;
+    cars?: Record<IconColor, ImageBitmap>
+    road?: ImageBitmap
+    roadSiding?: ImageBitmap
   },
   leaderboard?: LeaderboardEntry[]
 ) {
-  const { width, height } = ctx.canvas;
-  const timeSeconds = Date.now() / 1000;
+  const { width, height } = ctx.canvas
+  const timeSeconds = Date.now() / 1000
 
   // Clear screen
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, width, height)
 
   // Increment the position the leading car is at based on time
-  const leadingCarPosition = (timeSeconds * CAR_SPEED) % totalDistance;
+  const leadingCarPosition = (timeSeconds * CAR_SPEED) % totalDistance
 
   // Update camera
   updateCamera(
@@ -564,19 +561,19 @@ function draw(
     trackDrawSegments,
     totalDistance,
     leadingCarPosition
-  );
+  )
 
   // We need road image to draw track
   if (!bitmaps.road || !bitmaps.roadSiding) {
-    return;
+    return
   }
 
   // Draw track
-  drawTrack(ctx, trackDrawSegments, bitmaps.road, bitmaps.roadSiding);
+  drawTrack(ctx, trackDrawSegments, bitmaps.road, bitmaps.roadSiding)
 
   // We need leaderboard and car images to draw the cars
   if (!leaderboard) {
-    return;
+    return
   }
 
   // Draw cars
@@ -588,14 +585,14 @@ function draw(
     totalDistance,
     leaderboard,
     bitmaps.cars
-  );
+  )
 
   // Return positions of cars
   return {
     positions,
     transform: ctx.getTransform(),
     zoomedOut: cameraScale < 0.75
-  };
+  }
 }
 
 // Cycles through:
@@ -604,19 +601,19 @@ function draw(
 // 3. pause for PAN_DOWN_PAUSE
 // 4. pan up to 0
 function getCameraFocus(timeSeconds: number) {
-  const t = timeSeconds % ((PAN_DOWN_TIME + PAN_DOWN_PAUSE) * 2);
+  const t = timeSeconds % ((PAN_DOWN_TIME + PAN_DOWN_PAUSE) * 2)
   if (t < PAN_DOWN_PAUSE) {
-    return 0;
+    return 0
   } else if (t < PAN_DOWN_PAUSE + PAN_DOWN_TIME) {
-    return ((t - PAN_DOWN_PAUSE) / PAN_DOWN_TIME) * PAN_DOWN_TO_CAR;
+    return ((t - PAN_DOWN_PAUSE) / PAN_DOWN_TIME) * PAN_DOWN_TO_CAR
   } else if (t < PAN_DOWN_PAUSE + PAN_DOWN_TIME + PAN_DOWN_PAUSE) {
-    return PAN_DOWN_TO_CAR;
+    return PAN_DOWN_TO_CAR
   } else {
     return (
       PAN_DOWN_TO_CAR -
       ((t - PAN_DOWN_PAUSE - PAN_DOWN_TIME - PAN_DOWN_PAUSE) / PAN_DOWN_TIME) *
         PAN_DOWN_TO_CAR
-    );
+    )
   }
 }
 
@@ -629,7 +626,7 @@ function updateCamera(
   totalDistance: number,
   position: number
 ) {
-  const focusPosition = position - CAR_SPACING * getCameraFocus(timeSeconds);
+  const focusPosition = position - CAR_SPACING * getCameraFocus(timeSeconds)
 
   // Update camera if following
   if (cameraFollowing) {
@@ -637,28 +634,28 @@ function updateCamera(
       trackDrawSegments,
       totalDistance,
       focusPosition
-    );
-    cameraX = x;
-    cameraY = y;
-    cameraAngle = angle - Math.PI;
+    )
+    cameraX = x
+    cameraY = y
+    cameraAngle = angle - Math.PI
   } else {
-    cameraAngle = 0;
+    cameraAngle = 0
   }
 
   // Move origin to screen center
   const centerX =
-    (cameraFollowing ? FIRST_CAR_CAMERA_X_SCALE : 0.5) * trackPercent;
-  const centerY = cameraFollowing ? FIRST_CAR_CAMERA_Y_SCALE : 0.5;
-  ctx.translate(ctx.canvas.width * centerX, ctx.canvas.height * centerY);
+    (cameraFollowing ? FIRST_CAR_CAMERA_X_SCALE : 0.5) * trackPercent
+  const centerY = cameraFollowing ? FIRST_CAR_CAMERA_Y_SCALE : 0.5
+  ctx.translate(ctx.canvas.width * centerX, ctx.canvas.height * centerY)
 
   // Scale to user screen vs expected world space
-  const scale = (ctx.canvas.height / 1100) * cameraScale;
+  const scale = (ctx.canvas.height / 1100) * cameraScale
 
-  ctx.scale(scale, scale);
+  ctx.scale(scale, scale)
   // Rotate world so car faces "up"
-  ctx.rotate(-cameraAngle);
+  ctx.rotate(-cameraAngle)
   // Move world so car is centered
-  ctx.translate(-cameraX, -cameraY);
+  ctx.translate(-cameraX, -cameraY)
 }
 
 // Draw the track cars drive on
@@ -669,44 +666,44 @@ function drawTrack(
   roadSidingBitmap: ImageBitmap
 ) {
   // Get the segments that are drawable
-  const drawSegments = [];
+  const drawSegments = []
   for (const segment of trackDrawSegments) {
     const startDistance = Math.sqrt(
       Math.pow(cameraX - segment.x, 2) + Math.pow(cameraY - segment.y, 2)
-    );
+    )
     const endDistance = Math.sqrt(
       Math.pow(cameraX - segment.fX, 2) + Math.pow(cameraY - segment.fY, 2)
-    );
+    )
     if (
       Math.min(startDistance, endDistance) <
       RENDER_DISTANCE / Math.min(1, cameraScale)
     ) {
-      drawSegments.push(segment);
+      drawSegments.push(segment)
     }
   }
 
   // Draw siding first
-  const roadSidingPattern = ctx.createPattern(roadSidingBitmap, "repeat");
-  if (!roadSidingPattern) return;
+  const roadSidingPattern = ctx.createPattern(roadSidingBitmap, 'repeat')
+  if (!roadSidingPattern) return
   for (const segment of drawSegments) {
-    drawTrackSegmentSide(ctx, segment, roadSidingPattern);
+    drawTrackSegmentSide(ctx, segment, roadSidingPattern)
   }
 
   // Then draw track
-  const roadPattern = ctx.createPattern(roadBitmap, "repeat");
-  if (!roadPattern) return;
+  const roadPattern = ctx.createPattern(roadBitmap, 'repeat')
+  if (!roadPattern) return
   for (const segment of drawSegments) {
-    drawTrackSegment(ctx, segment, roadPattern);
+    drawTrackSegment(ctx, segment, roadPattern)
   }
 
   // Plant some trees
   for (const segment of drawSegments) {
-    drawTrees(ctx, segment);
+    drawTrees(ctx, segment)
   }
 
   // Draw the finish line
-  const { x, y, angle } = trackDrawSegments[0];
-  drawFinishLine(ctx, x, y, angle);
+  const { x, y, angle } = trackDrawSegments[0]
+  drawFinishLine(ctx, x, y, angle)
 }
 
 function drawTrackSegmentSide(
@@ -714,27 +711,27 @@ function drawTrackSegmentSide(
   segment: TrackDrawSegment,
   style: string | CanvasPattern
 ) {
-  const { type, x, y, angle, fX, fY } = segment;
+  const { type, x, y, angle, fX, fY } = segment
   // Draw the red-white side of the track
-  ctx.lineWidth = TRACK_WIDTH + SIDE_WIDTH;
+  ctx.lineWidth = TRACK_WIDTH + SIDE_WIDTH
 
-  if (type == "straight") {
-    ctx.beginPath();
-    ctx.strokeStyle = style;
-    ctx.moveTo(x, y);
-    ctx.lineTo(fX, fY);
-    ctx.stroke();
-  } else if (type == "arc") {
-    const { startDrawAngle, endDrawAngle, cx, cy, radius, right } = segment;
-    ctx.strokeStyle = style;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, startDrawAngle, endDrawAngle, !right);
-    ctx.stroke();
+  if (type == 'straight') {
+    ctx.beginPath()
+    ctx.strokeStyle = style
+    ctx.moveTo(x, y)
+    ctx.lineTo(fX, fY)
+    ctx.stroke()
+  } else if (type == 'arc') {
+    const { startDrawAngle, endDrawAngle, cx, cy, radius, right } = segment
+    ctx.strokeStyle = style
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, startDrawAngle, endDrawAngle, !right)
+    ctx.stroke()
   }
 
   // Segment to reduce sub-pixel error
-  ctx.fillStyle = style;
-  drawTrackSegmentConnector(ctx, x, y, angle, TRACK_WIDTH + SIDE_WIDTH);
+  ctx.fillStyle = style
+  drawTrackSegmentConnector(ctx, x, y, angle, TRACK_WIDTH + SIDE_WIDTH)
 }
 
 function drawTrackSegment(
@@ -742,24 +739,24 @@ function drawTrackSegment(
   segment: TrackDrawSegment,
   style: string | CanvasPattern
 ) {
-  ctx.lineWidth = TRACK_WIDTH;
-  ctx.strokeStyle = style;
-  const { type, x, y, angle, fX, fY } = segment;
-  if (type == "straight") {
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(fX, fY);
-    ctx.stroke();
-  } else if (type == "arc") {
-    const { startDrawAngle, endDrawAngle, cx, cy, radius, right } = segment;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, startDrawAngle, endDrawAngle, !right);
-    ctx.stroke();
+  ctx.lineWidth = TRACK_WIDTH
+  ctx.strokeStyle = style
+  const { type, x, y, angle, fX, fY } = segment
+  if (type == 'straight') {
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    ctx.lineTo(fX, fY)
+    ctx.stroke()
+  } else if (type == 'arc') {
+    const { startDrawAngle, endDrawAngle, cx, cy, radius, right } = segment
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, startDrawAngle, endDrawAngle, !right)
+    ctx.stroke()
   }
 
   // Segment to reduce sub-pixel error
-  ctx.fillStyle = style;
-  drawTrackSegmentConnector(ctx, x, y, angle, TRACK_WIDTH);
+  ctx.fillStyle = style
+  drawTrackSegmentConnector(ctx, x, y, angle, TRACK_WIDTH)
 }
 
 function drawTrackSegmentConnector(
@@ -769,21 +766,14 @@ function drawTrackSegmentConnector(
   angle: number,
   width: number
 ) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(rad(angle));
-  ctx.beginPath();
-  const connectorSegmentWidth = Math.ceil(
-    CONNECTOR_SEGMENT_WIDTH / cameraScale
-  );
-  ctx.rect(
-    -connectorSegmentWidth / 2,
-    -width / 2,
-    connectorSegmentWidth,
-    width
-  );
-  ctx.fill();
-  ctx.restore();
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.rotate(rad(angle))
+  ctx.beginPath()
+  const connectorSegmentWidth = Math.ceil(CONNECTOR_SEGMENT_WIDTH / cameraScale)
+  ctx.rect(-connectorSegmentWidth / 2, -width / 2, connectorSegmentWidth, width)
+  ctx.fill()
+  ctx.restore()
 }
 
 function drawFinishLine(
@@ -792,82 +782,82 @@ function drawFinishLine(
   y: number,
   angle: number
 ) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(rad(angle));
-  const width = TRACK_WIDTH;
-  const squareSize = width / FINISH_LINE_SQUARE_COLS;
-  const height = squareSize * FINISH_LINE_SQUARE_ROWS;
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.rotate(rad(angle))
+  const width = TRACK_WIDTH
+  const squareSize = width / FINISH_LINE_SQUARE_COLS
+  const height = squareSize * FINISH_LINE_SQUARE_ROWS
 
   for (let i = 0; i < FINISH_LINE_SQUARE_ROWS; i++) {
     for (let j = 0; j < FINISH_LINE_SQUARE_COLS; j++) {
-      ctx.beginPath();
-      ctx.fillStyle = (i + j) % 2 == 0 ? "#fff" : "#000";
+      ctx.beginPath()
+      ctx.fillStyle = (i + j) % 2 == 0 ? '#fff' : '#000'
       ctx.rect(
         i * squareSize - height / 2,
         j * squareSize - width / 2,
         squareSize,
         squareSize
-      );
-      ctx.fill();
+      )
+      ctx.fill()
     }
   }
 
-  ctx.restore();
+  ctx.restore()
 }
 
 function drawTrees(ctx: CanvasRenderingContext2D, segment: TrackDrawSegment) {
-  const { type, x, y, angle, trees, fX, fY, distance } = segment;
-  const maxTrees = Math.floor(distance / TREE_SPACING);
-  if (type == "straight") {
-    const perpAngle = rad(angle) + Math.PI / 2;
-    const nx = TRACK_WIDTH * 1.5 * Math.cos(perpAngle);
-    const ny = TRACK_WIDTH * 1.5 * Math.sin(perpAngle);
-    const dx = fX - x;
-    const dy = fY - y;
+  const { type, x, y, angle, trees, fX, fY, distance } = segment
+  const maxTrees = Math.floor(distance / TREE_SPACING)
+  if (type == 'straight') {
+    const perpAngle = rad(angle) + Math.PI / 2
+    const nx = TRACK_WIDTH * 1.5 * Math.cos(perpAngle)
+    const ny = TRACK_WIDTH * 1.5 * Math.sin(perpAngle)
+    const dx = fX - x
+    const dy = fY - y
 
     for (let i = 0; i < maxTrees; i++) {
-      const midpointX = x + (i / maxTrees) * dx;
-      const midpointY = y + (i / maxTrees) * dy;
-      const [spawn, treeAngle, treeDistance] = trees[i];
+      const midpointX = x + (i / maxTrees) * dx
+      const midpointY = y + (i / maxTrees) * dy
+      const [spawn, treeAngle, treeDistance] = trees[i]
       if (spawn) {
-        const dx = treeDistance * Math.cos(treeAngle + perpAngle) * spawn;
-        const dy = treeDistance * Math.sin(treeAngle + perpAngle) * spawn;
-        drawTree(ctx, midpointX + nx * spawn + dx, midpointY + ny * spawn + dy);
+        const dx = treeDistance * Math.cos(treeAngle + perpAngle) * spawn
+        const dy = treeDistance * Math.sin(treeAngle + perpAngle) * spawn
+        drawTree(ctx, midpointX + nx * spawn + dx, midpointY + ny * spawn + dy)
       }
     }
-  } else if (type == "arc") {
-    const { startDrawAngle, endDrawAngle, cx, cy, radius } = segment;
-    const dAngle = endDrawAngle - startDrawAngle;
+  } else if (type == 'arc') {
+    const { startDrawAngle, endDrawAngle, cx, cy, radius } = segment
+    const dAngle = endDrawAngle - startDrawAngle
     for (let i = 0; i < maxTrees; i++) {
-      const angleAlongArc = startDrawAngle + (i / maxTrees) * dAngle;
+      const angleAlongArc = startDrawAngle + (i / maxTrees) * dAngle
 
-      const centerX = cx + radius * Math.cos(angleAlongArc);
-      const centerY = cy + radius * Math.sin(angleAlongArc);
+      const centerX = cx + radius * Math.cos(angleAlongArc)
+      const centerY = cy + radius * Math.sin(angleAlongArc)
 
-      const nx = TRACK_WIDTH * 1.5 * Math.cos(angleAlongArc);
-      const ny = TRACK_WIDTH * 1.5 * Math.sin(angleAlongArc);
-      const [spawn, treeAngle, treeDistance] = trees[i];
+      const nx = TRACK_WIDTH * 1.5 * Math.cos(angleAlongArc)
+      const ny = TRACK_WIDTH * 1.5 * Math.sin(angleAlongArc)
+      const [spawn, treeAngle, treeDistance] = trees[i]
       if (spawn) {
-        const dx = treeDistance * Math.cos(treeAngle + angleAlongArc) * spawn;
-        const dy = treeDistance * Math.sin(treeAngle + angleAlongArc) * spawn;
-        drawTree(ctx, centerX + nx * spawn + dx, centerY + ny * spawn + dy);
+        const dx = treeDistance * Math.cos(treeAngle + angleAlongArc) * spawn
+        const dy = treeDistance * Math.sin(treeAngle + angleAlongArc) * spawn
+        drawTree(ctx, centerX + nx * spawn + dx, centerY + ny * spawn + dy)
       }
     }
   }
 }
 
 function drawTree(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  ctx.fillStyle = TREE_COLOR;
-  ctx.beginPath();
-  ctx.arc(x, y, TREE_SIZE, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x - TREE_SIZE, y + TREE_SIZE / 2, TREE_SIZE, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x, y + TREE_SIZE, TREE_SIZE, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillStyle = TREE_COLOR
+  ctx.beginPath()
+  ctx.arc(x, y, TREE_SIZE, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(x - TREE_SIZE, y + TREE_SIZE / 2, TREE_SIZE, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(x, y + TREE_SIZE, TREE_SIZE, 0, Math.PI * 2)
+  ctx.fill()
 }
 
 // Draws all cars using the starting position
@@ -880,7 +870,7 @@ function drawCars(
   leaderboard: LeaderboardEntry[],
   carBitmaps: Record<IconColor, ImageBitmap> | undefined
 ): CarPosition[] {
-  const positions: CarPosition[] = [];
+  const positions: CarPosition[] = []
 
   for (const [i, entry] of leaderboard.entries()) {
     // Create cycles for x and y drift to add realism
@@ -890,25 +880,24 @@ function drawCars(
         cycleX: 0.5 * Math.random() + 1,
         offsetY: 3 * Math.random(),
         cycleY: 0.5 * Math.random() + 1
-      });
+      })
     }
 
     // Stagger cars left-right-left-right
-    const stagerX = i % 2 == 0 ? 0.25 : -0.25;
+    const stagerX = i % 2 == 0 ? 0.25 : -0.25
     const driftX =
       stagerX +
-      0.1 * Math.sin(timeSeconds / carCycles[i].cycleX + carCycles[i].offsetX);
+      0.1 * Math.sin(timeSeconds / carCycles[i].cycleX + carCycles[i].offsetX)
     const driftY =
-      0.025 *
-      Math.sin(timeSeconds / carCycles[i].cycleY + carCycles[i].offsetY);
+      0.025 * Math.sin(timeSeconds / carCycles[i].cycleY + carCycles[i].offsetY)
 
     // Draw the car
-    const carPosition = position + -CAR_SPACING * i;
+    const carPosition = position + -CAR_SPACING * i
     const { x, y, angle } = getTrackPosition(
       trackDrawSegments,
       totalDistance,
       carPosition
-    );
+    )
     const res = drawCar(
       ctx,
       x,
@@ -917,12 +906,12 @@ function drawCars(
       driftX,
       driftY,
       carBitmaps?.[entry.icon]
-    );
+    )
 
-    positions.push(res);
+    positions.push(res)
   }
 
-  return positions;
+  return positions
 }
 
 // Draw a car using the metadata
@@ -935,31 +924,31 @@ function drawCar(
   driftY: number,
   bitmap: ImageBitmap | undefined
 ): CarPosition {
-  const width = CAR_WIDTH;
-  const height = CAR_HEIGHT;
+  const width = CAR_WIDTH
+  const height = CAR_HEIGHT
   // Draw the car by translating & rotating then drawing the image
   // We need to save and restore to not change the root transform
-  ctx.save();
-  ctx.fillStyle = "#000";
+  ctx.save()
+  ctx.fillStyle = '#000'
 
   // Apply drift
   const drawX =
     x +
     width * driftX * Math.cos(angle + Math.PI) +
-    height * driftY * Math.cos(angle + Math.PI / 2);
+    height * driftY * Math.cos(angle + Math.PI / 2)
   const drawY =
     y +
     width * driftX * Math.sin(angle + Math.PI) +
-    height * driftY * Math.sin(angle + Math.PI / 2);
-  const drawAngle = angle + Math.PI / 2;
+    height * driftY * Math.sin(angle + Math.PI / 2)
+  const drawAngle = angle + Math.PI / 2
 
   if (bitmap && DRAW_CARS_IN_CANVAS) {
-    ctx.translate(drawX, drawY);
-    ctx.rotate(drawAngle);
-    ctx.beginPath();
-    ctx.drawImage(bitmap, -width / 2, -height / 2, width, height);
-    ctx.fill();
-    ctx.restore();
+    ctx.translate(drawX, drawY)
+    ctx.rotate(drawAngle)
+    ctx.beginPath()
+    ctx.drawImage(bitmap, -width / 2, -height / 2, width, height)
+    ctx.fill()
+    ctx.restore()
   }
 
   return {
@@ -970,5 +959,5 @@ function drawCar(
     drawX,
     drawY,
     drawAngle
-  };
+  }
 }

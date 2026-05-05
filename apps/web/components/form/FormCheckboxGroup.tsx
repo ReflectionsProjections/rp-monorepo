@@ -7,21 +7,21 @@ import {
   HStack,
   Text,
   VStack
-} from "@chakra-ui/react";
-import type { FieldProps } from "formik";
-import { FastField, Field } from "formik";
+} from '@chakra-ui/react'
+import type { FieldProps } from 'formik'
+import { FastField, Field } from 'formik'
 
 type Props<
   TValues,
   TFieldName extends keyof (TValues & string),
   TOtherName extends (keyof TValues & string) | undefined = undefined
 > = {
-  name: TFieldName;
-  label: string;
-  options: string[];
+  name: TFieldName
+  label: string
+  options: string[]
 } & (TOtherName extends undefined
   ? { custom?: undefined }
-  : { custom: { name: TOtherName; label: string; maxLength?: number } });
+  : { custom: { name: TOtherName; label: string; maxLength?: number } })
 
 const FormCheckboxGroup = <
   TValues extends Record<string, unknown> & Record<TFieldName, string[]>,
@@ -36,9 +36,9 @@ const FormCheckboxGroup = <
   <FastField name={name}>
     {({ field, form }: FieldProps<TValues[TFieldName], TValues>) => {
       const updateValues = async (values: string[]) => {
-        await form.setFieldValue(name, values);
-        await form.setFieldTouched(name, true);
-      };
+        await form.setFieldValue(name, values)
+        await form.setFieldTouched(name, true)
+      }
 
       return (
         <FormControl
@@ -110,24 +110,24 @@ const FormCheckboxGroup = <
                     >) => {
                       const showCustomInput = field.value?.includes(
                         custom.label
-                      );
+                      )
 
                       return (
                         <Input
                           {...customField}
                           id={custom.name}
-                          placeholder={showCustomInput ? "Please specify" : ""}
-                          _placeholder={{ color: "#CCCCCC" }}
-                          variant={showCustomInput ? "outline" : "flushed"}
+                          placeholder={showCustomInput ? 'Please specify' : ''}
+                          _placeholder={{ color: '#CCCCCC' }}
+                          variant={showCustomInput ? 'outline' : 'flushed'}
                           backgroundColor={
-                            showCustomInput ? "#12131A" : "transparent"
+                            showCustomInput ? '#12131A' : 'transparent'
                           }
                           py={0.5}
                           h="fit-content"
                           disabled={!showCustomInput}
                           maxLength={custom.maxLength}
                         />
-                      );
+                      )
                     }}
                   </Field>
                 </HStack>
@@ -139,9 +139,9 @@ const FormCheckboxGroup = <
               (custom ? form.errors[custom.name] : undefined)}
           </FormErrorMessage>
         </FormControl>
-      );
+      )
     }}
   </FastField>
-);
+)
 
-export default FormCheckboxGroup;
+export default FormCheckboxGroup

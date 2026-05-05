@@ -9,81 +9,81 @@ import {
   Text,
   Badge,
   HStack
-} from "@chakra-ui/react";
-import { FaExternalLinkAlt } from "react-icons/fa";
+} from '@chakra-ui/react'
+import { FaExternalLinkAlt } from 'react-icons/fa'
 
 interface FoodItem {
-  imageUrl?: string;
-  name: string;
-  dietaryRestrictions: string[];
+  imageUrl?: string
+  name: string
+  dietaryRestrictions: string[]
 }
 
 interface FoodMenuData {
-  items: FoodItem[];
-  menuUrl?: string;
+  items: FoodItem[]
+  menuUrl?: string
 }
 
 function parseFoodMenu(description: string): FoodMenuData | null {
-  if (!description.includes(":food:")) {
-    return null;
+  if (!description.includes(':food:')) {
+    return null
   }
 
-  const lines = description.split("\n");
-  const foodStartIndex = lines.findIndex((line) => line.trim() === ":food:");
+  const lines = description.split('\n')
+  const foodStartIndex = lines.findIndex((line) => line.trim() === ':food:')
 
   if (foodStartIndex === -1) {
-    return null;
+    return null
   }
 
-  const items: FoodItem[] = [];
-  let menuUrl: string | undefined;
+  const items: FoodItem[] = []
+  let menuUrl: string | undefined
 
   for (let i = foodStartIndex + 1; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i].trim()
 
-    if (line.startsWith(":")) {
-      if (line.startsWith(":menu:")) {
-        menuUrl = line.replace(":menu:", "").trim();
+    if (line.startsWith(':')) {
+      if (line.startsWith(':menu:')) {
+        menuUrl = line.replace(':menu:', '').trim()
       }
-      break;
+      break
     }
 
-    if (!line) continue;
+    if (!line) continue
 
-    const parts = line.split("|").map((part) => part.trim());
+    const parts = line.split('|').map((part) => part.trim())
     if (parts.length >= 2) {
-      let imageUrl: string | undefined;
-      let name: string;
-      let restrictions: string;
+      let imageUrl: string | undefined
+      let name: string
+      let restrictions: string
 
       if (parts.length === 3) {
         // Format: imageUrl | name | restrictions
-        [imageUrl, name, restrictions] = parts;
+        ;[imageUrl, name, restrictions] = parts
       } else {
         // Format: name | restrictions (no image)
-        [name, restrictions] = parts;
+        ;[name, restrictions] = parts
       }
 
-      const dietaryRestrictions = restrictions.split(",").map((r) => r.trim());
+      const dietaryRestrictions = restrictions.split(',').map((r) => r.trim())
 
       items.push({
         imageUrl,
         name,
         dietaryRestrictions
-      });
+      })
     }
   }
 
-  return items.length > 0 ? { items, menuUrl } : null;
+  return items.length > 0 ? { items, menuUrl } : null
 }
 
 function getDietaryBadgeColor(restriction: string): string {
-  const lowerRestriction = restriction.toLowerCase();
+  const lowerRestriction = restriction.toLowerCase()
 
-  if (lowerRestriction.includes("veg")) return "green";
-  if (lowerRestriction.includes("contains")) return "orange";
+  if (lowerRestriction.includes('veg')) return 'green'
+  if (lowerRestriction.includes('contains')) return 'orange'
 
-  return "gray";
+  return 'gray'
 }
 
 export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
@@ -103,12 +103,12 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
             href={foodMenu.menuUrl}
             isExternal
             color="blue.300"
-            _hover={{ color: "blue.200" }}
+            _hover={{ color: 'blue.200' }}
             display="flex"
             alignItems="center"
             gap={2}
           >
-            <Text fontFamily={"Magistral"}>Full Menu</Text>
+            <Text fontFamily={'Magistral'}>Full Menu</Text>
             <Icon as={FaExternalLinkAlt} boxSize={3} />
           </Link>
         )}
@@ -116,8 +116,8 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
 
       <Grid
         templateColumns={{
-          base: "repeat(1, 1fr)",
-          md: "repeat(2, 1fr)"
+          base: 'repeat(1, 1fr)',
+          md: 'repeat(2, 1fr)'
         }}
         gap={4}
         mb={6}
@@ -130,7 +130,7 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
               overflow="hidden"
               boxShadow="lg"
               transition="transform 0.2s"
-              _hover={{ transform: "scale(1.02)" }}
+              _hover={{ transform: 'scale(1.02)' }}
             >
               <Image
                 src={item.imageUrl}
@@ -156,7 +156,7 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
                   {item.dietaryRestrictions.map((restriction, idx) => (
                     <Badge
                       key={idx}
-                      fontFamily={"Magistral"}
+                      fontFamily={'Magistral'}
                       colorScheme={getDietaryBadgeColor(restriction)}
                       variant="solid"
                       fontSize="xs"
@@ -173,15 +173,15 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
         ))}
       </Grid>
     </Box>
-  );
+  )
 }
 
 export default function FoodMenu({ description }: { description: string }) {
-  const foodMenu = parseFoodMenu(description);
+  const foodMenu = parseFoodMenu(description)
 
   if (!foodMenu) {
-    return null;
+    return null
   }
 
-  return <FoodMenuGrid foodMenu={foodMenu} />;
+  return <FoodMenuGrid foodMenu={foodMenu} />
 }

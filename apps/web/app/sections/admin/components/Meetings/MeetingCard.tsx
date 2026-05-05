@@ -1,4 +1,4 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 import {
   Card,
   CardBody,
@@ -10,39 +10,39 @@ import {
   Text,
   Skeleton,
   SkeletonText
-} from "@chakra-ui/react";
-import type { Meeting } from "@app";
-import moment from "moment";
-import React from "react";
-import EditModal from "./EditModal";
-import DeleteModal from "./DeleteModal";
-import QrModal from "./QrModal";
+} from '@chakra-ui/react'
+import type { Meeting } from '@app'
+import moment from 'moment'
+import React from 'react'
+import EditModal from './EditModal'
+import DeleteModal from './DeleteModal'
+import QrModal from './QrModal'
 
 type MeetingCardProps = {
-  meeting: Meeting;
-  updateMeetings: () => void;
-};
+  meeting: Meeting
+  updateMeetings: () => void
+}
 
-const dateFormat = "MMMM Do YYYY, h:mm a";
+const dateFormat = 'MMMM Do YYYY, h:mm a'
 
 const MeetingCard: React.FC<MeetingCardProps> = ({
   meeting,
   updateMeetings
 }) => {
-  const mirrorStyles = useMirrorStyles(true, true);
+  const mirrorStyles = useMirrorStyles(true, true)
 
-  const startCST = moment.tz(meeting.startTime, "America/Chicago");
+  const startCST = moment.tz(meeting.startTime, 'America/Chicago')
 
   return (
     <Card sx={mirrorStyles} maxW="sm">
       <CardBody>
         <Stack mt="6" spacing="3">
-          <Heading size="md">{`${meeting.committeeType} ${startCST.format("MM/DD")}`}</Heading>
+          <Heading size="md">{`${meeting.committeeType} ${startCST.format('MM/DD')}`}</Heading>
           <Badge
             borderRadius="full"
             px="2"
             colorScheme={
-              meeting.committeeType === "FULL TEAM" ? "pink" : "blue"
+              meeting.committeeType === 'FULL TEAM' ? 'pink' : 'blue'
             }
           >
             {meeting.committeeType}
@@ -59,18 +59,18 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
         </Flex>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
 type MeetingCardSkeletonProps = {
-  animation?: boolean;
-};
+  animation?: boolean
+}
 
 export const MeetingCardSkeleton: React.FC<MeetingCardSkeletonProps> = ({
   animation = true
 }) => {
-  const mirrorStyles = useMirrorStyles();
-  const speed = animation ? undefined : 0;
+  const mirrorStyles = useMirrorStyles()
+  const speed = animation ? undefined : 0
 
   return (
     <Card sx={mirrorStyles} w="sm">
@@ -109,7 +109,7 @@ export const MeetingCardSkeleton: React.FC<MeetingCardSkeletonProps> = ({
         </Flex>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
-export default MeetingCard;
+export default MeetingCard

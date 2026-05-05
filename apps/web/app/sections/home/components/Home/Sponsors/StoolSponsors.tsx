@@ -1,40 +1,40 @@
-import { Box, Image } from "@chakra-ui/react";
-import React from "react";
+import { Box, Image } from '@chakra-ui/react'
+import React from 'react'
 
 interface Character {
-  id: number;
-  src: string;
-  position: number;
+  id: number
+  src: string
+  position: number
 }
 
 const StoolsSponsors: React.FC = () => {
   const characters: Character[] = [
     {
       id: 1,
-      src: "/site/sponsors/stools/left.png",
+      src: '/site/sponsors/stools/left.png',
       position: 0
     },
     {
       id: 2,
-      src: "/site/sponsors/stools/left1.png",
+      src: '/site/sponsors/stools/left1.png',
       position: 1
     },
     {
       id: 3,
-      src: "/site/sponsors/stools/middle.png",
+      src: '/site/sponsors/stools/middle.png',
       position: 2
     },
     {
       id: 4,
-      src: "/site/sponsors/stools/right1.png",
+      src: '/site/sponsors/stools/right1.png',
       position: 3
     },
     {
       id: 5,
-      src: "/site/sponsors/stools/right.png",
+      src: '/site/sponsors/stools/right.png',
       position: 4
     }
-  ];
+  ]
 
   return (
     <>
@@ -87,7 +87,7 @@ const StoolsSponsors: React.FC = () => {
           bottom="0"
           left="50%"
           transform="translateX(-50%)"
-          padding={{ base: "0 0.25rem", md: "0 1rem" }}
+          padding={{ base: '0 0.25rem', md: '0 1rem' }}
           height="fit-content"
         >
           {characters.map((character) => (
@@ -97,23 +97,23 @@ const StoolsSponsors: React.FC = () => {
               alt={`Character ${character.id}`}
               className={`character-${character.id}`}
               height={{
-                base: "45vh",
-                sm: "45vh",
-                md: "50vh"
+                base: '45vh',
+                sm: '45vh',
+                md: '50vh'
               }}
-              minH={"500px"}
+              minH={'500px'}
               cursor="pointer"
               transition="all 0.3s ease-out"
-              transform={"translateY(30px)"}
+              transform={'translateY(30px)'}
               _active={{
-                transform: "translateY(-10px)"
+                transform: 'translateY(-10px)'
               }}
             />
           ))}
         </Box>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default StoolsSponsors;
+export default StoolsSponsors

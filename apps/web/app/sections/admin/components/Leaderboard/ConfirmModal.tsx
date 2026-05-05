@@ -13,18 +13,18 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast
-} from "@chakra-ui/react";
-import { useState } from "react";
-import { ExtendedLeaderboardStats } from "./LeaderboardStats";
-import type { LeaderboardUser } from "@app";
+} from '@chakra-ui/react'
+import { useState } from 'react'
+import { ExtendedLeaderboardStats } from './LeaderboardStats'
+import type { LeaderboardUser } from '@app'
 
 const ConfirmButton: React.FC<{
-  disabled: boolean;
-  leaderboardUsers: LeaderboardUser[];
-  effectiveNumberAwards: number;
-  minimumPointsThreshold: number;
-  selectedDate: string;
-  updateLeaderboard: () => Promise<void>;
+  disabled: boolean
+  leaderboardUsers: LeaderboardUser[]
+  effectiveNumberAwards: number
+  minimumPointsThreshold: number
+  selectedDate: string
+  updateLeaderboard: () => Promise<void>
 }> = ({
   disabled,
   leaderboardUsers,
@@ -32,36 +32,36 @@ const ConfirmButton: React.FC<{
   minimumPointsThreshold,
   updateLeaderboard
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const toast = useToast()
 
   const handleConfirmNumberAwards = async () => {
-    setIsSubmitting(true);
-    onClose();
+    setIsSubmitting(true)
+    onClose()
     try {
-      await updateLeaderboard();
+      await updateLeaderboard()
       toast({
         title: `Successfully awarded merch to ${effectiveNumberAwards} attendees`,
-        status: "success",
+        status: 'success',
         duration: 3000,
         isClosable: true
-      });
+      })
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed awarding merch. Try again soon!";
+          : 'Failed awarding merch. Try again soon!'
       toast({
         title: errorMessage,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true
-      });
+      })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <>
@@ -113,7 +113,7 @@ const ConfirmButton: React.FC<{
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default ConfirmButton;
+export default ConfirmButton

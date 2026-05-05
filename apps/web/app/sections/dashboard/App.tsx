@@ -1,32 +1,32 @@
-import "./index.css";
+import './index.css'
 
-import type { ThemeConfig } from "@chakra-ui/react";
-import { Box, ChakraProvider, extendTheme, Flex, Text } from "@chakra-ui/react";
-import Events from "./components/Events";
-import Leaderboard from "./components/Leaderboard";
-import { RegisterNow } from "./components/RegisterNow";
-import { Sponsors } from "./components/Sponsors";
-import Title from "./components/Title";
-import useTimeSyncedReload from "./hooks/TimeSynchedReload";
-import WebSocketPopup from "./components/WebSocketPopup";
+import type { ThemeConfig } from '@chakra-ui/react'
+import { Box, ChakraProvider, extendTheme, Flex, Text } from '@chakra-ui/react'
+import Events from './components/Events'
+import Leaderboard from './components/Leaderboard'
+import { RegisterNow } from './components/RegisterNow'
+import { Sponsors } from './components/Sponsors'
+import Title from './components/Title'
+import useTimeSyncedReload from './hooks/TimeSynchedReload'
+import WebSocketPopup from './components/WebSocketPopup'
 
-document.title = "R|P Dashboard";
+document.title = 'R|P Dashboard'
 
 const config: ThemeConfig = {
-  initialColorMode: "dark",
+  initialColorMode: 'dark',
   useSystemColorMode: false
-};
+}
 const theme = extendTheme({
   config,
   styles: {
     global: {
-      "html, body": {
-        "background-color": "black",
-        color: "white"
+      'html, body': {
+        'background-color': 'black',
+        color: 'white'
       }
     }
   }
-});
+})
 
 // Information about various Siebel screens for reference:
 // Main Siebel Giant Screen: 1920x1080 (dpr 1) - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) KorbytPlayer/3.21.2 Chrome/114.0.5735.289 Electron/25.8.4 Safari/537.36 - Win32
@@ -34,7 +34,7 @@ const theme = extendTheme({
 // Debug Info: {window.innerWidth}x{window.innerHeight} (dpr {window.devicePixelRatio}) - {navigator.userAgent} - {navigator.platform}
 
 function App() {
-  useTimeSyncedReload();
+  useTimeSyncedReload()
 
   return (
     <ChakraProvider theme={theme}>
@@ -43,39 +43,39 @@ function App() {
         backgroundSize="cover"
       >
         <Flex
-          position={"relative"} // Required for z-index
-          flexDirection={"column"}
-          alignItems={"center"}
-          width={"100%"}
+          position={'relative'} // Required for z-index
+          flexDirection={'column'}
+          alignItems={'center'}
+          width={'100%'}
           minH="100vh"
           boxSizing="border-box"
-          padding={"2vh"}
+          padding={'2vh'}
           paddingTop="0.5vh"
           zIndex={2}
         >
           <WebSocketPopup />
           <Title />
           <Text
-            position={"absolute"}
-            top={"0.5vh"}
-            left={"25%"}
-            fontSize={"2.5vh"}
+            position={'absolute'}
+            top={'0.5vh'}
+            left={'25%'}
+            fontSize={'2.5vh'}
             fontWeight="bold"
             color="white"
             fontFamily="ProRacingSlant"
             textAlign="center"
-            transform={"translateX(-50%)"}
-            paddingX={"1.25vh"}
+            transform={'translateX(-50%)'}
+            paddingX={'1.25vh'}
             borderRadius="1rem"
-            bgColor={"rgba(0,0,0,0.2)"}
+            bgColor={'rgba(0,0,0,0.2)'}
           >
             Leaderboard
           </Text>
-          <Flex width={"100%"} mt={"0"} flexGrow={1}>
-            <Flex width={"50%"} marginRight={"1vh"} alignItems={"flex-end"}>
+          <Flex width={'100%'} mt={'0'} flexGrow={1}>
+            <Flex width={'50%'} marginRight={'1vh'} alignItems={'flex-end'}>
               <RegisterNow />
             </Flex>
-            <Flex width={"50%"} flexDir={"column"}>
+            <Flex width={'50%'} flexDir={'column'}>
               <Events />
               <Sponsors />
             </Flex>
@@ -84,7 +84,7 @@ function App() {
         {/* Leaderboard needs to be positioned absolutely to ignore padding */}
         <Box
           zIndex={1}
-          position={"absolute"}
+          position={'absolute'}
           top={0}
           left={0}
           right={0}
@@ -94,7 +94,7 @@ function App() {
         </Box>
       </Box>
     </ChakraProvider>
-  );
+  )
 }
 
-export default App;
+export default App

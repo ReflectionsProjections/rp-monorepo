@@ -1,57 +1,57 @@
-import { Box } from "@chakra-ui/react";
-import { motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { Box } from '@chakra-ui/react'
+import { motion, useInView } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 type AnimatedCounterProps = {
-  value: string;
-  before?: string;
-  after?: string;
-};
+  value: string
+  before?: string
+  after?: string
+}
 
 const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   value,
   before,
   after
 }) => {
-  const [count, setCount] = useState(0);
-  const nodeRef = useRef(null);
-  const isInView = useInView(nodeRef);
-  const finalValue = parseInt(value);
+  const [count, setCount] = useState(0)
+  const nodeRef = useRef(null)
+  const isInView = useInView(nodeRef)
+  const finalValue = parseInt(value)
 
   useEffect(() => {
     if (!isInView) {
-      return;
+      return
     }
 
-    let startTime: number;
-    let animationFrame: number;
+    let startTime: number
+    let animationFrame: number
 
     const animate = (timestamp: number) => {
       if (!startTime) {
-        startTime = timestamp;
+        startTime = timestamp
       }
 
-      const progress = Math.min((timestamp - startTime) / (2 * 1000), 1);
+      const progress = Math.min((timestamp - startTime) / (2 * 1000), 1)
 
-      setCount(Math.floor((1 - Math.pow(2, -6 * progress)) * finalValue));
+      setCount(Math.floor((1 - Math.pow(2, -6 * progress)) * finalValue))
 
       if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
+        animationFrame = requestAnimationFrame(animate)
       } else {
-        setCount(finalValue);
+        setCount(finalValue)
       }
-    };
+    }
 
-    animationFrame = requestAnimationFrame(animate);
+    animationFrame = requestAnimationFrame(animate)
 
     return () => {
       if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
+        cancelAnimationFrame(animationFrame)
       }
-    };
-  }, [finalValue, isInView]);
+    }
+  }, [finalValue, isInView])
 
   return (
     <MotionBox
@@ -64,7 +64,7 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
       {count}
       {after}
     </MotionBox>
-  );
-};
+  )
+}
 
-export default AnimatedCounter;
+export default AnimatedCounter

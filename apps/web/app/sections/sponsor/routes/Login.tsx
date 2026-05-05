@@ -8,38 +8,38 @@ import {
   Center,
   useMediaQuery,
   useToast
-} from "@chakra-ui/react";
-import { useState } from "react";
-import { api } from "@app";
-import type { FormikHelpers } from "formik";
-import { Form, Formik } from "formik";
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+} from '@chakra-ui/react'
+import { useState } from 'react'
+import { api } from '@app'
+import type { FormikHelpers } from 'formik'
+import { Form, Formik } from 'formik'
+import * as yup from 'yup'
+import { useNavigate } from 'react-router-dom'
 
 type EmailSubmitHandler = (
   values: {
-    email: string;
+    email: string
   },
   formikHelpers: FormikHelpers<{
-    email: string;
+    email: string
   }>
-) => void | Promise<void>;
+) => void | Promise<void>
 
 type TwoFactorSubmitHandler = (
   values: {
-    twoFactor: string;
+    twoFactor: string
   },
   formikHelpers: FormikHelpers<{
-    twoFactor: string;
+    twoFactor: string
   }>
-) => void | Promise<void>;
+) => void | Promise<void>
 
 export function Login() {
-  const [isSmall] = useMediaQuery("(max-width: 600px)");
-  const [isXSmall] = useMediaQuery("(max-width: 400px)");
+  const [isSmall] = useMediaQuery('(max-width: 600px)')
+  const [isXSmall] = useMediaQuery('(max-width: 400px)')
 
   return (
-    <Box minHeight={"800px"}>
+    <Box minHeight={'800px'}>
       <Box
         position="fixed"
         bottom="0"
@@ -56,51 +56,51 @@ export function Login() {
         mt="2vh"
         mb="5vh"
         pb="15vh"
-        flexDirection={"column"}
+        flexDirection={'column'}
         textAlign="center"
-        textColor={"white"}
+        textColor={'white'}
       >
         <Center mt="15vh">
           <Box p="4">
-            <HStack justifyContent="center" spacing="8px" textAlign={"center"}>
+            <HStack justifyContent="center" spacing="8px" textAlign={'center'}>
               <Text
-                fontSize={isXSmall ? "20" : isSmall ? "28" : "43"}
-                fontFamily={"Roboto Slab"}
-                fontWeight={"700"}
-                letterSpacing={"0.08em"}
+                fontSize={isXSmall ? '20' : isSmall ? '28' : '43'}
+                fontFamily={'Roboto Slab'}
+                fontWeight={'700'}
+                letterSpacing={'0.08em'}
               >
-                {" "}
-                reflections{" "}
+                {' '}
+                reflections{' '}
               </Text>
               <Text
-                fontSize={isXSmall ? "52" : isSmall ? "60" : "76"}
-                fontFamily={"Roboto Slab"}
-                fontWeight={"300"}
-                letterSpacing={"0.08em"}
+                fontSize={isXSmall ? '52' : isSmall ? '60' : '76'}
+                fontFamily={'Roboto Slab'}
+                fontWeight={'300'}
+                letterSpacing={'0.08em'}
                 mt="-10px"
               >
-                {" "}
+                {' '}
                 |
               </Text>
               <Text
-                fontSize={isXSmall ? "20" : isSmall ? "28" : "43"}
-                fontFamily={"Roboto Slab"}
-                fontWeight={"700"}
-                letterSpacing={"0.08em"}
+                fontSize={isXSmall ? '20' : isSmall ? '28' : '43'}
+                fontFamily={'Roboto Slab'}
+                fontWeight={'700'}
+                letterSpacing={'0.08em'}
               >
-                {" "}
-                projections{" "}
+                {' '}
+                projections{' '}
               </Text>
             </HStack>
-            <HStack justifyContent="center" spacing="8px" textAlign={"center"}>
+            <HStack justifyContent="center" spacing="8px" textAlign={'center'}>
               <Text
-                fontSize={isXSmall ? "20" : isSmall ? "28" : "43"}
-                fontFamily={"Nunito"}
-                fontWeight={"500"}
-                letterSpacing={"0.08em"}
+                fontSize={isXSmall ? '20' : isSmall ? '28' : '43'}
+                fontFamily={'Nunito'}
+                fontWeight={'500'}
+                letterSpacing={'0.08em'}
               >
-                {" "}
-                Resume Book{" "}
+                {' '}
+                Resume Book{' '}
               </Text>
             </HStack>
           </Box>
@@ -110,27 +110,27 @@ export function Login() {
         </Box>
       </Flex>
     </Box>
-  );
+  )
 }
 
 function LoginForm() {
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState<string | null>(null);
+  const toast = useToast()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState<string | null>(null)
 
   const submitEmail: EmailSubmitHandler = ({ email }, { setSubmitting }) => {
     toast.promise(
       api
-        .post("/auth/sponsor/login", { email })
+        .post('/auth/sponsor/login', { email })
         .then(() => setEmail(email))
         .finally(() => setSubmitting(false)),
       {
-        success: { title: "Please check your email for the code" },
-        error: { title: "Something went wrong. Please try again." },
-        loading: { title: "Loading..." }
+        success: { title: 'Please check your email for the code' },
+        error: { title: 'Something went wrong. Please try again.' },
+        loading: { title: 'Loading...' }
       }
-    );
-  };
+    )
+  }
 
   const submitTwoFactor: TwoFactorSubmitHandler = (
     { twoFactor },
@@ -138,39 +138,39 @@ function LoginForm() {
   ) => {
     toast.promise(
       api
-        .post("/auth/sponsor/verify", {
+        .post('/auth/sponsor/verify', {
           email: email!,
           sixDigitCode: twoFactor
         })
         .then((response) => {
-          localStorage.setItem("jwt", response.data.token);
-          void navigate("/resume-book");
+          localStorage.setItem('jwt', response.data.token)
+          void navigate('/resume-book')
         })
         .finally(() => setSubmitting(false)),
       {
-        success: { title: "Success" },
-        error: { title: "Invalid Code. Please try again." },
-        loading: { title: "Loading..." }
+        success: { title: 'Success' },
+        error: { title: 'Invalid Code. Please try again.' },
+        loading: { title: 'Loading...' }
       }
-    );
-  };
+    )
+  }
 
   return email ? (
     <TwoFactorPage onSubmit={submitTwoFactor} />
   ) : (
     <EmailPage onSubmit={submitEmail} />
-  );
+  )
 }
 
 function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
   return (
     <Formik
-      initialValues={{ email: "" }}
+      initialValues={{ email: '' }}
       validationSchema={yup.object({
         email: yup
           .string()
-          .email("Please enter a valid email address.")
-          .required("Please enter an email address.")
+          .email('Please enter a valid email address.')
+          .required('Please enter an email address.')
       })}
       onSubmit={onSubmit}
     >
@@ -184,7 +184,7 @@ function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
         isSubmitting
       }) => (
         <Form onSubmit={handleSubmit}>
-          <Text fontSize="24" fontFamily={"Nunito"} fontWeight={"400"}>
+          <Text fontSize="24" fontFamily={'Nunito'} fontWeight={'400'}>
             Enter your Email
           </Text>
           <Input
@@ -194,7 +194,7 @@ function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
             width="250px"
             mt="20px"
             textColor="white"
-            _placeholder={{ color: "gray.400" }}
+            _placeholder={{ color: 'gray.400' }}
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -206,7 +206,7 @@ function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
             zIndex="3"
             m={4}
             mb={5}
-            _hover={{ bg: "blue.600" }}
+            _hover={{ bg: 'blue.600' }}
             type="submit"
             isLoading={isSubmitting}
           >
@@ -228,20 +228,20 @@ function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
         </Form>
       )}
     </Formik>
-  );
+  )
 }
 
-const MAX_DIGITS = 6;
+const MAX_DIGITS = 6
 
 function TwoFactorPage({ onSubmit }: { onSubmit: TwoFactorSubmitHandler }) {
   return (
     <Formik
-      initialValues={{ twoFactor: "" }}
+      initialValues={{ twoFactor: '' }}
       validationSchema={yup.object({
         twoFactor: yup
           .string()
-          .min(6, "Please enter a longer code")
-          .required("Please enter a code")
+          .min(6, 'Please enter a longer code')
+          .required('Please enter a code')
       })}
       onSubmit={onSubmit}
     >
@@ -254,7 +254,7 @@ function TwoFactorPage({ onSubmit }: { onSubmit: TwoFactorSubmitHandler }) {
         isSubmitting
       }) => (
         <Form onSubmit={handleSubmit}>
-          <Text fontSize="24" fontFamily={"Nunito"} fontWeight={"400"}>
+          <Text fontSize="24" fontFamily={'Nunito'} fontWeight={'400'}>
             Enter Code:
           </Text>
 
@@ -262,9 +262,9 @@ function TwoFactorPage({ onSubmit }: { onSubmit: TwoFactorSubmitHandler }) {
             <CodeBoxes
               name="twoFactor"
               value={values.twoFactor}
-              setValue={(v) => void setFieldValue("twoFactor", v)}
+              setValue={(v) => void setFieldValue('twoFactor', v)}
               onComplete={() => handleSubmit()}
-              isInvalid={!!errors["twoFactor"] && !!touched["twoFactor"]}
+              isInvalid={!!errors['twoFactor'] && !!touched['twoFactor']}
             />
           </Box>
 
@@ -275,7 +275,7 @@ function TwoFactorPage({ onSubmit }: { onSubmit: TwoFactorSubmitHandler }) {
             zIndex="3"
             m={4}
             mb={5}
-            _hover={{ bg: "blue.600" }}
+            _hover={{ bg: 'blue.600' }}
             type="submit"
             isLoading={isSubmitting}
           >
@@ -297,7 +297,7 @@ function TwoFactorPage({ onSubmit }: { onSubmit: TwoFactorSubmitHandler }) {
         </Form>
       )}
     </Formik>
-  );
+  )
 }
 
 function CodeBoxes({
@@ -307,29 +307,29 @@ function CodeBoxes({
   onComplete,
   isInvalid
 }: {
-  value: string;
-  name: string;
-  setValue: (v: string) => void;
-  onComplete: () => void;
-  isInvalid: boolean;
+  value: string
+  name: string
+  setValue: (v: string) => void
+  onComplete: () => void
+  isInvalid: boolean
 }) {
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.slice(0, MAX_DIGITS);
-    setValue(digits);
+    const digits = e.target.value.slice(0, MAX_DIGITS)
+    setValue(digits)
 
     if (digits.length === MAX_DIGITS) {
-      setTimeout(onComplete, 100);
+      setTimeout(onComplete, 100)
     }
-  };
+  }
 
   const focusInput = (id: string) => {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    el?.focus();
-  };
+    const el = document.getElementById(id) as HTMLInputElement | null
+    el?.focus()
+  }
 
-  const inputId = `${name}-hidden`;
+  const inputId = `${name}-hidden`
 
   return (
     <Box position="relative" width="fit-content">
@@ -341,22 +341,22 @@ function CodeBoxes({
         userSelect="none"
       >
         {Array.from({ length: MAX_DIGITS }).map((_, i) => {
-          const char = value[i] ?? "";
+          const char = value[i] ?? ''
           const isCursorHere =
-            isFocused && i === value.length && value.length < MAX_DIGITS;
+            isFocused && i === value.length && value.length < MAX_DIGITS
           return (
             <Box
               key={i}
               w="44px"
               h="56px"
               borderRadius="md"
-              borderWidth={isCursorHere ? "3px" : "1.5px"}
+              borderWidth={isCursorHere ? '3px' : '1.5px'}
               borderColor={
                 isInvalid
-                  ? "red.400"
+                  ? 'red.400'
                   : isCursorHere
-                    ? "blue.500"
-                    : "whiteAlpha.400"
+                    ? 'blue.500'
+                    : 'whiteAlpha.400'
               }
               bg="blackAlpha.300"
               display="flex"
@@ -367,7 +367,7 @@ function CodeBoxes({
               position="relative"
               transition="all 0.2s ease-in-out"
               boxShadow={
-                isCursorHere ? "0 0 0 2px rgba(66, 153, 225, 0.3)" : "none"
+                isCursorHere ? '0 0 0 2px rgba(66, 153, 225, 0.3)' : 'none'
               }
             >
               <Box
@@ -375,18 +375,18 @@ function CodeBoxes({
                 lineHeight="1"
                 mt="2px"
                 letterSpacing="0"
-                animation={isCursorHere ? "blink 1.5s infinite" : "none"}
+                animation={isCursorHere ? 'blink 1.5s infinite' : 'none'}
                 sx={{
-                  "@keyframes blink": {
-                    "0%, 50%": { opacity: 1 },
-                    "51%, 100%": { opacity: 0 }
+                  '@keyframes blink': {
+                    '0%, 50%': { opacity: 1 },
+                    '51%, 100%': { opacity: 0 }
                   }
                 }}
               >
-                {char || (isCursorHere ? "|" : "")}
+                {char || (isCursorHere ? '|' : '')}
               </Box>
             </Box>
-          );
+          )
         })}
       </HStack>
 
@@ -400,11 +400,11 @@ function CodeBoxes({
         position="absolute"
         inset="0"
         opacity={0}
-        _focusVisible={{ outline: "none", boxShadow: "none" }}
+        _focusVisible={{ outline: 'none', boxShadow: 'none' }}
         autoComplete="one-time-code"
         maxLength={MAX_DIGITS}
         aria-label="6-digit verification code"
       />
     </Box>
-  );
+  )
 }

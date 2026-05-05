@@ -1,32 +1,32 @@
-import { FAQS } from "@app/sections/home/constants/faq-questions";
-import { VStack } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { FAQS } from '@app/sections/home/constants/faq-questions'
+import { VStack } from '@chakra-ui/react'
+import React, { useState } from 'react'
 
-import { FAQHeader } from "./FAQHeader";
-import { FAQQuestion } from "./FAQQuestion";
+import { FAQHeader } from './FAQHeader'
+import { FAQQuestion } from './FAQQuestion'
 
 export const FAQ: React.FC = () => {
   const [selectedFaqIndices, setSelectedFaqIndices] = useState<Set<number>>(
     new Set()
-  );
+  )
 
   const handleFaqToggle = (index: number) => {
     setSelectedFaqIndices((prev) => {
-      const newSet = new Set(prev);
+      const newSet = new Set(prev)
       if (newSet.has(index)) {
-        newSet.delete(index);
+        newSet.delete(index)
       } else {
-        newSet.add(index);
+        newSet.add(index)
       }
-      return newSet;
-    });
-  };
+      return newSet
+    })
+  }
 
   return (
     <>
       <VStack
         w="100%"
-        minH={"100dvh"}
+        minH={'100dvh'}
         justifyContent="flex-start"
         bgImage={`
           linear-gradient(
@@ -38,7 +38,7 @@ export const FAQ: React.FC = () => {
           ),
           url("/site/faq/faq-backdrop.png")
         `}
-        bgColor={"#2d2727ff"}
+        bgColor={'#2d2727ff'}
         bgSize="cover"
         bgPosition="center"
         bgRepeat="no-repeat"
@@ -48,7 +48,7 @@ export const FAQ: React.FC = () => {
         pt={20}
         id="faq"
       >
-        <VStack spacing={0} mb={4} w="100%" overflowX={"hidden"}>
+        <VStack spacing={0} mb={4} w="100%" overflowX={'hidden'}>
           <FAQHeader selectedFaqIndices={selectedFaqIndices} />
         </VStack>
         <VStack
@@ -71,5 +71,5 @@ export const FAQ: React.FC = () => {
         </VStack>
       </VStack>
     </>
-  );
-};
+  )
+}

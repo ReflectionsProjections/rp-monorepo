@@ -1,6 +1,6 @@
 // credit to : https://www.frontend.fyi/tutorials/making-a-foldable-map-with-framer-motion
 
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   Box,
   Flex,
@@ -9,41 +9,41 @@ import {
   useColorModeValue,
   VStack,
   useBreakpointValue
-} from "@chakra-ui/react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRightIcon } from "@chakra-ui/icons";
+} from '@chakra-ui/react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronRightIcon } from '@chakra-ui/icons'
 
-const PANEL_W = 320;
-const PANEL_H = 600;
-const PANELS = [-2, -1, 0, 1, 2];
+const PANEL_W = 320
+const PANEL_H = 600
+const PANELS = [-2, -1, 0, 1, 2]
 
 const faqData = [
   {
-    question: "What is Reflections | Projections?",
+    question: 'What is Reflections | Projections?',
     answer:
-      "R|P is a technology conference that brings together students and professionals to explore cutting-edge developments in computer science, programming, and technology innovation."
+      'R|P is a technology conference that brings together students and professionals to explore cutting-edge developments in computer science, programming, and technology innovation.'
   },
   {
-    question: "Who can attend R|P?",
+    question: 'Who can attend R|P?',
     answer:
-      "The conference is open to students, professionals, researchers, and anyone interested in technology. We welcome attendees from all backgrounds and experience levels."
+      'The conference is open to students, professionals, researchers, and anyone interested in technology. We welcome attendees from all backgrounds and experience levels.'
   },
   {
-    question: "When is the event?",
+    question: 'When is the event?',
     answer:
       "R|P typically takes place annually in the spring semester. Check our website for the exact dates and schedule for this year's conference."
   },
   {
-    question: "How much does it cost?",
+    question: 'How much does it cost?',
     answer:
-      "Registration fees vary by attendee type. Students often receive discounted rates, and some events may be free. Visit our registration page for current pricing."
+      'Registration fees vary by attendee type. Students often receive discounted rates, and some events may be free. Visit our registration page for current pricing.'
   }
-];
+]
 
 const FAQPanel: React.FC<{
-  question: string;
-  answer: string;
-  textColor: string;
+  question: string
+  answer: string
+  textColor: string
 }> = ({ question, textColor }) => (
   <VStack spacing={4} align="stretch" h="100%" justify="flex-start" pt={4}>
     <Box>
@@ -69,46 +69,46 @@ const FAQPanel: React.FC<{
           h="2px"
           bg="gray.300"
           mb={3}
-          width={i === 0 ? "100%" : i === 9 ? "60%" : "90%"}
+          width={i === 0 ? '100%' : i === 9 ? '60%' : '90%'}
         />
       ))}
     </Box>
   </VStack>
-);
+)
 
 const FoldableFAQ: React.FC = () => {
-  const bg = useColorModeValue("white", "gray.800");
-  const altBg = useColorModeValue("gray.50", "gray.700");
-  const borderColor = useColorModeValue("gray.200", "gray.600");
-  const shadow = useColorModeValue("rgba(0,0,0,0.1)", "rgba(0,0,0,0.4)");
-  const textColor = useColorModeValue("gray.800", "white");
-  const [open, setOpen] = useState(false);
+  const bg = useColorModeValue('white', 'gray.800')
+  const altBg = useColorModeValue('gray.50', 'gray.700')
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const shadow = useColorModeValue('rgba(0,0,0,0.1)', 'rgba(0,0,0,0.4)')
+  const textColor = useColorModeValue('gray.800', 'white')
+  const [open, setOpen] = useState(false)
 
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const deckVariants = {
     closed: {
       scale: 0.96,
-      x: "-50%",
-      y: "-50%",
-      transition: { type: "spring", stiffness: 80, damping: 20 }
+      x: '-50%',
+      y: '-50%',
+      transition: { type: 'spring', stiffness: 80, damping: 20 }
     },
     open: {
       scale: 0.82,
-      x: "-50%",
-      y: "-50%",
+      x: '-50%',
+      y: '-50%',
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 80,
         damping: 20,
         delayChildren: 0.1,
         staggerChildren: 0.18
       }
     }
-  };
+  }
 
-  const panelVariants = (side: "left" | "right" | "center") => {
-    if (isMobile && !(side === "center")) {
+  const panelVariants = (side: 'left' | 'right' | 'center') => {
+    if (isMobile && !(side === 'center')) {
       // Mobile: side panels appear below the center panel
       return {
         initial: {
@@ -118,36 +118,36 @@ const FoldableFAQ: React.FC = () => {
         open: {
           opacity: 1,
           y: 0,
-          transition: { type: "spring", stiffness: 70, damping: 16, mass: 0.6 }
+          transition: { type: 'spring', stiffness: 70, damping: 16, mass: 0.6 }
         },
         closed: {
           opacity: 0,
           y: -50,
           transition: { duration: 0.4 }
         }
-      };
+      }
     } else {
       // Desktop: horizontal folding animation
       return {
         initial: {
-          rotateY: side === "left" ? -90 : side === "right" ? 90 : 0,
-          opacity: side === "center" ? 1 : 0
+          rotateY: side === 'left' ? -90 : side === 'right' ? 90 : 0,
+          opacity: side === 'center' ? 1 : 0
         },
         open: {
           rotateY: 0,
           opacity: 1,
-          transition: { type: "spring", stiffness: 70, damping: 16, mass: 0.6 }
+          transition: { type: 'spring', stiffness: 70, damping: 16, mass: 0.6 }
         },
         closed: {
-          rotateY: side === "left" ? -90 : side === "right" ? 90 : 0,
-          opacity: side === "center" ? 1 : 0,
+          rotateY: side === 'left' ? -90 : side === 'right' ? 90 : 0,
+          opacity: side === 'center' ? 1 : 0,
           transition: { duration: 0.4 }
         }
-      };
+      }
     }
-  };
+  }
 
-  const leftOf = (idx: number) => `${idx * PANEL_W}px`;
+  const leftOf = (idx: number) => `${idx * PANEL_W}px`
 
   if (isMobile) {
     // Mobile layout: vertical stacking
@@ -187,7 +187,7 @@ const FoldableFAQ: React.FC = () => {
             colorScheme="blue"
             onClick={() => setOpen((o) => !o)}
           >
-            {open ? "Close" : "Open"}
+            {open ? 'Close' : 'Open'}
           </Button>
         </Box>
 
@@ -203,11 +203,11 @@ const FoldableFAQ: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{
                     delay: index * 0.1,
-                    type: "spring",
+                    type: 'spring',
                     stiffness: 70,
                     damping: 16
                   }}
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 >
                   <Box
                     w="100%"
@@ -230,7 +230,7 @@ const FoldableFAQ: React.FC = () => {
           )}
         </AnimatePresence>
       </Box>
-    );
+    )
   }
 
   // Desktop layout: horizontal folding
@@ -247,33 +247,33 @@ const FoldableFAQ: React.FC = () => {
       <Flex
         justify="center"
         align="center"
-        sx={{ perspective: "2400px" }}
+        sx={{ perspective: '2400px' }}
         width="100%"
         height="100%"
         position="relative"
       >
         <motion.div
           style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
             width: PANEL_W * PANELS.length,
             height: PANEL_H,
-            transformStyle: "preserve-3d",
-            willChange: "transform"
+            transformStyle: 'preserve-3d',
+            willChange: 'transform'
           }}
           variants={deckVariants}
-          animate={open ? "open" : "closed"}
+          animate={open ? 'open' : 'closed'}
           initial="closed"
         >
           {PANELS.map((i) => {
-            const isCentre = i === 0;
-            const side: "left" | "right" | "center" =
-              i < 0 ? "left" : i > 0 ? "right" : "center";
+            const isCentre = i === 0
+            const side: 'left' | 'right' | 'center' =
+              i < 0 ? 'left' : i > 0 ? 'right' : 'center'
 
             const faqIndex =
-              i === -2 ? 0 : i === -1 ? 1 : i === 1 ? 2 : i === 2 ? 3 : 0;
-            const faq = faqData[faqIndex];
+              i === -2 ? 0 : i === -1 ? 1 : i === 1 ? 2 : i === 2 ? 3 : 0
+            const faq = faqData[faqIndex]
 
             return (
               <AnimatePresence key={i}>
@@ -281,24 +281,24 @@ const FoldableFAQ: React.FC = () => {
                   <motion.div
                     variants={panelVariants(side)}
                     initial="initial"
-                    animate={open ? "open" : "closed"}
+                    animate={open ? 'open' : 'closed'}
                     exit="closed"
                     style={{
                       width: PANEL_W,
                       height: PANEL_H,
-                      position: "absolute",
+                      position: 'absolute',
                       left: leftOf(i + 2),
                       top: 0,
                       background: isCentre ? bg : altBg,
                       borderRadius: 10,
                       border: `1px solid ${borderColor}`,
                       boxShadow: `0px 5px 15px ${shadow}`,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: isCentre ? "center" : "flex-start",
-                      alignItems: "center",
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: isCentre ? 'center' : 'flex-start',
+                      alignItems: 'center',
                       padding: 40,
-                      transformOrigin: i < 0 ? "right center" : "left center",
+                      transformOrigin: i < 0 ? 'right center' : 'left center',
                       zIndex: 10 - Math.abs(i)
                     }}
                   >
@@ -327,7 +327,7 @@ const FoldableFAQ: React.FC = () => {
                           fontSize="lg"
                           onClick={() => setOpen((o) => !o)}
                         >
-                          {open ? "Close" : "Open"}
+                          {open ? 'Close' : 'Open'}
                         </Button>
                       </>
                     ) : (
@@ -340,12 +340,12 @@ const FoldableFAQ: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-            );
+            )
           })}
         </motion.div>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-export default FoldableFAQ;
+export default FoldableFAQ

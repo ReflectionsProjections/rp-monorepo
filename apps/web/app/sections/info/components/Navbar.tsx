@@ -5,43 +5,43 @@ import {
   VStack,
   useDisclosure,
   useBreakpointValue
-} from "@chakra-ui/react";
-import { NavLink } from "react-router-dom";
-import { AnimatedLogoHover } from "./AnimatedLogo";
-import { motion } from "framer-motion";
-import { useEffect } from "react";
+} from '@chakra-ui/react'
+import { NavLink } from 'react-router-dom'
+import { AnimatedLogoHover } from './AnimatedLogo'
+import { motion } from 'framer-motion'
+import { useEffect } from 'react'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 export const Navbar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = "";
+      document.body.style.overflow = ''
     }
 
     return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (!isMobile) {
-      onClose();
+      onClose()
     }
-  }, [isMobile, onClose]);
+  }, [isMobile, onClose])
 
   const handleLinkClick = () => {
     // Restore body overflow and close menu when clicking a link
-    document.body.style.overflow = "";
-    onClose();
-  };
+    document.body.style.overflow = ''
+    onClose()
+  }
 
-  const handleToggle = () => (isOpen ? onClose() : onOpen());
+  const handleToggle = () => (isOpen ? onClose() : onOpen())
 
   return (
     <Box
@@ -49,8 +49,8 @@ export const Navbar = () => {
       top={0}
       left="50%"
       transform="translateX(-50%)"
-      w={{ base: "calc(100% - 16px)", md: "50%" }}
-      minW={{ md: "max(450px, 75%)" }}
+      w={{ base: 'calc(100% - 16px)', md: '50%' }}
+      minW={{ md: 'max(450px, 75%)' }}
       zIndex={500}
       mt="10px"
     >
@@ -64,10 +64,10 @@ export const Navbar = () => {
         backdropFilter="blur(24px)"
         initial={false}
         animate={{
-          height: isOpen && isMobile ? "calc(100vh - 20px)" : "60px"
+          height: isOpen && isMobile ? 'calc(100vh - 20px)' : '60px'
         }}
-        transition={{ height: { duration: 0.4, ease: "easeOut" } }}
-        style={{ overflow: "hidden" }}
+        transition={{ height: { duration: 0.4, ease: 'easeOut' } }}
+        style={{ overflow: 'hidden' }}
       >
         <Box py="5px" h="100%">
           <HStack
@@ -85,7 +85,7 @@ export const Navbar = () => {
               pos="relative"
               cursor="pointer"
               onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
             >
               <AnimatedLogoHover />
@@ -152,13 +152,13 @@ export const Navbar = () => {
                     left="0"
                     transform="rotate(0deg)"
                     transition=".25s ease-in-out"
-                    top={i === 1 ? "0" : i === 2 ? "9px" : "18px"}
+                    top={i === 1 ? '0' : i === 2 ? '9px' : '18px'}
                     transformOrigin="left center"
                     {...(isOpen && {
-                      top: i === 2 ? "9px" : "18px",
-                      width: i === 2 ? "0%" : "100%",
-                      left: i === 2 ? "50%" : "0",
-                      transform: `translateX(${i === 1 ? "5px" : i === 3 ? "5px" : "0"}) translateY(${i === 1 ? "-21px" : i === 3 ? "0px" : "0"}) rotate(${i === 1 ? "45deg" : i === 3 ? "-45deg" : "0"})`
+                      top: i === 2 ? '9px' : '18px',
+                      width: i === 2 ? '0%' : '100%',
+                      left: i === 2 ? '50%' : '0',
+                      transform: `translateX(${i === 1 ? '5px' : i === 3 ? '5px' : '0'}) translateY(${i === 1 ? '-21px' : i === 3 ? '0px' : '0'}) rotate(${i === 1 ? '45deg' : i === 3 ? '-45deg' : '0'})`
                     })}
                   />
                 ))}
@@ -209,5 +209,5 @@ export const Navbar = () => {
         </Box>
       </MotionBox>
     </Box>
-  );
-};
+  )
+}

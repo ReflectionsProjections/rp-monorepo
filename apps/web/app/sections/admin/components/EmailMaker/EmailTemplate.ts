@@ -699,7 +699,7 @@ export function rpMainTemplate(htmlContent: string) {
            </tr>
        </table>
    </body>
-</html>`;
+</html>`
 }
 
 export function rpEmptyTemplate(htmlContent: string) {
@@ -1309,7 +1309,7 @@ export function rpEmptyTemplate(htmlContent: string) {
            </tr>
        </table>
    </body>
-</html>`;
+</html>`
 }
 
 export function rpNoneTemplate(htmlContent: string) {
@@ -1322,5 +1322,5 @@ export function rpNoneTemplate(htmlContent: string) {
     <body>
         ${htmlContent}
     </body>
-</html>`;
+</html>`
 }

@@ -1,1 +1,1 @@
-export const RESUMES_PER_PAGE = 20;
+export const RESUMES_PER_PAGE = 20

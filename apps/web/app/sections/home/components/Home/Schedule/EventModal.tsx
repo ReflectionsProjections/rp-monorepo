@@ -1,4 +1,4 @@
-import { EVENT_ICONS } from "@app/sections/home/constants/event-icons";
+import { EVENT_ICONS } from '@app/sections/home/constants/event-icons'
 import {
   Box,
   CloseButton,
@@ -9,34 +9,34 @@ import {
   ModalHeader,
   ModalOverlay,
   Text
-} from "@chakra-ui/react";
-import type { Event } from "@app";
-import moment from "moment-timezone";
-import { FaAward, FaClock, FaMapPin, FaTag } from "react-icons/fa";
-import { AudioVisualizer } from "./AudioVisualizer";
-import FoodMenu from "./FoodMenu";
-import LinkButtons from "./LinkButtons";
+} from '@chakra-ui/react'
+import type { Event } from '@app'
+import moment from 'moment-timezone'
+import { FaAward, FaClock, FaMapPin, FaTag } from 'react-icons/fa'
+import { AudioVisualizer } from './AudioVisualizer'
+import FoodMenu from './FoodMenu'
+import LinkButtons from './LinkButtons'
 
 export default function EventModal({
   event,
   onClose
 }: {
-  event: Event | null;
-  onClose: () => void;
+  event: Event | null
+  onClose: () => void
 }) {
-  const hasFoodMenu = event?.description?.includes(":food:") || false;
-  const hasLinks = event?.description?.includes(":link:") || false;
+  const hasFoodMenu = event?.description?.includes(':food:') || false
+  const hasLinks = event?.description?.includes(':link:') || false
 
   // Extract the main description by removing both food and link sections
-  let displayDescription = event?.description;
+  let displayDescription = event?.description
   if (displayDescription) {
     // Remove food section if present
     if (hasFoodMenu) {
-      displayDescription = displayDescription.split(":food:")[0].trim();
+      displayDescription = displayDescription.split(':food:')[0].trim()
     }
     // Remove link section if present
     if (hasLinks) {
-      displayDescription = displayDescription.split(":link:")[0].trim();
+      displayDescription = displayDescription.split(':link:')[0].trim()
     }
   }
 
@@ -47,11 +47,11 @@ export default function EventModal({
         <ModalContent
           mt={{
             base: 14,
-            md: "auto"
+            md: 'auto'
           }}
           mx={{
             base: 4,
-            md: "auto"
+            md: 'auto'
           }}
           p={4}
           px={7}
@@ -68,7 +68,7 @@ export default function EventModal({
                 fontFamily="ProRacing"
                 fontSize="3xl"
                 as="h2"
-                transformOrigin={"top left"}
+                transformOrigin={'top left'}
               >
                 {event.name}
               </Text>
@@ -80,7 +80,7 @@ export default function EventModal({
             <AudioVisualizer />
           </Box>
 
-          <Box h={1} w="100%" bgColor={"gray.400"} mt={4}></Box>
+          <Box h={1} w="100%" bgColor={'gray.400'} mt={4}></Box>
           <br />
 
           <EventCard event={event} />
@@ -95,7 +95,7 @@ export default function EventModal({
                 fontFamily="Magistral"
                 letterSpacing="0.5px"
                 mt={4}
-                transformOrigin={"top left"}
+                transformOrigin={'top left'}
               >
                 {displayDescription}
               </Text>
@@ -111,7 +111,7 @@ export default function EventModal({
         </ModalContent>
       )}
     </Modal>
-  );
+  )
 }
 
 function EventCard({ event }: { event: Event }) {
@@ -120,14 +120,14 @@ function EventCard({ event }: { event: Event }) {
       borderRadius="md"
       p={4}
       w="100%"
-      boxShadow={"lg"}
-      bgColor={"whiteAlpha.200"}
+      boxShadow={'lg'}
+      bgColor={'whiteAlpha.200'}
     >
       <Flex
-        direction={{ base: "column", md: "row" }}
+        direction={{ base: 'column', md: 'row' }}
         alignItems={{
-          base: "flex-start",
-          md: "center"
+          base: 'flex-start',
+          md: 'center'
         }}
         mb={{
           base: 2,
@@ -145,8 +145,8 @@ function EventCard({ event }: { event: Event }) {
             fontWeight="bold"
             letterSpacing="0.5px"
           >
-            {moment(event.startTime).tz("America/Chicago").format("h:mma")} –{" "}
-            {moment(event.endTime).tz("America/Chicago").format("h:mma")} CT
+            {moment(event.startTime).tz('America/Chicago').format('h:mma')} –{' '}
+            {moment(event.endTime).tz('America/Chicago').format('h:mma')} CT
           </Text>
         </Flex>
         <Flex flex="1 1 0%" alignItems="center">
@@ -160,16 +160,16 @@ function EventCard({ event }: { event: Event }) {
             letterSpacing="0.5px"
             fontWeight="bold"
           >
-            {event.location || "Siebel CS"}
+            {event.location || 'Siebel CS'}
           </Text>
         </Flex>
       </Flex>
 
       <Flex
-        direction={{ base: "column", md: "row" }}
+        direction={{ base: 'column', md: 'row' }}
         alignItems={{
-          base: "flex-start",
-          md: "center"
+          base: 'flex-start',
+          md: 'center'
         }}
       >
         <Flex flex="1 1 0%" alignItems="center" mb={{ base: 2, md: 0 }}>
@@ -202,7 +202,7 @@ function EventCard({ event }: { event: Event }) {
         </Flex>
       </Flex>
     </Box>
-  );
+  )
 }
 
 function CheckerBoardPattern() {
@@ -235,12 +235,12 @@ function CheckerBoardPattern() {
       backgroundPosition="0 0, 10px 10px"
       backgroundSize="20px 20px"
     />
-  );
+  )
 }
 
 function capitalCase(text: string) {
   if (text.length === 0) {
-    return "";
+    return ''
   }
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()
 }

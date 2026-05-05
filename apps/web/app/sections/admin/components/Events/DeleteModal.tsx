@@ -1,4 +1,4 @@
-import type { MainContext } from "@app/sections/admin/routes/Main";
+import type { MainContext } from '@app/sections/admin/routes/Main'
 import {
   Button,
   Modal,
@@ -10,43 +10,43 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast
-} from "@chakra-ui/react";
-import type { Event } from "@app";
-import { api, path } from "@app";
-import { useOutletContext } from "react-router-dom";
+} from '@chakra-ui/react'
+import type { Event } from '@app'
+import { api, path } from '@app'
+import { useOutletContext } from 'react-router-dom'
 
 type DeleteModalProps = {
-  event: Event;
-  updateEvents: () => void;
-};
+  event: Event
+  updateEvents: () => void
+}
 
 const DeleteModal: React.FC<DeleteModalProps> = ({ event, updateEvents }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const context = useOutletContext<MainContext>();
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const context = useOutletContext<MainContext>()
+  const toast = useToast()
 
   const deleteEvent = () => {
     toast.promise(
       api
-        .delete(path("/events/:eventId", { eventId: event.eventId }))
+        .delete(path('/events/:eventId', { eventId: event.eventId }))
         .then(() => {
-          updateEvents();
-          onClose();
+          updateEvents()
+          onClose()
         }),
       {
-        success: { title: "Event deleted" },
-        error: { title: "Error deleting event" },
-        loading: { title: "Deleting event..." }
+        success: { title: 'Event deleted' },
+        error: { title: 'Error deleting event' },
+        loading: { title: 'Deleting event...' }
       }
-    );
-  };
+    )
+  }
 
   return (
     <>
       <Button
         colorScheme="red"
         onClick={onOpen}
-        isDisabled={!context.roles.includes("ADMIN")}
+        isDisabled={!context.roles.includes('ADMIN')}
       >
         Delete
       </Button>
@@ -65,7 +65,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ event, updateEvents }) => {
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default DeleteModal;
+export default DeleteModal

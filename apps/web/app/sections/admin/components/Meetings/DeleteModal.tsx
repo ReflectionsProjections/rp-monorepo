@@ -1,4 +1,4 @@
-import type { MainContext } from "@app/sections/admin/routes/Main";
+import type { MainContext } from '@app/sections/admin/routes/Main'
 import {
   Button,
   Modal,
@@ -10,46 +10,46 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast
-} from "@chakra-ui/react";
-import type { Meeting } from "@app";
-import { api, path } from "@app";
-import { useOutletContext } from "react-router-dom";
+} from '@chakra-ui/react'
+import type { Meeting } from '@app'
+import { api, path } from '@app'
+import { useOutletContext } from 'react-router-dom'
 
 type DeleteModalProps = {
-  meeting: Meeting;
-  updateMeetings: () => void;
-};
+  meeting: Meeting
+  updateMeetings: () => void
+}
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
   meeting,
   updateMeetings
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const context = useOutletContext<MainContext>();
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const context = useOutletContext<MainContext>()
+  const toast = useToast()
 
   const deleteMeeting = () => {
     toast.promise(
       api
-        .delete(path("/meetings/:meetingId", { meetingId: meeting.meetingId }))
+        .delete(path('/meetings/:meetingId', { meetingId: meeting.meetingId }))
         .then(() => {
-          updateMeetings();
-          onClose();
+          updateMeetings()
+          onClose()
         }),
       {
-        success: { title: "Meeting deleted" },
-        error: { title: "Error deleting meeting" },
-        loading: { title: "Deleting meeting..." }
+        success: { title: 'Meeting deleted' },
+        error: { title: 'Error deleting meeting' },
+        loading: { title: 'Deleting meeting...' }
       }
-    );
-  };
+    )
+  }
 
   return (
     <>
       <Button
         colorScheme="red"
         onClick={onOpen}
-        isDisabled={!context.roles.includes("ADMIN")}
+        isDisabled={!context.roles.includes('ADMIN')}
       >
         Delete
       </Button>
@@ -68,7 +68,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default DeleteModal;
+export default DeleteModal

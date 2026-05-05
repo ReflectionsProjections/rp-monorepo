@@ -1,6 +1,6 @@
-import { Box } from "@chakra-ui/react";
-import StoolsSceneWrapper from "./StoolSponsorsWrapper";
-import PitStopSceneWrapper from "./PItStopWrapper";
+import { Box } from '@chakra-ui/react'
+import StoolsSceneWrapper from './StoolSponsorsWrapper'
+import PitStopSceneWrapper from './PItStopWrapper'
 
 export default function SponsorSection() {
   return (
@@ -8,5 +8,5 @@ export default function SponsorSection() {
       <PitStopSceneWrapper />
       <StoolsSceneWrapper />
     </Box>
-  );
+  )
 }

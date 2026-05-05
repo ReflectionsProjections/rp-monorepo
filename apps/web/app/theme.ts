@@ -1,10 +1,10 @@
-import type { ThemeConfig } from "@chakra-ui/react";
-import { extendTheme } from "@chakra-ui/react";
+import type { ThemeConfig } from '@chakra-ui/react'
+import { extendTheme } from '@chakra-ui/react'
 
 const config: ThemeConfig = {
-  initialColorMode: "light",
+  initialColorMode: 'light',
   useSystemColorMode: false
-};
+}
 
 export const customTheme = extendTheme({
   config,
@@ -15,33 +15,33 @@ export const customTheme = extendTheme({
   },
   textStyles: {
     menu: {
-      fontFamily: "menu",
-      fontSize: "18px",
-      textColor: "black",
-      fontWeight: "700",
-      textUnderlineOffset: "5px"
+      fontFamily: 'menu',
+      fontSize: '18px',
+      textColor: 'black',
+      fontWeight: '700',
+      textUnderlineOffset: '5px'
     },
     textBlock: {
-      fontFamily: "menu",
-      fontSize: "65px",
-      textColor: "black",
-      fontWeight: "700",
-      textUnderlineOffset: "5px"
+      fontFamily: 'menu',
+      fontSize: '65px',
+      textColor: 'black',
+      fontWeight: '700',
+      textUnderlineOffset: '5px'
     }
   },
   colors: {
     brand: {
-      100: "#0F1130"
+      100: '#0F1130'
     }
   },
   components: {
     Checkbox: {
       baseStyle: {
         control: {
-          height: "20px",
-          width: "20px"
+          height: '20px',
+          width: '20px'
         }
       }
     }
   }
-});
+})

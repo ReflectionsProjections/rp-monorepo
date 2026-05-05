@@ -1,55 +1,55 @@
-import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import { useState } from "react";
-import type { Role, RoleObject } from "@api/types";
-import api from "@api/api";
-import { authRefresh } from "@api/auth";
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+import { useState } from 'react'
+import type { Role, RoleObject } from '@api/types'
+import api from '@api/api'
+import { authRefresh } from '@api/auth'
 
 type RequireAuthProps = {
-  requiredRoles?: Role[];
-};
+  requiredRoles?: Role[]
+}
 
 const RequireAuth: React.FC<RequireAuthProps> = ({ requiredRoles = [] }) => {
-  const [authInfo, setAuthInfo] = useState<RoleObject | null>(null);
-  const jwt = localStorage.getItem("jwt");
+  const [authInfo, setAuthInfo] = useState<RoleObject | null>(null)
+  const jwt = localStorage.getItem('jwt')
 
   useEffect(() => {
     if (!jwt) {
-      authRefresh();
-      return;
+      authRefresh()
+      return
     }
 
     if (!authInfo) {
       api
-        .get("/auth/info")
+        .get('/auth/info')
         .then((response) => {
-          const roles = response.data.roles;
+          const roles = response.data.roles
 
           const missingRole = requiredRoles.find(
             (role) => !roles.includes(role)
-          );
+          )
           if (missingRole) {
-            window.location.href = "/unauthorized";
+            window.location.href = '/unauthorized'
           } else {
-            setAuthInfo(response.data);
+            setAuthInfo(response.data)
           }
         })
         .catch(() => {
           // This only happens if jwt is expired
           // middleware will handle the error
-        });
+        })
     }
-  }, [authInfo, jwt, requiredRoles]);
+  }, [authInfo, jwt, requiredRoles])
 
   if (!jwt) {
-    return <p>Redirecting to login...</p>;
+    return <p>Redirecting to login...</p>
   }
 
   if (!authInfo) {
-    return <p>Loading...</p>;
+    return <p>Loading...</p>
   }
 
-  return <Outlet context={authInfo} />;
-};
+  return <Outlet context={authInfo} />
+}
 
-export default RequireAuth;
+export default RequireAuth

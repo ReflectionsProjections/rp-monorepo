@@ -1,19 +1,19 @@
-import { Suspense, lazy, type ReactNode } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Fallback from "./Fallback";
-import AuthCallback from "./routes/auth/AuthCallback";
-import AuthRefresh from "./routes/auth/AuthRefresh";
-import SiteApp from "./sections/home/App";
-import Unauthorized from "@components/auth/Unauthorized";
+import { Suspense, lazy, type ReactNode } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Fallback from './Fallback'
+import AuthCallback from './routes/auth/AuthCallback'
+import AuthRefresh from './routes/auth/AuthRefresh'
+import SiteApp from './sections/home/App'
+import Unauthorized from '@components/auth/Unauthorized'
 
-const AdminApp = lazy(() => import("./sections/admin/App"));
-const DashboardApp = lazy(() => import("./sections/dashboard/App"));
-const HypeApp = lazy(() => import("./sections/hype/App"));
-const InfoApp = lazy(() => import("./sections/info/App"));
-const SponsorApp = lazy(() => import("./sections/sponsor/App"));
+const AdminApp = lazy(() => import('./sections/admin/App'))
+const DashboardApp = lazy(() => import('./sections/dashboard/App'))
+const HypeApp = lazy(() => import('./sections/hype/App'))
+const InfoApp = lazy(() => import('./sections/info/App'))
+const SponsorApp = lazy(() => import('./sections/sponsor/App'))
 
 function LazySection({ children }: { children: ReactNode }) {
-  return <Suspense fallback={<Fallback />}>{children}</Suspense>;
+  return <Suspense fallback={<Fallback />}>{children}</Suspense>
 }
 
 export default function Root() {
@@ -66,5 +66,5 @@ export default function Root() {
         <Route path="/*" element={<SiteApp />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }

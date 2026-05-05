@@ -19,90 +19,90 @@ import {
   StackDivider,
   Stack,
   useBreakpointValue
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
-import { Bar } from "react-chartjs-2";
-import { Chart, registerables } from "chart.js";
+import { Bar } from 'react-chartjs-2'
+import { Chart, registerables } from 'chart.js'
 
 // Register Chart.js components
-Chart.register(...registerables);
+Chart.register(...registerables)
 
-import { useMemo, useState } from "react";
-import { path, usePolling } from "@app";
-import StatCard from "@app/sections/admin/components/StatCard";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { useOutletContext } from "react-router-dom";
-import type { MainContext } from "../Main";
+import { useMemo, useState } from 'react'
+import { path, usePolling } from '@app'
+import StatCard from '@app/sections/admin/components/StatCard'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { useOutletContext } from 'react-router-dom'
+import type { MainContext } from '../Main'
 
 const eventTags = [
-  "Career Readiness",
-  "AI",
-  "Research",
-  "Interactive Events",
-  "HCI",
-  "Ethics",
-  "Art/Media",
-  "Autonomous Vehicles",
-  "Networking",
-  "Company Talk",
-  "Cybersecurity"
-];
+  'Career Readiness',
+  'AI',
+  'Research',
+  'Interactive Events',
+  'HCI',
+  'Ethics',
+  'Art/Media',
+  'Autonomous Vehicles',
+  'Networking',
+  'Company Talk',
+  'Cybersecurity'
+]
 
 function Stats() {
-  const { authorized } = useOutletContext<MainContext>();
+  const { authorized } = useOutletContext<MainContext>()
 
-  const [minNumEvents, setMinNumEvents] = useState(0);
-  const [eventId, setEventId] = useState("");
-  const [tagName, setTagName] = useState<string>("");
+  const [minNumEvents, setMinNumEvents] = useState(0)
+  const [eventId, setEventId] = useState('')
+  const [tagName, setTagName] = useState<string>('')
 
-  const mirrorStyles = useMirrorStyles(true);
+  const mirrorStyles = useMirrorStyles(true)
   // const { data: pastAttendanceData, isLoading: pastAttendanceLoading } =
   //   usePolling(path("/stats/attendance/:n", { n: numEvents }), authorized);
   const { data: events, isLoading: eventsLoading } = usePolling(
-    "/events",
+    '/events',
     authorized
-  );
+  )
   const { data: eventAttendanceData, isLoading: eventAttendanceLoading } =
     usePolling(
-      path("/stats/event/:EVENT_ID/attendance", { EVENT_ID: eventId }),
+      path('/stats/event/:EVENT_ID/attendance', { EVENT_ID: eventId }),
       authorized
-    );
+    )
   const { data: numAttendedEventsData, isLoading: numAttendedEventsLoading } =
     usePolling(
-      path("/stats/attended-at-least/:N", { N: minNumEvents }),
+      path('/stats/attended-at-least/:N', { N: minNumEvents }),
       authorized
-    );
+    )
   const { data: tagInterestData, isLoading: tagInterestLoading } = usePolling(
-    "/stats/tag-counts",
+    '/stats/tag-counts',
     authorized
-  );
+  )
   const { data: tierCountsData, isLoading: tierCountsLoading } = usePolling(
-    "/stats/tier-counts",
+    '/stats/tier-counts',
     authorized
-  );
+  )
   const { data: prizesGivenData, isLoading: prizesGivenLoading } = usePolling(
-    "/stats/merch-redemption-counts",
+    '/stats/merch-redemption-counts',
     authorized
-  );
+  )
   const { data: dietaryRestrictions, isLoading: dietaryRestrictionsLoading } =
-    usePolling("/stats/dietary-restrictions", authorized);
+    usePolling('/stats/dietary-restrictions', authorized)
 
   const sortedAllergyCounts = useMemo(() => {
-    if (!dietaryRestrictions) return dietaryRestrictions;
-    return Object.entries(dietaryRestrictions?.allergyCounts).sort();
-  }, [dietaryRestrictions]);
+    if (!dietaryRestrictions) return dietaryRestrictions
+    return Object.entries(dietaryRestrictions?.allergyCounts).sort()
+  }, [dietaryRestrictions])
 
   const sortedDietaryRestrictionCounts = useMemo(() => {
-    if (!dietaryRestrictions) return dietaryRestrictions;
-    return Object.entries(dietaryRestrictions?.dietaryRestrictionCounts).sort();
-  }, [dietaryRestrictions]);
+    if (!dietaryRestrictions) return dietaryRestrictions
+    return Object.entries(dietaryRestrictions?.dietaryRestrictionCounts).sort()
+  }, [dietaryRestrictions])
 
   const responsiveStackDivider = useBreakpointValue({
     base: undefined, // no divider on small screens
     sm: <StackDivider />,
     md: undefined,
     lg: <StackDivider />
-  });
+  })
 
   return (
     <>
@@ -136,37 +136,37 @@ function Stats() {
             </StatLabel>
             <StatLabel>
               {tierCountsLoading ? (
-                "-"
+                '-'
               ) : (
                 <Stack
                   textAlign="center"
                   justifyContent="center"
                   spacing={{ base: 0, sm: 1, md: 0, lg: 3 }}
                   direction={{
-                    base: "column",
-                    sm: "row",
-                    md: "column",
-                    lg: "row"
+                    base: 'column',
+                    sm: 'row',
+                    md: 'column',
+                    lg: 'row'
                   }}
                   divider={responsiveStackDivider}
                   lineHeight="1.5rem"
                   mt={{ base: 0, sm: 4, md: 0, lg: 4 }}
                 >
                   <Text>
-                    shirts:{" "}
+                    shirts:{' '}
                     {(tierCountsData?.TIER1 ?? 0) +
                       (tierCountsData?.TIER2 ?? 0) +
                       (tierCountsData?.TIER3 ?? 0) +
                       (tierCountsData?.TIER4 ?? 0)}
                   </Text>
                   <Text>
-                    key chains:{" "}
+                    key chains:{' '}
                     {(tierCountsData?.TIER2 ?? 0) +
                       (tierCountsData?.TIER3 ?? 0) +
                       (tierCountsData?.TIER4 ?? 0)}
                   </Text>
                   <Text>
-                    squishies:{" "}
+                    squishies:{' '}
                     {(tierCountsData?.TIER3 ?? 0) +
                       (tierCountsData?.TIER4 ?? 0)}
                   </Text>
@@ -185,17 +185,17 @@ function Stats() {
             </StatLabel>
             <StatLabel>
               {prizesGivenLoading ? (
-                "-"
+                '-'
               ) : (
                 <Stack
                   textAlign="center"
                   justifyContent="center"
                   spacing={{ base: 0, sm: 1, md: 0, lg: 3 }}
                   direction={{
-                    base: "column",
-                    sm: "row",
-                    md: "column",
-                    lg: "row"
+                    base: 'column',
+                    sm: 'row',
+                    md: 'column',
+                    lg: 'row'
                   }}
                   divider={responsiveStackDivider}
                   lineHeight="1.5rem"
@@ -218,10 +218,10 @@ function Stats() {
               justifyContent="center"
               gap={2}
               flexDirection={{
-                base: "column",
-                sm: "row",
-                md: "column",
-                lg: "row"
+                base: 'column',
+                sm: 'row',
+                md: 'column',
+                lg: 'row'
               }}
             >
               Attendance for
@@ -245,7 +245,7 @@ function Stats() {
             </StatLabel>
             <StatNumber mt={1}>
               {eventAttendanceLoading ? (
-                "—"
+                '—'
               ) : (
                 <Text>{eventAttendanceData?.attendanceCount ?? 0}</Text>
               )}
@@ -258,10 +258,10 @@ function Stats() {
               justifyContent="center"
               gap={2}
               flexDirection={{
-                base: "column",
-                sm: "row",
-                md: "column",
-                lg: "row"
+                base: 'column',
+                sm: 'row',
+                md: 'column',
+                lg: 'row'
               }}
             >
               <Text>Interest in</Text>
@@ -278,17 +278,17 @@ function Stats() {
                 ))}
               </Select>
               <Text
-                display={{ base: "none", sm: "block", md: "none", lg: "block" }}
+                display={{ base: 'none', sm: 'block', md: 'none', lg: 'block' }}
               >
                 events:
               </Text>
             </StatLabel>
             <StatNumber mt={1}>
               {tagInterestLoading ? (
-                "—"
+                '—'
               ) : (
                 <Text>
-                  {tagInterestData ? (tagInterestData[tagName] ?? 0) : "x"}
+                  {tagInterestData ? (tagInterestData[tagName] ?? 0) : 'x'}
                 </Text>
               )}
             </StatNumber>
@@ -302,10 +302,10 @@ function Stats() {
               justifyContent="center"
               gap={2}
               flexDirection={{
-                base: "column",
-                sm: "row",
-                md: "column",
-                lg: "row"
+                base: 'column',
+                sm: 'row',
+                md: 'column',
+                lg: 'row'
               }}
             >
               <Text>People who have attended</Text>
@@ -329,7 +329,7 @@ function Stats() {
 
             <StatNumber>
               {numAttendedEventsLoading
-                ? "—"
+                ? '—'
                 : (numAttendedEventsData?.count ?? 0)}
             </StatNumber>
           </Stat>
@@ -349,7 +349,7 @@ function Stats() {
               <StatLabel>Allergies</StatLabel>
               <StatNumber>
                 {dietaryRestrictionsLoading
-                  ? "—"
+                  ? '—'
                   : dietaryRestrictions?.allergies}
               </StatNumber>
             </Stat>
@@ -357,20 +357,20 @@ function Stats() {
               <StatLabel>Dietary Restrictions</StatLabel>
               <StatNumber>
                 {dietaryRestrictionsLoading
-                  ? "—"
+                  ? '—'
                   : dietaryRestrictions?.dietaryRestrictions}
               </StatNumber>
             </Stat>
             <Stat>
               <StatLabel>Both</StatLabel>
               <StatNumber>
-                {dietaryRestrictionsLoading ? "—" : dietaryRestrictions?.both}
+                {dietaryRestrictionsLoading ? '—' : dietaryRestrictions?.both}
               </StatNumber>
             </Stat>
             <Stat>
               <StatLabel>None</StatLabel>
               <StatNumber>
-                {dietaryRestrictionsLoading ? "—" : dietaryRestrictions?.none}
+                {dietaryRestrictionsLoading ? '—' : dietaryRestrictions?.none}
               </StatNumber>
             </Stat>
           </StatGroup>
@@ -386,9 +386,9 @@ function Stats() {
                       labels: sortedAllergyCounts?.map((entry) => entry[0]),
                       datasets: [
                         {
-                          label: "Allergies",
+                          label: 'Allergies',
                           data: sortedAllergyCounts?.map((entry) => entry[1]),
-                          backgroundColor: "rgba(75, 192, 192, 0.6)"
+                          backgroundColor: 'rgba(75, 192, 192, 0.6)'
                         }
                       ]
                     }
@@ -409,11 +409,11 @@ function Stats() {
                       ),
                       datasets: [
                         {
-                          label: "Dietary Restrictions",
+                          label: 'Dietary Restrictions',
                           data: sortedDietaryRestrictionCounts?.map(
                             (entry) => entry[1]
                           ),
-                          backgroundColor: "rgba(153, 102, 255, 0.6)"
+                          backgroundColor: 'rgba(153, 102, 255, 0.6)'
                         }
                       ]
                     }
@@ -423,7 +423,7 @@ function Stats() {
         </Card>
       </StatGroup>
     </>
-  );
+  )
 }
 
-export default Stats;
+export default Stats

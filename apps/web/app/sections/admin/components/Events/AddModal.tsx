@@ -1,5 +1,5 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { AddIcon } from "@chakra-ui/icons";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { AddIcon } from '@chakra-ui/icons'
 import {
   Modal,
   ModalOverlay,
@@ -7,44 +7,44 @@ import {
   Button,
   useDisclosure,
   useToast
-} from "@chakra-ui/react";
-import type { FormikHelpers } from "formik";
-import type { EventFormValues } from "./EventSchema";
-import { EventFormInitialValues } from "./EventSchema";
-import EventForm from "./EventForm";
-import { api } from "@app";
+} from '@chakra-ui/react'
+import type { FormikHelpers } from 'formik'
+import type { EventFormValues } from './EventSchema'
+import { EventFormInitialValues } from './EventSchema'
+import EventForm from './EventForm'
+import { api } from '@app'
 
 type AddModalProps = {
-  updateEvents: () => void;
-};
+  updateEvents: () => void
+}
 
 const AddModal: React.FC<AddModalProps> = ({ updateEvents }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const mirrorStyles = useMirrorStyles();
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const mirrorStyles = useMirrorStyles()
+  const toast = useToast()
 
   const createEvent = (
     values: EventFormValues,
     helpers: FormikHelpers<EventFormValues>
   ) => {
     const request = api
-      .post("/events", { ...values, attendanceCount: 0 })
+      .post('/events', { ...values, attendanceCount: 0 })
       .then(() => {
-        updateEvents();
-        onClose();
+        updateEvents()
+        onClose()
       })
       .finally(() => {
-        helpers.setSubmitting(false);
-      });
+        helpers.setSubmitting(false)
+      })
 
     toast.promise(request, {
-      success: { title: "Event created" },
-      error: { title: "Error creating event" },
-      loading: { title: "Creating event..." }
-    });
+      success: { title: 'Event created' },
+      error: { title: 'Error creating event' },
+      loading: { title: 'Creating event...' }
+    })
 
-    return request;
-  };
+    return request
+  }
 
   return (
     <>
@@ -74,7 +74,7 @@ const AddModal: React.FC<AddModalProps> = ({ updateEvents }) => {
         <AddIcon />
       </Button>
     </>
-  );
-};
+  )
+}
 
-export default AddModal;
+export default AddModal

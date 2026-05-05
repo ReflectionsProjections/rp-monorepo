@@ -6,24 +6,24 @@ import {
   SimpleGrid,
   Text,
   VStack
-} from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import React, { useRef } from "react";
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { useInView } from 'framer-motion'
+import React, { useRef } from 'react'
 
-const MotionBox = motion(Box);
-const MotionText = motion(Text);
-const MotionFlex = motion(Flex);
+const MotionBox = motion(Box)
+const MotionText = motion(Text)
+const MotionFlex = motion(Flex)
 
 export const Archive = () => {
-  const sponsors = ["John Deere", "Caterpillar", "Motorola", "Verkada"];
+  const sponsors = ['John Deere', 'Caterpillar', 'Motorola', 'Verkada']
 
-  const speakersRef = useRef<HTMLDivElement>(null);
+  const speakersRef = useRef<HTMLDivElement>(null)
 
   return (
     <Box minH="100vh" py={10}>
       <Container maxW="container.xl">
-        <Flex direction={{ base: "column", md: "row" }} mb={16} align="center">
+        <Flex direction={{ base: 'column', md: 'row' }} mb={16} align="center">
           <VStack flex={1} align="flex-start" p={4} spacing={4}>
             <Heading as="h2" size="2xl" fontWeight="bold">
               History
@@ -70,26 +70,26 @@ export const Archive = () => {
           height="100%"
           _before={{
             content: '""',
-            position: "absolute",
-            top: "0",
-            left: "0",
-            width: "100%",
-            height: "30%",
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '30%',
             background:
-              "linear-gradient(45deg, #9CA3AF 0%, #6B7280 50%, #4B5563 100%)",
-            clipPath: "ellipse(80% 100% at 20% 0%)",
+              'linear-gradient(45deg, #9CA3AF 0%, #6B7280 50%, #4B5563 100%)',
+            clipPath: 'ellipse(80% 100% at 20% 0%)',
             zIndex: 1
           }}
           _after={{
             content: '""',
-            position: "absolute",
-            bottom: "0",
-            right: "0",
-            width: "100%",
-            height: "20%",
+            position: 'absolute',
+            bottom: '0',
+            right: '0',
+            width: '100%',
+            height: '20%',
             background:
-              "linear-gradient(-45deg, #6B7280 0%, #4B5563 50%, #374151 100%)",
-            clipPath: "ellipse(75% 100% at 80% 100%)",
+              'linear-gradient(-45deg, #6B7280 0%, #4B5563 50%, #374151 100%)',
+            clipPath: 'ellipse(75% 100% at 80% 100%)',
             zIndex: 1
           }}
         />
@@ -101,7 +101,7 @@ export const Archive = () => {
             justifyContent="center"
             p={4}
             gap={4}
-            flexDirection={{ base: "column", md: "row" }}
+            flexDirection={{ base: 'column', md: 'row' }}
             ref={speakersRef}
           >
             <Box
@@ -120,7 +120,7 @@ export const Archive = () => {
               zIndex={5}
             >
               <Text fontSize="4xl" fontWeight="bold" color="gray.700">
-                HALL OF{" "}
+                HALL OF{' '}
               </Text>
               <Text
                 fontSize="3xl"
@@ -128,7 +128,7 @@ export const Archive = () => {
                 lineHeight="6"
                 color="gray.600"
               >
-                Previous <br /> Speakers{" "}
+                Previous <br /> Speakers{' '}
               </Text>
             </Box>
             <VStack zIndex={5} position="relative">
@@ -191,11 +191,11 @@ export const Archive = () => {
 
         <VStack p={4}>
           <VStack
-            w={"100%"}
+            w={'100%'}
             align="flex-start"
             spacing={4}
-            borderBottom={"1px solid"}
-            borderColor={"gray.500"}
+            borderBottom={'1px solid'}
+            borderColor={'gray.500'}
             pb={3}
           >
             <Heading as="h2" size="lg" fontWeight="bold">
@@ -215,24 +215,24 @@ export const Archive = () => {
         <br />
       </Container>
     </Box>
-  );
-};
+  )
+}
 
 const YearContent: React.FC<{
-  year: number;
+  year: number
 }> = ({ year }) => {
   return (
-    <Flex p={4} gap={8} direction={{ base: "column", md: "row" }}>
+    <Flex p={4} gap={8} direction={{ base: 'column', md: 'row' }}>
       <Flex
-        direction={"column"}
-        alignItems={{ base: "flex-start", md: "flex-end" }}
-        borderTop={"1px solid"}
-        borderColor={"gray.500"}
+        direction={'column'}
+        alignItems={{ base: 'flex-start', md: 'flex-end' }}
+        borderTop={'1px solid'}
+        borderColor={'gray.500'}
         pt={2}
-        justifyContent={"space-between"}
-        pl={"0px"}
+        justifyContent={'space-between'}
+        pl={'0px'}
       >
-        <Heading as="h2" size="2xl" fontWeight="bold" h={"40px"}>
+        <Heading as="h2" size="2xl" fontWeight="bold" h={'40px'}>
           '{year}
         </Heading>
         <Box
@@ -241,7 +241,7 @@ const YearContent: React.FC<{
           position="relative"
           bg="gray.300"
           borderRadius="md"
-          mt={{ base: "10px", md: "30px" }}
+          mt={{ base: '10px', md: '30px' }}
         />
       </Flex>
       <Box w="100%">
@@ -253,12 +253,12 @@ const YearContent: React.FC<{
         </SimpleGrid>
       </Box>
     </Flex>
-  );
-};
+  )
+}
 
 const ArchiveImageBox = ({ delay = 0 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.2 })
 
   return (
     <MotionBox
@@ -270,27 +270,27 @@ const ArchiveImageBox = ({ delay = 0 }) => {
       overflow="hidden"
       initial={{ opacity: 0, y: 10 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-      boxShadow={"1px "}
+      boxShadow={'1px '}
       transition={{
         duration: 0.5,
         delay: delay,
-        easings: ["easeInOut"]
+        easings: ['easeInOut']
       }}
     />
-  );
-};
+  )
+}
 
 const SponsorBox: React.FC<{
-  sponsorName: string;
-  delay: number;
+  sponsorName: string
+  delay: number
 }> = ({ sponsorName, delay = 0 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.2 })
   return (
-    <VStack alignItems={"flex-start"}>
+    <VStack alignItems={'flex-start'}>
       <MotionBox
         ref={ref}
-        w={"100%"}
+        w={'100%'}
         h="200px"
         position="relative"
         bgColor="gray.300"
@@ -302,7 +302,7 @@ const SponsorBox: React.FC<{
         transition={{
           duration: 0.5,
           delay: delay,
-          ease: "easeIn"
+          ease: 'easeIn'
         }}
       />
       <MotionText
@@ -312,27 +312,27 @@ const SponsorBox: React.FC<{
         transition={{
           duration: 0.5,
           delay: delay,
-          ease: "easeIn"
+          ease: 'easeIn'
         }}
       >
         {sponsorName}
       </MotionText>
     </VStack>
-  );
-};
+  )
+}
 
 const SpeakerOval: React.FC<{
-  speakersRef: React.RefObject<HTMLElement>;
-  speakerName: string;
-  companyName: string;
-  width: number;
-  height: number;
-  delay?: number;
-  mt?: number | string;
-  ml?: number | string;
-  mr?: number | string;
-  mb?: number | string;
-  horizontal?: boolean;
+  speakersRef: React.RefObject<HTMLElement>
+  speakerName: string
+  companyName: string
+  width: number
+  height: number
+  delay?: number
+  mt?: number | string
+  ml?: number | string
+  mr?: number | string
+  mb?: number | string
+  horizontal?: boolean
 }> = ({
   speakerName,
   companyName,
@@ -346,10 +346,10 @@ const SpeakerOval: React.FC<{
   delay = 0,
   speakersRef
 }) => {
-  const isInView = useInView(speakersRef, { once: true, amount: 0.2 });
+  const isInView = useInView(speakersRef, { once: true, amount: 0.2 })
   return (
     <MotionFlex
-      flexDirection={horizontal ? "row" : "column"}
+      flexDirection={horizontal ? 'row' : 'column'}
       gap={horizontal ? 3 : 0}
       alignItems="center"
       mt={mt}
@@ -361,7 +361,7 @@ const SpeakerOval: React.FC<{
       transition={{
         duration: 0.5,
         delay: delay,
-        ease: "easeIn"
+        ease: 'easeIn'
       }}
     >
       <Box
@@ -386,5 +386,5 @@ const SpeakerOval: React.FC<{
         </Text>
       </VStack>
     </MotionFlex>
-  );
-};
+  )
+}

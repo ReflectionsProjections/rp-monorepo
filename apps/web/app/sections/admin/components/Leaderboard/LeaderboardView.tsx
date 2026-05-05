@@ -5,28 +5,28 @@ import {
   StackDivider,
   Text,
   useColorModeValue
-} from "@chakra-ui/react";
-import type { LeaderboardUser } from "@app";
-import { useMemo } from "react";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+} from '@chakra-ui/react'
+import type { LeaderboardUser } from '@app'
+import { useMemo } from 'react'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 
 const LeaderboardCard: React.FC<{
-  user: LeaderboardUser;
-  ranking: number;
-  isQualified?: boolean;
+  user: LeaderboardUser
+  ranking: number
+  isQualified?: boolean
 }> = ({ user, ranking, isQualified = false }) => {
-  const mirrorStyles = useMirrorStyles(true);
-  const normalBorder = useColorModeValue("gray.200", "gray.600");
-  const normalText = useColorModeValue("gray.700", "gray.300");
+  const mirrorStyles = useMirrorStyles(true)
+  const normalBorder = useColorModeValue('gray.200', 'gray.600')
+  const normalText = useColorModeValue('gray.700', 'gray.300')
 
   // Special styling for qualified users (selected for prizes)
-  const qualifiedBg = useColorModeValue("green.50", "green.900");
-  const qualifiedBorder = useColorModeValue("green.400", "green.600");
-  const qualifiedText = useColorModeValue("green.800", "green.200");
+  const qualifiedBg = useColorModeValue('green.50', 'green.900')
+  const qualifiedBorder = useColorModeValue('green.400', 'green.600')
+  const qualifiedText = useColorModeValue('green.800', 'green.200')
   const qualifiedShadow = useColorModeValue(
-    "0 0 20px rgba(34, 197, 94, 0.3)",
-    "0 0 20px rgba(34, 197, 94, 0.5)"
-  );
+    '0 0 20px rgba(34, 197, 94, 0.3)',
+    '0 0 20px rgba(34, 197, 94, 0.5)'
+  )
 
   return (
     <Flex
@@ -36,14 +36,14 @@ const LeaderboardCard: React.FC<{
       gap={4}
       p={4}
       borderRadius="xl"
-      bg={isQualified ? qualifiedBg : "transparent"}
-      border={isQualified ? "3px solid" : "1px solid"}
+      bg={isQualified ? qualifiedBg : 'transparent'}
+      border={isQualified ? '3px solid' : '1px solid'}
       borderColor={isQualified ? qualifiedBorder : normalBorder}
       transition="all 0.3s ease"
       sx={isQualified ? { ...mirrorStyles, boxShadow: qualifiedShadow } : {}}
       _hover={{
-        transform: isQualified ? "scale(1.05)" : "scale(1.01)",
-        boxShadow: isQualified ? qualifiedShadow : "md"
+        transform: isQualified ? 'scale(1.05)' : 'scale(1.01)',
+        boxShadow: isQualified ? qualifiedShadow : 'md'
       }}
       position="relative"
     >
@@ -77,18 +77,18 @@ const LeaderboardCard: React.FC<{
         textAlign="left"
         fontStyle="oblique"
         opacity="0.7"
-        display={{ base: "none", lg: "block" }}
+        display={{ base: 'none', lg: 'block' }}
       >
         {user.email}
       </Box>
       <Flex
-        flex={{ base: "4", xl: "6" }}
+        flex={{ base: '4', xl: '6' }}
         textAlign="left"
         alignItems="center"
         gap={1.5}
-        display={{ base: "none", lg: "flex" }}
+        display={{ base: 'none', lg: 'flex' }}
       >
-        <Text display={{ base: "none", xl: "block" }}>Tier:&nbsp;&nbsp;</Text>
+        <Text display={{ base: 'none', xl: 'block' }}>Tier:&nbsp;&nbsp;</Text>
         <Text
           as="span"
           fontSize="lg"
@@ -97,7 +97,7 @@ const LeaderboardCard: React.FC<{
           px={2}
           py={1}
           borderRadius="md"
-          bg={isQualified ? "green.200" : "gray.100"}
+          bg={isQualified ? 'green.200' : 'gray.100'}
         >
           {user.currentTier}
         </Text>
@@ -106,9 +106,9 @@ const LeaderboardCard: React.FC<{
         flex={2}
         textAlign="left"
         alignItems="center"
-        gap={{ base: "0", sm: "3" }}
-        display={{ base: "flex", lg: "none" }}
-        direction={{ base: "column", sm: "row" }}
+        gap={{ base: '0', sm: '3' }}
+        display={{ base: 'flex', lg: 'none' }}
+        direction={{ base: 'column', sm: 'row' }}
       >
         <Text>Tier:</Text>
         <Text
@@ -119,7 +119,7 @@ const LeaderboardCard: React.FC<{
           px={2}
           py={1}
           borderRadius="md"
-          bg={isQualified ? "green.200" : "gray.100"}
+          bg={isQualified ? 'green.200' : 'gray.100'}
         >
           {user.currentTier}
         </Text>
@@ -134,8 +134,8 @@ const LeaderboardCard: React.FC<{
         </Text>
       </Box>
     </Flex>
-  );
-};
+  )
+}
 
 const LeaderboardCardSkeleton: React.FC = () => (
   <Flex
@@ -148,7 +148,7 @@ const LeaderboardCardSkeleton: React.FC = () => (
     <Box flex={4}>
       <Box height="24px" bg="gray.200" borderRadius="md" width="70%" />
     </Box>
-    <Box flex={5} display={{ base: "none", lg: "block" }}>
+    <Box flex={5} display={{ base: 'none', lg: 'block' }}>
       <Box height="24px" bg="gray.200" borderRadius="md" width="80%" />
     </Box>
     <Box flex={{ base: 2, lg: 4, xl: 6 }}>
@@ -170,38 +170,38 @@ const LeaderboardCardSkeleton: React.FC = () => (
       />
     </Box>
   </Flex>
-);
+)
 
 const LeaderboardView: React.FC<{
-  leaderboardUsers: LeaderboardUser[];
-  minimumPointsThreshold: number;
-  isLoading: boolean;
+  leaderboardUsers: LeaderboardUser[]
+  minimumPointsThreshold: number
+  isLoading: boolean
 }> = ({ leaderboardUsers, minimumPointsThreshold, isLoading }) => {
   const breakpoint = useMemo(
     () => minimumPointsThreshold,
     [minimumPointsThreshold]
-  );
+  )
 
-  const mirrorStyles = useMirrorStyles(true);
-  const bannerBg = useColorModeValue("blue.50", "blue.900");
-  const bannerBorder = useColorModeValue("blue.200", "blue.600");
-  const bannerText = useColorModeValue("blue.700", "blue.200");
-  const bannerSubtext = useColorModeValue("blue.500", "blue.300");
+  const mirrorStyles = useMirrorStyles(true)
+  const bannerBg = useColorModeValue('blue.50', 'blue.900')
+  const bannerBorder = useColorModeValue('blue.200', 'blue.600')
+  const bannerText = useColorModeValue('blue.700', 'blue.200')
+  const bannerSubtext = useColorModeValue('blue.500', 'blue.300')
 
   const allCards = useMemo(() => {
     // Debug: Check for duplicate userIds
-    const userIds = leaderboardUsers.map((user) => user.userId);
-    const uniqueUserIds = new Set(userIds);
+    const userIds = leaderboardUsers.map((user) => user.userId)
+    const uniqueUserIds = new Set(userIds)
     if (userIds.length !== uniqueUserIds.size) {
-      console.warn("Duplicate userIds found in leaderboard data:", userIds);
+      console.warn('Duplicate userIds found in leaderboard data:', userIds)
       const duplicates = userIds.filter(
         (id, index) => userIds.indexOf(id) !== index
-      );
-      console.warn("Duplicate userIds:", [...new Set(duplicates)]);
+      )
+      console.warn('Duplicate userIds:', [...new Set(duplicates)])
     }
 
     return leaderboardUsers.map((user, index) => {
-      const isQualified = user.points >= breakpoint;
+      const isQualified = user.points >= breakpoint
       return (
         <LeaderboardCard
           user={user}
@@ -209,9 +209,9 @@ const LeaderboardView: React.FC<{
           ranking={index}
           isQualified={isQualified}
         />
-      );
-    });
-  }, [leaderboardUsers, breakpoint]);
+      )
+    })
+  }, [leaderboardUsers, breakpoint])
 
   const loadingSkeletons = useMemo(
     () =>
@@ -219,7 +219,7 @@ const LeaderboardView: React.FC<{
         <LeaderboardCardSkeleton key={`skeleton-${index}`} />
       )),
     []
-  );
+  )
 
   return (
     <Box>
@@ -244,7 +244,7 @@ const LeaderboardView: React.FC<{
       <Stack
         divider={
           <StackDivider
-            borderColor={useColorModeValue("gray.200", "gray.600")}
+            borderColor={useColorModeValue('gray.200', 'gray.600')}
           />
         }
         spacing={3}
@@ -253,7 +253,7 @@ const LeaderboardView: React.FC<{
         {isLoading ? loadingSkeletons : allCards}
       </Stack>
     </Box>
-  );
-};
+  )
+}
 
-export default LeaderboardView;
+export default LeaderboardView

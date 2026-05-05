@@ -83,14 +83,14 @@ rp db
 
 ## Service URLs
 
-| Service | URL |
-| --- | --- |
-| API | http://localhost:3000 |
-| Site | http://localhost:3001 |
-| Kong Gateway | http://localhost:8000 |
-| Supabase Studio | http://localhost:8001 |
-| Expo Metro | http://localhost:8081 |
-| Expo Web | http://localhost:19006 |
+| Service         | URL                    |
+| --------------- | ---------------------- |
+| API             | http://localhost:3000  |
+| Site            | http://localhost:3001  |
+| Kong Gateway    | http://localhost:8000  |
+| Supabase Studio | http://localhost:8001  |
+| Expo Metro      | http://localhost:8081  |
+| Expo Web        | http://localhost:19006 |
 
 ## Verification
 

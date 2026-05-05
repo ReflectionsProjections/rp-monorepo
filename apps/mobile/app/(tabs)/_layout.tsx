@@ -1,77 +1,81 @@
-import '@/global.css';
-import React, { useEffect, useState } from 'react';
-import { Dimensions, View, TouchableOpacity, Pressable } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { SvgProps } from 'react-native-svg';
-import { api } from '../../api/api';
-import { Role } from '../../api/types';
+import '@/global.css'
+import React, { useEffect, useState } from 'react'
+import { Dimensions, View, TouchableOpacity, Pressable } from 'react-native'
+import { Colors } from '@/constants/Colors'
+import { SvgProps } from 'react-native-svg'
+import { api } from '../../api/api'
+import { Role } from '../../api/types'
 
-import CurvedBottomBar from '../../components/misc/curvedBottomBar';
-import HomeScreen from './home';
-import EventsScreen from './events';
-import PointsShopScreen from './points_shop';
-import ProfileScreen from './profile';
-import ScannerStaffScreen from './scanner/scanner_staff';
-import ScannerUserScreen from './scanner/scanner_user';
+import CurvedBottomBar from '../../components/misc/curvedBottomBar'
+import HomeScreen from './home'
+import EventsScreen from './events'
+import PointsShopScreen from './points_shop'
+import ProfileScreen from './profile'
+import ScannerStaffScreen from './scanner/scanner_staff'
+import ScannerUserScreen from './scanner/scanner_user'
 
-import HomeIcon from '@/assets/icons/tabIcons/final_homeIcon.svg';
-import EventsIcon from '@/assets/icons/tabIcons/final_eventsIcon.svg';
-import QrCodeIcon from '@/assets/icons/tabIcons/rp_qr.svg';
-import PointsIcon from '@/assets/icons/tabIcons/final_shopIcon.svg';
-import ProfileIcon from '@/assets/icons/tabIcons/final_leaderIcon.svg';
+import HomeIcon from '@/assets/icons/tabIcons/final_homeIcon.svg'
+import EventsIcon from '@/assets/icons/tabIcons/final_eventsIcon.svg'
+import QrCodeIcon from '@/assets/icons/tabIcons/rp_qr.svg'
+import PointsIcon from '@/assets/icons/tabIcons/final_shopIcon.svg'
+import ProfileIcon from '@/assets/icons/tabIcons/final_leaderIcon.svg'
 
-import FilledHomeIcon from '@/assets/icons/tabIcons/filled/filled_homeIcon.svg';
-import FilledEventsIcon from '@/assets/icons/tabIcons/filled/filled_eventsIcon.svg';
-import FilledPointsIcon from '@/assets/icons/tabIcons/filled/filled_shopIcon.svg';
-import FilledProfileIcon from '@/assets/icons/tabIcons/filled/filled_leaderIcon.svg';
-import ScannerGuestScreen from './scanner/scanner_guest';
+import FilledHomeIcon from '@/assets/icons/tabIcons/filled/filled_homeIcon.svg'
+import FilledEventsIcon from '@/assets/icons/tabIcons/filled/filled_eventsIcon.svg'
+import FilledPointsIcon from '@/assets/icons/tabIcons/filled/filled_shopIcon.svg'
+import FilledProfileIcon from '@/assets/icons/tabIcons/filled/filled_leaderIcon.svg'
+import ScannerGuestScreen from './scanner/scanner_guest'
 
-const { width, height } = Dimensions.get('window');
-const HEIGHT = 0.15 * height;
-const BUTTON_SIZE = Math.min(width, height) * 0.21;
-const ICON_SIZE = 36;
+const { width, height } = Dimensions.get('window')
+const HEIGHT = 0.15 * height
+const BUTTON_SIZE = Math.min(width, height) * 0.21
+const ICON_SIZE = 36
 
-const TABS: { key: string; icon: React.FC<SvgProps>; filledIcon: React.FC<SvgProps> }[] = [
+const TABS: {
+  key: string
+  icon: React.FC<SvgProps>
+  filledIcon: React.FC<SvgProps>
+}[] = [
   { key: 'home', icon: HomeIcon, filledIcon: FilledHomeIcon },
   { key: 'events', icon: EventsIcon, filledIcon: FilledEventsIcon },
   { key: 'points', icon: PointsIcon, filledIcon: FilledPointsIcon },
-  { key: 'profile', icon: ProfileIcon, filledIcon: FilledProfileIcon },
-];
+  { key: 'profile', icon: ProfileIcon, filledIcon: FilledProfileIcon }
+]
 
 export default function TabLayout() {
-  const [activeTab, setActiveTab] = useState('home');
-  const [roles, setRoles] = useState<Role[] | null>([]);
+  const [activeTab, setActiveTab] = useState('home')
+  const [roles, setRoles] = useState<Role[] | null>([])
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await api.get('/auth/info');
-      setRoles(response.data.roles);
-    };
-    fetchUser();
-  }, []);
+      const response = await api.get('/auth/info')
+      setRoles(response.data.roles)
+    }
+    fetchUser()
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeScreen />;
+        return <HomeScreen />
       case 'events':
-        return <EventsScreen />;
+        return <EventsScreen />
       case 'points':
-        return <PointsShopScreen />;
+        return <PointsShopScreen />
       case 'profile':
-        return <ProfileScreen />;
+        return <ProfileScreen />
       case 'scanner':
         if (roles === null || roles.length === 0) {
-          return <ScannerGuestScreen />;
+          return <ScannerGuestScreen />
         } else if (roles.includes('STAFF')) {
-          return <ScannerStaffScreen />;
+          return <ScannerStaffScreen />
         } else if (roles.includes('USER')) {
-          return <ScannerUserScreen />;
+          return <ScannerUserScreen />
         }
       default:
-        return <HomeScreen />;
+        return <HomeScreen />
     }
-  };
+  }
 
   return (
     <View className="flex-1">
@@ -95,7 +99,7 @@ export default function TabLayout() {
                     setActiveTab={setActiveTab}
                   />
                 </React.Fragment>
-              );
+              )
             }
             return (
               <TabButton
@@ -106,7 +110,7 @@ export default function TabLayout() {
                 width={tab.key === 'home' ? 50 : 40}
                 height={tab.key === 'home' ? 50 : 40}
               />
-            );
+            )
           })}
         </View>
 
@@ -117,10 +121,10 @@ export default function TabLayout() {
             left: width / 2 - BUTTON_SIZE / 2,
             width: BUTTON_SIZE,
             height: BUTTON_SIZE,
-            zIndex: 2,
+            zIndex: 2
           }}
           onPress={() => {
-            setActiveTab('scanner');
+            setActiveTab('scanner')
           }}
         >
           <View
@@ -136,7 +140,7 @@ export default function TabLayout() {
               shadowColor: '#000',
               shadowOpacity: 0.1,
               shadowRadius: 8,
-              elevation: 4,
+              elevation: 4
             }}
           >
             <QrCodeIcon
@@ -148,27 +152,37 @@ export default function TabLayout() {
         </Pressable>
       </View>
     </View>
-  );
+  )
 }
 
 type TabButtonProps = {
-  tab: { key: string; icon: React.FC<SvgProps>; filledIcon: React.FC<SvgProps> };
-  activeTab: string;
-  setActiveTab: (key: string) => void;
-  width?: number;
-  height?: number;
-};
-function TabButton({ tab, activeTab, setActiveTab, width = 40, height = 40 }: TabButtonProps) {
-  const isActive = activeTab === tab.key;
-  const Icon = isActive ? tab.filledIcon : tab.icon;
+  tab: { key: string; icon: React.FC<SvgProps>; filledIcon: React.FC<SvgProps> }
+  activeTab: string
+  setActiveTab: (key: string) => void
+  width?: number
+  height?: number
+}
+function TabButton({
+  tab,
+  activeTab,
+  setActiveTab,
+  width = 40,
+  height = 40
+}: TabButtonProps) {
+  const isActive = activeTab === tab.key
+  const Icon = isActive ? tab.filledIcon : tab.icon
   return (
     <TouchableOpacity
       className="flex-1 justify-center items-center"
       onPress={() => setActiveTab(tab.key)}
     >
       <View className={`tab-icon ${isActive ? 'tab-icon-active' : ''}`}>
-        <Icon width={width} height={height} color={isActive ? '#DF4F44' : '#00ADB5'} />
+        <Icon
+          width={width}
+          height={height}
+          color={isActive ? '#DF4F44' : '#00ADB5'}
+        />
       </View>
     </TouchableOpacity>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { Flex, Heading } from "@chakra-ui/react";
-import RolesCard from "../../components/Roles/RolesCard";
+import { Flex, Heading } from '@chakra-ui/react'
+import RolesCard from '../../components/Roles/RolesCard'
 
 function Roles() {
   return (
@@ -18,7 +18,7 @@ function Roles() {
         <RolesCard />
       </Flex>
     </>
-  );
+  )
 }
 
-export default Roles;
+export default Roles

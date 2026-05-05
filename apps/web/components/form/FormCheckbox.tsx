@@ -3,15 +3,15 @@ import {
   FormLabel,
   FormErrorMessage,
   Checkbox
-} from "@chakra-ui/react";
-import type { FieldProps } from "formik";
-import { FastField } from "formik";
+} from '@chakra-ui/react'
+import type { FieldProps } from 'formik'
+import { FastField } from 'formik'
 
 type Props<TValues, TFieldName extends keyof TValues> = {
-  name: TFieldName;
-  label: string;
-  isRequired?: boolean;
-};
+  name: TFieldName
+  label: string
+  isRequired?: boolean
+}
 
 const FormCheckbox = <
   TValues extends Record<string, unknown> & Record<TFieldName, boolean>,
@@ -31,7 +31,7 @@ const FormCheckbox = <
           <Checkbox
             isChecked={!!field.value}
             onChange={(e) => {
-              void form.setFieldValue(name, e.target.checked);
+              void form.setFieldValue(name, e.target.checked)
             }}
             onBlur={field.onBlur}
             name={name}
@@ -45,7 +45,7 @@ const FormCheckbox = <
         </FormControl>
       )}
     </FastField>
-  );
-};
+  )
+}
 
-export default FormCheckbox;
+export default FormCheckbox

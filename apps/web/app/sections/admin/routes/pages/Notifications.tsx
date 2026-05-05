@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex } from '@chakra-ui/react'
 
 function Notifications() {
   return (
@@ -14,7 +14,7 @@ function Notifications() {
         />
       </Flex>
     </Box>
-  );
+  )
 }
 
-export default Notifications;
+export default Notifications

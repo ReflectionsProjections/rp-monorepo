@@ -1,4 +1,4 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 import {
   Modal,
   ModalOverlay,
@@ -16,23 +16,23 @@ import {
   VStack,
   HStack,
   useColorModeValue
-} from "@chakra-ui/react";
-import type { FormikHelpers } from "formik";
-import { Formik } from "formik";
-import type { SpeakerFormValues } from "./SpeakerSchema";
-import { SpeakerFormInitialValues, SpeakerFormSchema } from "./SpeakerSchema";
+} from '@chakra-ui/react'
+import type { FormikHelpers } from 'formik'
+import { Formik } from 'formik'
+import type { SpeakerFormValues } from './SpeakerSchema'
+import { SpeakerFormInitialValues, SpeakerFormSchema } from './SpeakerSchema'
 
 interface SpeakerFormProps {
-  initialValues?: SpeakerFormValues;
+  initialValues?: SpeakerFormValues
   onSubmit: (
     values: SpeakerFormValues,
     helpers: FormikHelpers<SpeakerFormValues>
-  ) => void;
-  onCancel: () => void;
-  title: string;
-  submitText: string;
-  isOpen: boolean;
-  onClose: () => void;
+  ) => void
+  onCancel: () => void
+  title: string
+  submitText: string
+  isOpen: boolean
+  onClose: () => void
 }
 
 const SpeakerForm: React.FC<SpeakerFormProps> = ({
@@ -44,8 +44,8 @@ const SpeakerForm: React.FC<SpeakerFormProps> = ({
   isOpen,
   onClose
 }) => {
-  const mirrorStyles = useMirrorStyles();
-  const modalBg = useColorModeValue("white", "gray.800");
+  const mirrorStyles = useMirrorStyles()
+  const modalBg = useColorModeValue('white', 'gray.800')
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -130,9 +130,9 @@ const SpeakerForm: React.FC<SpeakerFormProps> = ({
                         size="md"
                         onClick={() => {
                           void setFieldValue(
-                            "imgUrl",
-                            "http://reflectionsprojections.org"
-                          );
+                            'imgUrl',
+                            'http://reflectionsprojections.org'
+                          )
                         }}
                       >
                         Default
@@ -160,7 +160,7 @@ const SpeakerForm: React.FC<SpeakerFormProps> = ({
         </Formik>
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
-export default SpeakerForm;
+export default SpeakerForm

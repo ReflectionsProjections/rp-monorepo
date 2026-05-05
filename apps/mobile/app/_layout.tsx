@@ -1,33 +1,36 @@
-import '../global.css';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import React, { useLayoutEffect } from 'react';
-import { Text } from 'react-native';
-import Toast from 'react-native-toast-message';
+import '../global.css'
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider
+} from '@react-navigation/native'
+import { useFonts } from 'expo-font'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
+import { useEffect } from 'react'
+import 'react-native-reanimated'
+import React, { useLayoutEffect } from 'react'
+import { Text } from 'react-native'
+import Toast from 'react-native-toast-message'
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from '@/hooks/useColorScheme'
 // import { useFirebaseNotifications } from '@/hooks/useFirebaseNotifications';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
+;(React as any).useInsertionEffect = useLayoutEffect
 
-(React as any).useInsertionEffect = useLayoutEffect;
-
-const RNText = Text as any;
+const RNText = Text as any
 RNText.defaultProps = {
   ...(RNText.defaultProps || {}),
   style: {
     ...(RNText.defaultProps?.style || {}),
-    fontFamily: 'ProRacing',
-  },
-};
+    fontFamily: 'ProRacing'
+  }
+}
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme()
   // const {
   //   fcmToken,
   //   isLoading: notificationsLoading,
@@ -39,17 +42,17 @@ export default function RootLayout() {
     ProRacing: require('../assets/fonts/ProRacing-Regular.otf'),
     ProRacingSlant: require('../assets/fonts/ProRacingSlant.otf'),
     Magistral: require('../assets/fonts/magistral-light.ttf'),
-    MagistralMedium: require('../assets/fonts/magistral-medium.ttf'),
-  });
+    MagistralMedium: require('../assets/fonts/magistral-medium.ttf')
+  })
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync()
     }
-  }, [loaded]);
+  }, [loaded])
 
   if (!loaded) {
-    return null;
+    return null
   }
 
   return (
@@ -59,7 +62,7 @@ export default function RootLayout() {
           name="(auth)"
           options={{
             headerShown: false,
-            animation: 'ios_from_left',
+            animation: 'ios_from_left'
           }}
         />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -67,5 +70,5 @@ export default function RootLayout() {
       <StatusBar style="auto" />
       <Toast />
     </ThemeProvider>
-  );
+  )
 }

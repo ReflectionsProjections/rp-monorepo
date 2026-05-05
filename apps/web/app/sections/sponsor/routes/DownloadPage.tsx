@@ -1,41 +1,41 @@
-import { downloadResumes } from "@app/sections/sponsor/util/download-functions";
-import { Flex, Icon, Spinner, Text, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { FaCircleCheck } from "react-icons/fa6";
-import { IoCloseCircle } from "react-icons/io5";
-import { useParams } from "react-router-dom";
-import type { Resume } from "./ResumeBook/ResumeBook";
-import { api } from "@app";
-import { Config } from "@app/sections/sponsor/config";
+import { downloadResumes } from '@app/sections/sponsor/util/download-functions'
+import { Flex, Icon, Spinner, Text, useToast } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { FaCircleCheck } from 'react-icons/fa6'
+import { IoCloseCircle } from 'react-icons/io5'
+import { useParams } from 'react-router-dom'
+import type { Resume } from './ResumeBook/ResumeBook'
+import { api } from '@app'
+import { Config } from '@app/sections/sponsor/config'
 
 export function DownloadPage() {
-  const { resumeId } = useParams<{ resumeId: string }>();
+  const { resumeId } = useParams<{ resumeId: string }>()
 
-  const toast = useToast();
+  const toast = useToast()
 
   const [currentState, setCurrentState] = useState<
-    "not-started" | "downloading" | "failed" | "success"
-  >("not-started");
+    'not-started' | 'downloading' | 'failed' | 'success'
+  >('not-started')
 
-  const showToast = (message: string, status: "error" | "success") => {
+  const showToast = (message: string, status: 'error' | 'success') => {
     toast({
       title: message,
       status,
       duration: 9000,
       isClosable: true
-    });
-  };
+    })
+  }
 
   const handleDownloadResume = () => {
-    setCurrentState("downloading");
+    setCurrentState('downloading')
 
     if (!resumeId) {
-      showToast("No resume ID provided.", "error");
-      return;
+      showToast('No resume ID provided.', 'error')
+      return
     }
 
     api
-      .get("/registration/all")
+      .get('/registration/all')
       .then(function (response) {
         let resumes = response.data.map(
           (registrant) =>
@@ -49,70 +49,70 @@ export function DownloadPage() {
               jobInterest: registrant.opportunities,
               portfolios: registrant.personalLinks
             }) as Resume
-        );
+        )
 
-        const developerResumes: Resume[] = [];
-        const allResumes: Resume[] = [];
+        const developerResumes: Resume[] = []
+        const allResumes: Resume[] = []
 
         resumes.forEach((resume) => {
           if (Config.RESUMEBOOK_DEVELOPER_UIDS.includes(resume.id)) {
-            developerResumes.push(resume);
+            developerResumes.push(resume)
           } else {
-            allResumes.push(resume);
+            allResumes.push(resume)
           }
-        });
+        })
 
         developerResumes.sort((a, b) => {
           return (
             Config.RESUMEBOOK_DEVELOPER_UIDS.indexOf(a.id) -
             Config.RESUMEBOOK_DEVELOPER_UIDS.indexOf(b.id)
-          );
-        });
+          )
+        })
 
-        resumes = [...developerResumes, ...allResumes];
-        return resumes;
+        resumes = [...developerResumes, ...allResumes]
+        return resumes
       })
       .then(function (resumes) {
-        return downloadResumes(resumes, [resumeId]);
+        return downloadResumes(resumes, [resumeId])
       })
       .then(() => {
-        showToast("Resume downloaded successfully!", "success");
-        setCurrentState("success");
+        showToast('Resume downloaded successfully!', 'success')
+        setCurrentState('success')
       })
       .catch(function (error) {
         showToast(
           `Error ${error}: Failed to fetch resumes - please sign in again`,
-          "error"
-        );
-        setCurrentState("failed");
-      });
-  };
+          'error'
+        )
+        setCurrentState('failed')
+      })
+  }
 
   useEffect(() => {
     if (!resumeId) {
-      console.error("No resume ID provided in URL parameters.");
-      setCurrentState("failed");
-      return;
+      console.error('No resume ID provided in URL parameters.')
+      setCurrentState('failed')
+      return
     }
-    console.log("DownloadPage mounted, starting download...");
-    handleDownloadResume();
-  }, [resumeId]);
+    console.log('DownloadPage mounted, starting download...')
+    handleDownloadResume()
+  }, [resumeId])
 
   return (
     <Flex
       gap={3}
       p={3}
-      alignItems={"center"}
-      justifyContent={"center"}
+      alignItems={'center'}
+      justifyContent={'center'}
       h="100vh"
     >
-      {currentState === "downloading" && (
+      {currentState === 'downloading' && (
         <>
           <Spinner />
           <Text fontSize="xl">Downloading resume...</Text>
         </>
       )}
-      {currentState === "failed" && (
+      {currentState === 'failed' && (
         <>
           <Icon as={IoCloseCircle} boxSize={6} color="red.500" />
           <Text fontSize="xl" color="red.500">
@@ -120,7 +120,7 @@ export function DownloadPage() {
           </Text>
         </>
       )}
-      {currentState === "success" && (
+      {currentState === 'success' && (
         <>
           <Icon as={FaCircleCheck} boxSize={6} color="green.500" />
           <Text fontSize="xl" color="green.500">
@@ -129,5 +129,5 @@ export function DownloadPage() {
         </>
       )}
     </Flex>
-  );
+  )
 }

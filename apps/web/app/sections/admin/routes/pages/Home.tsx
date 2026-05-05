@@ -6,24 +6,21 @@ import {
   Heading,
   CardBody,
   VStack
-} from "@chakra-ui/react";
-import StatCard from "@app/sections/admin/components/StatCard";
-import { motion } from "framer-motion";
-import { usePolling } from "@app";
-import EventCard from "@app/sections/admin/components/EventCard";
-import Section from "@app/sections/admin/components/Section";
-import MyShifts from "@app/sections/admin/components/MyShifts";
-import { useOutletContext } from "react-router-dom";
-import type { MainContext } from "../Main";
+} from '@chakra-ui/react'
+import StatCard from '@app/sections/admin/components/StatCard'
+import { motion } from 'framer-motion'
+import { usePolling } from '@app'
+import EventCard from '@app/sections/admin/components/EventCard'
+import Section from '@app/sections/admin/components/Section'
+import MyShifts from '@app/sections/admin/components/MyShifts'
+import { useOutletContext } from 'react-router-dom'
+import type { MainContext } from '../Main'
 
-const MotionHeader = motion(Heading);
+const MotionHeader = motion(Heading)
 
 function Home() {
-  const { authorized, displayName } = useOutletContext<MainContext>();
-  const { data: currentEvent } = usePolling(
-    "/events/currentOrNext",
-    authorized
-  );
+  const { authorized, displayName } = useOutletContext<MainContext>()
+  const { data: currentEvent } = usePolling('/events/currentOrNext', authorized)
 
   return (
     <>
@@ -34,22 +31,22 @@ function Home() {
         textAlign="left"
         initial={{ opacity: 0 }}
         animate={
-          displayName === ""
+          displayName === ''
             ? {}
             : {
                 opacity: 1,
                 transition: {
-                  opacity: { duration: 0.8, ease: "easeOut" }
+                  opacity: { duration: 0.8, ease: 'easeOut' }
                 }
               }
         }
         backgroundSize="400%"
       >
-        {displayName == "" ? "Welcome!" : `Welcome, ${displayName}!`}
+        {displayName == '' ? 'Welcome!' : `Welcome, ${displayName}!`}
       </MotionHeader>
 
       <VStack spacing={6} align="stretch">
-        <Flex direction={{ base: "column", md: "row" }} justify="space-between">
+        <Flex direction={{ base: 'column', md: 'row' }} justify="space-between">
           <Box flex="3" mr={{ base: 0, md: 2 }}>
             <VStack spacing={4} align="stretch">
               <Section>
@@ -59,14 +56,14 @@ function Home() {
                 <CardBody display="flex" flexDir="column" gap={4}>
                   <StatGroup gap={4}>
                     <StatCard
-                      label={"Checked-In"}
-                      endpoint={"/stats/check-in"}
+                      label={'Checked-In'}
+                      endpoint={'/stats/check-in'}
                       enabled={authorized}
                       transformer={(data) => data.count}
                     />
                     <StatCard
-                      label={"Priority Status"}
-                      endpoint={"/stats/priority-attendee"}
+                      label={'Priority Status'}
+                      endpoint={'/stats/priority-attendee'}
                       enabled={authorized}
                       transformer={(data) => data.count}
                     />
@@ -98,7 +95,7 @@ function Home() {
         </Flex>
       </VStack>
     </>
-  );
+  )
 }
 
-export default Home;
+export default Home

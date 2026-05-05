@@ -1,6 +1,6 @@
-import DisplayCard from "@app/sections/admin/components/Dashboard/DisplayCard";
-import MessageModal from "@app/sections/admin/components/Dashboard/MessageModal";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import DisplayCard from '@app/sections/admin/components/Dashboard/DisplayCard'
+import MessageModal from '@app/sections/admin/components/Dashboard/MessageModal'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 import {
   Card,
   CardBody,
@@ -13,48 +13,48 @@ import {
   Divider,
   useToast,
   Spacer
-} from "@chakra-ui/react";
-import { api, usePolling } from "@app";
+} from '@chakra-ui/react'
+import { api, usePolling } from '@app'
 
 export default function Dashboard() {
-  const { data } = usePolling("/dashboard", true, 5 * 1000);
-  const mirrorStyle = useMirrorStyles();
-  const toast = useToast();
+  const { data } = usePolling('/dashboard', true, 5 * 1000)
+  const mirrorStyle = useMirrorStyles()
+  const toast = useToast()
 
   function identifyAll() {
     api
-      .post("/dashboard/identify", undefined)
+      .post('/dashboard/identify', undefined)
       .then(() =>
         toast({
           title: `Identified all displays`,
-          status: "success"
+          status: 'success'
         })
       )
       .catch((err) => {
-        console.error(err);
+        console.error(err)
         toast({
           title: `Failed to identify all displays`,
-          status: "error"
-        });
-      });
+          status: 'error'
+        })
+      })
   }
 
   function reloadAll() {
     api
-      .post("/dashboard/reload", undefined)
+      .post('/dashboard/reload', undefined)
       .then(() =>
         toast({
           title: `Reloaded all displays`,
-          status: "success"
+          status: 'success'
         })
       )
       .catch((err) => {
-        console.error(err);
+        console.error(err)
         toast({
           title: `Failed to reload all displays`,
-          status: "error"
-        });
-      });
+          status: 'error'
+        })
+      })
   }
 
   return (
@@ -62,7 +62,7 @@ export default function Dashboard() {
       <Card sx={mirrorStyle} w="100%">
         <CardHeader>
           <Flex alignItems="end" w="100%">
-            <Stack direction={"column"}>
+            <Stack direction={'column'}>
               <Heading size="lg">Dashboard</Heading>
               <Text>{data ? data.length : 0} displays connected</Text>
             </Stack>
@@ -96,5 +96,5 @@ export default function Dashboard() {
         </CardBody>
       </Card>
     </>
-  );
+  )
 }

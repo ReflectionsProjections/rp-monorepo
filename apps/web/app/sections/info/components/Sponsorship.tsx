@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Box,
   Flex,
@@ -8,24 +8,24 @@ import {
   VStack,
   Button,
   useColorModeValue
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
 // Types
 interface BenefitItem {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  bgColor?: string;
+  icon: React.ReactNode
+  title: string
+  description: string
+  bgColor?: string
 }
 
 interface SponsorshipComponentProps {
-  title?: string;
-  subtitle?: string;
-  benefits: BenefitItem[];
-  ctaText?: string;
-  ctaLink?: string;
-  contactTitle?: string;
-  contactDescription?: string;
+  title?: string
+  subtitle?: string
+  benefits: BenefitItem[]
+  ctaText?: string
+  ctaLink?: string
+  contactTitle?: string
+  contactDescription?: string
 }
 
 // Components
@@ -35,8 +35,8 @@ const BenefitCard: React.FC<BenefitItem> = ({
   description,
   bgColor
 }) => {
-  const colorValue = useColorModeValue("gray.100", "gray.700");
-  const bg = bgColor || colorValue;
+  const colorValue = useColorModeValue('gray.100', 'gray.700')
+  const bg = bgColor || colorValue
   return (
     <VStack
       spacing={4}
@@ -50,8 +50,8 @@ const BenefitCard: React.FC<BenefitItem> = ({
       <Heading size="md">{title}</Heading>
       <Text color="gray.600">{description}</Text>
     </VStack>
-  );
-};
+  )
+}
 
 const ContactItem: React.FC<{ placeholder?: boolean }> = ({
   placeholder = true
@@ -67,17 +67,17 @@ const ContactItem: React.FC<{ placeholder?: boolean }> = ({
     >
       {!placeholder && <Text>Contact Info</Text>}
     </Flex>
-  );
-};
+  )
+}
 
 const SponsorshipComponent: React.FC<SponsorshipComponentProps> = ({
-  title = "Interested in Sponsoring?",
-  subtitle = "Partnering with us offers unique visibility and engagement with our audience. Elevate your brand while supporting our mission.",
+  title = 'Interested in Sponsoring?',
+  subtitle = 'Partnering with us offers unique visibility and engagement with our audience. Elevate your brand while supporting our mission.',
   benefits,
-  ctaText = "Interest Form",
-  ctaLink = "#",
-  contactTitle = "Contact Us",
-  contactDescription = "RP is a week-long ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod rum."
+  ctaText = 'Interest Form',
+  ctaLink = '#',
+  contactTitle = 'Contact Us',
+  contactDescription = 'RP is a week-long ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod rum.'
 }) => {
   return (
     <Box maxW="6xl" mx="auto" px={4} py={8}>
@@ -92,14 +92,14 @@ const SponsorshipComponent: React.FC<SponsorshipComponentProps> = ({
       </Box>
 
       {/* Benefits Section */}
-      <Grid templateColumns={["1fr", null, "repeat(3, 1fr)"]} gap={8} mb={12}>
+      <Grid templateColumns={['1fr', null, 'repeat(3, 1fr)']} gap={8} mb={12}>
         {benefits.map((benefit, index) => (
           <BenefitCard
             key={index}
             icon={benefit.icon}
             title={benefit.title}
             description={benefit.description}
-            bgColor={index === 1 ? "blue.50" : "gray.100"}
+            bgColor={index === 1 ? 'blue.50' : 'gray.100'}
           />
         ))}
       </Grid>
@@ -110,7 +110,7 @@ const SponsorshipComponent: React.FC<SponsorshipComponentProps> = ({
           as="a"
           href={ctaLink}
           bg="gray.600"
-          _hover={{ bg: "gray.700" }}
+          _hover={{ bg: 'gray.700' }}
           color="white"
           px={8}
           py={6}
@@ -125,7 +125,7 @@ const SponsorshipComponent: React.FC<SponsorshipComponentProps> = ({
         <Heading size="2xl" textAlign="center" mb={16}>
           {contactTitle}
         </Heading>
-        <Flex direction={["column", null, "row"]} gap={8} align="flex-start">
+        <Flex direction={['column', null, 'row']} gap={8} align="flex-start">
           <Box flex="1">
             <Text whiteSpace="pre-line">{contactDescription}</Text>
           </Box>
@@ -141,7 +141,7 @@ const SponsorshipComponent: React.FC<SponsorshipComponentProps> = ({
         </Flex>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default SponsorshipComponent;
+export default SponsorshipComponent
