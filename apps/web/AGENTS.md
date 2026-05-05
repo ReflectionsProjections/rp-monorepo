@@ -37,12 +37,12 @@ Do not recreate the old `src/`, `shared/`, or `apps/*` structure inside this wor
 - Prefer placing section-specific code inside `app/sections/<section>` even if it includes local hooks or components.
 - Move code to top-level `components`, `hooks`, `constants`, `api`, or `lib` only when it is genuinely shared across sections.
 - Preserve the path-based site model:
-  - `/`
-  - `/admin/*`
-  - `/info/*`
-  - `/sponsor/*`
-  - `/dashboard/*`
-  - `/hype/*`
+    - `/`
+    - `/admin/*`
+    - `/info/*`
+    - `/sponsor/*`
+    - `/dashboard/*`
+    - `/hype/*`
 
 ## Imports
 

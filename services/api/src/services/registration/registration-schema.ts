@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { Database } from "../../database.types";
+import { z } from "zod"
+import { Database } from "../../database.types"
 
 // Zod schema for registration drafts
 const RegistrationDraftValidator = z.object({
@@ -26,7 +26,7 @@ const RegistrationDraftValidator = z.object({
     isInterestedMechMania: z.boolean(),
     isInterestedPuzzleBang: z.boolean(),
     tags: z.array(z.string().max(50)).max(15),
-});
+})
 
 // Zod schema for registration
 const RegistrationValidator = z.object({
@@ -48,8 +48,8 @@ const RegistrationValidator = z.object({
     isInterestedMechMania: z.boolean(),
     isInterestedPuzzleBang: z.boolean(),
     tags: z.array(z.string().max(50)).max(15),
-});
+})
 
-export type Registration = Database["public"]["Tables"]["registrations"]["Row"];
+export type Registration = Database["public"]["Tables"]["registrations"]["Row"]
 
-export { RegistrationDraftValidator, RegistrationValidator };
+export { RegistrationDraftValidator, RegistrationValidator }

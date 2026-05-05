@@ -1,14 +1,14 @@
-import { clearSupabaseTables } from "./testingTools";
-import { afterEach, jest, beforeAll } from "@jest/globals";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { clearSupabaseTables } from "./testingTools"
+import { afterEach, jest, beforeAll } from "@jest/globals"
+import { createClient, SupabaseClient } from "@supabase/supabase-js"
 
-let supabase: SupabaseClient;
+let supabase: SupabaseClient
 
 function mockSupabase(supabaseUrl: string, supabaseServiceKey: string) {
-    supabase = createClient(supabaseUrl, supabaseServiceKey);
+    supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     if (!supabase) {
-        throw new Error("Failed to create test Supabase client");
+        throw new Error("Failed to create test Supabase client")
     }
 
     jest.mock("../src/database", () => {
@@ -16,80 +16,79 @@ function mockSupabase(supabaseUrl: string, supabaseServiceKey: string) {
             supabase: supabase,
             SupabaseDB: {
                 get AUTH_INFO() {
-                    return supabase.from("authInfo");
+                    return supabase.from("authInfo")
                 },
                 get AUTH_ROLES() {
-                    return supabase.from("authRoles");
+                    return supabase.from("authRoles")
                 },
                 get AUTH_CODES() {
-                    return supabase.from("authCodes");
+                    return supabase.from("authCodes")
                 },
                 get CORPORATE() {
-                    return supabase.from("corporate");
+                    return supabase.from("corporate")
                 },
                 get STAFF() {
-                    return supabase.from("staff");
+                    return supabase.from("staff")
                 },
                 get MEETINGS() {
-                    return supabase.from("meetings");
+                    return supabase.from("meetings")
                 },
                 get DRAFT_REGISTRATIONS() {
-                    return supabase.from("draftRegistrations");
+                    return supabase.from("draftRegistrations")
                 },
                 get ATTENDEES() {
-                    return supabase.from("attendees");
+                    return supabase.from("attendees")
                 },
                 get EVENTS() {
-                    return supabase.from("events");
+                    return supabase.from("events")
                 },
                 get EVENT_ATTENDANCES() {
-                    return supabase.from("eventAttendances");
+                    return supabase.from("eventAttendances")
                 },
                 get ATTENDEE_ATTENDANCES() {
-                    return supabase.from("attendeeAttendances");
+                    return supabase.from("attendeeAttendances")
                 },
                 get REGISTRATIONS() {
-                    return supabase.from("registrations");
+                    return supabase.from("registrations")
                 },
 
                 get SPEAKERS() {
-                    return supabase.from("speakers");
+                    return supabase.from("speakers")
                 },
 
                 get SUBSCRIPTIONS() {
-                    return supabase.from("subscriptions");
+                    return supabase.from("subscriptions")
                 },
                 get SHIFTS() {
-                    return supabase.from("shifts");
+                    return supabase.from("shifts")
                 },
                 get SHIFT_ASSIGNMENTS() {
-                    return supabase.from("shiftAssignments");
+                    return supabase.from("shiftAssignments")
                 },
                 get CUSTOM_TOPICS() {
-                    return supabase.from("customTopics");
+                    return supabase.from("customTopics")
                 },
                 get NOTIFICATIONS() {
-                    return supabase.from("notifications");
+                    return supabase.from("notifications")
                 },
                 get REDEMPTIONS() {
-                    return supabase.from("redemptions");
+                    return supabase.from("redemptions")
                 },
                 get LEADERBOARD_SUBMISSIONS() {
-                    return supabase.from("leaderboardSubmissions");
+                    return supabase.from("leaderboardSubmissions")
                 },
             },
             __esModule: true,
-        };
-    });
-
-    (globalThis as typeof globalThis & { supabase: SupabaseClient }).supabase =
-        supabase;
+        }
+    })
+    ;(globalThis as typeof globalThis & { supabase: SupabaseClient }).supabase =
+        supabase
 }
 
 beforeAll(async () => {
-    mockSupabase(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
-});
+    mockSupabase(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+})
 
 afterEach(async () => {
-    await clearSupabaseTables(supabase);
-});
+    await clearSupabaseTables(supabase)
+})

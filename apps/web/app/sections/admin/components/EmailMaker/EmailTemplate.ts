@@ -1,5 +1,5 @@
 export function rpMainTemplate(htmlContent: string) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -699,11 +699,11 @@ export function rpMainTemplate(htmlContent: string) {
            </tr>
        </table>
    </body>
-</html>`;
+</html>`
 }
 
 export function rpEmptyTemplate(htmlContent: string) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -1309,11 +1309,11 @@ export function rpEmptyTemplate(htmlContent: string) {
            </tr>
        </table>
    </body>
-</html>`;
+</html>`
 }
 
 export function rpNoneTemplate(htmlContent: string) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -1322,5 +1322,5 @@ export function rpNoneTemplate(htmlContent: string) {
     <body>
         ${htmlContent}
     </body>
-</html>`;
+</html>`
 }

@@ -1,78 +1,78 @@
-import { WebSocket } from "ws";
+import { WebSocket } from "ws"
 
-const WS_TIMEOUT = 30 * 1000;
+const WS_TIMEOUT = 30 * 1000
 
 export default class TestWebSocket {
-    private url: string;
-    private ws: WebSocket | undefined = undefined;
-    private received: string[] = [];
-    private closePromise: Promise<number> | undefined = undefined;
+    private url: string
+    private ws: WebSocket | undefined = undefined
+    private received: string[] = []
+    private closePromise: Promise<number> | undefined = undefined
     private resolveClosePromise: ((code: number) => void) | undefined =
-        undefined;
+        undefined
     private rejectClosePromise: ((reason?: unknown) => void) | undefined =
-        undefined;
+        undefined
 
     constructor(url: string) {
-        this.url = url;
+        this.url = url
     }
 
     start() {
         return new Promise<void>((resolve, reject) => {
-            if (this.ws) return;
+            if (this.ws) return
 
-            this.ws = new WebSocket(this.url);
+            this.ws = new WebSocket(this.url)
 
             this.closePromise = new Promise((resolve, reject) => {
-                this.resolveClosePromise = resolve;
-                this.rejectClosePromise = reject;
-            });
+                this.resolveClosePromise = resolve
+                this.rejectClosePromise = reject
+            })
 
-            const timeout = setTimeout(reject, WS_TIMEOUT);
+            const timeout = setTimeout(reject, WS_TIMEOUT)
 
             this.ws.onopen = () => {
-                clearTimeout(timeout);
-                resolve();
-            };
+                clearTimeout(timeout)
+                resolve()
+            }
 
             this.ws.onmessage = (event) => {
                 const data =
                     typeof event.data === "string"
                         ? event.data
-                        : event.data.toString();
-                this.received.push(data);
-            };
+                        : event.data.toString()
+                this.received.push(data)
+            }
 
             this.ws.onclose = (event) => {
-                if (!this.resolveClosePromise) return;
-                this.resolveClosePromise(event.code);
-                this.resolveClosePromise = undefined;
-                this.rejectClosePromise = undefined;
-            };
+                if (!this.resolveClosePromise) return
+                this.resolveClosePromise(event.code)
+                this.resolveClosePromise = undefined
+                this.rejectClosePromise = undefined
+            }
 
             this.ws.onerror = (error) => {
-                if (!this.rejectClosePromise) return;
-                this.rejectClosePromise(error);
-                this.resolveClosePromise = undefined;
-                this.rejectClosePromise = undefined;
-            };
-        });
+                if (!this.rejectClosePromise) return
+                this.rejectClosePromise(error)
+                this.resolveClosePromise = undefined
+                this.rejectClosePromise = undefined
+            }
+        })
     }
 
     send(message: string) {
-        if (!this.ws) throw new Error("Cannot send - websocket not open");
-        this.ws.send(message);
+        if (!this.ws) throw new Error("Cannot send - websocket not open")
+        this.ws.send(message)
     }
 
     async close() {
-        if (!this.ws || !this.closePromise) return;
-        this.ws.close();
-        this.ws = undefined;
+        if (!this.ws || !this.closePromise) return
+        this.ws.close()
+        this.ws = undefined
 
-        const code = await this.closePromise;
-        this.closePromise = undefined;
-        this.resolveClosePromise = undefined;
-        this.rejectClosePromise = undefined;
+        const code = await this.closePromise
+        this.closePromise = undefined
+        this.resolveClosePromise = undefined
+        this.rejectClosePromise = undefined
 
-        return { code, received: this.received };
+        return { code, received: this.received }
     }
 }

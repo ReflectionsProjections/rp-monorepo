@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
-import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
+import { Schema } from "mongoose"
+import { z } from "zod"
+import { v4 as uuidv4 } from "uuid"
 
 export const EventType = z.enum([
     "SPEAKER",
@@ -9,10 +9,10 @@ export const EventType = z.enum([
     "PARTNERS",
     "MEALS",
     "CHECKIN",
-]);
+])
 
-export type InternalEvent = z.infer<typeof internalEventView>;
-export type EventInputPayload = z.infer<typeof eventInfoValidator>;
+export type InternalEvent = z.infer<typeof internalEventView>
+export type EventInputPayload = z.infer<typeof eventInfoValidator>
 
 export const externalEventView = z.object({
     eventId: z.coerce.string().default(() => uuidv4()),
@@ -26,34 +26,34 @@ export const externalEventView = z.object({
     location: z.string().nullable(),
     eventType: EventType,
     tags: z.array(z.string()).default([]),
-});
+})
 
 export const internalEventView = externalEventView.extend({
     attendanceCount: z.number(),
     isVisible: z.boolean(),
-});
+})
 
 // ApiResponseSchema objects used to create expected internal and external event objects
 const eventTimeExtension = {
     startTime: z.string(),
     endTime: z.string(),
-};
+}
 
 export const externalEventApiResponseSchema =
-    externalEventView.extend(eventTimeExtension);
+    externalEventView.extend(eventTimeExtension)
 export type ExternalEventApiResponse = z.infer<
     typeof externalEventApiResponseSchema
->;
+>
 
 export const internalEventApiResponseSchema =
-    internalEventView.extend(eventTimeExtension);
+    internalEventView.extend(eventTimeExtension)
 export type InternalEventApiResponse = z.infer<
     typeof internalEventApiResponseSchema
->;
+>
 
 export const eventInfoValidator = internalEventView
     .omit({ eventId: true })
-    .strict();
+    .strict()
 
 export const EventSchema = new Schema({
     eventId: {
@@ -107,7 +107,7 @@ export const EventSchema = new Schema({
         required: true,
         enum: EventType.Values,
     },
-});
+})
 
 export const EventAttendanceSchema = new Schema({
     eventId: {
@@ -122,9 +122,9 @@ export const EventAttendanceSchema = new Schema({
             required: true,
         },
     ],
-});
+})
 
 export const EventAttendanceValidator = z.object({
     eventId: z.string(),
     attendees: z.array(z.string()),
-});
+})

@@ -1,12 +1,12 @@
-import { Schema } from "mongoose";
-import { TierType, IconColorType } from "../../database";
-import { Database } from "../../database.types";
-import { z } from "zod";
+import { Schema } from "mongoose"
+import { TierType, IconColorType } from "../../database"
+import { Database } from "../../database.types"
+import { z } from "zod"
 
-export type DayKey = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
+export type DayKey = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun"
 
 // Database types for consistency with other schema patterns
-export type AttendeeType = Database["public"]["Tables"]["attendees"]["Row"];
+export type AttendeeType = Database["public"]["Tables"]["attendees"]["Row"]
 
 // Zod enums for runtime validation and .Enum access
 export const Tiers = z.enum([
@@ -14,7 +14,7 @@ export const Tiers = z.enum([
     "TIER2",
     "TIER3",
     "TIER4",
-]) satisfies z.ZodEnum<[TierType, ...TierType[]]>;
+]) satisfies z.ZodEnum<[TierType, ...TierType[]]>
 
 export const IconColors = z.enum([
     "BLUE",
@@ -23,7 +23,7 @@ export const IconColors = z.enum([
     "PINK",
     "PURPLE",
     "ORANGE",
-] as const) satisfies z.ZodEnum<[IconColorType, ...IconColorType[]]>;
+] as const) satisfies z.ZodEnum<[IconColorType, ...IconColorType[]]>
 
 // Mongoose schema for attendee
 export const AttendeeSchema = new Schema({
@@ -45,7 +45,7 @@ export const AttendeeSchema = new Schema({
                 Sat: { type: Boolean, default: false },
                 Sun: { type: Boolean, default: false },
             },
-            { _id: false }
+            { _id: false },
         ),
         default: {
             Mon: false,
@@ -65,7 +65,7 @@ export const AttendeeSchema = new Schema({
                 Tote: { type: Boolean, default: false },
                 Cap: { type: Boolean, default: false },
             },
-            { _id: false }
+            { _id: false },
         ),
         default: {
             Tshirt: false,
@@ -82,7 +82,7 @@ export const AttendeeSchema = new Schema({
                 Tote: { type: Boolean, default: false },
                 Cap: { type: Boolean, default: false },
             },
-            { _id: false }
+            { _id: false },
         ),
         default: {
             Tshirt: true,
@@ -94,7 +94,7 @@ export const AttendeeSchema = new Schema({
 
     favorites: [{ type: String }],
     puzzlesCompleted: [{ type: String, default: [] }],
-});
+})
 
 export const AttendeeAttendanceSchema = new Schema({
     userId: {
@@ -103,4 +103,4 @@ export const AttendeeAttendanceSchema = new Schema({
         required: true,
     },
     eventsAttended: [{ type: String, ref: "Event", required: true }],
-});
+})

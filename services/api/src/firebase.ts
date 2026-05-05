@@ -1,8 +1,8 @@
-import * as admin from "firebase-admin";
-import Config from "./config";
+import * as admin from "firebase-admin"
+import Config from "./config"
 
 // We only want to initialize the firebase admin once
-let initialized = false;
+let initialized = false
 export function getFirebaseAdmin() {
     if (!initialized) {
         // Ref: https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments
@@ -10,9 +10,9 @@ export function getFirebaseAdmin() {
         // Separate env variables would be harder to manage
         admin.initializeApp({
             credential: admin.credential.cert(Config.FIREBASE_ADMIN_CERT_PATH),
-        });
-        initialized = true;
+        })
+        initialized = true
     }
 
-    return admin;
+    return admin
 }

@@ -1,16 +1,16 @@
-import dotenv from "dotenv";
-import path from "path";
+import dotenv from "dotenv"
+import path from "path"
 
-import { z } from "zod";
+import { z } from "zod"
 
-import { SES } from "@aws-sdk/client-ses";
+import { SES } from "@aws-sdk/client-ses"
 
-dotenv.config({ quiet: true });
+dotenv.config({ quiet: true })
 dotenv.config({
     path: path.resolve(__dirname, "../../../.env"),
     quiet: true,
     override: false,
-});
+})
 
 export enum EnvironmentEnum {
     PRODUCTION = "PRODUCTION",
@@ -19,34 +19,34 @@ export enum EnvironmentEnum {
     GITHUB_CI = "GITHUB_CI",
 }
 
-export const Environment = z.nativeEnum(EnvironmentEnum);
+export const Environment = z.nativeEnum(EnvironmentEnum)
 
-export const MailingListName = z.enum(["rp_interest"]);
-const env = Environment.parse(getEnv("ENV"));
+export const MailingListName = z.enum(["rp_interest"])
+const env = Environment.parse(getEnv("ENV"))
 
 function getEnv(key: string): string {
-    const val = process.env[key];
+    const val = process.env[key]
     if (val === undefined) {
         if (env == EnvironmentEnum.PRODUCTION) {
             console.warn(
-                `env value ${key} not found, defaulting to empty string`
-            );
-            return "";
+                `env value ${key} not found, defaulting to empty string`,
+            )
+            return ""
         }
 
-        throw new Error(`env value ${key} not found, exiting...`);
+        throw new Error(`env value ${key} not found, exiting...`)
     }
-    return val;
+    return val
 }
 
 const API_BASE =
     env === EnvironmentEnum.PRODUCTION
         ? "https://api.reflectionsprojections.org"
-        : "http://localhost:3000";
+        : "http://localhost:3000"
 const WEB_BASE =
     env === EnvironmentEnum.PRODUCTION
         ? "https://reflectionsprojections.org"
-        : "http://localhost:3001";
+        : "http://localhost:3001"
 
 export const Config = {
     ENV: env,
@@ -126,7 +126,7 @@ export const Config = {
     OUTGOING_EMAIL_ADDRESSES: z.enum(["no-reply@reflectionsprojections.org"]),
     LOG_DIR:
         env === EnvironmentEnum.PRODUCTION ? "/home/ubuntu/logs" : "./logs",
-};
+}
 
 export const ses = new SES({
     region: Config.S3_REGION,
@@ -135,6 +135,6 @@ export const ses = new SES({
         accessKeyId: Config.S3_ACCESS_KEY,
         secretAccessKey: Config.S3_SECRET_KEY,
     },
-});
+})
 
-export default Config;
+export default Config

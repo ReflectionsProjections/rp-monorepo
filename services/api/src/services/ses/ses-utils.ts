@@ -1,22 +1,22 @@
-import { ses, Config } from "../../config";
-import { SendEmailCommand, SendEmailCommandOutput } from "@aws-sdk/client-ses";
+import { ses, Config } from "../../config"
+import { SendEmailCommand, SendEmailCommandOutput } from "@aws-sdk/client-ses"
 
 export function sendManyEmails(
     emailIds: string[],
     subject: string,
-    emailBody: string
+    emailBody: string,
 ): Promise<SendEmailCommandOutput>[] {
-    const emailPromises: Promise<SendEmailCommandOutput>[] = [];
+    const emailPromises: Promise<SendEmailCommandOutput>[] = []
     for (let i = 0; i < emailIds.length; i++) {
-        emailPromises.push(sendEmail(emailIds[i], subject, emailBody));
+        emailPromises.push(sendEmail(emailIds[i], subject, emailBody))
     }
-    return emailPromises;
+    return emailPromises
 }
 
 export function sendEmail(
     emailId: string,
     subject: string,
-    emailBody: string
+    emailBody: string,
 ): Promise<SendEmailCommandOutput> {
     return ses.send(
         new SendEmailCommand({
@@ -36,14 +36,14 @@ export function sendEmail(
             Source: Config.OUTGOING_EMAIL_ADDRESSES.Enum[
                 "no-reply@reflectionsprojections.org"
             ],
-        })
-    );
+        }),
+    )
 }
 
 export function sendHTMLEmail(
     emailId: string,
     subject: string,
-    emailHtml: string
+    emailHtml: string,
 ): Promise<SendEmailCommandOutput> {
     return ses.send(
         new SendEmailCommand({
@@ -64,6 +64,6 @@ export function sendHTMLEmail(
             Source: Config.OUTGOING_EMAIL_ADDRESSES.Enum[
                 "no-reply@reflectionsprojections.org"
             ],
-        })
-    );
+        }),
+    )
 }

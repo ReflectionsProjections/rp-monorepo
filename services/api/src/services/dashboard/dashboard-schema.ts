@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const DisplayMetadataSchema = z.object({
     screenWidth: z.number(),
@@ -7,17 +7,17 @@ export const DisplayMetadataSchema = z.object({
     userAgent: z.string(),
     platform: z.string(),
     unixTime: z.number(),
-});
-export type DisplayMetadata = z.infer<typeof DisplayMetadataSchema>;
+})
+export type DisplayMetadata = z.infer<typeof DisplayMetadataSchema>
 
-export const DisplayId = z.coerce.number();
+export const DisplayId = z.coerce.number()
 
 export const DisplaySchema = z.object({
     id: DisplayId,
     metadata: DisplayMetadataSchema.optional(),
     lastUpdate: z.number(),
-});
-export type Display = z.infer<typeof DisplaySchema>;
+})
+export type Display = z.infer<typeof DisplaySchema>
 
 export const DashboardMessageValidator = z.union([
     z.object({
@@ -28,5 +28,5 @@ export const DashboardMessageValidator = z.union([
         fullscreen: z.boolean().optional(),
         iframe: z.boolean().optional(),
     }),
-]);
-export type DashboardMessage = z.infer<typeof DashboardMessageValidator>;
+])
+export type DashboardMessage = z.infer<typeof DashboardMessageValidator>

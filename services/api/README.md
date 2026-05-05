@@ -10,38 +10,38 @@ From `services/api`:
 
 1. Install dependencies:
 
-   ```bash
-   yarn
-   ```
+    ```bash
+    yarn
+    ```
 
 2. Make sure the shared root `.env` is in place.
 
 3. From the repo root, start the local database and Supabase tooling:
 
-   ```bash
-   rp start
-   ```
+    ```bash
+    rp start
+    ```
 
 4. Run the API:
 
-   ```bash
-   yarn dev
-   ```
+    ```bash
+    yarn dev
+    ```
 
 ## Scripts
 
-| Task | Command |
-| --- | --- |
-| Start development server | `yarn dev` |
-| Start production server | `yarn start` |
-| Run tests | `yarn test` |
-| Run tests in watch mode | `yarn test:watch` |
-| Lint code | `yarn lint` |
-| Check lint | `yarn lint:check` |
-| Format code | `yarn format` |
-| Check formatting | `yarn format:check` |
-| Build project | `yarn build` |
-| Verify | `yarn verify` |
+| Task                     | Command             |
+| ------------------------ | ------------------- |
+| Start development server | `yarn dev`          |
+| Start production server  | `yarn start`        |
+| Run tests                | `yarn test`         |
+| Run tests in watch mode  | `yarn test:watch`   |
+| Lint code                | `yarn lint`         |
+| Check lint               | `yarn lint:check`   |
+| Format code              | `yarn format`       |
+| Check formatting         | `yarn format:check` |
+| Build project            | `yarn build`        |
+| Verify                   | `yarn verify`       |
 
 ## Database Management
 

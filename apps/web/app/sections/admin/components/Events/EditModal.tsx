@@ -1,77 +1,81 @@
-import { EditIcon } from "@chakra-ui/icons";
+import { EditIcon } from "@chakra-ui/icons"
 import {
-  useDisclosure,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  useToast
-} from "@chakra-ui/react";
-import type { Event } from "@app";
-import { api, path } from "@app";
-import React from "react";
-import EventForm from "./EventForm";
-import type { EventFormValues } from "./EventSchema";
-import type { FormikHelpers } from "formik";
+    useDisclosure,
+    Button,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    useToast,
+} from "@chakra-ui/react"
+import type { Event } from "@app"
+import { api, path } from "@app"
+import React from "react"
+import EventForm from "./EventForm"
+import type { EventFormValues } from "./EventSchema"
+import type { FormikHelpers } from "formik"
 
 type EditModalProps = {
-  event: Event;
-  updateEvents: () => void;
-};
+    event: Event
+    updateEvents: () => void
+}
 
 const EditModal: React.FC<EditModalProps> = ({ event, updateEvents }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const toast = useToast()
 
-  const { eventId, ...eventProps } = event;
+    const { eventId, ...eventProps } = event
 
-  const editEvent = (
-    values: EventFormValues,
-    helpers: FormikHelpers<EventFormValues>
-  ) => {
-    const request = api
-      .put(path("/events/:eventId", { eventId }), values)
-      .then(() => {
-        updateEvents();
-        onClose();
-      })
-      .finally(() => {
-        helpers.setSubmitting(false);
-      });
+    const editEvent = (
+        values: EventFormValues,
+        helpers: FormikHelpers<EventFormValues>,
+    ) => {
+        const request = api
+            .put(path("/events/:eventId", { eventId }), values)
+            .then(() => {
+                updateEvents()
+                onClose()
+            })
+            .finally(() => {
+                helpers.setSubmitting(false)
+            })
 
-    toast.promise(request, {
-      success: { title: "Event successfully updated" },
-      error: { title: "Error updating event" },
-      loading: { title: "Updating event..." }
-    });
+        toast.promise(request, {
+            success: { title: "Event successfully updated" },
+            error: { title: "Error updating event" },
+            loading: { title: "Updating event..." },
+        })
 
-    return request;
-  };
+        return request
+    }
 
-  return (
-    <>
-      <Button
-        leftIcon={<EditIcon />}
-        colorScheme="teal"
-        variant="solid"
-        onClick={onOpen}
-      >
-        Edit
-      </Button>
-      <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <EventForm
-            initialValues={eventProps}
-            onSubmit={editEvent}
-            onCancel={onClose}
-            title="Edit event"
-            submitText="Save"
-          />
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
+    return (
+        <>
+            <Button
+                leftIcon={<EditIcon />}
+                colorScheme="teal"
+                variant="solid"
+                onClick={onOpen}
+            >
+                Edit
+            </Button>
+            <Modal
+                closeOnOverlayClick={false}
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <ModalOverlay />
+                <ModalContent>
+                    <EventForm
+                        initialValues={eventProps}
+                        onSubmit={editEvent}
+                        onCancel={onClose}
+                        title="Edit event"
+                        submitText="Save"
+                    />
+                </ModalContent>
+            </Modal>
+        </>
+    )
+}
 
-export default EditModal;
+export default EditModal

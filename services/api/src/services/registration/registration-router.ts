@@ -1,82 +1,82 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Router } from "express"
+import { StatusCodes } from "http-status-codes"
 import {
     RegistrationDraftValidator,
     RegistrationValidator,
-} from "./registration-schema";
-import { SupabaseDB } from "../../database";
-import RoleChecker from "../../middleware/role-checker";
-import { AttendeeCreateValidator } from "../attendee/attendee-validators";
-import cors from "cors";
-import Mustache from "mustache";
-import { sendHTMLEmail } from "../ses/ses-utils";
-import templates from "../../templates/templates";
-import { Role } from "../auth/auth-models";
+} from "./registration-schema"
+import { SupabaseDB } from "../../database"
+import RoleChecker from "../../middleware/role-checker"
+import { AttendeeCreateValidator } from "../attendee/attendee-validators"
+import cors from "cors"
+import Mustache from "mustache"
+import { sendHTMLEmail } from "../ses/ses-utils"
+import templates from "../../templates/templates"
+import { Role } from "../auth/auth-models"
 
-const registrationRouter = Router();
-registrationRouter.use(cors());
+const registrationRouter = Router()
+registrationRouter.use(cors())
 
 registrationRouter.post("/draft", RoleChecker([]), async (req, res) => {
-    const payload = res.locals.payload;
+    const payload = res.locals.payload
 
-    const validatorResult = RegistrationDraftValidator.safeParse(req.body);
+    const validatorResult = RegistrationDraftValidator.safeParse(req.body)
     if (!validatorResult.success) {
         return res
             .status(StatusCodes.BAD_REQUEST)
-            .json({ error: validatorResult.error.format() });
+            .json({ error: validatorResult.error.format() })
     }
 
     const registrationDraft = {
         ...validatorResult.data,
         userId: payload.userId,
-    };
+    }
 
     await SupabaseDB.DRAFT_REGISTRATIONS.upsert(
-        registrationDraft
-    ).throwOnError();
+        registrationDraft,
+    ).throwOnError()
 
-    return res.status(StatusCodes.OK).json(registrationDraft);
-});
+    return res.status(StatusCodes.OK).json(registrationDraft)
+})
 
 registrationRouter.get("/draft", RoleChecker([]), async (req, res) => {
     const { data: draftRegistration } =
         await SupabaseDB.DRAFT_REGISTRATIONS.select("*")
             .eq("userId", res.locals.payload.userId)
-            .maybeSingle();
+            .maybeSingle()
 
     if (!draftRegistration) {
         return res.status(StatusCodes.NOT_FOUND).json({
             error: "DoesNotExist",
-        });
+        })
     }
 
-    return res.status(StatusCodes.OK).json(draftRegistration);
-});
+    return res.status(StatusCodes.OK).json(draftRegistration)
+})
 
 registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
-    const payload = res.locals.payload;
+    const payload = res.locals.payload
 
-    const registrationResult = RegistrationValidator.safeParse(req.body);
+    const registrationResult = RegistrationValidator.safeParse(req.body)
     if (!registrationResult.success) {
         return res
             .status(StatusCodes.BAD_REQUEST)
-            .json({ error: registrationResult.error.format() });
+            .json({ error: registrationResult.error.format() })
     }
 
-    const registration = { ...registrationResult.data, userId: payload.userId };
+    const registration = { ...registrationResult.data, userId: payload.userId }
 
-    const attendeeResult = AttendeeCreateValidator.safeParse(registration);
+    const attendeeResult = AttendeeCreateValidator.safeParse(registration)
     if (!attendeeResult.success) {
         return res
             .status(StatusCodes.BAD_REQUEST)
-            .json({ error: attendeeResult.error.format() });
+            .json({ error: attendeeResult.error.format() })
     }
 
-    const attendee = attendeeResult.data;
+    const attendee = attendeeResult.data
 
     const { data: existing } = await SupabaseDB.REGISTRATIONS.select("userId")
         .eq("userId", payload.userId)
-        .single();
+        .single()
 
     await Promise.all([
         SupabaseDB.REGISTRATIONS.upsert(registration, {
@@ -87,7 +87,7 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
                 userId: payload.userId,
                 role: Role.Enum.USER,
             },
-            { onConflict: "userId,role", ignoreDuplicates: true }
+            { onConflict: "userId,role", ignoreDuplicates: true },
         ).throwOnError(),
         SupabaseDB.ATTENDEES.upsert(attendee, {
             onConflict: "userId",
@@ -96,7 +96,7 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
             userId: payload.userId,
             mailingList: "attendees",
         }).throwOnError(),
-    ]);
+    ])
 
     const substitution = {
         allergies:
@@ -138,7 +138,7 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
         personalLinks: registration.personalLinks,
         tags:
             registration.tags.length > 0 ? registration.tags.join(", ") : "N/A",
-    };
+    }
 
     // NOTE: The school's email filters block emails with an exclamation mark (!) in the subject
     // Not sure why, but do not put exclamation marks in the subject line
@@ -146,34 +146,34 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
         await sendHTMLEmail(
             payload.email,
             "Reflections | Projections 2025 Registration Confirmation",
-            Mustache.render(templates.REGISTRATION_CONFIRMATION, substitution)
-        );
+            Mustache.render(templates.REGISTRATION_CONFIRMATION, substitution),
+        )
     } else {
         await sendHTMLEmail(
             payload.email,
             "Reflections | Projections 2025 Registration Updated",
             Mustache.render(
                 templates.REGISTRATION_UPDATE_CONFIRMATION,
-                substitution
-            )
-        );
+                substitution,
+            ),
+        )
     }
 
-    return res.status(StatusCodes.OK).json(registration);
-});
+    return res.status(StatusCodes.OK).json(registration)
+})
 
 registrationRouter.get(
     "/all",
     RoleChecker([Role.Enum.ADMIN, Role.Enum.CORPORATE]),
     async (req, res) => {
         const { data } = await SupabaseDB.REGISTRATIONS.select(
-            "userId, name, majors, minors, school, educationLevel, graduationYear, opportunities, personalLinks"
+            "userId, name, majors, minors, school, educationLevel, graduationYear, opportunities, personalLinks",
         )
             .eq("hasResume", true)
-            .throwOnError();
+            .throwOnError()
 
-        return res.status(StatusCodes.OK).json(data);
-    }
-);
+        return res.status(StatusCodes.OK).json(data)
+    },
+)
 
-export default registrationRouter;
+export default registrationRouter

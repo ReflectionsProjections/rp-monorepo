@@ -4,702 +4,702 @@ export type Json =
     | boolean
     | null
     | { [key: string]: Json | undefined }
-    | Json[];
+    | Json[]
 
 export type Database = {
     // Allows to automatically instantiate createClient with right options
     // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
     __InternalSupabase: {
-        PostgrestVersion: "13.0.4";
-    };
+        PostgrestVersion: "13.0.4"
+    }
     graphql_public: {
         Tables: {
-            [_ in never]: never;
-        };
+            [_ in never]: never
+        }
         Views: {
-            [_ in never]: never;
-        };
+            [_ in never]: never
+        }
         Functions: {
             graphql: {
                 Args: {
-                    extensions?: Json;
-                    operationName?: string;
-                    query?: string;
-                    variables?: Json;
-                };
-                Returns: Json;
-            };
-        };
+                    extensions?: Json
+                    operationName?: string
+                    query?: string
+                    variables?: Json
+                }
+                Returns: Json
+            }
+        }
         Enums: {
-            [_ in never]: never;
-        };
+            [_ in never]: never
+        }
         CompositeTypes: {
-            [_ in never]: never;
-        };
-    };
+            [_ in never]: never
+        }
+    }
     public: {
         Tables: {
             attendeeAttendances: {
                 Row: {
-                    eventsAttended: string[];
-                    userId: string;
-                };
+                    eventsAttended: string[]
+                    userId: string
+                }
                 Insert: {
-                    eventsAttended?: string[];
-                    userId: string;
-                };
+                    eventsAttended?: string[]
+                    userId: string
+                }
                 Update: {
-                    eventsAttended?: string[];
-                    userId?: string;
-                };
+                    eventsAttended?: string[]
+                    userId?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "attendee_attendance_user_id_fkey";
-                        columns: ["userId"];
-                        isOneToOne: true;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "attendee_attendance_user_id_fkey"
+                        columns: ["userId"]
+                        isOneToOne: true
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
+                ]
+            }
             attendees: {
                 Row: {
-                    currentTier: Database["public"]["Enums"]["tierType"];
-                    favoriteEvents: string[];
-                    hasPriorityFri: boolean;
-                    hasPriorityMon: boolean;
-                    hasPrioritySat: boolean;
-                    hasPrioritySun: boolean;
-                    hasPriorityThu: boolean;
-                    hasPriorityTue: boolean;
-                    hasPriorityWed: boolean;
-                    icon: Database["public"]["Enums"]["iconColorType"];
-                    points: number;
-                    pointsDay1: number;
-                    pointsDay2: number;
-                    pointsDay3: number;
-                    pointsDay4: number;
-                    pointsDay5: number;
-                    puzzlesCompleted: string[];
-                    tags: string[];
-                    userId: string;
-                };
+                    currentTier: Database["public"]["Enums"]["tierType"]
+                    favoriteEvents: string[]
+                    hasPriorityFri: boolean
+                    hasPriorityMon: boolean
+                    hasPrioritySat: boolean
+                    hasPrioritySun: boolean
+                    hasPriorityThu: boolean
+                    hasPriorityTue: boolean
+                    hasPriorityWed: boolean
+                    icon: Database["public"]["Enums"]["iconColorType"]
+                    points: number
+                    pointsDay1: number
+                    pointsDay2: number
+                    pointsDay3: number
+                    pointsDay4: number
+                    pointsDay5: number
+                    puzzlesCompleted: string[]
+                    tags: string[]
+                    userId: string
+                }
                 Insert: {
-                    currentTier?: Database["public"]["Enums"]["tierType"];
-                    favoriteEvents?: string[];
-                    hasPriorityFri?: boolean;
-                    hasPriorityMon?: boolean;
-                    hasPrioritySat?: boolean;
-                    hasPrioritySun?: boolean;
-                    hasPriorityThu?: boolean;
-                    hasPriorityTue?: boolean;
-                    hasPriorityWed?: boolean;
-                    icon?: Database["public"]["Enums"]["iconColorType"];
-                    points?: number;
-                    pointsDay1?: number;
-                    pointsDay2?: number;
-                    pointsDay3?: number;
-                    pointsDay4?: number;
-                    pointsDay5?: number;
-                    puzzlesCompleted?: string[];
-                    tags?: string[];
-                    userId: string;
-                };
+                    currentTier?: Database["public"]["Enums"]["tierType"]
+                    favoriteEvents?: string[]
+                    hasPriorityFri?: boolean
+                    hasPriorityMon?: boolean
+                    hasPrioritySat?: boolean
+                    hasPrioritySun?: boolean
+                    hasPriorityThu?: boolean
+                    hasPriorityTue?: boolean
+                    hasPriorityWed?: boolean
+                    icon?: Database["public"]["Enums"]["iconColorType"]
+                    points?: number
+                    pointsDay1?: number
+                    pointsDay2?: number
+                    pointsDay3?: number
+                    pointsDay4?: number
+                    pointsDay5?: number
+                    puzzlesCompleted?: string[]
+                    tags?: string[]
+                    userId: string
+                }
                 Update: {
-                    currentTier?: Database["public"]["Enums"]["tierType"];
-                    favoriteEvents?: string[];
-                    hasPriorityFri?: boolean;
-                    hasPriorityMon?: boolean;
-                    hasPrioritySat?: boolean;
-                    hasPrioritySun?: boolean;
-                    hasPriorityThu?: boolean;
-                    hasPriorityTue?: boolean;
-                    hasPriorityWed?: boolean;
-                    icon?: Database["public"]["Enums"]["iconColorType"];
-                    points?: number;
-                    pointsDay1?: number;
-                    pointsDay2?: number;
-                    pointsDay3?: number;
-                    pointsDay4?: number;
-                    pointsDay5?: number;
-                    puzzlesCompleted?: string[];
-                    tags?: string[];
-                    userId?: string;
-                };
+                    currentTier?: Database["public"]["Enums"]["tierType"]
+                    favoriteEvents?: string[]
+                    hasPriorityFri?: boolean
+                    hasPriorityMon?: boolean
+                    hasPrioritySat?: boolean
+                    hasPrioritySun?: boolean
+                    hasPriorityThu?: boolean
+                    hasPriorityTue?: boolean
+                    hasPriorityWed?: boolean
+                    icon?: Database["public"]["Enums"]["iconColorType"]
+                    points?: number
+                    pointsDay1?: number
+                    pointsDay2?: number
+                    pointsDay3?: number
+                    pointsDay4?: number
+                    pointsDay5?: number
+                    puzzlesCompleted?: string[]
+                    tags?: string[]
+                    userId?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "attendees_user_id_fkey";
-                        columns: ["userId"];
-                        isOneToOne: true;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "attendees_user_id_fkey"
+                        columns: ["userId"]
+                        isOneToOne: true
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
+                ]
+            }
             authCodes: {
                 Row: {
-                    email: string;
-                    expTime: string;
-                    hashedVerificationCode: string;
-                };
+                    email: string
+                    expTime: string
+                    hashedVerificationCode: string
+                }
                 Insert: {
-                    email: string;
-                    expTime: string;
-                    hashedVerificationCode: string;
-                };
+                    email: string
+                    expTime: string
+                    hashedVerificationCode: string
+                }
                 Update: {
-                    email?: string;
-                    expTime?: string;
-                    hashedVerificationCode?: string;
-                };
-                Relationships: [];
-            };
+                    email?: string
+                    expTime?: string
+                    hashedVerificationCode?: string
+                }
+                Relationships: []
+            }
             authInfo: {
                 Row: {
-                    authId: string;
-                    displayName: string;
-                    email: string;
-                    userId: string;
-                };
+                    authId: string
+                    displayName: string
+                    email: string
+                    userId: string
+                }
                 Insert: {
-                    authId: string;
-                    displayName: string;
-                    email: string;
-                    userId: string;
-                };
+                    authId: string
+                    displayName: string
+                    email: string
+                    userId: string
+                }
                 Update: {
-                    authId?: string;
-                    displayName?: string;
-                    email?: string;
-                    userId?: string;
-                };
-                Relationships: [];
-            };
+                    authId?: string
+                    displayName?: string
+                    email?: string
+                    userId?: string
+                }
+                Relationships: []
+            }
             authRoles: {
                 Row: {
-                    role: Database["public"]["Enums"]["roleType"];
-                    userId: string;
-                };
+                    role: Database["public"]["Enums"]["roleType"]
+                    userId: string
+                }
                 Insert: {
-                    role: Database["public"]["Enums"]["roleType"];
-                    userId: string;
-                };
+                    role: Database["public"]["Enums"]["roleType"]
+                    userId: string
+                }
                 Update: {
-                    role?: Database["public"]["Enums"]["roleType"];
-                    userId?: string;
-                };
-                Relationships: [];
-            };
+                    role?: Database["public"]["Enums"]["roleType"]
+                    userId?: string
+                }
+                Relationships: []
+            }
             corporate: {
                 Row: {
-                    email: string;
-                    name: string;
-                };
+                    email: string
+                    name: string
+                }
                 Insert: {
-                    email: string;
-                    name: string;
-                };
+                    email: string
+                    name: string
+                }
                 Update: {
-                    email?: string;
-                    name?: string;
-                };
-                Relationships: [];
-            };
+                    email?: string
+                    name?: string
+                }
+                Relationships: []
+            }
             customTopics: {
                 Row: {
-                    topicId: string;
-                    topicName: string;
-                };
+                    topicId: string
+                    topicName: string
+                }
                 Insert: {
-                    topicId?: string;
-                    topicName: string;
-                };
+                    topicId?: string
+                    topicName: string
+                }
                 Update: {
-                    topicId?: string;
-                    topicName?: string;
-                };
-                Relationships: [];
-            };
+                    topicId?: string
+                    topicName?: string
+                }
+                Relationships: []
+            }
             draftRegistrations: {
                 Row: {
-                    allergies: string[];
-                    allergiesOther: string;
-                    dietaryOther: string;
-                    dietaryRestrictions: string[];
-                    educationLevel: string;
-                    educationOther: string;
-                    email: string;
-                    ethnicity: string[];
-                    ethnicityOther: string;
-                    gender: string;
-                    genderOther: string;
-                    graduationYear: string;
-                    howDidYouHear: string[];
-                    isInterestedMechMania: boolean;
-                    isInterestedPuzzleBang: boolean;
-                    majors: string[];
-                    minors: string[];
-                    name: string;
-                    opportunities: string[];
-                    personalLinks: string[];
-                    resume: string;
-                    school: string;
-                    tags: string[];
-                    userId: string;
-                };
+                    allergies: string[]
+                    allergiesOther: string
+                    dietaryOther: string
+                    dietaryRestrictions: string[]
+                    educationLevel: string
+                    educationOther: string
+                    email: string
+                    ethnicity: string[]
+                    ethnicityOther: string
+                    gender: string
+                    genderOther: string
+                    graduationYear: string
+                    howDidYouHear: string[]
+                    isInterestedMechMania: boolean
+                    isInterestedPuzzleBang: boolean
+                    majors: string[]
+                    minors: string[]
+                    name: string
+                    opportunities: string[]
+                    personalLinks: string[]
+                    resume: string
+                    school: string
+                    tags: string[]
+                    userId: string
+                }
                 Insert: {
-                    allergies?: string[];
-                    allergiesOther: string;
-                    dietaryOther: string;
-                    dietaryRestrictions?: string[];
-                    educationLevel: string;
-                    educationOther: string;
-                    email: string;
-                    ethnicity?: string[];
-                    ethnicityOther: string;
-                    gender: string;
-                    genderOther: string;
-                    graduationYear: string;
-                    howDidYouHear?: string[];
-                    isInterestedMechMania: boolean;
-                    isInterestedPuzzleBang: boolean;
-                    majors?: string[];
-                    minors?: string[];
-                    name: string;
-                    opportunities?: string[];
-                    personalLinks?: string[];
-                    resume?: string;
-                    school: string;
-                    tags?: string[];
-                    userId: string;
-                };
+                    allergies?: string[]
+                    allergiesOther: string
+                    dietaryOther: string
+                    dietaryRestrictions?: string[]
+                    educationLevel: string
+                    educationOther: string
+                    email: string
+                    ethnicity?: string[]
+                    ethnicityOther: string
+                    gender: string
+                    genderOther: string
+                    graduationYear: string
+                    howDidYouHear?: string[]
+                    isInterestedMechMania: boolean
+                    isInterestedPuzzleBang: boolean
+                    majors?: string[]
+                    minors?: string[]
+                    name: string
+                    opportunities?: string[]
+                    personalLinks?: string[]
+                    resume?: string
+                    school: string
+                    tags?: string[]
+                    userId: string
+                }
                 Update: {
-                    allergies?: string[];
-                    allergiesOther?: string;
-                    dietaryOther?: string;
-                    dietaryRestrictions?: string[];
-                    educationLevel?: string;
-                    educationOther?: string;
-                    email?: string;
-                    ethnicity?: string[];
-                    ethnicityOther?: string;
-                    gender?: string;
-                    genderOther?: string;
-                    graduationYear?: string;
-                    howDidYouHear?: string[];
-                    isInterestedMechMania?: boolean;
-                    isInterestedPuzzleBang?: boolean;
-                    majors?: string[];
-                    minors?: string[];
-                    name?: string;
-                    opportunities?: string[];
-                    personalLinks?: string[];
-                    resume?: string;
-                    school?: string;
-                    tags?: string[];
-                    userId?: string;
-                };
-                Relationships: [];
-            };
+                    allergies?: string[]
+                    allergiesOther?: string
+                    dietaryOther?: string
+                    dietaryRestrictions?: string[]
+                    educationLevel?: string
+                    educationOther?: string
+                    email?: string
+                    ethnicity?: string[]
+                    ethnicityOther?: string
+                    gender?: string
+                    genderOther?: string
+                    graduationYear?: string
+                    howDidYouHear?: string[]
+                    isInterestedMechMania?: boolean
+                    isInterestedPuzzleBang?: boolean
+                    majors?: string[]
+                    minors?: string[]
+                    name?: string
+                    opportunities?: string[]
+                    personalLinks?: string[]
+                    resume?: string
+                    school?: string
+                    tags?: string[]
+                    userId?: string
+                }
+                Relationships: []
+            }
             eventAttendances: {
                 Row: {
-                    attendee: string;
-                    eventId: string;
-                };
+                    attendee: string
+                    eventId: string
+                }
                 Insert: {
-                    attendee: string;
-                    eventId: string;
-                };
+                    attendee: string
+                    eventId: string
+                }
                 Update: {
-                    attendee?: string;
-                    eventId?: string;
-                };
+                    attendee?: string
+                    eventId?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "event_attendance_attendee_fkey";
-                        columns: ["attendee"];
-                        isOneToOne: false;
-                        referencedRelation: "attendees";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "event_attendance_attendee_fkey"
+                        columns: ["attendee"]
+                        isOneToOne: false
+                        referencedRelation: "attendees"
+                        referencedColumns: ["userId"]
                     },
                     {
-                        foreignKeyName: "event_attendance_event_id_fkey";
-                        columns: ["eventId"];
-                        isOneToOne: false;
-                        referencedRelation: "events";
-                        referencedColumns: ["eventId"];
+                        foreignKeyName: "event_attendance_event_id_fkey"
+                        columns: ["eventId"]
+                        isOneToOne: false
+                        referencedRelation: "events"
+                        referencedColumns: ["eventId"]
                     },
-                ];
-            };
+                ]
+            }
             events: {
                 Row: {
-                    attendanceCount: number;
-                    description: string;
-                    endTime: string;
-                    eventId: string;
-                    eventType: Database["public"]["Enums"]["eventType"];
-                    imageUrl: string | null;
-                    isVirtual: boolean;
-                    isVisible: boolean;
-                    location: string | null;
-                    name: string;
-                    points: number;
-                    startTime: string;
-                    tags: string[];
-                };
+                    attendanceCount: number
+                    description: string
+                    endTime: string
+                    eventId: string
+                    eventType: Database["public"]["Enums"]["eventType"]
+                    imageUrl: string | null
+                    isVirtual: boolean
+                    isVisible: boolean
+                    location: string | null
+                    name: string
+                    points: number
+                    startTime: string
+                    tags: string[]
+                }
                 Insert: {
-                    attendanceCount?: number;
-                    description: string;
-                    endTime: string;
-                    eventId?: string;
-                    eventType: Database["public"]["Enums"]["eventType"];
-                    imageUrl?: string | null;
-                    isVirtual: boolean;
-                    isVisible?: boolean;
-                    location?: string | null;
-                    name: string;
-                    points: number;
-                    startTime: string;
-                    tags?: string[];
-                };
+                    attendanceCount?: number
+                    description: string
+                    endTime: string
+                    eventId?: string
+                    eventType: Database["public"]["Enums"]["eventType"]
+                    imageUrl?: string | null
+                    isVirtual: boolean
+                    isVisible?: boolean
+                    location?: string | null
+                    name: string
+                    points: number
+                    startTime: string
+                    tags?: string[]
+                }
                 Update: {
-                    attendanceCount?: number;
-                    description?: string;
-                    endTime?: string;
-                    eventId?: string;
-                    eventType?: Database["public"]["Enums"]["eventType"];
-                    imageUrl?: string | null;
-                    isVirtual?: boolean;
-                    isVisible?: boolean;
-                    location?: string | null;
-                    name?: string;
-                    points?: number;
-                    startTime?: string;
-                    tags?: string[];
-                };
-                Relationships: [];
-            };
+                    attendanceCount?: number
+                    description?: string
+                    endTime?: string
+                    eventId?: string
+                    eventType?: Database["public"]["Enums"]["eventType"]
+                    imageUrl?: string | null
+                    isVirtual?: boolean
+                    isVisible?: boolean
+                    location?: string | null
+                    name?: string
+                    points?: number
+                    startTime?: string
+                    tags?: string[]
+                }
+                Relationships: []
+            }
             leaderboardSubmissions: {
                 Row: {
-                    count: number;
-                    day: string;
-                    submissionId: string;
-                    submittedAt: string;
-                    submittedBy: string;
-                };
+                    count: number
+                    day: string
+                    submissionId: string
+                    submittedAt: string
+                    submittedBy: string
+                }
                 Insert: {
-                    count: number;
-                    day: string;
-                    submissionId?: string;
-                    submittedAt?: string;
-                    submittedBy: string;
-                };
+                    count: number
+                    day: string
+                    submissionId?: string
+                    submittedAt?: string
+                    submittedBy: string
+                }
                 Update: {
-                    count?: number;
-                    day?: string;
-                    submissionId?: string;
-                    submittedAt?: string;
-                    submittedBy?: string;
-                };
+                    count?: number
+                    day?: string
+                    submissionId?: string
+                    submittedAt?: string
+                    submittedBy?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "leaderboard_submissions_submitted_by_fkey";
-                        columns: ["submittedBy"];
-                        isOneToOne: false;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "leaderboard_submissions_submitted_by_fkey"
+                        columns: ["submittedBy"]
+                        isOneToOne: false
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
+                ]
+            }
             meetings: {
                 Row: {
-                    committeeType: Database["public"]["Enums"]["committeeNames"];
-                    meetingId: string;
-                    startTime: string;
-                };
+                    committeeType: Database["public"]["Enums"]["committeeNames"]
+                    meetingId: string
+                    startTime: string
+                }
                 Insert: {
-                    committeeType: Database["public"]["Enums"]["committeeNames"];
-                    meetingId?: string;
-                    startTime: string;
-                };
+                    committeeType: Database["public"]["Enums"]["committeeNames"]
+                    meetingId?: string
+                    startTime: string
+                }
                 Update: {
-                    committeeType?: Database["public"]["Enums"]["committeeNames"];
-                    meetingId?: string;
-                    startTime?: string;
-                };
-                Relationships: [];
-            };
+                    committeeType?: Database["public"]["Enums"]["committeeNames"]
+                    meetingId?: string
+                    startTime?: string
+                }
+                Relationships: []
+            }
             notifications: {
                 Row: {
-                    deviceId: string;
-                    userId: string;
-                };
+                    deviceId: string
+                    userId: string
+                }
                 Insert: {
-                    deviceId: string;
-                    userId: string;
-                };
+                    deviceId: string
+                    userId: string
+                }
                 Update: {
-                    deviceId?: string;
-                    userId?: string;
-                };
+                    deviceId?: string
+                    userId?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "notifications_user_id_fkey";
-                        columns: ["userId"];
-                        isOneToOne: true;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "notifications_user_id_fkey"
+                        columns: ["userId"]
+                        isOneToOne: true
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
+                ]
+            }
             redemptions: {
                 Row: {
-                    item: Database["public"]["Enums"]["tierType"];
-                    userId: string;
-                };
+                    item: Database["public"]["Enums"]["tierType"]
+                    userId: string
+                }
                 Insert: {
-                    item: Database["public"]["Enums"]["tierType"];
-                    userId: string;
-                };
+                    item: Database["public"]["Enums"]["tierType"]
+                    userId: string
+                }
                 Update: {
-                    item?: Database["public"]["Enums"]["tierType"];
-                    userId?: string;
-                };
+                    item?: Database["public"]["Enums"]["tierType"]
+                    userId?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "redemptions_user_id_fkey";
-                        columns: ["userId"];
-                        isOneToOne: false;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "redemptions_user_id_fkey"
+                        columns: ["userId"]
+                        isOneToOne: false
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
+                ]
+            }
             registrations: {
                 Row: {
-                    allergies: string[];
-                    dietaryRestrictions: string[];
-                    educationLevel: string;
-                    email: string;
-                    ethnicity: string[];
-                    gender: string;
-                    graduationYear: string;
-                    hasResume: boolean;
-                    howDidYouHear: string[];
-                    isInterestedMechMania: boolean;
-                    isInterestedPuzzleBang: boolean;
-                    majors: string[];
-                    minors: string[];
-                    name: string;
-                    opportunities: string[];
-                    personalLinks: string[];
-                    school: string;
-                    tags: string[];
-                    userId: string;
-                };
+                    allergies: string[]
+                    dietaryRestrictions: string[]
+                    educationLevel: string
+                    email: string
+                    ethnicity: string[]
+                    gender: string
+                    graduationYear: string
+                    hasResume: boolean
+                    howDidYouHear: string[]
+                    isInterestedMechMania: boolean
+                    isInterestedPuzzleBang: boolean
+                    majors: string[]
+                    minors: string[]
+                    name: string
+                    opportunities: string[]
+                    personalLinks: string[]
+                    school: string
+                    tags: string[]
+                    userId: string
+                }
                 Insert: {
-                    allergies?: string[];
-                    dietaryRestrictions?: string[];
-                    educationLevel: string;
-                    email: string;
-                    ethnicity?: string[];
-                    gender: string;
-                    graduationYear: string;
-                    hasResume?: boolean;
-                    howDidYouHear?: string[];
-                    isInterestedMechMania: boolean;
-                    isInterestedPuzzleBang: boolean;
-                    majors?: string[];
-                    minors?: string[];
-                    name: string;
-                    opportunities?: string[];
-                    personalLinks?: string[];
-                    school: string;
-                    tags?: string[];
-                    userId: string;
-                };
+                    allergies?: string[]
+                    dietaryRestrictions?: string[]
+                    educationLevel: string
+                    email: string
+                    ethnicity?: string[]
+                    gender: string
+                    graduationYear: string
+                    hasResume?: boolean
+                    howDidYouHear?: string[]
+                    isInterestedMechMania: boolean
+                    isInterestedPuzzleBang: boolean
+                    majors?: string[]
+                    minors?: string[]
+                    name: string
+                    opportunities?: string[]
+                    personalLinks?: string[]
+                    school: string
+                    tags?: string[]
+                    userId: string
+                }
                 Update: {
-                    allergies?: string[];
-                    dietaryRestrictions?: string[];
-                    educationLevel?: string;
-                    email?: string;
-                    ethnicity?: string[];
-                    gender?: string;
-                    graduationYear?: string;
-                    hasResume?: boolean;
-                    howDidYouHear?: string[];
-                    isInterestedMechMania?: boolean;
-                    isInterestedPuzzleBang?: boolean;
-                    majors?: string[];
-                    minors?: string[];
-                    name?: string;
-                    opportunities?: string[];
-                    personalLinks?: string[];
-                    school?: string;
-                    tags?: string[];
-                    userId?: string;
-                };
+                    allergies?: string[]
+                    dietaryRestrictions?: string[]
+                    educationLevel?: string
+                    email?: string
+                    ethnicity?: string[]
+                    gender?: string
+                    graduationYear?: string
+                    hasResume?: boolean
+                    howDidYouHear?: string[]
+                    isInterestedMechMania?: boolean
+                    isInterestedPuzzleBang?: boolean
+                    majors?: string[]
+                    minors?: string[]
+                    name?: string
+                    opportunities?: string[]
+                    personalLinks?: string[]
+                    school?: string
+                    tags?: string[]
+                    userId?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "registrations_user_id_fkey";
-                        columns: ["userId"];
-                        isOneToOne: true;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "registrations_user_id_fkey"
+                        columns: ["userId"]
+                        isOneToOne: true
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
+                ]
+            }
             shiftAssignments: {
                 Row: {
-                    acknowledged: boolean;
-                    shiftId: string;
-                    staffEmail: string;
-                };
+                    acknowledged: boolean
+                    shiftId: string
+                    staffEmail: string
+                }
                 Insert: {
-                    acknowledged?: boolean;
-                    shiftId: string;
-                    staffEmail: string;
-                };
+                    acknowledged?: boolean
+                    shiftId: string
+                    staffEmail: string
+                }
                 Update: {
-                    acknowledged?: boolean;
-                    shiftId?: string;
-                    staffEmail?: string;
-                };
+                    acknowledged?: boolean
+                    shiftId?: string
+                    staffEmail?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "shiftAssignments_shiftId_fkey";
-                        columns: ["shiftId"];
-                        isOneToOne: false;
-                        referencedRelation: "shifts";
-                        referencedColumns: ["shiftId"];
+                        foreignKeyName: "shiftAssignments_shiftId_fkey"
+                        columns: ["shiftId"]
+                        isOneToOne: false
+                        referencedRelation: "shifts"
+                        referencedColumns: ["shiftId"]
                     },
                     {
-                        foreignKeyName: "shiftAssignments_staffEmail_fkey";
-                        columns: ["staffEmail"];
-                        isOneToOne: false;
-                        referencedRelation: "staff";
-                        referencedColumns: ["email"];
+                        foreignKeyName: "shiftAssignments_staffEmail_fkey"
+                        columns: ["staffEmail"]
+                        isOneToOne: false
+                        referencedRelation: "staff"
+                        referencedColumns: ["email"]
                     },
-                ];
-            };
+                ]
+            }
             shifts: {
                 Row: {
-                    endTime: string;
-                    location: string;
-                    name: string;
-                    role: Database["public"]["Enums"]["shiftRoleType"];
-                    shiftId: string;
-                    startTime: string;
-                };
+                    endTime: string
+                    location: string
+                    name: string
+                    role: Database["public"]["Enums"]["shiftRoleType"]
+                    shiftId: string
+                    startTime: string
+                }
                 Insert: {
-                    endTime: string;
-                    location: string;
-                    name: string;
-                    role: Database["public"]["Enums"]["shiftRoleType"];
-                    shiftId?: string;
-                    startTime: string;
-                };
+                    endTime: string
+                    location: string
+                    name: string
+                    role: Database["public"]["Enums"]["shiftRoleType"]
+                    shiftId?: string
+                    startTime: string
+                }
                 Update: {
-                    endTime?: string;
-                    location?: string;
-                    name?: string;
-                    role?: Database["public"]["Enums"]["shiftRoleType"];
-                    shiftId?: string;
-                    startTime?: string;
-                };
-                Relationships: [];
-            };
+                    endTime?: string
+                    location?: string
+                    name?: string
+                    role?: Database["public"]["Enums"]["shiftRoleType"]
+                    shiftId?: string
+                    startTime?: string
+                }
+                Relationships: []
+            }
             speakers: {
                 Row: {
-                    bio: string;
-                    eventDescription: string;
-                    eventTitle: string;
-                    imgUrl: string;
-                    name: string;
-                    speakerId: string;
-                    title: string;
-                };
+                    bio: string
+                    eventDescription: string
+                    eventTitle: string
+                    imgUrl: string
+                    name: string
+                    speakerId: string
+                    title: string
+                }
                 Insert: {
-                    bio: string;
-                    eventDescription: string;
-                    eventTitle: string;
-                    imgUrl: string;
-                    name: string;
-                    speakerId?: string;
-                    title: string;
-                };
+                    bio: string
+                    eventDescription: string
+                    eventTitle: string
+                    imgUrl: string
+                    name: string
+                    speakerId?: string
+                    title: string
+                }
                 Update: {
-                    bio?: string;
-                    eventDescription?: string;
-                    eventTitle?: string;
-                    imgUrl?: string;
-                    name?: string;
-                    speakerId?: string;
-                    title?: string;
-                };
-                Relationships: [];
-            };
+                    bio?: string
+                    eventDescription?: string
+                    eventTitle?: string
+                    imgUrl?: string
+                    name?: string
+                    speakerId?: string
+                    title?: string
+                }
+                Relationships: []
+            }
             staff: {
                 Row: {
-                    attendances: Json;
-                    email: string;
-                    name: string;
-                    team: Database["public"]["Enums"]["committeeNames"];
-                };
+                    attendances: Json
+                    email: string
+                    name: string
+                    team: Database["public"]["Enums"]["committeeNames"]
+                }
                 Insert: {
-                    attendances?: Json;
-                    email: string;
-                    name: string;
-                    team: Database["public"]["Enums"]["committeeNames"];
-                };
+                    attendances?: Json
+                    email: string
+                    name: string
+                    team: Database["public"]["Enums"]["committeeNames"]
+                }
                 Update: {
-                    attendances?: Json;
-                    email?: string;
-                    name?: string;
-                    team?: Database["public"]["Enums"]["committeeNames"];
-                };
-                Relationships: [];
-            };
+                    attendances?: Json
+                    email?: string
+                    name?: string
+                    team?: Database["public"]["Enums"]["committeeNames"]
+                }
+                Relationships: []
+            }
             subscriptions: {
                 Row: {
-                    userId: string;
-                    mailingList: string;
-                };
+                    userId: string
+                    mailingList: string
+                }
                 Insert: {
-                    userId: string;
-                    mailingList: string;
-                };
+                    userId: string
+                    mailingList: string
+                }
                 Update: {
-                    userId?: string;
-                    mailingList?: string;
-                };
+                    userId?: string
+                    mailingList?: string
+                }
                 Relationships: [
                     {
-                        foreignKeyName: "subscriptions_user_id_fkey";
-                        columns: ["userId"];
-                        isOneToOne: false;
-                        referencedRelation: "authInfo";
-                        referencedColumns: ["userId"];
+                        foreignKeyName: "subscriptions_user_id_fkey"
+                        columns: ["userId"]
+                        isOneToOne: false
+                        referencedRelation: "authInfo"
+                        referencedColumns: ["userId"]
                     },
-                ];
-            };
-        };
+                ]
+            }
+        }
         Views: {
-            [_ in never]: never;
-        };
+            [_ in never]: never
+        }
         Functions: {
             promote_users_batch: {
-                Args: { user_ids: string[] };
-                Returns: number;
-            };
+                Args: { user_ids: string[] }
+                Returns: number
+            }
             get_tier_counts: {
-                Args: Record<string, never>;
+                Args: Record<string, never>
                 Returns: {
-                    currentTier: Database["public"]["Enums"]["tierType"];
-                    count: number;
-                }[];
-            };
-        };
+                    currentTier: Database["public"]["Enums"]["tierType"]
+                    count: number
+                }[]
+            }
+        }
         Enums: {
             committeeNames:
                 | "CONTENT"
@@ -708,22 +708,22 @@ export type Database = {
                 | "DEV"
                 | "FULL TEAM"
                 | "MARKETING"
-                | "OPERATIONS";
+                | "OPERATIONS"
             eventType:
                 | "SPEAKER"
                 | "CORPORATE"
                 | "SPECIAL"
                 | "PARTNERS"
                 | "MEALS"
-                | "CHECKIN";
+                | "CHECKIN"
             iconColorType:
                 | "BLUE"
                 | "RED"
                 | "GREEN"
                 | "PINK"
                 | "PURPLE"
-                | "ORANGE";
-            roleType: "USER" | "STAFF" | "ADMIN" | "CORPORATE" | "SUPER_ADMIN";
+                | "ORANGE"
+            roleType: "USER" | "STAFF" | "ADMIN" | "CORPORATE" | "SUPER_ADMIN"
             shiftRoleType:
                 | "CLEAN_UP"
                 | "DINNER"
@@ -731,39 +731,36 @@ export type Database = {
                 | "SPEAKER_BUDDY"
                 | "SPONSOR_BUDDY"
                 | "DEV_ON_CALL"
-                | "CHAIR_ON_CALL";
-            staffAttendanceType: "PRESENT" | "EXCUSED" | "ABSENT";
-            tierType: "TIER1" | "TIER2" | "TIER3" | "TIER4";
-        };
+                | "CHAIR_ON_CALL"
+            staffAttendanceType: "PRESENT" | "EXCUSED" | "ABSENT"
+            tierType: "TIER1" | "TIER2" | "TIER3" | "TIER4"
+        }
         CompositeTypes: {
-            [_ in never]: never;
-        };
-    };
-};
+            [_ in never]: never
+        }
+    }
+}
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<
-    keyof Database,
-    "public"
->];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
     DefaultSchemaTableNameOrOptions extends
         | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
         | { schema: keyof DatabaseWithoutInternals },
     TableName extends DefaultSchemaTableNameOrOptions extends {
-        schema: keyof DatabaseWithoutInternals;
+        schema: keyof DatabaseWithoutInternals
     }
         ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
               DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
         : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
 }
     ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
           DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-          Row: infer R;
+          Row: infer R
       }
         ? R
         : never
@@ -771,95 +768,95 @@ export type Tables<
             DefaultSchema["Views"])
       ? (DefaultSchema["Tables"] &
             DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-            Row: infer R;
+            Row: infer R
         }
           ? R
           : never
-      : never;
+      : never
 
 export type TablesInsert<
     DefaultSchemaTableNameOrOptions extends
         | keyof DefaultSchema["Tables"]
         | { schema: keyof DatabaseWithoutInternals },
     TableName extends DefaultSchemaTableNameOrOptions extends {
-        schema: keyof DatabaseWithoutInternals;
+        schema: keyof DatabaseWithoutInternals
     }
         ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
         : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
 }
     ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-          Insert: infer I;
+          Insert: infer I
       }
         ? I
         : never
     : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
       ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-            Insert: infer I;
+            Insert: infer I
         }
           ? I
           : never
-      : never;
+      : never
 
 export type TablesUpdate<
     DefaultSchemaTableNameOrOptions extends
         | keyof DefaultSchema["Tables"]
         | { schema: keyof DatabaseWithoutInternals },
     TableName extends DefaultSchemaTableNameOrOptions extends {
-        schema: keyof DatabaseWithoutInternals;
+        schema: keyof DatabaseWithoutInternals
     }
         ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
         : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
 }
     ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-          Update: infer U;
+          Update: infer U
       }
         ? U
         : never
     : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
       ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-            Update: infer U;
+            Update: infer U
         }
           ? U
           : never
-      : never;
+      : never
 
 export type Enums<
     DefaultSchemaEnumNameOrOptions extends
         | keyof DefaultSchema["Enums"]
         | { schema: keyof DatabaseWithoutInternals },
     EnumName extends DefaultSchemaEnumNameOrOptions extends {
-        schema: keyof DatabaseWithoutInternals;
+        schema: keyof DatabaseWithoutInternals
     }
         ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
         : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
 }
     ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
     : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
       ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-      : never;
+      : never
 
 export type CompositeTypes<
     PublicCompositeTypeNameOrOptions extends
         | keyof DefaultSchema["CompositeTypes"]
         | { schema: keyof DatabaseWithoutInternals },
     CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-        schema: keyof DatabaseWithoutInternals;
+        schema: keyof DatabaseWithoutInternals
     }
         ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
         : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
 }
     ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
     : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
       ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-      : never;
+      : never
 
 export const Constants = {
     graphql_public: {
@@ -899,4 +896,4 @@ export const Constants = {
             tierType: ["TIER1", "TIER2", "TIER3", "TIER4"],
         },
     },
-} as const;
+} as const

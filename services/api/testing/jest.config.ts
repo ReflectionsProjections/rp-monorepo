@@ -1,6 +1,6 @@
 //https://jestjs.io/docs/configuration
 
-import type { Config } from "jest";
+import type { Config } from "jest"
 
 const config: Config = {
     preset: "ts-jest",
@@ -30,12 +30,12 @@ const config: Config = {
         "!**/*.test.ts",
         "!**/*.spec.ts",
     ],
-};
-
-/* GitHub CI specific config */
-const githubActions = process.env.GITHUB_ACTIONS;
-if (githubActions != undefined && githubActions != "0" && githubActions != "") {
-    config.reporters = [["github-actions", { silent: false }], "summary"];
 }
 
-export default config;
+/* GitHub CI specific config */
+const githubActions = process.env.GITHUB_ACTIONS
+if (githubActions != undefined && githubActions != "0" && githubActions != "") {
+    config.reporters = [["github-actions", { silent: false }], "summary"]
+}
+
+export default config

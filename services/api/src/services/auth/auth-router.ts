@@ -1,24 +1,24 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
-import Config from "../../config";
-import RoleChecker from "../../middleware/role-checker";
-import { Platform, Role } from "../auth/auth-models";
+import { Router } from "express"
+import { StatusCodes } from "http-status-codes"
+import Config from "../../config"
+import RoleChecker from "../../middleware/role-checker"
+import { Platform, Role } from "../auth/auth-models"
 import {
     AuthInfo,
     AuthLoginValidator,
     AuthRoleChangeRequest,
-} from "./auth-schema";
-import authSponsorRouter from "./sponsor/sponsor-router";
-import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema";
+} from "./auth-schema"
+import authSponsorRouter from "./sponsor/sponsor-router"
+import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema"
 import {
     generateJWT,
     payloadHasProperScopes,
     updateDatabaseWithAuthPayload,
-} from "./auth-utils";
-import { OAuth2Client } from "google-auth-library";
-import { SupabaseDB } from "../../database";
+} from "./auth-utils"
+import { OAuth2Client } from "google-auth-library"
+import { SupabaseDB } from "../../database"
 
-const authRouter = Router();
+const authRouter = Router()
 
 const oauthClients = {
     [Platform.WEB]: new OAuth2Client({
@@ -31,9 +31,9 @@ const oauthClients = {
     [Platform.ANDROID]: new OAuth2Client({
         clientId: Config.ANDROID_CLIENT_ID,
     }),
-};
+}
 
-authRouter.use("/sponsor", authSponsorRouter);
+authRouter.use("/sponsor", authSponsorRouter)
 
 // Remove role from userId (super admin only endpoint)
 authRouter.delete(
@@ -41,17 +41,17 @@ authRouter.delete(
     RoleChecker([Role.Enum.SUPER_ADMIN]),
     async (req, res) => {
         // Validate request body using Zod schema
-        const { userId, role } = AuthRoleChangeRequest.parse(req.body);
+        const { userId, role } = AuthRoleChangeRequest.parse(req.body)
 
         const { data } = await SupabaseDB.AUTH_INFO.select("userId")
             .eq("userId", userId)
             .maybeSingle()
-            .throwOnError();
+            .throwOnError()
 
         if (!data) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 error: "UserNotFound",
-            });
+            })
         }
 
         const { data: deleted } = await SupabaseDB.AUTH_ROLES.delete()
@@ -59,25 +59,25 @@ authRouter.delete(
             .eq("role", role)
             .select()
             .single()
-            .throwOnError();
+            .throwOnError()
 
-        return res.status(StatusCodes.OK).json(deleted);
-    }
-);
+        return res.status(StatusCodes.OK).json(deleted)
+    },
+)
 
 // Add role to userId (super admin only endpoint)
 authRouter.put("/", RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
-    const { userId, role } = AuthRoleChangeRequest.parse(req.body);
+    const { userId, role } = AuthRoleChangeRequest.parse(req.body)
 
     const { data } = await SupabaseDB.AUTH_INFO.select("userId")
         .eq("userId", userId)
         .maybeSingle()
-        .throwOnError();
+        .throwOnError()
 
     if (!data) {
         return res.status(StatusCodes.NOT_FOUND).json({
             error: "UserNotFound",
-        });
+        })
     }
 
     const { data: updated } = await SupabaseDB.AUTH_ROLES.upsert({
@@ -86,201 +86,202 @@ authRouter.put("/", RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
     })
         .select()
         .single()
-        .throwOnError();
+        .throwOnError()
 
-    return res.status(StatusCodes.OK).json(updated);
-});
+    return res.status(StatusCodes.OK).json(updated)
+})
 
 const getAuthPayloadFromCode = async (
     code: string,
     redirect_uri: string,
     platform: Platform,
-    codeVerifier?: string
+    codeVerifier?: string,
 ) => {
     try {
-        const googleOAuthClient = oauthClients[platform];
+        const googleOAuthClient = oauthClients[platform]
         const { tokens } = await googleOAuthClient.getToken({
             code,
             redirect_uri,
             codeVerifier, // only for mobile apps
-        });
+        })
         if (!tokens.id_token) {
-            throw new Error("Invalid token");
+            throw new Error("Invalid token")
         }
         const ticket = await googleOAuthClient.verifyIdToken({
             idToken: tokens.id_token,
-        });
-        const payload = ticket.getPayload();
+        })
+        const payload = ticket.getPayload()
         if (!payload) {
-            throw new Error("Invalid payload");
+            throw new Error("Invalid payload")
         }
 
-        return payload;
+        return payload
     } catch (error) {
-        console.error("AUTH ISSUE:", error);
-        return undefined;
+        console.error("AUTH ISSUE:", error)
+        return undefined
     }
-};
+}
 
 authRouter.post("/login/:PLATFORM", async (req, res) => {
     try {
         const validatedData = AuthLoginValidator.parse({
             ...req.body,
             platform: req.params.PLATFORM,
-        });
+        })
 
-        const { code, redirectUri, platform } = validatedData;
+        const { code, redirectUri, platform } = validatedData
         const codeVerifier =
             "codeVerifier" in validatedData
                 ? validatedData.codeVerifier
-                : undefined;
+                : undefined
 
         const authPayload = await getAuthPayloadFromCode(
             code,
             redirectUri,
             platform,
-            codeVerifier
-        );
+            codeVerifier,
+        )
 
         if (!authPayload) {
             return res
                 .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "InvalidToken" });
+                .send({ error: "InvalidToken" })
         }
 
         if (!payloadHasProperScopes(authPayload)) {
             return res
                 .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "InvalidScopes" });
+                .send({ error: "InvalidScopes" })
         }
 
         // Update database by payload
-        const userId = await updateDatabaseWithAuthPayload(authPayload);
+        const userId = await updateDatabaseWithAuthPayload(authPayload)
 
         // Generate the JWT
-        const jwtToken = await generateJWT(userId);
+        const jwtToken = await generateJWT(userId)
 
-        return res.status(StatusCodes.OK).send({ token: jwtToken });
+        return res.status(StatusCodes.OK).send({ token: jwtToken })
     } catch (error) {
-        console.error("Error in platform login:", error);
+        console.error("Error in platform login:", error)
         return res.status(StatusCodes.BAD_REQUEST).send({
             error: "InvalidRequest",
             details: error instanceof Error ? error.message : "Unknown error",
-        });
+        })
     }
-});
+})
 
 authRouter.get(
     "/corporate",
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
-        const { data } = await SupabaseDB.CORPORATE.select().throwOnError();
+        const { data } = await SupabaseDB.CORPORATE.select().throwOnError()
 
-        return res.status(StatusCodes.OK).json(data);
-    }
-);
+        return res.status(StatusCodes.OK).json(data)
+    },
+)
 
 authRouter.post(
     "/corporate",
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
-        const data = CorporateValidator.parse(req.body);
+        const data = CorporateValidator.parse(req.body)
         const { data: existing } = await SupabaseDB.CORPORATE.select()
             .eq("email", data.email)
-            .throwOnError();
+            .throwOnError()
         if (existing.length > 0) {
             return res.status(StatusCodes.BAD_REQUEST).send({
                 error: "AlreadyExists",
-            });
+            })
         }
         const { data: corporate } = await SupabaseDB.CORPORATE.insert(data)
             .select()
             .single()
-            .throwOnError();
+            .throwOnError()
 
-        return res.status(StatusCodes.CREATED).json(corporate);
-    }
-);
+        return res.status(StatusCodes.CREATED).json(corporate)
+    },
+)
 
 authRouter.delete(
     "/corporate",
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
-        const { email } = CorporateDeleteRequest.parse(req.body);
+        const { email } = CorporateDeleteRequest.parse(req.body)
         const { data } = await SupabaseDB.CORPORATE.delete()
             .eq("email", email)
             .select()
-            .throwOnError();
+            .throwOnError()
 
         if (data.length == 0) {
             return res
                 .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "NotFound" });
+                .send({ error: "NotFound" })
         }
 
-        return res.sendStatus(StatusCodes.NO_CONTENT);
-    }
-);
+        return res.sendStatus(StatusCodes.NO_CONTENT)
+    },
+)
 
 authRouter.get("/info", RoleChecker([]), async (req, res) => {
-    const userId = res.locals.payload.userId;
+    const userId = res.locals.payload.userId
     const { data: info } = await SupabaseDB.AUTH_INFO.select()
         .eq("userId", userId)
         .single()
-        .throwOnError();
+        .throwOnError()
     const { data: roleRows } = await SupabaseDB.AUTH_ROLES.select()
         .eq("userId", userId)
-        .throwOnError();
+        .throwOnError()
     const user = {
         ...info,
         roles: roleRows.map((row: { role: Role }) => row.role),
-    };
-    return res.status(StatusCodes.OK).json(user);
-});
+    }
+    return res.status(StatusCodes.OK).json(user)
+})
 
 // Get team members (users with STAFF or ADMIN roles)
 authRouter.get("/team", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
     try {
         // Get all users first
         const { data: users } =
-            await SupabaseDB.AUTH_INFO.select("*").throwOnError();
+            await SupabaseDB.AUTH_INFO.select("*").throwOnError()
 
         // Get all roles
         const { data: roles } =
-            await SupabaseDB.AUTH_ROLES.select("*").throwOnError();
+            await SupabaseDB.AUTH_ROLES.select("*").throwOnError()
 
         // Create a map of userId to roles
-        const userRolesMap = new Map<string, Role[]>();
+        const userRolesMap = new Map<string, Role[]>()
         roles?.forEach((roleRow: { userId: string; role: Role }) => {
             if (!userRolesMap.has(roleRow.userId)) {
-                userRolesMap.set(roleRow.userId, []);
+                userRolesMap.set(roleRow.userId, [])
             }
-            userRolesMap.get(roleRow.userId)!.push(roleRow.role);
-        });
+            userRolesMap.get(roleRow.userId)!.push(roleRow.role)
+        })
 
         // Filter to only users with STAFF or ADMIN roles
         const teamMembers =
             users
                 ?.filter((user: AuthInfo) => {
-                    const userRoles = userRolesMap.get(user.userId) || [];
+                    const userRoles = userRolesMap.get(user.userId) || []
                     return userRoles.some(
                         (role: Role) =>
-                            role === Role.Enum.STAFF || role === Role.Enum.ADMIN
-                    );
+                            role === Role.Enum.STAFF ||
+                            role === Role.Enum.ADMIN,
+                    )
                 })
                 .map((user: AuthInfo) => ({
                     ...user,
                     roles: userRolesMap.get(user.userId) || [],
-                })) || [];
+                })) || []
 
-        return res.status(StatusCodes.OK).json(teamMembers);
+        return res.status(StatusCodes.OK).json(teamMembers)
     } catch (error) {
-        console.error("Error fetching team members:", error);
+        console.error("Error fetching team members:", error)
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             error: "Failed to fetch team members",
-        });
+        })
     }
-});
+})
 
 // Get staff user ids for resume book
 authRouter.get(
@@ -289,22 +290,22 @@ authRouter.get(
     async (req, res) => {
         const { data } = await SupabaseDB.AUTH_ROLES.select("userId")
             .eq("role", Role.Enum.STAFF)
-            .throwOnError();
-        const userIds = data.map((row: { userId: string }) => row.userId);
-        return res.status(StatusCodes.OK).json(userIds);
-    }
-);
+            .throwOnError()
+        const userIds = data.map((row: { userId: string }) => row.userId)
+        return res.status(StatusCodes.OK).json(userIds)
+    },
+)
 
 // Get a list of user ids by role (staff only endpoint)
 authRouter.get("/:ROLE", RoleChecker([Role.Enum.STAFF]), async (req, res) => {
     // Validate the role using Zod schema
-    const role = Role.parse(req.params.ROLE);
+    const role = Role.parse(req.params.ROLE)
 
     const { data } = await SupabaseDB.AUTH_ROLES.select("userId")
         .eq("role", role)
-        .throwOnError();
-    const userIds = data.map((row: { userId: string }) => row.userId);
-    return res.status(StatusCodes.OK).json(userIds);
-});
+        .throwOnError()
+    const userIds = data.map((row: { userId: string }) => row.userId)
+    return res.status(StatusCodes.OK).json(userIds)
+})
 
-export default authRouter;
+export default authRouter

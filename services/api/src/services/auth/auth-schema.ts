@@ -1,14 +1,14 @@
-import { Schema } from "mongoose";
-import { z } from "zod";
-import { Platform, Role } from "./auth-models";
-import { Database } from "../../database.types";
+import { Schema } from "mongoose"
+import { z } from "zod"
+import { Platform, Role } from "./auth-models"
+import { Database } from "../../database.types"
 
 export const RoleValidator = z.object({
     userId: z.coerce.string(),
     displayName: z.coerce.string(),
     email: z.coerce.string().email(),
     roles: z.array(Role).default([]),
-});
+})
 
 export const AuthLoginValidator = z.union([
     // Web platform - no codeVerifier needed
@@ -27,12 +27,12 @@ export const AuthLoginValidator = z.union([
             z.literal(Platform.ANDROID),
         ]),
     }),
-]);
+])
 
 export const AuthRoleChangeRequest = z.object({
     userId: z.string(),
     role: Role,
-});
+})
 
 export const RoleSchema = new Schema(
     {
@@ -55,7 +55,7 @@ export const RoleSchema = new Schema(
             required: true,
         },
     },
-    { timestamps: { createdAt: "createdAt" } }
-);
-export type AuthInfo = Database["public"]["Tables"]["authInfo"]["Row"];
-export type AuthRole = Database["public"]["Tables"]["authRoles"]["Row"];
+    { timestamps: { createdAt: "createdAt" } },
+)
+export type AuthInfo = Database["public"]["Tables"]["authInfo"]["Row"]
+export type AuthRole = Database["public"]["Tables"]["authRoles"]["Row"]

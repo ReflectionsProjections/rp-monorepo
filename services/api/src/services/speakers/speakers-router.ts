@@ -1,103 +1,101 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
-import { SpeakerValidator, UpdateSpeakerValidator } from "./speakers-schema";
-import RoleChecker from "../../middleware/role-checker";
-import { Role } from "../auth/auth-models";
-import { SupabaseDB } from "../../database";
+import { Router } from "express"
+import { StatusCodes } from "http-status-codes"
+import { SpeakerValidator, UpdateSpeakerValidator } from "./speakers-schema"
+import RoleChecker from "../../middleware/role-checker"
+import { Role } from "../auth/auth-models"
+import { SupabaseDB } from "../../database"
 
-const speakersRouter = Router();
+const speakersRouter = Router()
 
 // Get all speakers
 speakersRouter.get("/", RoleChecker([], true), async (req, res) => {
     const { data: speakers } =
-        await SupabaseDB.SPEAKERS.select("*").throwOnError();
+        await SupabaseDB.SPEAKERS.select("*").throwOnError()
 
-    return res.status(StatusCodes.OK).json(speakers);
-});
+    return res.status(StatusCodes.OK).json(speakers)
+})
 
 // Get a specific speaker
 speakersRouter.get("/:SPEAKERID", RoleChecker([], true), async (req, res) => {
-    const speakerId = req.params.SPEAKERID;
+    const speakerId = req.params.SPEAKERID
 
     const { data: speaker } = await SupabaseDB.SPEAKERS.select("*")
         .eq("speakerId", speakerId)
         .maybeSingle()
-        .throwOnError();
+        .throwOnError()
 
     if (!speaker) {
-        return res
-            .status(StatusCodes.NOT_FOUND)
-            .json({ error: "DoesNotExist" });
+        return res.status(StatusCodes.NOT_FOUND).json({ error: "DoesNotExist" })
     }
 
-    return res.status(StatusCodes.OK).json(speaker);
-});
+    return res.status(StatusCodes.OK).json(speaker)
+})
 
 // Create a new speaker
 speakersRouter.post(
     "/",
     RoleChecker([Role.Enum.ADMIN, Role.Enum.STAFF]),
     async (req, res) => {
-        const validatedData = SpeakerValidator.parse(req.body);
+        const validatedData = SpeakerValidator.parse(req.body)
 
         const { data: newSpeaker } = await SupabaseDB.SPEAKERS.insert(
-            validatedData
+            validatedData,
         )
             .select()
             .single()
-            .throwOnError();
+            .throwOnError()
 
-        return res.status(StatusCodes.CREATED).json(newSpeaker);
-    }
-);
+        return res.status(StatusCodes.CREATED).json(newSpeaker)
+    },
+)
 
 // Update a speaker
 speakersRouter.put(
     "/:SPEAKERID",
     RoleChecker([Role.Enum.ADMIN, Role.Enum.STAFF]),
     async (req, res) => {
-        const speakerId = req.params.SPEAKERID;
-        const validatedData = UpdateSpeakerValidator.parse(req.body);
+        const speakerId = req.params.SPEAKERID
+        const validatedData = UpdateSpeakerValidator.parse(req.body)
 
         const { data: updatedSpeaker } = await SupabaseDB.SPEAKERS.update(
-            validatedData
+            validatedData,
         )
             .eq("speakerId", speakerId)
             .select()
             .maybeSingle()
-            .throwOnError();
+            .throwOnError()
 
         if (!updatedSpeaker) {
             return res
                 .status(StatusCodes.NOT_FOUND)
-                .json({ error: "DoesNotExist" });
+                .json({ error: "DoesNotExist" })
         }
 
-        return res.status(StatusCodes.OK).json(updatedSpeaker);
-    }
-);
+        return res.status(StatusCodes.OK).json(updatedSpeaker)
+    },
+)
 
 // Delete a speaker
 speakersRouter.delete(
     "/:SPEAKERID",
     RoleChecker([Role.Enum.ADMIN, Role.Enum.STAFF]),
     async (req, res) => {
-        const speakerId = req.params.SPEAKERID;
+        const speakerId = req.params.SPEAKERID
 
         const { data: deletedSpeaker } = await SupabaseDB.SPEAKERS.delete()
             .eq("speakerId", speakerId)
             .select()
             .maybeSingle()
-            .throwOnError();
+            .throwOnError()
 
         if (!deletedSpeaker) {
             return res
                 .status(StatusCodes.NOT_FOUND)
-                .json({ error: "DoesNotExist" });
+                .json({ error: "DoesNotExist" })
         }
 
-        return res.sendStatus(StatusCodes.NO_CONTENT);
-    }
-);
+        return res.sendStatus(StatusCodes.NO_CONTENT)
+    },
+)
 
-export default speakersRouter;
+export default speakersRouter

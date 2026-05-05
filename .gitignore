@@ -1,5 +1,8 @@
 .env
 
+# Root npm tooling
+node_modules
+
 # Yarn workspace files
 **/.yarn/*
 !**/.yarn/releases

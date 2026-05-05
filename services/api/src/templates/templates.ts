@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config from "../config"
 
 const templates = {
     REGISTRATION_CONFIRMATION: `<!DOCTYPE html>
@@ -2085,6 +2085,6 @@ const templates = {
         </div>
     </body>
     </html>`,
-};
+}
 
-export default templates;
+export default templates
