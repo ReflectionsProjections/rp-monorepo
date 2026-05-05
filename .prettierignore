@@ -1,0 +1,19 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+.expo
+android
+ios
+
+# Yarn
+**/.yarn
+**/*.lock
+
+# Generated / vendored
+**/yarn-*.cjs
+
+# OS / editor
+.DS_Store
