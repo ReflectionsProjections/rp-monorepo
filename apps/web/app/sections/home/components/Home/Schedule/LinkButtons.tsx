@@ -1,7 +1,7 @@
-import { Box, Button, Icon, Wrap, WrapItem } from "@chakra-ui/react";
-import { FaExternalLinkAlt } from "react-icons/fa";
-import type { LinkData } from "./link-utils";
-import { parseLinks } from "./link-utils";
+import { Box, Button, Icon, Wrap, WrapItem } from '@chakra-ui/react'
+import { FaExternalLinkAlt } from 'react-icons/fa'
+import type { LinkData } from './link-utils'
+import { parseLinks } from './link-utils'
 
 export function LinkButtonsGrid({ linkData }: { linkData: LinkData }) {
   return (
@@ -20,14 +20,14 @@ export function LinkButtonsGrid({ linkData }: { linkData: LinkData }) {
               color="black"
               borderColor="gray.300"
               _hover={{
-                bg: "gray.100",
-                color: "black",
-                borderColor: "gray.400",
-                transform: "translateY(-1px)",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)"
+                bg: 'gray.100',
+                color: 'black',
+                borderColor: 'gray.400',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
               }}
               _active={{
-                transform: "translateY(0)"
+                transform: 'translateY(0)'
               }}
               transition="all 0.2s ease"
               rightIcon={<Icon as={FaExternalLinkAlt} boxSize={3} />}
@@ -38,15 +38,15 @@ export function LinkButtonsGrid({ linkData }: { linkData: LinkData }) {
         ))}
       </Wrap>
     </Box>
-  );
+  )
 }
 
 export default function LinkButtons({ description }: { description: string }) {
-  const linkData = parseLinks(description);
+  const linkData = parseLinks(description)
 
   if (!linkData) {
-    return null;
+    return null
   }
 
-  return <LinkButtonsGrid linkData={linkData} />;
+  return <LinkButtonsGrid linkData={linkData} />
 }

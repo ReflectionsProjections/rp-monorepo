@@ -9,59 +9,59 @@ import {
   Flex,
   ModalHeader,
   Switch
-} from "@chakra-ui/react";
-import type { Meeting } from "@app";
-import React from "react";
-import { QRCode } from "react-qrcode-logo";
-import type { Moment } from "moment";
-import rpLogo from "/rp_logo.svg";
+} from '@chakra-ui/react'
+import type { Meeting } from '@app'
+import React from 'react'
+import { QRCode } from 'react-qrcode-logo'
+import type { Moment } from 'moment'
+import rpLogo from '/rp_logo.svg'
 
 type QrModalProps = {
-  meeting: Meeting;
-  startCST: Moment;
-};
+  meeting: Meeting
+  startCST: Moment
+}
 
 const QrModal: React.FC<QrModalProps> = ({ meeting, startCST }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const qrCodeRef = React.useRef<QRCode>(null);
-  const [qrCodeIsFullURL, setQrCodeIsFullURL] = React.useState(true);
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const qrCodeRef = React.useRef<QRCode>(null)
+  const [qrCodeIsFullURL, setQrCodeIsFullURL] = React.useState(true)
+  const toast = useToast()
 
   function copyQrCode() {
     if (!qrCodeRef.current) {
-      return;
+      return
     }
 
     const canvas = (
       qrCodeRef.current as unknown as {
-        canvasRef: { current: HTMLCanvasElement };
+        canvasRef: { current: HTMLCanvasElement }
       }
-    ).canvasRef.current;
+    ).canvasRef.current
 
     canvas.toBlob((blob) => {
       if (blob) {
         toast.promise(
-          navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]),
+          navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]),
           {
-            success: { title: "QR code copied to clipboard" },
-            error: { title: "Failed to copy QR code" },
-            loading: { title: "Copying QR code..." }
+            success: { title: 'QR code copied to clipboard' },
+            error: { title: 'Failed to copy QR code' },
+            loading: { title: 'Copying QR code...' }
           }
-        );
+        )
       }
-    }, "image/png");
+    }, 'image/png')
   }
 
   function downloadQrCode() {
     if (!qrCodeRef.current) {
-      return;
+      return
     }
 
     qrCodeRef.current.download(
-      "png",
-      `QR_${qrCodeIsFullURL ? "URL" : "APP"}_ ` +
-        `${meeting.committeeType}_${startCST.format("MM/DD/YYYY")}.png`
-    );
+      'png',
+      `QR_${qrCodeIsFullURL ? 'URL' : 'APP'}_ ` +
+        `${meeting.committeeType}_${startCST.format('MM/DD/YYYY')}.png`
+    )
   }
 
   return (
@@ -73,7 +73,7 @@ const QrModal: React.FC<QrModalProps> = ({ meeting, startCST }) => {
         <ModalOverlay />
         <ModalContent alignItems="center">
           <ModalHeader>
-            {`Attendance: ${meeting.committeeType} ${startCST.format("MM/DD/YYYY")}`}
+            {`Attendance: ${meeting.committeeType} ${startCST.format('MM/DD/YYYY')}`}
           </ModalHeader>
           <QRCode
             ref={qrCodeRef}
@@ -92,14 +92,14 @@ const QrModal: React.FC<QrModalProps> = ({ meeting, startCST }) => {
             }
           />
           <Text mt="2" fontSize="small">
-            scan with {qrCodeIsFullURL ? "camera" : "R|P app"}
+            scan with {qrCodeIsFullURL ? 'camera' : 'R|P app'}
           </Text>
           <Flex mt="3" justifyContent="center" alignItems="center">
             <Text
               position="absolute"
               mr="24"
-              fontSize={!qrCodeIsFullURL ? "lg" : "unset"}
-              fontWeight={!qrCodeIsFullURL ? "bold" : "normal"}
+              fontSize={!qrCodeIsFullURL ? 'lg' : 'unset'}
+              fontWeight={!qrCodeIsFullURL ? 'bold' : 'normal'}
             >
               APP
             </Text>
@@ -111,8 +111,8 @@ const QrModal: React.FC<QrModalProps> = ({ meeting, startCST }) => {
             <Text
               position="absolute"
               ml="24"
-              fontSize={qrCodeIsFullURL ? "lg" : "unset"}
-              fontWeight={qrCodeIsFullURL ? "bold" : "normal"}
+              fontSize={qrCodeIsFullURL ? 'lg' : 'unset'}
+              fontWeight={qrCodeIsFullURL ? 'bold' : 'normal'}
             >
               URL
             </Text>
@@ -128,7 +128,7 @@ const QrModal: React.FC<QrModalProps> = ({ meeting, startCST }) => {
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default QrModal;
+export default QrModal

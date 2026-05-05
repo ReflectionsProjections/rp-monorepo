@@ -1,5 +1,5 @@
-import type { EventType } from "@app";
-import type { IconType } from "react-icons";
+import type { EventType } from '@app'
+import type { IconType } from 'react-icons'
 
 import {
   FaBriefcase,
@@ -8,7 +8,7 @@ import {
   FaMicrophone,
   FaStar,
   FaUtensils
-} from "react-icons/fa";
+} from 'react-icons/fa'
 
 export const eventIcons: Record<EventType, IconType> = {
   SPECIAL: FaStar, // star for special events
@@ -17,4 +17,4 @@ export const eventIcons: Record<EventType, IconType> = {
   PARTNERS: FaHandshake, // handshake for partners
   MEALS: FaUtensils, // utensils for meal breaks
   CHECKIN: FaCheck // checkmark for check-in
-};
+}

@@ -1,11 +1,11 @@
-import { ChakraProvider } from "@chakra-ui/react";
-import { customTheme } from "@app/theme";
-import { Routes, Route } from "react-router-dom";
-import { Home } from "./routes/Home";
+import { ChakraProvider } from '@chakra-ui/react'
+import { customTheme } from '@app/theme'
+import { Routes, Route } from 'react-router-dom'
+import { Home } from './routes/Home'
 // import { Archive } from "./routes/Archive";
 // import { FAQ } from "./routes/FAQ";
-import { Navbar } from "./components/Navbar";
-import TeamPage from "./routes/Team";
+import { Navbar } from './components/Navbar'
+import TeamPage from './routes/Team'
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Route path="team" element={<TeamPage />} />
       </Routes>
     </ChakraProvider>
-  );
+  )
 }
 
-export default App;
+export default App

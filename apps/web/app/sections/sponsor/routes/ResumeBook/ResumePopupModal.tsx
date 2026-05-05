@@ -1,4 +1,4 @@
-import { Config } from "@app/sections/sponsor/config";
+import { Config } from '@app/sections/sponsor/config'
 import {
   Box,
   Button,
@@ -19,30 +19,30 @@ import {
   Tooltip,
   useSafeLayoutEffect,
   useToast
-} from "@chakra-ui/react";
-import { api, path } from "@app";
-import axios from "axios";
-import { saveAs } from "file-saver";
-import { useState } from "react";
-import { FaTimes } from "react-icons/fa";
-import { FaDownload } from "react-icons/fa6";
-import PortfolioLinks from "../../components/PortfolioLinks";
-import type { Resume } from "./ResumeBook";
+} from '@chakra-ui/react'
+import { api, path } from '@app'
+import axios from 'axios'
+import { saveAs } from 'file-saver'
+import { useState } from 'react'
+import { FaTimes } from 'react-icons/fa'
+import { FaDownload } from 'react-icons/fa6'
+import PortfolioLinks from '../../components/PortfolioLinks'
+import type { Resume } from './ResumeBook'
 
-import React from "react";
+import React from 'react'
 
 interface StudyInfoProps {
-  degree?: string;
-  graduationYear?: string | null;
-  majors: string[];
-  minors: string[];
+  degree?: string
+  graduationYear?: string | null
+  majors: string[]
+  minors: string[]
 }
 
 const Separator = () => (
   <Text as="span" fontSize="md" color="gray.400">
-    {" | "}
+    {' | '}
   </Text>
-);
+)
 
 export const StudyInfo: React.FC<StudyInfoProps> = ({
   degree,
@@ -50,39 +50,39 @@ export const StudyInfo: React.FC<StudyInfoProps> = ({
   majors,
   minors
 }) => {
-  const hasBoth = majors.length > 0 && minors.length > 0;
+  const hasBoth = majors.length > 0 && minors.length > 0
 
-  const nodes: React.ReactNode[] = [];
+  const nodes: React.ReactNode[] = []
   majors.forEach((m, i) => {
     nodes.push(
       <Text as="span" key={`maj-${i}`} fontSize="md" color="gray.600">
         {m}
         <Text as="span" fontSize="sm" color="gray.500">
-          {" (Major)"}
+          {' (Major)'}
         </Text>
       </Text>
-    );
-    if (i < majors.length - 1) nodes.push(", ");
-  });
+    )
+    if (i < majors.length - 1) nodes.push(', ')
+  })
   minors.forEach((m, i) => {
     if ((majors.length > 0 && i === 0) || i > 0) {
-      nodes.push(", ");
+      nodes.push(', ')
     }
     nodes.push(
       <Text as="span" key={`min-${i}`} fontSize="md" color="gray.600">
         {m}
         <Text as="span" fontSize="sm" color="gray.500">
-          {" (Minor)"}
+          {' (Minor)'}
         </Text>
       </Text>
-    );
-  });
+    )
+  })
 
-  const firstLine: React.ReactNode[] = [];
-  if (degree) firstLine.push(degree);
-  if (graduationYear) firstLine.push(graduationYear.toString());
+  const firstLine: React.ReactNode[] = []
+  if (degree) firstLine.push(degree)
+  if (graduationYear) firstLine.push(graduationYear.toString())
   if (!hasBoth && nodes.length > 0) {
-    firstLine.push(nodes);
+    firstLine.push(nodes)
   }
 
   return (
@@ -104,19 +104,19 @@ export const StudyInfo: React.FC<StudyInfoProps> = ({
         </Text>
       )}
     </Box>
-  );
-};
+  )
+}
 
 type ResumePopupModalProps = {
-  isMediumScreen: boolean;
-  resume: Resume | null;
-  numPrevious: number;
-  numNext: number;
+  isMediumScreen: boolean
+  resume: Resume | null
+  numPrevious: number
+  numNext: number
 
-  onClose: () => void;
-  onPrevious: () => void;
-  onNext: () => void;
-};
+  onClose: () => void
+  onPrevious: () => void
+  onNext: () => void
+}
 
 const ResumePopupModal = ({
   resume,
@@ -127,93 +127,93 @@ const ResumePopupModal = ({
   numPrevious,
   numNext
 }: ResumePopupModalProps) => {
-  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-  const [resumeLoading, setResumeLoading] = useState(false);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null)
+  const [resumeLoading, setResumeLoading] = useState(false)
 
-  const toast = useToast();
+  const toast = useToast()
 
   const showToast = (message: string) => {
     toast({
       title: message,
-      status: "error",
+      status: 'error',
       duration: 9000,
       isClosable: true
-    });
-  };
+    })
+  }
 
   const handleLoadResume = () => {
-    setResumeLoading(true);
+    setResumeLoading(true)
     if (!resume) {
-      return;
+      return
     }
-    console.log("resume", resume);
+    console.log('resume', resume)
     api
-      .get(path("/s3/download/user/:userId", { userId: resume.id }))
+      .get(path('/s3/download/user/:userId', { userId: resume.id }))
       .then((response) => {
-        setResumeUrl(response.data.url);
+        setResumeUrl(response.data.url)
         setTimeout(() => {
-          setResumeLoading(false);
-        }, 1000);
+          setResumeLoading(false)
+        }, 1000)
       })
       .catch(() => {
-        showToast("Failed to open resume. Please try again later.");
-        setResumeLoading(false);
-      });
-  };
+        showToast('Failed to open resume. Please try again later.')
+        setResumeLoading(false)
+      })
+  }
 
   useSafeLayoutEffect(() => {
-    handleLoadResume();
-  }, [resume]);
+    handleLoadResume()
+  }, [resume])
 
   const handleDownloadResume = async () => {
     if (!resumeUrl || !resume) {
-      showToast("No resume available for download.");
-      return;
+      showToast('No resume available for download.')
+      return
     }
 
     try {
       // Fetch the file as a blob
       const fileResponse = await axios.get<unknown, { data: Blob }>(resumeUrl, {
-        responseType: "blob"
-      });
+        responseType: 'blob'
+      })
 
       saveAs(
         fileResponse.data,
         resume.name
           ? `${resume.name}-${resume.graduationYear}.pdf`
-          : "resume.pdf"
-      );
+          : 'resume.pdf'
+      )
     } catch (error) {
-      console.error("Download failed:", error);
-      showToast("Failed to download resume. Please try again.");
+      console.error('Download failed:', error)
+      showToast('Failed to download resume. Please try again.')
     }
-  };
+  }
 
-  const hasLinks = resume?.portfolios && resume.portfolios.length > 0;
+  const hasLinks = resume?.portfolios && resume.portfolios.length > 0
 
   return (
     <Modal isOpen={resume !== null} onClose={onClose} size="6xl">
       <ModalOverlay />
       <ModalContent
-        h={isMediumScreen ? "95dvh" : "90dvh"}
-        my={"auto"}
-        mt={isMediumScreen ? "auto" : 0}
+        h={isMediumScreen ? '95dvh' : '90dvh'}
+        my={'auto'}
+        mt={isMediumScreen ? 'auto' : 0}
       >
         {resume !== null && (
           <>
             <ModalHeader>
               <Flex
                 justifyContent="space-between"
-                alignItems={"flex-start"}
+                alignItems={'flex-start'}
                 gap={2}
                 flexDir={{
-                  base: "column",
-                  md: "row"
+                  base: 'column',
+                  md: 'row'
                 }}
               >
                 <Flex w="100%">
-                  <Flex flexDirection={"column"} w="100%">
-                    <HStack alignItems={"center"} gap={2}>
+                  <Flex flexDirection={'column'} w="100%">
+                    <HStack alignItems={'center'} gap={2}>
                       <Text fontSize="2xl" fontWeight="bold">
                         {resume.name}
                       </Text>
@@ -237,16 +237,16 @@ const ResumePopupModal = ({
                   </Flex>
                   <IconButton
                     display={{
-                      base: "flex",
-                      md: "none"
+                      base: 'flex',
+                      md: 'none'
                     }}
-                    alignItems={"center"}
-                    justifyContent={"center"}
+                    alignItems={'center'}
+                    justifyContent={'center'}
                     aria-label="Close"
                     icon={<FaTimes />}
                     onClick={onClose}
                     ml="auto"
-                    variant={"outline"}
+                    variant={'outline'}
                     colorScheme="blue"
                   />
                 </Flex>
@@ -254,8 +254,8 @@ const ResumePopupModal = ({
                   w="fit-content"
                   mt={1}
                   justifyContent={{
-                    base: "flex-start",
-                    md: "flex-end"
+                    base: 'flex-start',
+                    md: 'flex-end'
                   }}
                 >
                   {resumeLoading ? (
@@ -269,14 +269,14 @@ const ResumePopupModal = ({
                         />
                         <IconButton
                           display={{
-                            base: "none",
-                            md: "flex"
+                            base: 'none',
+                            md: 'flex'
                           }}
                           aria-label="Close Resume"
                           icon={<FaTimes />}
                           onClick={onClose}
                           ml={2}
-                          variant={"outline"}
+                          variant={'outline'}
                           colorScheme="blue"
                         />
                       </HStack>
@@ -288,14 +288,14 @@ const ResumePopupModal = ({
                           ml={hasLinks ? 1 : undefined}
                           px={hasLinks ? 2 : 4}
                           display={{
-                            base: "flex",
-                            md: "none"
+                            base: 'flex',
+                            md: 'none'
                           }}
                           onClick={() => {
-                            void handleDownloadResume();
+                            void handleDownloadResume()
                           }}
                         >
-                          {hasLinks ? <FaDownload /> : "Download Resume"}
+                          {hasLinks ? <FaDownload /> : 'Download Resume'}
                         </Button>
                       )}
                     </>
@@ -307,7 +307,7 @@ const ResumePopupModal = ({
               {resumeUrl && (
                 <Box
                   w="100%"
-                  height={resumeLoading ? "0px" : "100%"}
+                  height={resumeLoading ? '0px' : '100%'}
                   outline="2px solid"
                   outlineColor="gray.200"
                 >
@@ -316,7 +316,7 @@ const ResumePopupModal = ({
               )}
               {resumeLoading && (
                 <Skeleton
-                  height={"100%"}
+                  height={'100%'}
                   width="100%"
                   borderRadius="md"
                   startColor="gray.200"
@@ -325,10 +325,10 @@ const ResumePopupModal = ({
               )}
             </ModalBody>
             <ModalFooter
-              display={"flex"}
+              display={'flex'}
               flexDir={{
-                base: "column",
-                md: "row"
+                base: 'column',
+                md: 'row'
               }}
               pt={2}
               w="100%"
@@ -336,8 +336,8 @@ const ResumePopupModal = ({
               <Flex
                 gap={2}
                 display={{
-                  base: "none",
-                  md: "flex"
+                  base: 'none',
+                  md: 'flex'
                 }}
               >
                 {resumeUrl && (
@@ -350,7 +350,7 @@ const ResumePopupModal = ({
                     <Box
                       as="span"
                       ml={2}
-                      display={{ base: "none", md: "inline" }}
+                      display={{ base: 'none', md: 'inline' }}
                     >
                       Download Resume
                     </Box>
@@ -362,8 +362,8 @@ const ResumePopupModal = ({
               <Flex
                 gap={2}
                 justifyContent={{
-                  base: "space-between",
-                  md: "flex-end"
+                  base: 'space-between',
+                  md: 'flex-end'
                 }}
                 w="100%"
               >
@@ -374,7 +374,7 @@ const ResumePopupModal = ({
                 >
                   Previous
                   <Text
-                    fontWeight={"normal"}
+                    fontWeight={'normal'}
                     ml={2}
                     color="gray.200"
                     fontSize="sm"
@@ -390,7 +390,7 @@ const ResumePopupModal = ({
                 >
                   Next
                   <Text
-                    fontWeight={"normal"}
+                    fontWeight={'normal'}
                     ml={2}
                     color="gray.200"
                     fontSize="sm"
@@ -404,7 +404,7 @@ const ResumePopupModal = ({
         )}
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
-export default ResumePopupModal;
+export default ResumePopupModal

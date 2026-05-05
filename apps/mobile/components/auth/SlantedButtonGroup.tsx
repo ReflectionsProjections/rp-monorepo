@@ -1,11 +1,11 @@
-import React from 'react';
-import { View } from 'react-native';
-import { styled } from 'nativewind';
+import React from 'react'
+import { View } from 'react-native'
+import { styled } from 'nativewind'
 
-const StyledView = styled(View);
+const StyledView = styled(View)
 
 interface SlantedButtonGroupProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export function SlantedButtonGroup({ children }: SlantedButtonGroupProps) {
@@ -13,5 +13,5 @@ export function SlantedButtonGroup({ children }: SlantedButtonGroupProps) {
     <StyledView className="-skew-x-12 rounded-md overflow-hidden my-2 items-center justify-center gap-1">
       {children}
     </StyledView>
-  );
+  )
 }

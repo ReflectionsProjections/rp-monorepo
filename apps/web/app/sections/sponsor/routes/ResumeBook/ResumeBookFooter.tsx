@@ -1,6 +1,6 @@
-import { Box, Button, Flex, HStack, Input, Text } from "@chakra-ui/react";
-import type { Resume } from "./ResumeBook";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { Box, Button, Flex, HStack, Input, Text } from '@chakra-ui/react'
+import type { Resume } from './ResumeBook'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
 export function ResumeBookFooter({
   startIndex,
@@ -14,23 +14,23 @@ export function ResumeBookFooter({
   handleNext,
   handlePrevious
 }: {
-  startIndex: number;
-  endIndex: number;
-  allFilteredResumes: Resume[];
-  filteredResumes: Resume[];
-  page: number;
-  pageSize: number;
-  displayedPage: string;
-  handlePageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNext: () => void;
-  handlePrevious: () => void;
+  startIndex: number
+  endIndex: number
+  allFilteredResumes: Resume[]
+  filteredResumes: Resume[]
+  page: number
+  pageSize: number
+  displayedPage: string
+  handlePageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleNext: () => void
+  handlePrevious: () => void
 }) {
   return (
     <Flex bg="gray.200" px={3} py={3} align="center" w="100%">
       <Box
-        display={{ base: "none", md: "block" }}
+        display={{ base: 'none', md: 'block' }}
         flex={1}
-        textAlign={{ base: "center", md: "left" }}
+        textAlign={{ base: 'center', md: 'left' }}
         mb={{ base: 2, md: 0 }}
       >
         <Text fontSize="md" whiteSpace="nowrap">
@@ -43,8 +43,8 @@ export function ResumeBookFooter({
         textAlign="center"
         mb={{ base: 2, md: 0 }}
         display={{
-          base: "none",
-          md: "block"
+          base: 'none',
+          md: 'block'
         }}
       >
         <Text fontSize="sm" color="gray.500">
@@ -55,12 +55,12 @@ export function ResumeBookFooter({
       {filteredResumes.length > 0 && (
         <Box
           flex={1}
-          textAlign={{ base: "center", md: "right" }}
-          display={"flex"}
+          textAlign={{ base: 'center', md: 'right' }}
+          display={'flex'}
           gap={3}
-          flexDir={{ base: "row-reverse", md: "row" }}
+          flexDir={{ base: 'row-reverse', md: 'row' }}
         >
-          <HStack flex={1} spacing={{ base: 2, md: 4 }} justify={"flex-end"}>
+          <HStack flex={1} spacing={{ base: 2, md: 4 }} justify={'flex-end'}>
             <Button
               onClick={handlePrevious}
               isDisabled={page === 1}
@@ -71,7 +71,7 @@ export function ResumeBookFooter({
               Previous
             </Button>
 
-            <HStack spacing={2} display={{ base: "none", md: "flex" }}>
+            <HStack spacing={2} display={{ base: 'none', md: 'flex' }}>
               <Input
                 value={displayedPage}
                 onChange={handlePageChange}
@@ -82,7 +82,7 @@ export function ResumeBookFooter({
                 bg="white"
                 px={1}
               />
-              <Text fontSize="md" whiteSpace={"nowrap"}>
+              <Text fontSize="md" whiteSpace={'nowrap'}>
                 / {pageSize}
               </Text>
             </HStack>
@@ -100,7 +100,7 @@ export function ResumeBookFooter({
 
           <HStack
             spacing={2}
-            display={{ base: "flex", md: "none" }}
+            display={{ base: 'flex', md: 'none' }}
             justify="center"
           >
             <Input
@@ -118,5 +118,5 @@ export function ResumeBookFooter({
         </Box>
       )}
     </Flex>
-  );
+  )
 }

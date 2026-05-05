@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from 'react'
 import {
   Box,
   Text,
@@ -29,229 +29,224 @@ import {
   Spinner,
   Center,
   useToast
-} from "@chakra-ui/react";
-import {
-  AddIcon,
-  EditIcon,
-  DragHandleIcon,
-  DeleteIcon
-} from "@chakra-ui/icons";
-import moment from "moment-timezone";
-import { useOutletContext } from "react-router-dom";
-import type { MainContext } from "../Main.tsx";
-import type { Shift, Staff, ShiftAssignment, ShiftRoleType, Event } from "@app";
-import { usePolling, api } from "@app";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import ShiftForm from "../../components/Shifts/ShiftForm";
-import ShiftAssignmentModal from "../../components/Shifts/ShiftAssignmentModal";
+} from '@chakra-ui/react'
+import { AddIcon, EditIcon, DragHandleIcon, DeleteIcon } from '@chakra-ui/icons'
+import moment from 'moment-timezone'
+import { useOutletContext } from 'react-router-dom'
+import type { MainContext } from '../Main.tsx'
+import type { Shift, Staff, ShiftAssignment, ShiftRoleType, Event } from '@app'
+import { usePolling, api } from '@app'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import ShiftForm from '../../components/Shifts/ShiftForm'
+import ShiftAssignmentModal from '../../components/Shifts/ShiftAssignmentModal'
 
 // Set timezone to Chicago (Central Time)
-moment.tz.setDefault("America/Chicago");
+moment.tz.setDefault('America/Chicago')
 
 type CalendarShift = Shift & {
-  startSlot: number;
-  endSlot: number;
-  rowSpan: number;
-  column: number;
-  assignments: (Staff & { acknowledged: boolean })[];
-};
+  startSlot: number
+  endSlot: number
+  rowSpan: number
+  column: number
+  assignments: (Staff & { acknowledged: boolean })[]
+}
 
 type CalendarEvent = Event & {
-  startSlot: number;
-  endSlot: number;
-  rowSpan: number;
-  column: number;
-};
+  startSlot: number
+  endSlot: number
+  rowSpan: number
+  column: number
+}
 
 const Shifts: React.FC = () => {
-  const { authorized } = useOutletContext<MainContext>();
-  const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
+  const { authorized } = useOutletContext<MainContext>()
+  const [selectedShift, setSelectedShift] = useState<Shift | null>(null)
   const {
     isOpen: isFormOpen,
     onOpen: onFormOpen,
     onClose: onFormClose
-  } = useDisclosure();
+  } = useDisclosure()
   const {
     isOpen: isAssignmentOpen,
     onOpen: onAssignmentOpen,
     onClose: onAssignmentClose
-  } = useDisclosure();
-  const mirrorStyles = useMirrorStyles();
-  const toast = useToast();
+  } = useDisclosure()
+  const mirrorStyles = useMirrorStyles()
+  const toast = useToast()
 
   const {
     data: shifts,
     isLoading: shiftsLoading,
     update: updateShifts
-  } = usePolling("/shifts", authorized);
+  } = usePolling('/shifts', authorized)
 
   const {
     data: assignments,
     isLoading: assignmentsLoading,
     update: updateAssignments
-  } = usePolling("/shifts/assignments", authorized);
+  } = usePolling('/shifts/assignments', authorized)
 
   const { data: staff, isLoading: staffLoading } = usePolling(
-    "/staff",
+    '/staff',
     authorized
-  );
+  )
 
   const { data: events, isLoading: eventsLoading } = usePolling(
-    "/events",
+    '/events',
     authorized
-  );
+  )
 
-  const borderColor = useColorModeValue("gray.200", "gray.600");
-  const hoverBg = useColorModeValue("gray.50", "gray.700");
-  const timeSlotColor = useColorModeValue("gray.600", "gray.300");
-  const TIME_SLOT_HEIGHT = 50;
-  const ROW_SPACING = 4;
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
+  const timeSlotColor = useColorModeValue('gray.600', 'gray.300')
+  const TIME_SLOT_HEIGHT = 50
+  const ROW_SPACING = 4
 
   // Pre-calculate shift colors for different shift types
   const shiftColors = {
     CLEAN_UP: {
-      bg: useColorModeValue("red.50", "red.900"),
-      border: useColorModeValue("red.200", "red.700"),
-      color: "red"
+      bg: useColorModeValue('red.50', 'red.900'),
+      border: useColorModeValue('red.200', 'red.700'),
+      color: 'red'
     },
     DINNER: {
-      bg: useColorModeValue("orange.50", "orange.900"),
-      border: useColorModeValue("orange.200", "orange.700"),
-      color: "orange"
+      bg: useColorModeValue('orange.50', 'orange.900'),
+      border: useColorModeValue('orange.200', 'orange.700'),
+      color: 'orange'
     },
     CHECK_IN: {
-      bg: useColorModeValue("blue.50", "blue.900"),
-      border: useColorModeValue("blue.200", "blue.700"),
-      color: "blue"
+      bg: useColorModeValue('blue.50', 'blue.900'),
+      border: useColorModeValue('blue.200', 'blue.700'),
+      color: 'blue'
     },
     SPEAKER_BUDDY: {
-      bg: useColorModeValue("purple.50", "purple.900"),
-      border: useColorModeValue("purple.200", "purple.700"),
-      color: "purple"
+      bg: useColorModeValue('purple.50', 'purple.900'),
+      border: useColorModeValue('purple.200', 'purple.700'),
+      color: 'purple'
     },
     SPONSOR_BUDDY: {
-      bg: useColorModeValue("pink.50", "pink.900"),
-      border: useColorModeValue("pink.200", "pink.700"),
-      color: "pink"
+      bg: useColorModeValue('pink.50', 'pink.900'),
+      border: useColorModeValue('pink.200', 'pink.700'),
+      color: 'pink'
     },
     DEV_ON_CALL: {
-      bg: useColorModeValue("green.50", "green.900"),
-      border: useColorModeValue("green.200", "green.700"),
-      color: "green"
+      bg: useColorModeValue('green.50', 'green.900'),
+      border: useColorModeValue('green.200', 'green.700'),
+      color: 'green'
     },
     CHAIR_ON_CALL: {
-      bg: useColorModeValue("yellow.50", "yellow.900"),
-      border: useColorModeValue("yellow.200", "yellow.700"),
-      color: "yellow"
+      bg: useColorModeValue('yellow.50', 'yellow.900'),
+      border: useColorModeValue('yellow.200', 'yellow.700'),
+      color: 'yellow'
     }
-  };
+  }
 
   // Pre-calculate event colors for different event types (transparent background)
   const eventColors = {
     SPEAKER: {
-      bg: useColorModeValue("blue.100", "blue.800"),
-      border: useColorModeValue("blue.300", "blue.600"),
-      color: "blue"
+      bg: useColorModeValue('blue.100', 'blue.800'),
+      border: useColorModeValue('blue.300', 'blue.600'),
+      color: 'blue'
     },
     CORPORATE: {
-      bg: useColorModeValue("green.100", "green.800"),
-      border: useColorModeValue("green.300", "green.600"),
-      color: "green"
+      bg: useColorModeValue('green.100', 'green.800'),
+      border: useColorModeValue('green.300', 'green.600'),
+      color: 'green'
     },
     SPECIAL: {
-      bg: useColorModeValue("purple.100", "purple.800"),
-      border: useColorModeValue("purple.300", "purple.600"),
-      color: "purple"
+      bg: useColorModeValue('purple.100', 'purple.800'),
+      border: useColorModeValue('purple.300', 'purple.600'),
+      color: 'purple'
     },
     PARTNERS: {
-      bg: useColorModeValue("orange.100", "orange.800"),
-      border: useColorModeValue("orange.300", "orange.600"),
-      color: "orange"
+      bg: useColorModeValue('orange.100', 'orange.800'),
+      border: useColorModeValue('orange.300', 'orange.600'),
+      color: 'orange'
     },
     MEALS: {
-      bg: useColorModeValue("yellow.100", "yellow.800"),
-      border: useColorModeValue("yellow.300", "yellow.600"),
-      color: "yellow"
+      bg: useColorModeValue('yellow.100', 'yellow.800'),
+      border: useColorModeValue('yellow.300', 'yellow.600'),
+      color: 'yellow'
     },
     CHECKIN: {
-      bg: useColorModeValue("teal.100", "teal.800"),
-      border: useColorModeValue("teal.300", "teal.600"),
-      color: "teal"
+      bg: useColorModeValue('teal.100', 'teal.800'),
+      border: useColorModeValue('teal.300', 'teal.600'),
+      color: 'teal'
     }
-  };
+  }
 
   // Generate time slots from 8 AM to 11 PM (half-hour intervals)
   const timeSlots = useMemo(() => {
-    const slots = [];
+    const slots = []
     for (let hour = 8; hour <= 23; hour++) {
       // Add full hour slot
-      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      slots.push(`${hour.toString().padStart(2, '0')}:00`)
       // Add half-hour slot (except for the last hour)
       if (hour < 23) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
+        slots.push(`${hour.toString().padStart(2, '0')}:30`)
       }
     }
-    return slots;
-  }, []);
+    return slots
+  }, [])
 
   // Get unique dates from shifts and events
   const dates = useMemo(() => {
-    const allDates = new Set<string>();
+    const allDates = new Set<string>()
 
     if (shifts) {
       shifts.forEach((shift: Shift) => {
         allDates.add(
-          moment.tz(shift.startTime, "America/Chicago").format("YYYY-MM-DD")
-        );
-      });
+          moment.tz(shift.startTime, 'America/Chicago').format('YYYY-MM-DD')
+        )
+      })
     }
 
     if (events) {
       events.forEach((event: Event) => {
         allDates.add(
-          moment.tz(event.startTime, "America/Chicago").format("YYYY-MM-DD")
-        );
-      });
+          moment.tz(event.startTime, 'America/Chicago').format('YYYY-MM-DD')
+        )
+      })
     }
 
-    const uniqueDates = Array.from(allDates).sort();
+    const uniqueDates = Array.from(allDates).sort()
 
     return uniqueDates.map((date) => ({
       key: date,
-      moment: moment.tz(date, "America/Chicago"),
-      display: moment.tz(date, "America/Chicago").format("ddd, MMM D")
-    }));
-  }, [shifts, events]);
+      moment: moment.tz(date, 'America/Chicago'),
+      display: moment.tz(date, 'America/Chicago').format('ddd, MMM D')
+    }))
+  }, [shifts, events])
 
   // Process shifts to calculate time slots and handle overlaps
   const processedShifts = useMemo(() => {
-    if (!shifts || !staff || !assignments) return {};
+    if (!shifts || !staff || !assignments) return {}
 
-    const processed: { [dateKey: string]: CalendarShift[] } = {};
+    const processed: { [dateKey: string]: CalendarShift[] } = {}
 
     dates.forEach((date) => {
       const dateShifts = shifts.filter(
         (shift: Shift) =>
-          moment.tz(shift.startTime, "America/Chicago").format("YYYY-MM-DD") ===
+          moment.tz(shift.startTime, 'America/Chicago').format('YYYY-MM-DD') ===
           date.key
-      );
+      )
 
       // Calculate time slots for each shift and add assignments
       const calendarShifts: CalendarShift[] = dateShifts.map((shift: Shift) => {
-        const startMoment = moment.tz(shift.startTime, "America/Chicago");
-        const endMoment = moment.tz(shift.endTime, "America/Chicago");
+        const startMoment = moment.tz(shift.startTime, 'America/Chicago')
+        const endMoment = moment.tz(shift.endTime, 'America/Chicago')
 
         let startSlot =
-          (startMoment.hour() - 8) * 2 + Math.floor(startMoment.minute() / 30);
+          (startMoment.hour() - 8) * 2 + Math.floor(startMoment.minute() / 30)
         let endSlot =
-          (endMoment.hour() - 8) * 2 + Math.floor(endMoment.minute() / 30);
+          (endMoment.hour() - 8) * 2 + Math.floor(endMoment.minute() / 30)
 
         // Handle shifts that start before 8 AM or end after 11 PM
-        if (startSlot < 0) startSlot = 0;
-        if (endSlot > 30) endSlot = 30; // 15 hours * 2 slots per hour = 30 slots
+        if (startSlot < 0) startSlot = 0
+        if (endSlot > 30) endSlot = 30 // 15 hours * 2 slots per hour = 30 slots
 
         // Calculate row span based on actual duration
-        const rowSpan = Math.max(1, endSlot - startSlot);
+        const rowSpan = Math.max(1, endSlot - startSlot)
 
         // Get assignments for this shift with acknowledgment status
         const shiftAssignments = assignments
@@ -262,12 +257,12 @@ const Shifts: React.FC = () => {
           .map((assignment: ShiftAssignment) => {
             const staffMember = staff.find(
               (s: Staff) => s.email === assignment.staffEmail
-            );
+            )
             return staffMember
               ? { ...staffMember, acknowledged: assignment.acknowledged }
-              : null;
+              : null
           })
-          .filter(Boolean) as (Staff & { acknowledged: boolean })[];
+          .filter(Boolean) as (Staff & { acknowledged: boolean })[]
 
         return {
           ...shift,
@@ -276,21 +271,21 @@ const Shifts: React.FC = () => {
           rowSpan,
           column: 0, // Will be calculated for overlap handling
           assignments: shiftAssignments
-        };
-      });
+        }
+      })
 
       // Sort shifts by start time
-      calendarShifts.sort((a, b) => a.startSlot - b.startSlot);
+      calendarShifts.sort((a, b) => a.startSlot - b.startSlot)
 
       // Handle overlapping shifts by assigning columns
-      const columns: CalendarShift[][] = [];
+      const columns: CalendarShift[][] = []
 
       calendarShifts.forEach((shift) => {
-        let columnIndex = 0;
+        let columnIndex = 0
 
         // Find the first column where this shift doesn't overlap
         while (columnIndex < columns.length) {
-          const column = columns[columnIndex];
+          const column = columns[columnIndex]
           const hasOverlap = column.some(
             (existingShift) =>
               // Shifts overlap if they share any time period
@@ -298,58 +293,58 @@ const Shifts: React.FC = () => {
                 shift.endSlot <= existingShift.startSlot ||
                 shift.startSlot >= existingShift.endSlot
               )
-          );
+          )
 
-          if (!hasOverlap) break;
-          columnIndex++;
+          if (!hasOverlap) break
+          columnIndex++
         }
 
         // Add to existing column or create new one
         if (columnIndex < columns.length) {
-          columns[columnIndex].push(shift);
+          columns[columnIndex].push(shift)
         } else {
-          columns.push([shift]);
+          columns.push([shift])
         }
 
-        shift.column = columnIndex;
-      });
+        shift.column = columnIndex
+      })
 
-      processed[date.key] = calendarShifts;
-    });
+      processed[date.key] = calendarShifts
+    })
 
-    return processed;
-  }, [shifts, staff, dates, assignments]);
+    return processed
+  }, [shifts, staff, dates, assignments])
 
   // Process events to calculate time slots and handle overlaps
   const processedEvents = useMemo(() => {
-    if (!events) return {};
+    if (!events) return {}
 
-    const processed: { [dateKey: string]: CalendarEvent[] } = {};
+    const processed: { [dateKey: string]: CalendarEvent[] } = {}
 
     dates.forEach((date) => {
       const dateEvents = events.filter(
         (event: Event) =>
-          moment.tz(event.startTime, "America/Chicago").format("YYYY-MM-DD") ===
+          moment.tz(event.startTime, 'America/Chicago').format('YYYY-MM-DD') ===
           date.key
-      );
+      )
 
       // Calculate time slots for each event
       const calendarEvents: CalendarEvent[] = dateEvents.map((event: Event) => {
-        const startMoment = moment.tz(event.startTime, "America/Chicago");
-        const endMoment = moment.tz(event.endTime, "America/Chicago");
+        const startMoment = moment.tz(event.startTime, 'America/Chicago')
+        const endMoment = moment.tz(event.endTime, 'America/Chicago')
 
         // Calculate time slots with half-hour precision
         let startSlot =
-          (startMoment.hour() - 8) * 2 + Math.floor(startMoment.minute() / 30);
+          (startMoment.hour() - 8) * 2 + Math.floor(startMoment.minute() / 30)
         let endSlot =
-          (endMoment.hour() - 8) * 2 + Math.floor(endMoment.minute() / 30);
+          (endMoment.hour() - 8) * 2 + Math.floor(endMoment.minute() / 30)
 
         // Handle events that start before 8 AM or end after 11 PM
-        if (startSlot < 0) startSlot = 0;
-        if (endSlot > 30) endSlot = 30;
+        if (startSlot < 0) startSlot = 0
+        if (endSlot > 30) endSlot = 30
 
         // Calculate row span based on actual duration
-        const rowSpan = Math.max(1, endSlot - startSlot);
+        const rowSpan = Math.max(1, endSlot - startSlot)
 
         return {
           ...event,
@@ -357,70 +352,70 @@ const Shifts: React.FC = () => {
           endSlot,
           rowSpan,
           column: 0 // Events will be in background, so no overlap handling needed
-        };
-      });
+        }
+      })
 
-      processed[date.key] = calendarEvents;
-    });
+      processed[date.key] = calendarEvents
+    })
 
-    return processed;
-  }, [events, dates]);
+    return processed
+  }, [events, dates])
 
   const handleShiftClick = (shift: CalendarShift) => {
-    setSelectedShift(shift);
-    onAssignmentOpen();
-  };
+    setSelectedShift(shift)
+    onAssignmentOpen()
+  }
 
   const handleCreateShift = () => {
-    setSelectedShift(null);
-    onFormOpen();
-  };
+    setSelectedShift(null)
+    onFormOpen()
+  }
 
   const handleEditShift = (shift: CalendarShift) => {
-    setSelectedShift(shift);
-    onFormOpen();
-  };
+    setSelectedShift(shift)
+    onFormOpen()
+  }
 
   const getShiftColor = (role: ShiftRoleType) => {
-    return shiftColors[role]?.color || "gray";
-  };
+    return shiftColors[role]?.color || 'gray'
+  }
 
   const formatTime = (time: string) => {
-    return moment.tz(time, "America/Chicago").format("h:mm A");
-  };
+    return moment.tz(time, 'America/Chicago').format('h:mm A')
+  }
 
   const handleAssignmentUpdate = () => {
     // Refresh both shifts and assignments
-    updateShifts();
-    updateAssignments();
-  };
+    updateShifts()
+    updateAssignments()
+  }
 
   const handleShiftUpdate = () => {
-    updateShifts();
-    onFormClose();
-  };
+    updateShifts()
+    onFormClose()
+  }
 
   const handleDeleteShift = async (shift: CalendarShift) => {
     try {
-      await api.delete(`/shifts/${shift.shiftId}` as "/shifts/:shiftId");
+      await api.delete(`/shifts/${shift.shiftId}` as '/shifts/:shiftId')
       toast({
-        title: "Shift deleted successfully",
-        status: "success",
+        title: 'Shift deleted successfully',
+        status: 'success',
         duration: 3000,
         isClosable: true
-      });
-      updateShifts();
+      })
+      updateShifts()
     } catch (error) {
-      console.error("Error deleting shift:", error);
+      console.error('Error deleting shift:', error)
       toast({
-        title: "Error deleting shift",
-        description: "Please try again",
-        status: "error",
+        title: 'Error deleting shift',
+        description: 'Please try again',
+        status: 'error',
         duration: 5000,
         isClosable: true
-      });
+      })
     }
-  };
+  }
 
   if (shiftsLoading || staffLoading || assignmentsLoading || eventsLoading) {
     return (
@@ -430,7 +425,7 @@ const Shifts: React.FC = () => {
           <Text>Loading shifts...</Text>
         </VStack>
       </Center>
-    );
+    )
   }
 
   return (
@@ -453,7 +448,7 @@ const Shifts: React.FC = () => {
                       {date.display}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      {date.moment.format("MMM D")}
+                      {date.moment.format('MMM D')}
                     </Text>
                   </VStack>
                 </Th>
@@ -475,21 +470,21 @@ const Shifts: React.FC = () => {
                   position="relative"
                 >
                   <Box>
-                    {moment(timeSlot, "HH:mm").format("h:mm")}
+                    {moment(timeSlot, 'HH:mm').format('h:mm')}
                     <Text as="span" fontSize="xs" color="gray.500" ml="1px">
-                      {moment(timeSlot, "HH:mm").format("A")}
+                      {moment(timeSlot, 'HH:mm').format('A')}
                     </Text>
                   </Box>
                 </Td>
                 {dates.map((date) => {
-                  const dateShifts = processedShifts[date.key] || [];
-                  const dateEvents = processedEvents[date.key] || [];
+                  const dateShifts = processedShifts[date.key] || []
+                  const dateEvents = processedEvents[date.key] || []
                   const shiftsInThisSlot = dateShifts.filter(
                     (shift) => shift.startSlot === slotIndex
-                  );
+                  )
                   const eventsInThisSlot = dateEvents.filter(
                     (event) => event.startSlot === slotIndex
-                  );
+                  )
 
                   return (
                     <Td
@@ -556,8 +551,8 @@ const Shifts: React.FC = () => {
                           borderColor={shiftColors[shift.role].border}
                           _hover={{
                             bg: hoverBg,
-                            transform: "scale(1.02)",
-                            boxShadow: "md",
+                            transform: 'scale(1.02)',
+                            boxShadow: 'md',
                             zIndex: 10
                           }}
                           onClick={() => handleShiftClick(shift)}
@@ -601,7 +596,7 @@ const Shifts: React.FC = () => {
                                 flexShrink={0}
                                 noOfLines={1}
                               >
-                                {shift.role.replace("_", " ")}
+                                {shift.role.replace('_', ' ')}
                               </Badge>
                               {shift.location && (
                                 <Badge
@@ -621,7 +616,7 @@ const Shifts: React.FC = () => {
                               noOfLines={1}
                               lineHeight="1.2"
                             >
-                              {formatTime(shift.startTime)} -{" "}
+                              {formatTime(shift.startTime)} -{' '}
                               {formatTime(shift.endTime)}
                             </Text>
 
@@ -632,7 +627,7 @@ const Shifts: React.FC = () => {
                                   {shift.assignments.map((staff) => (
                                     <Tooltip
                                       key={staff.email}
-                                      label={`${staff.name} (${staff.team}) - ${staff.acknowledged ? "Acknowledged" : "Pending"}`}
+                                      label={`${staff.name} (${staff.team}) - ${staff.acknowledged ? 'Acknowledged' : 'Pending'}`}
                                       placement="top"
                                     >
                                       <Box position="relative">
@@ -651,8 +646,8 @@ const Shifts: React.FC = () => {
                                           size="xs"
                                           colorScheme={
                                             staff.acknowledged
-                                              ? "green"
-                                              : "orange"
+                                              ? 'green'
+                                              : 'orange'
                                           }
                                           borderRadius="full"
                                           minW="12px"
@@ -662,7 +657,7 @@ const Shifts: React.FC = () => {
                                           alignItems="center"
                                           justifyContent="center"
                                         >
-                                          {staff.acknowledged ? "✓" : "!"}
+                                          {staff.acknowledged ? '✓' : '!'}
                                         </Badge>
                                       </Box>
                                     </Tooltip>
@@ -681,8 +676,8 @@ const Shifts: React.FC = () => {
                                   variant="solid"
                                   colorScheme="blue"
                                   onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditShift(shift);
+                                    e.stopPropagation()
+                                    handleEditShift(shift)
                                   }}
                                 />
                               </Tooltip>
@@ -693,8 +688,8 @@ const Shifts: React.FC = () => {
                                   size="xs"
                                   variant="ghost"
                                   onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleShiftClick(shift);
+                                    e.stopPropagation()
+                                    handleShiftClick(shift)
                                   }}
                                 />
                               </Tooltip>
@@ -706,8 +701,8 @@ const Shifts: React.FC = () => {
                                   variant="ghost"
                                   colorScheme="red"
                                   onClick={(e) => {
-                                    e.stopPropagation();
-                                    void handleDeleteShift(shift);
+                                    e.stopPropagation()
+                                    void handleDeleteShift(shift)
                                   }}
                                 />
                               </Tooltip>
@@ -716,7 +711,7 @@ const Shifts: React.FC = () => {
                         </Box>
                       ))}
                     </Td>
-                  );
+                  )
                 })}
               </Tr>
             ))}
@@ -729,7 +724,7 @@ const Shifts: React.FC = () => {
         <ModalOverlay />
         <ModalContent sx={mirrorStyles} color="white">
           <ModalHeader color="white">
-            {selectedShift ? "Edit Shift" : "Create New Shift"}
+            {selectedShift ? 'Edit Shift' : 'Create New Shift'}
           </ModalHeader>
           <ModalCloseButton color="white" />
           <ModalBody pb={6} color="white">
@@ -750,7 +745,7 @@ const Shifts: React.FC = () => {
           <ModalHeader color="white">
             {selectedShift
               ? `Assign Staff to ${selectedShift.name}`
-              : "Shift Assignments"}
+              : 'Shift Assignments'}
           </ModalHeader>
           <ModalCloseButton color="white" />
           <ModalBody pb={6} color="white">
@@ -762,12 +757,12 @@ const Shifts: React.FC = () => {
                 onUpdate={handleAssignmentUpdate}
                 onClose={onAssignmentClose}
                 onEdit={() => {
-                  onAssignmentClose();
-                  setSelectedShift(selectedShift);
-                  onFormOpen();
+                  onAssignmentClose()
+                  setSelectedShift(selectedShift)
+                  onFormOpen()
                 }}
                 onDelete={() => {
-                  onAssignmentClose();
+                  onAssignmentClose()
                   // Create a minimal CalendarShift object for deletion
                   const calendarShift: CalendarShift = {
                     ...selectedShift,
@@ -776,8 +771,8 @@ const Shifts: React.FC = () => {
                     rowSpan: 1,
                     column: 0,
                     assignments: []
-                  };
-                  void handleDeleteShift(calendarShift);
+                  }
+                  void handleDeleteShift(calendarShift)
                 }}
               />
             )}
@@ -800,7 +795,7 @@ const Shifts: React.FC = () => {
         <AddIcon />
       </Button>
     </VStack>
-  );
-};
+  )
+}
 
-export default Shifts;
+export default Shifts

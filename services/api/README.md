@@ -30,18 +30,18 @@ From `services/api`:
 
 ## Scripts
 
-| Task | Command |
-| --- | --- |
-| Start development server | `yarn dev` |
-| Start production server | `yarn start` |
-| Run tests | `yarn test` |
-| Run tests in watch mode | `yarn test:watch` |
-| Lint code | `yarn lint` |
-| Check lint | `yarn lint:check` |
-| Format code | `yarn format` |
-| Check formatting | `yarn format:check` |
-| Build project | `yarn build` |
-| Verify | `yarn verify` |
+| Task                     | Command             |
+| ------------------------ | ------------------- |
+| Start development server | `yarn dev`          |
+| Start production server  | `yarn start`        |
+| Run tests                | `yarn test`         |
+| Run tests in watch mode  | `yarn test:watch`   |
+| Lint code                | `yarn lint`         |
+| Check lint               | `yarn lint:check`   |
+| Format code              | `yarn format`       |
+| Check formatting         | `yarn format:check` |
+| Build project            | `yarn build`        |
+| Verify                   | `yarn verify`       |
 
 ## Database Management
 

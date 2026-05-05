@@ -1,4 +1,4 @@
-import { CheckIcon, StarIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import { CheckIcon, StarIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
 import {
   Box,
   Stack,
@@ -20,48 +20,48 @@ import {
   HStack,
   FormLabel,
   Button
-} from "@chakra-ui/react";
-import React from "react";
-import type { Role, RoleObject, CommitteeType } from "@app";
-import { path, usePolling, api } from "@app";
-import { Config } from "@app/sections/admin/config";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import type { FormikHelpers } from "formik";
-import { Formik } from "formik";
-import type { RoleFormValues } from "./RoleSchema";
-import type { MainContext } from "@app/sections/admin/routes/Main";
-import { useOutletContext } from "react-router-dom";
-import type { Staff } from "@app";
+} from '@chakra-ui/react'
+import React from 'react'
+import type { Role, RoleObject, CommitteeType } from '@app'
+import { path, usePolling, api } from '@app'
+import { Config } from '@app/sections/admin/config'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import type { FormikHelpers } from 'formik'
+import { Formik } from 'formik'
+import type { RoleFormValues } from './RoleSchema'
+import type { MainContext } from '@app/sections/admin/routes/Main'
+import { useOutletContext } from 'react-router-dom'
+import type { Staff } from '@app'
 
-type RolesCardProps = Record<string, never>;
+type RolesCardProps = Record<string, never>
 
 type UserWithRoles = RoleObject & {
-  roles: Role[];
-  team?: string;
-};
+  roles: Role[]
+  team?: string
+}
 
 const RolesCard: React.FC<RolesCardProps> = () => {
-  const { authorized } = useOutletContext<MainContext>();
-  const toast = useToast();
-  const mirrorStyle = useMirrorStyles();
+  const { authorized } = useOutletContext<MainContext>()
+  const toast = useToast()
+  const mirrorStyle = useMirrorStyles()
 
   // Fetch team members (users with STAFF or ADMIN roles)
   const {
     data: teamMembers,
     update: updateTeamMembers,
     isLoading: teamLoading
-  } = usePolling("/auth/team" as const, authorized, 30000);
+  } = usePolling('/auth/team' as const, authorized, 30000)
 
   // Fetch all staff members
   const {
     data: staffMembers,
     update: updateStaffMembers,
     isLoading: staffMembersLoading
-  } = usePolling("/staff" as const, authorized, 30000);
+  } = usePolling('/staff' as const, authorized, 30000)
 
   // Combine team members and identify pending users
   const allUsers = React.useMemo((): UserWithRoles[] => {
-    const users: UserWithRoles[] = [];
+    const users: UserWithRoles[] = []
 
     // Add team members (users with STAFF or ADMIN roles)
     if (teamMembers) {
@@ -73,14 +73,14 @@ const RolesCard: React.FC<RolesCardProps> = () => {
               team: undefined // Team info will come from staff lookup
             }) as UserWithRoles
         )
-      );
+      )
     }
 
     // Create a set of emails that have roles (from team members)
-    const emailsWithRoles = new Set<string>();
+    const emailsWithRoles = new Set<string>()
     teamMembers?.forEach((user: RoleObject) => {
-      emailsWithRoles.add(user.email);
-    });
+      emailsWithRoles.add(user.email)
+    })
 
     // Add pending users (in staff table but not in team members)
     if (staffMembers) {
@@ -88,84 +88,84 @@ const RolesCard: React.FC<RolesCardProps> = () => {
         if (!emailsWithRoles.has(staff.email)) {
           // This staff member doesn't have roles yet - they're pending
           users.push({
-            userId: "", // No userId since they're not in auth system yet
+            userId: '', // No userId since they're not in auth system yet
             email: staff.email,
             displayName: staff.name,
-            roles: ["PENDING"],
+            roles: ['PENDING'],
             team: staff.team
-          } as UserWithRoles);
+          } as UserWithRoles)
         }
-      });
+      })
     }
 
     // Create a map of email to staff info for team lookup
-    const staffByEmail = new Map<string, Staff>();
+    const staffByEmail = new Map<string, Staff>()
     staffMembers?.forEach((staff: Staff) => {
-      staffByEmail.set(staff.email, staff);
-    });
+      staffByEmail.set(staff.email, staff)
+    })
 
     // Add team info to all users
     return users.map((user: UserWithRoles) => {
-      const staffInfo = staffByEmail.get(user.email);
+      const staffInfo = staffByEmail.get(user.email)
       return {
         ...user,
         team: staffInfo?.team || user.team || undefined
-      };
-    });
-  }, [teamMembers, staffMembers]);
+      }
+    })
+  }, [teamMembers, staffMembers])
 
-  const isLoading = teamLoading || staffMembersLoading;
+  const isLoading = teamLoading || staffMembersLoading
 
   const removeFromRole = (role: Role, userId: string, email?: string) => {
     // For PENDING users, delete their staff object
-    if (role === "PENDING" && email) {
+    if (role === 'PENDING' && email) {
       toast.promise(
-        api.delete(path("/staff/:EMAIL", { EMAIL: email })).then(() => {
-          void updateTeamMembers();
-          void updateStaffMembers();
+        api.delete(path('/staff/:EMAIL', { EMAIL: email })).then(() => {
+          void updateTeamMembers()
+          void updateStaffMembers()
         }),
         {
           success: {
-            title: "Pending user removed from staff"
+            title: 'Pending user removed from staff'
           },
-          error: { title: "Failed to remove pending user. Try again soon!" },
-          loading: { title: "Removing pending user..." }
+          error: { title: 'Failed to remove pending user. Try again soon!' },
+          loading: { title: 'Removing pending user...' }
         }
-      );
-      return;
+      )
+      return
     }
 
     // For regular roles, delete from auth system
     toast.promise(
-      api.delete("/auth", { data: { userId, role } }).then(() => {
-        void updateTeamMembers();
-        void updateStaffMembers();
+      api.delete('/auth', { data: { userId, role } }).then(() => {
+        void updateTeamMembers()
+        void updateStaffMembers()
       }),
       {
         success: {
           title: `User Role updated: No longer ${role} role`
         },
-        error: { title: "Failed to update user role. Try again soon!" },
-        loading: { title: "Updating user role..." }
+        error: { title: 'Failed to update user role. Try again soon!' },
+        loading: { title: 'Updating user role...' }
       }
-    );
-  };
+    )
+  }
 
   const addRole = (role: Role, userId: string) => {
     toast.promise(
-      api.put("/auth", { userId, role }).then(() => {
-        void updateTeamMembers();
-        void updateStaffMembers();
+      api.put('/auth', { userId, role }).then(() => {
+        void updateTeamMembers()
+        void updateStaffMembers()
       }),
       {
         success: {
           title: `User Role updated: Added ${role} role`
         },
-        error: { title: "Failed to add user role. Try again soon!" },
-        loading: { title: "Adding user role..." }
+        error: { title: 'Failed to add user role. Try again soon!' },
+        loading: { title: 'Adding user role...' }
       }
-    );
-  };
+    )
+  }
 
   const addToRole = async (
     values: RoleFormValues,
@@ -176,70 +176,70 @@ const RolesCard: React.FC<RolesCardProps> = () => {
         email: values.email,
         name: values.name,
         team: values.team as CommitteeType
-      };
+      }
 
-      await api.post("/staff/", staffData);
+      await api.post('/staff/', staffData)
 
       // Update all data
-      void updateTeamMembers();
-      void updateStaffMembers();
+      void updateTeamMembers()
+      void updateStaffMembers()
 
       toast({
         title: `${values.name} added as staff member`,
         description: `Added to ${values.team} team`,
-        status: "success",
+        status: 'success',
         duration: 3000,
         isClosable: true
-      });
+      })
     } catch (error) {
-      console.error("Failed to add staff member:", error);
+      console.error('Failed to add staff member:', error)
       toast({
-        title: "Failed to add staff member",
-        description: "Try again soon!",
-        status: "error",
+        title: 'Failed to add staff member',
+        description: 'Try again soon!',
+        status: 'error',
         duration: 3000,
         isClosable: true
-      });
+      })
     } finally {
-      helpers.setSubmitting(false);
+      helpers.setSubmitting(false)
     }
-  };
+  }
 
   function toTitleCase(str: string) {
     return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    })
   }
 
   const getRoleIcon = (userRole: Role) => {
     switch (userRole) {
-      case "SUPER_ADMIN":
-        return <StarIcon color="yellow.500" />;
-      case "ADMIN":
-        return <StarIcon color="red.500" />;
-      case "STAFF":
-        return <StarIcon color="blue.500" />;
+      case 'SUPER_ADMIN':
+        return <StarIcon color="yellow.500" />
+      case 'ADMIN':
+        return <StarIcon color="red.500" />
+      case 'STAFF':
+        return <StarIcon color="blue.500" />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const getRoleColor = (userRole: Role) => {
     switch (userRole) {
-      case "SUPER_ADMIN":
-        return "yellow";
-      case "ADMIN":
-        return "red";
-      case "STAFF":
-        return "blue";
-      case "CORPORATE":
-        return "green";
-      case "PUZZLEBANG":
-        return "purple";
+      case 'SUPER_ADMIN':
+        return 'yellow'
+      case 'ADMIN':
+        return 'red'
+      case 'STAFF':
+        return 'blue'
+      case 'CORPORATE':
+        return 'green'
+      case 'PUZZLEBANG':
+        return 'purple'
       default:
-        return "gray";
+        return 'gray'
     }
-  };
+  }
 
   return (
     <Card sx={mirrorStyle} overflowY="auto" maxHeight="80vh" flex={{ xl: 1 }}>
@@ -249,10 +249,10 @@ const RolesCard: React.FC<RolesCardProps> = () => {
       <CardBody>
         <Formik<RoleFormValues>
           initialValues={{
-            email: "",
-            name: "",
-            team: "",
-            roles: ["STAFF"]
+            email: '',
+            name: '',
+            team: '',
+            roles: ['STAFF']
           }}
           onSubmit={addToRole}
         >
@@ -264,7 +264,7 @@ const RolesCard: React.FC<RolesCardProps> = () => {
             errors,
             touched
           }) => (
-            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
               <VStack spacing={4} align="stretch">
                 <Flex>
                   <FormControl
@@ -373,28 +373,28 @@ const RolesCard: React.FC<RolesCardProps> = () => {
                             alignItems="center"
                             gap={1}
                             cursor={
-                              userRole === "STAFF" &&
-                              user.roles.includes("ADMIN")
-                                ? "not-allowed"
-                                : "pointer"
+                              userRole === 'STAFF' &&
+                              user.roles.includes('ADMIN')
+                                ? 'not-allowed'
+                                : 'pointer'
                             }
                             onClick={() => {
                               // Don't allow deleting STAFF if user has ADMIN role
                               if (
-                                userRole === "STAFF" &&
-                                user.roles.includes("ADMIN")
+                                userRole === 'STAFF' &&
+                                user.roles.includes('ADMIN')
                               ) {
-                                return;
+                                return
                               }
-                              if (userRole === "PENDING") {
-                                removeFromRole(userRole, "", user.email);
+                              if (userRole === 'PENDING') {
+                                removeFromRole(userRole, '', user.email)
                               } else if (user.userId) {
-                                removeFromRole(userRole, user.userId);
+                                removeFromRole(userRole, user.userId)
                               }
                             }}
                             _hover={{
                               opacity: 0.8,
-                              transform: "scale(1.05)"
+                              transform: 'scale(1.05)'
                             }}
                             transition="all 0.2s"
                             position="relative"
@@ -413,21 +413,21 @@ const RolesCard: React.FC<RolesCardProps> = () => {
                               top="50%"
                               transform="translateY(-50%)"
                               onClick={(e) => {
-                                e.stopPropagation();
-                                if (userRole === "PENDING") {
-                                  removeFromRole(userRole, "", user.email);
+                                e.stopPropagation()
+                                if (userRole === 'PENDING') {
+                                  removeFromRole(userRole, '', user.email)
                                 } else if (user.userId) {
-                                  removeFromRole(userRole, user.userId);
+                                  removeFromRole(userRole, user.userId)
                                 }
                               }}
                               isDisabled={
-                                (userRole === "STAFF" &&
-                                  user.roles.includes("ADMIN")) ||
-                                (userRole === "ADMIN" &&
-                                  user.roles.includes("SUPER_ADMIN"))
+                                (userRole === 'STAFF' &&
+                                  user.roles.includes('ADMIN')) ||
+                                (userRole === 'ADMIN' &&
+                                  user.roles.includes('SUPER_ADMIN'))
                               }
                               _hover={{
-                                bg: "red.100"
+                                bg: 'red.100'
                               }}
                             />
                           </Badge>
@@ -435,8 +435,8 @@ const RolesCard: React.FC<RolesCardProps> = () => {
 
                         {/* Add role button - only show for users with userId (logged in users) */}
                         {user.userId &&
-                          (!user.roles.includes("ADMIN") ||
-                            !user.roles.includes("SUPER_ADMIN")) && (
+                          (!user.roles.includes('ADMIN') ||
+                            !user.roles.includes('SUPER_ADMIN')) && (
                             <IconButton
                               size="xs"
                               icon={<AddIcon />}
@@ -446,18 +446,18 @@ const RolesCard: React.FC<RolesCardProps> = () => {
                               onClick={() => {
                                 // For now, just add ADMIN/SUPER_ADMIN role
                                 // Could be expanded to show a dropdown of available roles
-                                if (!user.userId) return;
+                                if (!user.userId) return
 
-                                if (!user.roles.includes("ADMIN")) {
-                                  addRole("ADMIN", user.userId);
+                                if (!user.roles.includes('ADMIN')) {
+                                  addRole('ADMIN', user.userId)
                                 } else if (
-                                  !user.roles.includes("SUPER_ADMIN")
+                                  !user.roles.includes('SUPER_ADMIN')
                                 ) {
-                                  addRole("SUPER_ADMIN", user.userId);
+                                  addRole('SUPER_ADMIN', user.userId)
                                 }
                               }}
                               _hover={{
-                                bg: "green.50"
+                                bg: 'green.50'
                               }}
                             />
                           )}
@@ -469,8 +469,8 @@ const RolesCard: React.FC<RolesCardProps> = () => {
         </Stack>
       </CardBody>
     </Card>
-  );
-};
+  )
+}
 
 const RoleCardSkeleton: React.FC = () => (
   <Flex justifyContent="space-between" alignItems="center" py={2} opacity={0.7}>
@@ -484,6 +484,6 @@ const RoleCardSkeleton: React.FC = () => (
       <Box height="32px" width="32px" bg="gray.200" borderRadius="full" />
     </Box>
   </Flex>
-);
+)
 
-export default RolesCard;
+export default RolesCard

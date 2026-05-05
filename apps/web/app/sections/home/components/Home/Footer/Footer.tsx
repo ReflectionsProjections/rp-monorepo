@@ -6,25 +6,25 @@ import {
   Link,
   Text,
   useMediaQuery
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
-import { Link as ChakraLink } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as ChakraLink } from '@chakra-ui/react'
+import { Link as RouterLink } from 'react-router-dom'
 
 const footerLinkIcons: { src: string; to: string }[] = [
   {
-    src: "linkedin_red.svg",
-    to: "https://linkedin.com/company/reflections-projections-uiuc"
+    src: 'linkedin_red.svg',
+    to: 'https://linkedin.com/company/reflections-projections-uiuc'
   },
-  { src: "instagram_red.svg", to: "https://instagram.com/uiuc_rp/" },
-  { src: "tiktok_red.svg", to: "https://www.tiktok.com/@uiuc_rp" },
-  { src: "facebook_red.svg", to: "https://facebook.com/acmrp/" },
-  { src: "github_red.svg", to: "https://github.com/ReflectionsProjections" },
-  { src: "email_red.svg", to: "mailto:contact@reflectionsprojections.org" }
-]; // there should be <= 6 of these
+  { src: 'instagram_red.svg', to: 'https://instagram.com/uiuc_rp/' },
+  { src: 'tiktok_red.svg', to: 'https://www.tiktok.com/@uiuc_rp' },
+  { src: 'facebook_red.svg', to: 'https://facebook.com/acmrp/' },
+  { src: 'github_red.svg', to: 'https://github.com/ReflectionsProjections' },
+  { src: 'email_red.svg', to: 'mailto:contact@reflectionsprojections.org' }
+] // there should be <= 6 of these
 
 export const Footer = () => {
-  const [isTiny] = useMediaQuery("(max-width: 300px)");
+  const [isTiny] = useMediaQuery('(max-width: 300px)')
 
   return (
     <Flex
@@ -37,25 +37,25 @@ export const Footer = () => {
         w="100%"
         maxW="1500px"
         alignItems="center"
-        justifyContent={{ base: "center", md: "space-between" }}
+        justifyContent={{ base: 'center', md: 'space-between' }}
         flexDir="row"
         px={6}
         py={10}
       >
         <Image
           display={{
-            base: "none",
-            md: "block"
+            base: 'none',
+            md: 'block'
           }}
           src="/site/footer/footer_car.svg"
           zIndex={2}
-          maxH={{ md: "150px", lg: "200px" }}
+          maxH={{ md: '150px', lg: '200px' }}
           transform="scaleX(-1)"
         />
         <Flex
           flexDirection="column"
           h="inherit"
-          pb={{ base: 0, md: "20px" }}
+          pb={{ base: 0, md: '20px' }}
           pr={{ base: 0, md: 10 }}
           alignItems="flex-end"
           justifyContent="center"
@@ -72,8 +72,8 @@ export const Footer = () => {
               <Link
                 key={item.src}
                 href={item.to}
-                w={isTiny ? "40px" : "60px"}
-                h={isTiny ? "40px" : "60px"}
+                w={isTiny ? '40px' : '60px'}
+                h={isTiny ? '40px' : '60px'}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -85,8 +85,8 @@ export const Footer = () => {
                   h="100%"
                   transition="transform 0.2s ease, filter 0.2s ease"
                   _hover={{
-                    transform: "scale(1.1)",
-                    filter: "brightness(0.7)"
+                    transform: 'scale(1.1)',
+                    filter: 'brightness(0.7)'
                   }}
                 />
               </Link>
@@ -95,18 +95,18 @@ export const Footer = () => {
           <ChakraLink
             as={RouterLink}
             to="/app"
-            _hover={{ textDecoration: "none" }}
+            _hover={{ textDecoration: 'none' }}
           >
             <Text
               mt={{ base: 6, lg: 12 }}
               color="blue.400"
               w="100%"
               fontFamily="Magistral"
-              fontSize={{ base: "md", md: "lg", lg: "xl" }}
-              textAlign={{ base: "center", md: "right" }}
+              fontSize={{ base: 'md', md: 'lg', lg: 'xl' }}
+              textAlign={{ base: 'center', md: 'right' }}
               _hover={{
-                color: "blue.200",
-                cursor: "pointer"
+                color: 'blue.200',
+                cursor: 'pointer'
               }}
             >
               Download the app
@@ -115,17 +115,17 @@ export const Footer = () => {
           <ChakraLink
             as={RouterLink}
             to="/profile"
-            _hover={{ textDecoration: "none" }}
+            _hover={{ textDecoration: 'none' }}
           >
             <Text
               color="blue.400"
               w="100%"
               fontFamily="Magistral"
-              fontSize={{ base: "md", md: "lg", lg: "xl" }}
-              textAlign={{ base: "center", md: "right" }}
+              fontSize={{ base: 'md', md: 'lg', lg: 'xl' }}
+              textAlign={{ base: 'center', md: 'right' }}
               _hover={{
-                color: "blue.200",
-                cursor: "pointer"
+                color: 'blue.200',
+                cursor: 'pointer'
               }}
             >
               Go to profile and QR code
@@ -135,8 +135,8 @@ export const Footer = () => {
             color="white"
             w="100%"
             fontFamily="Magistral"
-            fontSize={{ base: "md", md: "lg", lg: "xl" }}
-            textAlign={{ base: "center", md: "right" }}
+            fontSize={{ base: 'md', md: 'lg', lg: 'xl' }}
+            textAlign={{ base: 'center', md: 'right' }}
           >
             © 2025 by Reflections | Projections
           </Text>
@@ -156,7 +156,7 @@ export const Footer = () => {
         bgSize="70px 40px" // size of each checker square
       />
     </Flex>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

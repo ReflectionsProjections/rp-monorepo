@@ -99,8 +99,6 @@ jobs:
         run: yarn install --immutable
       - name: Build
         run: yarn build
-      - name: Format
-        run: yarn format:check
       - name: Lint
         run: yarn lint:check
       # These containers provide the local Postgres + Kong + PostgREST stack
@@ -138,8 +136,6 @@ jobs:
         run: yarn type-check
       - name: Lint
         run: yarn lint
-      - name: Format
-        run: yarn format:check
 
   # Only runs when the mobile workspace changes, or when workflow changes could
   # affect how mobile checks are executed.

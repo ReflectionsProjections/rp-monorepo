@@ -25,95 +25,95 @@ import {
   useDisclosure,
   useMediaQuery,
   useToast
-} from "@chakra-ui/react";
-import React, { useEffect, useMemo, useState } from "react";
-import AttendanceModal from "./AttendanceModal";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import type { AttendanceType, Meeting, Staff, CommitteeType } from "@app";
-import { path, usePolling, api } from "@app";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import type { MainContext } from "@app/sections/admin/routes/Main";
-import { useOutletContext } from "react-router-dom";
+} from '@chakra-ui/react'
+import React, { useEffect, useMemo, useState } from 'react'
+import AttendanceModal from './AttendanceModal'
+import { ChevronDownIcon } from '@chakra-ui/icons'
+import type { AttendanceType, Meeting, Staff, CommitteeType } from '@app'
+import { path, usePolling, api } from '@app'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import type { MainContext } from '@app/sections/admin/routes/Main'
+import { useOutletContext } from 'react-router-dom'
 
 type StaffStatistics = Record<
-  "ABSENT" | "PRESENT" | "EXCUSED" | "TOTAL",
+  'ABSENT' | 'PRESENT' | 'EXCUSED' | 'TOTAL',
   number
->;
+>
 
 type ParsedStaff = Staff & {
-  statistics: StaffStatistics;
-};
+  statistics: StaffStatistics
+}
 
-type ParsedMeeting = Omit<Meeting, "startTime"> & {
-  startTime: Date;
-};
+type ParsedMeeting = Omit<Meeting, 'startTime'> & {
+  startTime: Date
+}
 
 const meetingSortFunction = (
   { startTime: a }: { startTime: Date },
   { startTime: b }: { startTime: Date }
 ) => {
-  return b.getTime() - a.getTime();
-};
+  return b.getTime() - a.getTime()
+}
 
 const teamTypeToDisplayText = (team: CommitteeType) => {
   switch (team) {
-    case "FULL TEAM":
-      return "Full Team";
-    case "DESIGN":
-      return "Design";
-    case "DEV":
-      return "Dev";
-    case "CONTENT":
-      return "Content";
-    case "MARKETING":
-      return "Marketing";
-    case "CORPORATE":
-      return "Corporate";
-    case "OPERATIONS":
-      return "Operations";
+    case 'FULL TEAM':
+      return 'Full Team'
+    case 'DESIGN':
+      return 'Design'
+    case 'DEV':
+      return 'Dev'
+    case 'CONTENT':
+      return 'Content'
+    case 'MARKETING':
+      return 'Marketing'
+    case 'CORPORATE':
+      return 'Corporate'
+    case 'OPERATIONS':
+      return 'Operations'
   }
-};
+}
 
 const AttendanceBox = () => {
-  const { authorized } = useOutletContext<MainContext>();
-  const [isSmall] = useMediaQuery("(max-width: 1200px)");
+  const { authorized } = useOutletContext<MainContext>()
+  const [isSmall] = useMediaQuery('(max-width: 1200px)')
   const [selectedStaff, setSelectedStaff] = useState<Staff | undefined>(
     undefined
-  );
-  const [selectedTeam, setSelectedTeam] = useState<CommitteeType>("FULL TEAM");
-  const [updating, setUpdating] = useState(false);
+  )
+  const [selectedTeam, setSelectedTeam] = useState<CommitteeType>('FULL TEAM')
+  const [updating, setUpdating] = useState(false)
   const {
     data: staff,
     isLoading: staffLoading,
     mutate: mutateStaff
-  } = usePolling("/staff", authorized);
+  } = usePolling('/staff', authorized)
   const { data: meetings, isLoading: meetingsLoading } = usePolling(
-    "/meetings",
+    '/meetings',
     authorized
-  );
-  const toast = useToast();
+  )
+  const toast = useToast()
 
-  const mirrorStyle = useMirrorStyles();
-  const mirrorStyleAnimated = useMirrorStyles(true);
+  const mirrorStyle = useMirrorStyles()
+  const mirrorStyleAnimated = useMirrorStyles(true)
 
-  const loading = staffLoading || meetingsLoading;
+  const loading = staffLoading || meetingsLoading
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleStaffSelect = (staff: Staff) => {
-    setSelectedStaff(staff);
-    onOpen();
-  };
+    setSelectedStaff(staff)
+    onOpen()
+  }
 
   const handleStaffAttendance = (
     staffEmail: string,
     meetingId: string,
     attendanceType: AttendanceType
   ) => {
-    setUpdating(true);
+    setUpdating(true)
 
     const request = api
-      .post(path("/staff/:EMAIL/attendance", { EMAIL: staffEmail }), {
+      .post(path('/staff/:EMAIL/attendance', { EMAIL: staffEmail }), {
         meetingId,
         attendanceType
       })
@@ -123,18 +123,18 @@ const AttendanceBox = () => {
             previous?.map((member) =>
               member.email === response.data.email ? response.data : member
             ) ?? [response.data]
-        );
+        )
       })
       .finally(() => {
-        setUpdating(false);
-      });
+        setUpdating(false)
+      })
 
     toast.promise(request, {
-      success: { title: "Attendence successfully updated" },
-      error: { title: "Error updating attendance" },
-      loading: { title: "Updating attendance..." }
-    });
-  };
+      success: { title: 'Attendence successfully updated' },
+      error: { title: 'Error updating attendance' },
+      loading: { title: 'Updating attendance...' }
+    })
+  }
 
   const teamMeetings: Record<CommitteeType, ParsedMeeting[]> = useMemo(() => {
     const parsedMeetings =
@@ -143,92 +143,91 @@ const AttendanceBox = () => {
           meetingId: meeting.meetingId,
           committeeType: meeting.committeeType,
           startTime: new Date(meeting.startTime)
-        };
-      }) ?? [];
+        }
+      }) ?? []
     return {
-      "FULL TEAM": parsedMeetings
-        .filter((meeting) => meeting.committeeType === "FULL TEAM")
+      'FULL TEAM': parsedMeetings
+        .filter((meeting) => meeting.committeeType === 'FULL TEAM')
         .sort(meetingSortFunction),
       CONTENT: parsedMeetings
         .filter(
           (meeting) =>
-            meeting.committeeType === "CONTENT" ||
-            meeting.committeeType === "FULL TEAM"
+            meeting.committeeType === 'CONTENT' ||
+            meeting.committeeType === 'FULL TEAM'
         )
         .sort(meetingSortFunction),
       CORPORATE: parsedMeetings
         .filter(
           (meeting) =>
-            meeting.committeeType === "CORPORATE" ||
-            meeting.committeeType === "FULL TEAM"
+            meeting.committeeType === 'CORPORATE' ||
+            meeting.committeeType === 'FULL TEAM'
         )
         .sort(meetingSortFunction),
       DESIGN: parsedMeetings
         .filter(
           (meeting) =>
-            meeting.committeeType === "DESIGN" ||
-            meeting.committeeType === "FULL TEAM"
+            meeting.committeeType === 'DESIGN' ||
+            meeting.committeeType === 'FULL TEAM'
         )
         .sort(meetingSortFunction),
       DEV: parsedMeetings
         .filter(
           (meeting) =>
-            meeting.committeeType === "DEV" ||
-            meeting.committeeType === "FULL TEAM"
+            meeting.committeeType === 'DEV' ||
+            meeting.committeeType === 'FULL TEAM'
         )
         .sort(meetingSortFunction),
       MARKETING: parsedMeetings
         .filter(
           (meeting) =>
-            meeting.committeeType === "MARKETING" ||
-            meeting.committeeType === "FULL TEAM"
+            meeting.committeeType === 'MARKETING' ||
+            meeting.committeeType === 'FULL TEAM'
         )
         .sort(meetingSortFunction),
       OPERATIONS: parsedMeetings
         .filter(
           (meeting) =>
-            meeting.committeeType === "OPERATIONS" ||
-            meeting.committeeType === "FULL TEAM"
+            meeting.committeeType === 'OPERATIONS' ||
+            meeting.committeeType === 'FULL TEAM'
         )
         .sort(meetingSortFunction)
-    };
-  }, [meetings]);
+    }
+  }, [meetings])
 
   const staffTeams: Record<CommitteeType, ParsedStaff[]> = useMemo(() => {
     const parsedStaff =
       staff?.map((member) => {
         const statistics = Object.values(member.attendances).reduce(
           (acc, type) => {
-            acc[type ?? "ABSENT"]++;
-            acc.TOTAL++;
-            return acc;
+            acc[type ?? 'ABSENT']++
+            acc.TOTAL++
+            return acc
           },
           { ABSENT: 0, PRESENT: 0, EXCUSED: 0, TOTAL: 0 }
-        );
+        )
 
         if (statistics.TOTAL < teamMeetings[member.team].length) {
-          const difference =
-            teamMeetings[member.team].length - statistics.TOTAL;
-          statistics.ABSENT += difference;
-          statistics.TOTAL += difference;
+          const difference = teamMeetings[member.team].length - statistics.TOTAL
+          statistics.ABSENT += difference
+          statistics.TOTAL += difference
         }
 
         return {
           ...member,
           statistics
-        };
-      }) ?? [];
+        }
+      }) ?? []
 
     return {
-      "FULL TEAM": parsedStaff,
-      CONTENT: parsedStaff.filter((member) => member.team === "CONTENT"),
-      CORPORATE: parsedStaff.filter((member) => member.team === "CORPORATE"),
-      DESIGN: parsedStaff.filter((member) => member.team === "DESIGN"),
-      DEV: parsedStaff.filter((member) => member.team === "DEV"),
-      MARKETING: parsedStaff.filter((member) => member.team === "MARKETING"),
-      OPERATIONS: parsedStaff.filter((member) => member.team === "OPERATIONS")
-    };
-  }, [staff, teamMeetings]);
+      'FULL TEAM': parsedStaff,
+      CONTENT: parsedStaff.filter((member) => member.team === 'CONTENT'),
+      CORPORATE: parsedStaff.filter((member) => member.team === 'CORPORATE'),
+      DESIGN: parsedStaff.filter((member) => member.team === 'DESIGN'),
+      DEV: parsedStaff.filter((member) => member.team === 'DEV'),
+      MARKETING: parsedStaff.filter((member) => member.team === 'MARKETING'),
+      OPERATIONS: parsedStaff.filter((member) => member.team === 'OPERATIONS')
+    }
+  }, [staff, teamMeetings])
 
   return (
     <>
@@ -289,7 +288,7 @@ const AttendanceBox = () => {
           <Tabs size="lg" minW="60vw">
             <TabList justifyContent="center">
               {(Object.keys(staffTeams) as CommitteeType[]).map((team) => {
-                return <Tab key={team}>{teamTypeToDisplayText(team)}</Tab>;
+                return <Tab key={team}>{teamTypeToDisplayText(team)}</Tab>
               })}
             </TabList>
             <TabPanels>
@@ -317,35 +316,35 @@ const AttendanceBox = () => {
         </Flex>
       )}
     </>
-  );
-};
+  )
+}
 
 type AttendanceTableProps = {
-  staff: ParsedStaff[];
-  meetings: ParsedMeeting[];
-  handleStaffSelect: (staff: Staff) => void;
+  staff: ParsedStaff[]
+  meetings: ParsedMeeting[]
+  handleStaffSelect: (staff: Staff) => void
   handleStaffAttendance: (
     staffId: string,
     meetingId: string,
     attendanceType: AttendanceType
-  ) => void;
-  isSmall: boolean;
-  updating: boolean;
-};
+  ) => void
+  isSmall: boolean
+  updating: boolean
+}
 
 const attendanceTypeToDisplayText = (
   attendanceType: AttendanceType | undefined,
   isSmall: boolean
 ) => {
   switch (attendanceType) {
-    case "PRESENT":
-      return isSmall ? "🟢" : "🟢 Present";
-    case "EXCUSED":
-      return isSmall ? "🔵" : "🔵 Excused";
+    case 'PRESENT':
+      return isSmall ? '🟢' : '🟢 Present'
+    case 'EXCUSED':
+      return isSmall ? '🔵' : '🔵 Excused'
     default:
-      return isSmall ? "🔴" : "🔴 Absent";
+      return isSmall ? '🔴' : '🔴 Absent'
   }
-};
+}
 
 const AttendanceTable: React.FC<AttendanceTableProps> = ({
   staff,
@@ -355,57 +354,53 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
   isSmall,
   updating
 }) => {
-  const { authorized } = useOutletContext<MainContext>();
+  const { authorized } = useOutletContext<MainContext>()
   const [selectedMeeting, setSelectedMeeting] = useState<ParsedMeeting>(
     () => meetings[0]
-  );
-  const mirrorStyle = useMirrorStyles();
-  const mirrorStyleAnimated = useMirrorStyles(true);
+  )
+  const mirrorStyle = useMirrorStyles()
+  const mirrorStyleAnimated = useMirrorStyles(true)
 
   const SelectAttendance = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     staffEmail: string,
     attendanceType: AttendanceType
   ) => {
-    event.stopPropagation();
-    handleStaffAttendance(
-      staffEmail,
-      selectedMeeting.meetingId,
-      attendanceType
-    );
-  };
+    event.stopPropagation()
+    handleStaffAttendance(staffEmail, selectedMeeting.meetingId, attendanceType)
+  }
 
   useEffect(() => {
     if (meetings.length > 0) {
       setSelectedMeeting((prev) => {
         const stillExists =
-          prev && meetings.find((m) => m.meetingId === prev.meetingId);
-        return stillExists ? prev : meetings[0];
-      });
+          prev && meetings.find((m) => m.meetingId === prev.meetingId)
+        return stillExists ? prev : meetings[0]
+      })
     }
-  }, [meetings]);
+  }, [meetings])
 
   return (
-    <TableContainer minW={isSmall ? "auto" : "lg"} maxW="100vw">
-      <Table variant="simple" size={isSmall ? "md" : "lg"}>
+    <TableContainer minW={isSmall ? 'auto' : 'lg'} maxW="100vw">
+      <Table variant="simple" size={isSmall ? 'md' : 'lg'}>
         <Thead>
           <Tr>
-            <Th minW={isSmall ? "auto" : "15vw"}>Name</Th>
+            <Th minW={isSmall ? 'auto' : '15vw'}>Name</Th>
             <Th>
               {!selectedMeeting ? (
-                "Meeting"
+                'Meeting'
               ) : (
                 <Menu>
                   <MenuButton
                     as={Button}
                     sx={mirrorStyleAnimated}
                     rightIcon={<ChevronDownIcon />}
-                    size={isSmall ? "sm" : "md"}
+                    size={isSmall ? 'sm' : 'md'}
                   >
-                    {selectedMeeting.startTime.toLocaleDateString("en-US", {
-                      timeZone: "America/Chicago",
-                      month: "2-digit",
-                      day: "2-digit"
+                    {selectedMeeting.startTime.toLocaleDateString('en-US', {
+                      timeZone: 'America/Chicago',
+                      month: '2-digit',
+                      day: '2-digit'
                     })}
                   </MenuButton>
                   <MenuList sx={mirrorStyle} maxH="40vh" overflowY="scroll">
@@ -417,10 +412,10 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                           onClick={() => setSelectedMeeting(meeting)}
                           bg="transparent"
                         >
-                          {meeting.startTime.toLocaleDateString("en-US", {
-                            timeZone: "America/Chicago",
-                            month: "2-digit",
-                            day: "2-digit"
+                          {meeting.startTime.toLocaleDateString('en-US', {
+                            timeZone: 'America/Chicago',
+                            month: '2-digit',
+                            day: '2-digit'
                           })}
                         </MenuItem>
                       </>
@@ -462,14 +457,14 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                 <Tr
                   key={index}
                   onClick={() => {
-                    if (selectedMeeting) handleStaffSelect(staffMember);
+                    if (selectedMeeting) handleStaffSelect(staffMember)
                   }}
                   cursor="pointer"
-                  _hover={{ bgColor: "#8888882d" }}
+                  _hover={{ bgColor: '#8888882d' }}
                 >
                   <Td>{staffMember.name}</Td>
                   <Td>
-                    <Menu size={isSmall ? "sm" : "md"}>
+                    <Menu size={isSmall ? 'sm' : 'md'}>
                       <MenuButton
                         as={Button}
                         sx={mirrorStyleAnimated}
@@ -488,7 +483,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                         <MenuItem
                           bg="transparent"
                           onClick={(event) =>
-                            SelectAttendance(event, staffMember.email, "ABSENT")
+                            SelectAttendance(event, staffMember.email, 'ABSENT')
                           }
                         >
                           🔴 Absent
@@ -500,7 +495,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                             SelectAttendance(
                               event,
                               staffMember.email,
-                              "PRESENT"
+                              'PRESENT'
                             )
                           }
                         >
@@ -513,7 +508,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                             SelectAttendance(
                               event,
                               staffMember.email,
-                              "EXCUSED"
+                              'EXCUSED'
                             )
                           }
                         >
@@ -532,12 +527,12 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
         </Tbody>
       </Table>
     </TableContainer>
-  );
-};
+  )
+}
 
 type AttendanceBarProps = {
-  statistics: StaffStatistics;
-};
+  statistics: StaffStatistics
+}
 
 const AttendanceBar: React.FC<AttendanceBarProps> = ({ statistics }) => {
   const {
@@ -545,15 +540,15 @@ const AttendanceBar: React.FC<AttendanceBarProps> = ({ statistics }) => {
     PRESENT: present,
     EXCUSED: excused,
     TOTAL: total
-  } = statistics;
-  const minPercent = 10;
+  } = statistics
+  const minPercent = 10
 
   const presentPercent =
-    present === 0 ? 0 : Math.max((present / total) * 100 || 0, minPercent);
+    present === 0 ? 0 : Math.max((present / total) * 100 || 0, minPercent)
   const absentPercent =
-    absent === 0 ? 0 : Math.max((absent / total) * 100 || 0, minPercent);
+    absent === 0 ? 0 : Math.max((absent / total) * 100 || 0, minPercent)
   const excusedPercent =
-    excused === 0 ? 0 : Math.max((excused / total) * 100 || 0, minPercent);
+    excused === 0 ? 0 : Math.max((excused / total) * 100 || 0, minPercent)
 
   return (
     <Flex
@@ -573,7 +568,7 @@ const AttendanceBar: React.FC<AttendanceBarProps> = ({ statistics }) => {
         <Box w={`${excusedPercent}%`} bg="blue.400" h="full" />
       </Tooltip>
     </Flex>
-  );
-};
+  )
+}
 
-export default AttendanceBox;
+export default AttendanceBox

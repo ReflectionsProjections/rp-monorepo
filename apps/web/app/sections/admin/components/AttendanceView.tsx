@@ -1,36 +1,36 @@
-import { Box, Skeleton, Text, Tooltip, VStack } from "@chakra-ui/react";
-import moment from "moment";
+import { Box, Skeleton, Text, Tooltip, VStack } from '@chakra-ui/react'
+import moment from 'moment'
 import type {
   AttendanceItem,
   StaffAttendance,
   WeekData
-} from "./useAttendanceViewHook";
+} from './useAttendanceViewHook'
 import {
   ATTENDANCE_STATUS_COLORS,
   ATTENDANCE_STATUS_COLORS_DARK,
   BOX_SIZE,
   useAttendanceViewHook
-} from "./useAttendanceViewHook";
+} from './useAttendanceViewHook'
 
-const BOX_SIZE_PX = `${BOX_SIZE}px`;
+const BOX_SIZE_PX = `${BOX_SIZE}px`
 
 const TooltipContent = ({
   committeeType,
   item
 }: {
-  committeeType: string;
-  item: AttendanceItem;
+  committeeType: string
+  item: AttendanceItem
 }) => {
   const formattedDate = item.meetingDate
-    ? moment(item.meetingDate).format("MMMM D, YYYY")
-    : "";
-  const status = item.attendanceStatus ?? "Attendance not recorded";
-  const statusColor = ATTENDANCE_STATUS_COLORS[status];
-  const darkStatusColor = ATTENDANCE_STATUS_COLORS_DARK[status];
+    ? moment(item.meetingDate).format('MMMM D, YYYY')
+    : ''
+  const status = item.attendanceStatus ?? 'Attendance not recorded'
+  const statusColor = ATTENDANCE_STATUS_COLORS[status]
+  const darkStatusColor = ATTENDANCE_STATUS_COLORS_DARK[status]
 
   // Statuses are capitalized, so we need to format them
   const capitalCasedStatus =
-    status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
 
   return (
     <VStack spacing={1} align="left" p={1}>
@@ -46,15 +46,15 @@ const TooltipContent = ({
         {capitalCasedStatus}
       </Text>
     </VStack>
-  );
-};
+  )
+}
 
 const AttendanceSubBox = ({
   item,
   committeeType
 }: {
-  item: AttendanceItem;
-  committeeType: string;
+  item: AttendanceItem
+  committeeType: string
 }) => {
   return (
     <Tooltip
@@ -64,9 +64,9 @@ const AttendanceSubBox = ({
       color="black"
       borderColor="gray.200"
       _dark={{
-        bg: "gray.700",
-        color: "white",
-        borderColor: "gray.600"
+        bg: 'gray.700',
+        color: 'white',
+        borderColor: 'gray.600'
       }}
       borderWidth="1px"
     >
@@ -76,32 +76,32 @@ const AttendanceSubBox = ({
         bgColor={
           item.attendanceStatus
             ? ATTENDANCE_STATUS_COLORS[item.attendanceStatus]
-            : "gray.500"
+            : 'gray.500'
         }
         _dark={{
           bgColor: item.attendanceStatus
             ? ATTENDANCE_STATUS_COLORS_DARK[item.attendanceStatus]
-            : "gray.300"
+            : 'gray.300'
         }}
         display="flex"
         justifyContent="space-between"
         borderRadius="sm"
       />
     </Tooltip>
-  );
-};
+  )
+}
 
 const AttendanceBox = ({
   id,
   weekData,
   committeeType
 }: {
-  id: string;
-  weekData: WeekData;
-  committeeType: string;
+  id: string
+  weekData: WeekData
+  committeeType: string
 }) => {
-  const { attendanceItems } = weekData;
-  const itemsCount = attendanceItems.length;
+  const { attendanceItems } = weekData
+  const itemsCount = attendanceItems.length
 
   return (
     <Box
@@ -211,18 +211,18 @@ const AttendanceBox = ({
         </>
       )}
     </Box>
-  );
-};
+  )
+}
 
 function AttendanceView({
   attendanceData,
   loading
 }: {
-  attendanceData: StaffAttendance[];
-  loading: boolean;
+  attendanceData: StaffAttendance[]
+  loading: boolean
 }) {
-  const attendanceViewHook = useAttendanceViewHook(attendanceData);
-  const committeeTypes = Object.keys(attendanceViewHook.weeksData);
+  const attendanceViewHook = useAttendanceViewHook(attendanceData)
+  const committeeTypes = Object.keys(attendanceViewHook.weeksData)
 
   return (
     <Skeleton isLoaded={!loading}>
@@ -233,33 +233,33 @@ function AttendanceView({
         pb={6}
         bgColor="gray.50"
         _dark={{
-          bg: "gray.800",
-          borderColor: "gray.500"
+          bg: 'gray.800',
+          borderColor: 'gray.500'
         }}
         borderColor="gray.200"
         borderWidth={1}
-        borderRadius={"10px"}
+        borderRadius={'10px'}
         display="flex"
       >
         {attendanceData.length === 0 && (
           <Text mt={2}>No attendance data available</Text>
         )}
-        <Box width={"170px"} minWidth={"170px"} pt={"28px"}>
+        <Box width={'170px'} minWidth={'170px'} pt={'28px'}>
           {committeeTypes.map((committeeType, index) => (
             <Box
               key={`meeting-type-${index}`}
               fontWeight="bold"
               h={BOX_SIZE_PX}
-              verticalAlign={"center"}
-              alignItems={"center"}
+              verticalAlign={'center'}
+              alignItems={'center'}
               display="flex"
             >
               <Text>{committeeType}</Text>
             </Box>
           ))}
         </Box>
-        <Box overflowX={"auto"} flex={1}>
-          <Box h={"28px"} display="flex" gap={0}>
+        <Box overflowX={'auto'} flex={1}>
+          <Box h={'28px'} display="flex" gap={0}>
             {committeeTypes.length > 0 &&
               attendanceViewHook.weeksData[committeeTypes[0]]?.map(
                 (item: WeekData, index: number) => (
@@ -271,7 +271,7 @@ function AttendanceView({
                   >
                     {item.isHeaderItem ? (
                       <Text
-                        fontSize={"14px"}
+                        fontSize={'14px'}
                         whiteSpace="nowrap"
                       >{`${item.weekInfo.month} ${item.weekInfo.year}`}</Text>
                     ) : (
@@ -284,9 +284,9 @@ function AttendanceView({
           <Box
             bgColor="gray.200"
             _dark={{
-              bg: "gray.600"
+              bg: 'gray.600'
             }}
-            width={"fit-content"}
+            width={'fit-content'}
           >
             {committeeTypes.map((committeeType) => (
               <Box key={committeeType} mb={0} display="flex" gap={0}>
@@ -306,7 +306,7 @@ function AttendanceView({
         </Box>
       </Box>
     </Skeleton>
-  );
+  )
 }
 
-export default AttendanceView;
+export default AttendanceView

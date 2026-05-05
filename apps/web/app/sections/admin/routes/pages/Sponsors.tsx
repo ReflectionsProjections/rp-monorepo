@@ -1,4 +1,4 @@
-import { CloseIcon, CheckIcon } from "@chakra-ui/icons";
+import { CloseIcon, CheckIcon } from '@chakra-ui/icons'
 import {
   Box,
   Stack,
@@ -12,65 +12,65 @@ import {
   FormControl,
   FormErrorMessage,
   Heading
-} from "@chakra-ui/react";
-import { api, usePolling } from "@app";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import type { FormikHelpers } from "formik";
-import { Formik } from "formik";
-import type { SponsorFormValues } from "@app/sections/admin/components/Sponsors/SponsorSchema";
+} from '@chakra-ui/react'
+import { api, usePolling } from '@app'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import type { FormikHelpers } from 'formik'
+import { Formik } from 'formik'
+import type { SponsorFormValues } from '@app/sections/admin/components/Sponsors/SponsorSchema'
 import {
   SponsorFormInitialValues,
   SponsorFormSchema
-} from "@app/sections/admin/components/Sponsors/SponsorSchema";
-import { useOutletContext } from "react-router-dom";
-import type { MainContext } from "../Main";
+} from '@app/sections/admin/components/Sponsors/SponsorSchema'
+import { useOutletContext } from 'react-router-dom'
+import type { MainContext } from '../Main'
 
 const Sponsors = () => {
-  const { authorized } = useOutletContext<MainContext>();
+  const { authorized } = useOutletContext<MainContext>()
   const {
     data: sponsors,
     update: updateSponsors,
     isLoading
-  } = usePolling("/auth/corporate", authorized);
-  const toast = useToast();
-  const mirrorStyle = useMirrorStyles();
+  } = usePolling('/auth/corporate', authorized)
+  const toast = useToast()
+  const mirrorStyle = useMirrorStyles()
 
   const removeSponsor = (email: string) => {
     toast.promise(
       api
-        .delete("/auth/corporate", { data: { email } })
+        .delete('/auth/corporate', { data: { email } })
         .then(() => updateSponsors()),
       {
         success: { title: `${email} is no longer a sponsor` },
-        error: { title: "Failed to remove sponsor. Try again soon!" },
-        loading: { title: "Removing sponsor..." }
+        error: { title: 'Failed to remove sponsor. Try again soon!' },
+        loading: { title: 'Removing sponsor...' }
       }
-    );
-  };
+    )
+  }
 
   const addSponsor = (
     values: SponsorFormValues,
     helpers: FormikHelpers<SponsorFormValues>
   ) => {
     const request = api
-      .post("/auth/corporate", {
+      .post('/auth/corporate', {
         name: values.name,
         email: values.email
       })
       .then(() => {
-        updateSponsors();
+        updateSponsors()
       })
       .finally(() => {
-        helpers.setSubmitting(false);
-      });
+        helpers.setSubmitting(false)
+      })
 
     toast.promise(request, {
       success: { title: `${values.name} is now a sponsor` },
-      error: { title: "Failed to add sponsor. Try again soon!" },
-      loading: { title: "Adding sponsor..." }
-    });
-    return request;
-  };
+      error: { title: 'Failed to add sponsor. Try again soon!' },
+      loading: { title: 'Adding sponsor...' }
+    })
+    return request
+  }
 
   return (
     <>
@@ -105,7 +105,7 @@ const Sponsors = () => {
                 errors,
                 touched
               }) => (
-                <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                   <Flex mb={4}>
                     <FormControl
                       mr={2}
@@ -162,9 +162,9 @@ const Sponsors = () => {
                         {sponsor.email}
                       </Box>
                       <IconButton
-                        size={"md"}
+                        size={'md'}
                         icon={<CloseIcon />}
-                        aria-label={"Open Menu"}
+                        aria-label={'Open Menu'}
                         onClick={() => removeSponsor(sponsor.email)}
                       />
                     </Flex>
@@ -174,8 +174,8 @@ const Sponsors = () => {
         </Card>
       </Flex>
     </>
-  );
-};
+  )
+}
 
 const SponsorCardSkeleton: React.FC = () => (
   <Flex justifyContent="space-between" alignItems="center" py={2} opacity={0.7}>
@@ -189,6 +189,6 @@ const SponsorCardSkeleton: React.FC = () => (
       <Box height="32px" width="32px" bg="gray.200" borderRadius="full" />
     </Box>
   </Flex>
-);
+)
 
-export default Sponsors;
+export default Sponsors

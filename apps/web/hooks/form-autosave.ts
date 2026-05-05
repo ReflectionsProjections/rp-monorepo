@@ -1,43 +1,43 @@
-import { useFormikContext } from "formik";
-import { useEffect } from "react";
-import { useRef } from "react";
+import { useFormikContext } from 'formik'
+import { useEffect } from 'react'
+import { useRef } from 'react'
 
 const useFormAutosave = <T>(callback: (values: T) => void) => {
-  const { values } = useFormikContext<T>();
-  const isFirstRender = useRef(true);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { values } = useFormikContext<T>()
+  const isFirstRender = useRef(true)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+      isFirstRender.current = false
+      return
     }
 
     timerRef.current = setTimeout(() => {
-      callback(values);
-      timerRef.current = null;
-    }, 10000);
+      callback(values)
+      timerRef.current = null
+    }, 10000)
 
     return () => {
       if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
+        clearTimeout(timerRef.current)
+        timerRef.current = null
       }
-    };
-  }, [values, callback]);
+    }
+  }, [values, callback])
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (timerRef.current) {
-        e.preventDefault();
+        e.preventDefault()
       }
-    };
+    }
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload)
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-};
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [])
+}
 
-export default useFormAutosave;
+export default useFormAutosave

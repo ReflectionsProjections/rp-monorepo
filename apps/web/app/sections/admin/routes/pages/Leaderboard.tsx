@@ -14,230 +14,230 @@ import {
   FormLabel,
   Box,
   VStack
-} from "@chakra-ui/react";
-import { api } from "@app";
-import type { LeaderboardUser } from "@app";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { useOutletContext } from "react-router-dom";
-import type { MainContext } from "../Main";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+} from '@chakra-ui/react'
+import { api } from '@app'
+import type { LeaderboardUser } from '@app'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { useOutletContext } from 'react-router-dom'
+import type { MainContext } from '../Main'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import LeaderboardView from "@app/sections/admin/components/Leaderboard/LeaderboardView";
-import ConfirmButton from "@app/sections/admin/components/Leaderboard/ConfirmModal";
-import LeaderboardStats from "@app/sections/admin/components/Leaderboard/LeaderboardStats";
-import Section from "@app/sections/admin/components/Section";
+import LeaderboardView from '@app/sections/admin/components/Leaderboard/LeaderboardView'
+import ConfirmButton from '@app/sections/admin/components/Leaderboard/ConfirmModal'
+import LeaderboardStats from '@app/sections/admin/components/Leaderboard/LeaderboardStats'
+import Section from '@app/sections/admin/components/Section'
 
-const defaultNumberAwards = 1;
+const defaultNumberAwards = 1
 
 const Leaderboard: React.FC = () => {
-  const { roles, authorized } = useOutletContext<MainContext>();
-  const mirrorStyle = useMirrorStyles();
-  const leaderboardViewRef = useRef<HTMLDivElement>(null);
+  const { roles, authorized } = useOutletContext<MainContext>()
+  const mirrorStyle = useMirrorStyles()
+  const leaderboardViewRef = useRef<HTMLDivElement>(null)
 
   const [previewNumberAwards, setPreviewNumberAwards] = useState(
     `${defaultNumberAwards}`
-  );
-  const [effectiveNumberAwards, setEffectiveNumberAwards] = useState(0);
-  const [minimumPointsThreshold, setMinimumPointsThreshold] = useState(0);
+  )
+  const [effectiveNumberAwards, setEffectiveNumberAwards] = useState(0)
+  const [minimumPointsThreshold, setMinimumPointsThreshold] = useState(0)
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toLocaleDateString("en-CA") // YYYY-MM-DD format in local timezone
-  );
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+    new Date().toLocaleDateString('en-CA') // YYYY-MM-DD format in local timezone
+  )
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [submissionStatus, setSubmissionStatus] = useState<{
-    exists: boolean;
+    exists: boolean
     submission?: {
-      submissionId: string;
-      submittedAt: string;
-      submittedBy: string;
-      count: number;
-    };
-  } | null>(null);
+      submissionId: string
+      submittedAt: string
+      submittedBy: string
+      count: number
+    }
+  } | null>(null)
 
   // Check submission status for a specific day
   const checkSubmissionStatus = useCallback(
     async (day: string) => {
-      if (!authorized) return;
+      if (!authorized) return
 
       try {
-        const response = await api.get("/leaderboard/submission-status", {
+        const response = await api.get('/leaderboard/submission-status', {
           params: { day }
-        });
+        })
 
-        setSubmissionStatus(response.data as { exists: boolean });
+        setSubmissionStatus(response.data as { exists: boolean })
       } catch (error) {
-        console.error("Error checking submission status:", error);
-        setSubmissionStatus({ exists: false });
+        console.error('Error checking submission status:', error)
+        setSubmissionStatus({ exists: false })
       }
     },
     [authorized]
-  );
+  )
 
   // Fetch daily leaderboard data
   const fetchDailyLeaderboard = useCallback(
     async (day: string, n?: number) => {
-      if (!authorized) return;
+      if (!authorized) return
 
-      setIsLoading(true);
+      setIsLoading(true)
 
       try {
-        const params: Record<string, string> = { day };
-        if (n) params.n = n.toString();
+        const params: Record<string, string> = { day }
+        if (n) params.n = n.toString()
 
-        const response = await api.get("/leaderboard/daily", {
+        const response = await api.get('/leaderboard/daily', {
           params
-        });
+        })
         const data = response.data as {
           leaderboard: Array<{
-            rank: number;
-            userId: string;
-            displayName: string;
-            points: number;
-            currentTier: string;
-            icon: string;
-          }>;
-        };
+            rank: number
+            userId: string
+            displayName: string
+            points: number
+            currentTier: string
+            icon: string
+          }>
+        }
 
         // Transform API response to match LeaderboardUser format
         const transformedData: LeaderboardUser[] = data.leaderboard.map(
           (entry) => ({
             userId: entry.userId, // Keep as string since it's a UUID
             name: entry.displayName,
-            email: "", // Not provided by API
+            email: '', // Not provided by API
             points: entry.points,
             currentTier: entry.currentTier.toString(),
             isEligibleMerch: {
               base: true,
               first:
-                entry.currentTier.toString() === "TIER1" ||
-                entry.currentTier.toString() === "TIER2" ||
-                entry.currentTier.toString() === "TIER3" ||
-                entry.currentTier.toString() === "TIER4",
+                entry.currentTier.toString() === 'TIER1' ||
+                entry.currentTier.toString() === 'TIER2' ||
+                entry.currentTier.toString() === 'TIER3' ||
+                entry.currentTier.toString() === 'TIER4',
               second:
-                entry.currentTier.toString() === "TIER2" ||
-                entry.currentTier.toString() === "TIER3" ||
-                entry.currentTier.toString() === "TIER4",
+                entry.currentTier.toString() === 'TIER2' ||
+                entry.currentTier.toString() === 'TIER3' ||
+                entry.currentTier.toString() === 'TIER4',
               third:
-                entry.currentTier.toString() === "TIER3" ||
-                entry.currentTier.toString() === "TIER4"
+                entry.currentTier.toString() === 'TIER3' ||
+                entry.currentTier.toString() === 'TIER4'
             }
           })
-        );
+        )
 
-        setLeaderboardData(transformedData);
+        setLeaderboardData(transformedData)
 
         // Debug: Check tier distribution
         const tierCounts = transformedData.reduce(
           (acc, user) => {
-            acc[user.currentTier] = (acc[user.currentTier] || 0) + 1;
-            return acc;
+            acc[user.currentTier] = (acc[user.currentTier] || 0) + 1
+            return acc
           },
           {} as Record<string, number>
-        );
-        console.log("Daily leaderboard data loaded:", {
+        )
+        console.log('Daily leaderboard data loaded:', {
           day,
           count: transformedData.length,
           tierDistribution: tierCounts,
           data: transformedData
-        });
+        })
       } catch (err) {
-        console.error("Failed to fetch leaderboard data:", err);
+        console.error('Failed to fetch leaderboard data:', err)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     },
     [authorized]
-  );
+  )
 
   // Submit leaderboard results
   const updateLeaderboard = async (day: string, n: number): Promise<void> => {
-    if (!authorized) return;
+    if (!authorized) return
 
     try {
       // Get the first effectiveNumberAwards eligible users (already filtered to exclude TIER4)
       // This accounts for tiebreaks and gives us the actual number that will be promoted
-      const eligibleUsers = leaderboardUsers.slice(0, effectiveNumberAwards);
+      const eligibleUsers = leaderboardUsers.slice(0, effectiveNumberAwards)
 
-      const eligibleUserIds = eligibleUsers.map((user) => user.userId);
+      const eligibleUserIds = eligibleUsers.map((user) => user.userId)
 
       console.log(`Submitting leaderboard for ${day}:`, {
         requestedPromotions: n,
         effectivePromotions: effectiveNumberAwards,
         eligibleUsersFound: eligibleUserIds.length,
         eligibleUserIds
-      });
+      })
 
-      await api.post("/leaderboard/submit", {
+      await api.post('/leaderboard/submit', {
         day,
         n: effectiveNumberAwards, // Send the effective number, not the original query number
         userIdsToPromote: eligibleUserIds
-      });
+      })
       // Refresh the leaderboard data after submission
-      await fetchDailyLeaderboard(day, undefined);
+      await fetchDailyLeaderboard(day, undefined)
 
       // Refresh submission status
-      await checkSubmissionStatus(day);
+      await checkSubmissionStatus(day)
     } catch (err: unknown) {
-      console.error("Failed to submit leaderboard:", err);
+      console.error('Failed to submit leaderboard:', err)
 
       // Handle 409 Conflict (already submitted)
-      if (err && typeof err === "object" && "response" in err) {
+      if (err && typeof err === 'object' && 'response' in err) {
         const errorResponse = err as {
-          response?: { status?: number; data?: { message?: string } };
-        };
+          response?: { status?: number; data?: { message?: string } }
+        }
         if (errorResponse.response?.status === 409) {
           const errorMessage =
             errorResponse.response.data?.message ||
-            "This date has already been submitted";
-          throw new Error(errorMessage);
+            'This date has already been submitted'
+          throw new Error(errorMessage)
         }
       }
 
       // Handle other errors
-      let errorMessage = "Failed to submit leaderboard";
-      if (err && typeof err === "object" && "response" in err) {
+      let errorMessage = 'Failed to submit leaderboard'
+      if (err && typeof err === 'object' && 'response' in err) {
         const errorResponse = err as {
-          response?: { data?: { message?: string } };
-        };
-        if (errorResponse.response?.data?.message) {
-          errorMessage = errorResponse.response.data.message;
+          response?: { data?: { message?: string } }
         }
-      } else if (err && typeof err === "object" && "message" in err) {
-        const errorWithMessage = err as { message: unknown };
-        if (typeof errorWithMessage.message === "string") {
-          errorMessage = errorWithMessage.message;
+        if (errorResponse.response?.data?.message) {
+          errorMessage = errorResponse.response.data.message
+        }
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        const errorWithMessage = err as { message: unknown }
+        if (typeof errorWithMessage.message === 'string') {
+          errorMessage = errorWithMessage.message
         }
       }
-      throw new Error(errorMessage);
+      throw new Error(errorMessage)
     }
-  };
+  }
 
   useEffect(() => {
     if (authorized) {
-      void fetchDailyLeaderboard(selectedDate, undefined);
-      void checkSubmissionStatus(selectedDate);
+      void fetchDailyLeaderboard(selectedDate, undefined)
+      void checkSubmissionStatus(selectedDate)
     }
-  }, [authorized, selectedDate, fetchDailyLeaderboard, checkSubmissionStatus]);
+  }, [authorized, selectedDate, fetchDailyLeaderboard, checkSubmissionStatus])
 
   const leaderboardUsers: LeaderboardUser[] = useMemo(
     () => {
       if (!leaderboardData || leaderboardData.length === 0) {
-        return [];
+        return []
       }
 
       // Filter out TIER4 users (they already have all prizes)
-      return leaderboardData.filter((user) => user.currentTier !== "TIER4");
+      return leaderboardData.filter((user) => user.currentTier !== 'TIER4')
     }, // don't show users who already have all prizes
     [leaderboardData]
-  );
+  )
 
   useEffect(() => {
     // automatically set the initial effective preview number only when data is loaded
     if (!isLoading && leaderboardUsers.length > 0) {
-      handleSetEffectiveNumberAwards(defaultNumberAwards);
+      handleSetEffectiveNumberAwards(defaultNumberAwards)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, leaderboardUsers.length]);
+  }, [isLoading, leaderboardUsers.length])
 
   const previewNumberIsInvalid = useMemo(
     () =>
@@ -245,16 +245,16 @@ const Leaderboard: React.FC = () => {
       !parseInt(previewNumberAwards) ||
       parseInt(previewNumberAwards) < 1,
     [previewNumberAwards]
-  );
+  )
 
   const handleChangePreviewNumber = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newValue = event.target.value;
-    setPreviewNumberAwards(newValue);
-    const newValueInt = parseInt(newValue);
-    handleSetEffectiveNumberAwards(newValueInt);
-  };
+    const newValue = event.target.value
+    setPreviewNumberAwards(newValue)
+    const newValueInt = parseInt(newValue)
+    handleSetEffectiveNumberAwards(newValueInt)
+  }
 
   const handleSetEffectiveNumberAwards = (inputPreviewValue: number) => {
     if (
@@ -262,30 +262,30 @@ const Leaderboard: React.FC = () => {
       !leaderboardUsers ||
       leaderboardUsers.length === 0
     ) {
-      setEffectiveNumberAwards(0);
-      setMinimumPointsThreshold(0);
-      return;
+      setEffectiveNumberAwards(0)
+      setMinimumPointsThreshold(0)
+      return
     }
 
     // Find the breakpoint user (the user at the target position)
-    const breakpointUser = leaderboardUsers[inputPreviewValue - 1];
+    const breakpointUser = leaderboardUsers[inputPreviewValue - 1]
     if (!breakpointUser) {
-      setEffectiveNumberAwards(0);
-      setMinimumPointsThreshold(0);
-      return;
+      setEffectiveNumberAwards(0)
+      setMinimumPointsThreshold(0)
+      return
     }
 
-    const breakpoint = breakpointUser.points;
-    setMinimumPointsThreshold(breakpoint);
+    const breakpoint = breakpointUser.points
+    setMinimumPointsThreshold(breakpoint)
 
     // Find all users with points >= breakpoint (including ties)
     const usersGeqBreakpoint = leaderboardUsers.filter(
       (user) => user.points >= breakpoint
-    );
-    setEffectiveNumberAwards(usersGeqBreakpoint.length);
+    )
+    setEffectiveNumberAwards(usersGeqBreakpoint.length)
 
     // No scrolling needed - the visual highlighting will show which users qualify
-  };
+  }
 
   return (
     <>
@@ -322,13 +322,13 @@ const Leaderboard: React.FC = () => {
                   ⚠️ Leaderboard Already Submitted
                 </Text>
                 <Text fontSize="sm" color="orange.700" mt={1}>
-                  This day has already been submitted with{" "}
-                  {submissionStatus.submission?.count} prizes on{" "}
+                  This day has already been submitted with{' '}
+                  {submissionStatus.submission?.count} prizes on{' '}
                   {submissionStatus.submission?.submittedAt
                     ? new Date(
                         submissionStatus.submission.submittedAt
                       ).toLocaleString()
-                    : "unknown date"}
+                    : 'unknown date'}
                   .
                 </Text>
               </Box>
@@ -337,7 +337,7 @@ const Leaderboard: React.FC = () => {
             <Flex mb={4}>
               {/* date picker */}
               <VStack justifyContent="center">
-                <Flex direction="row" w={{ base: "70%" }}>
+                <Flex direction="row" w={{ base: '70%' }}>
                   <FormLabel>Select Date</FormLabel>
                   <Input
                     type="date"
@@ -346,11 +346,11 @@ const Leaderboard: React.FC = () => {
                   />
                 </Flex>
                 {/* input */}
-                <Flex direction="row" w={{ base: "70%" }}>
+                <Flex direction="row" w={{ base: '70%' }}>
                   <FormLabel>Target number of Prizes</FormLabel>
                   <Stack
-                    w={{ base: "100%" }}
-                    direction={{ base: "column", lg: "row" }}
+                    w={{ base: '100%' }}
+                    direction={{ base: 'column', lg: 'row' }}
                     mr={4}
                   >
                     <FormControl
@@ -394,7 +394,7 @@ const Leaderboard: React.FC = () => {
                     </FormControl>
                     <ConfirmButton
                       disabled={
-                        !roles.includes("ADMIN") ||
+                        !roles.includes('ADMIN') ||
                         previewNumberIsInvalid ||
                         (submissionStatus?.exists ?? false)
                       }
@@ -407,11 +407,11 @@ const Leaderboard: React.FC = () => {
                           await updateLeaderboard(
                             selectedDate,
                             parseInt(previewNumberAwards) ?? 0
-                          );
+                          )
                         } catch (err) {
                           // Error is already handled in updateLeaderboard function
-                          console.error("Leaderboard submission failed:", err);
-                          throw err;
+                          console.error('Leaderboard submission failed:', err)
+                          throw err
                         }
                       }}
                     />
@@ -419,7 +419,7 @@ const Leaderboard: React.FC = () => {
                 </Flex>
               </VStack>
               {/* stats */}
-              <Stack w={{ base: "70%" }} direction="row">
+              <Stack w={{ base: '70%' }} direction="row">
                 <Section w="100%" h="100%" p={3}>
                   <LeaderboardStats
                     leaderboardUsers={leaderboardUsers}
@@ -450,7 +450,7 @@ const Leaderboard: React.FC = () => {
         </Card>
       </Flex>
     </>
-  );
-};
+  )
+}
 
-export default Leaderboard;
+export default Leaderboard

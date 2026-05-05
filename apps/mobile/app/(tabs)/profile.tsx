@@ -1,19 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, ActivityIndicator, Text, Dimensions } from 'react-native';
-import ProfileHeader from '@/components/profile/Header';
-import ImageCarousel from '@/components/profile/ImageCarousel';
-import UserInfo from '@/components/profile/UserInfo';
-import ColorPicker from '@/components/profile/ColorPicker';
-import { api } from '@/api/api';
-import { RoleObject } from '@/api/types';
+import React, { useEffect, useState } from 'react'
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  ActivityIndicator,
+  Text,
+  Dimensions
+} from 'react-native'
+import ProfileHeader from '@/components/profile/Header'
+import ImageCarousel from '@/components/profile/ImageCarousel'
+import UserInfo from '@/components/profile/UserInfo'
+import ColorPicker from '@/components/profile/ColorPicker'
+import { api } from '@/api/api'
+import { RoleObject } from '@/api/types'
 
-import Background from '@/assets/images/profile_background.svg';
-import LottieView from 'lottie-react-native';
+import Background from '@/assets/images/profile_background.svg'
+import LottieView from 'lottie-react-native'
 
-const { width, height } = Dimensions.get('window');
-const Separator = () => <View className="h-0.5 bg-white mb-2" />;
+const { width, height } = Dimensions.get('window')
+const Separator = () => <View className="h-0.5 bg-white mb-2" />
 
-const LSeparator = ({ size = width * 0.85, thickness = 2, color = '#fff', zIndex = 1 }) => (
+const LSeparator = ({
+  size = width * 0.85,
+  thickness = 2,
+  color = '#fff',
+  zIndex = 1
+}) => (
   <View
     style={{
       position: 'absolute',
@@ -25,7 +37,7 @@ const LSeparator = ({ size = width * 0.85, thickness = 2, color = '#fff', zIndex
       height: size,
       justifyContent: 'flex-end',
       zIndex: zIndex,
-      pointerEvents: 'none',
+      pointerEvents: 'none'
     }}
   >
     <View
@@ -34,7 +46,7 @@ const LSeparator = ({ size = width * 0.85, thickness = 2, color = '#fff', zIndex
         height: thickness,
         backgroundColor: color,
         borderRadius: thickness / 2,
-        left: 1,
+        left: 1
       }}
     />
     <View
@@ -42,46 +54,49 @@ const LSeparator = ({ size = width * 0.85, thickness = 2, color = '#fff', zIndex
         width: thickness,
         height: size,
         backgroundColor: color,
-        borderRadius: thickness / 2,
+        borderRadius: thickness / 2
       }}
     />
   </View>
-);
+)
 
 const ProfileScreen = () => {
-  const [user, setUser] = useState<RoleObject | null>(null);
-  const [points, setPoints] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<RoleObject | null>(null)
+  const [points, setPoints] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout>
     const fetchAttendee = async () => {
-      const start = Date.now();
+      const start = Date.now()
       try {
-        const response = await api.get('/auth/info');
-        setUser(response.data);
+        const response = await api.get('/auth/info')
+        setUser(response.data)
       } catch (err) {
-        setError('Failed to load user info');
+        setError('Failed to load user info')
       } finally {
-        const elapsed = Date.now() - start;
-        const remaining = 500 - elapsed;
-        timeoutId = setTimeout(() => setLoading(false), remaining > 0 ? remaining : 0);
+        const elapsed = Date.now() - start
+        const remaining = 500 - elapsed
+        timeoutId = setTimeout(
+          () => setLoading(false),
+          remaining > 0 ? remaining : 0
+        )
       }
-    };
+    }
 
     const fetchPoints = async () => {
       try {
-        const response = await api.get('/attendee/points');
-        setPoints(response.data.points || 0);
+        const response = await api.get('/attendee/points')
+        setPoints(response.data.points || 0)
       } catch (err) {
-        console.error('Failed to fetch points:', err);
+        console.error('Failed to fetch points:', err)
       }
-    };
+    }
 
-    fetchAttendee();
-    fetchPoints();
-    return () => clearTimeout(timeoutId);
-  }, []);
+    fetchAttendee()
+    fetchPoints()
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   if (loading) {
     return (
@@ -94,7 +109,7 @@ const ProfileScreen = () => {
           speed={4}
         />
       </SafeAreaView>
-    );
+    )
   }
 
   if (error) {
@@ -104,7 +119,7 @@ const ProfileScreen = () => {
           Make sure to register for R|P first!
         </Text>
       </SafeAreaView>
-    );
+    )
   }
 
   return (
@@ -112,7 +127,14 @@ const ProfileScreen = () => {
       <Background
         width={width}
         height={height}
-        style={{ zIndex: 0, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        style={{
+          zIndex: 0,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }}
         preserveAspectRatio="none"
       />
       <SafeAreaView className="flex-1">
@@ -128,7 +150,7 @@ const ProfileScreen = () => {
             <UserInfo
               name={{
                 first: user?.displayName?.split(' ')[0] || '',
-                last: user?.displayName?.split(' ').slice(1).join(' ') || '',
+                last: user?.displayName?.split(' ').slice(1).join(' ') || ''
               }}
               roles={user?.roles || []}
             />
@@ -137,7 +159,7 @@ const ProfileScreen = () => {
         </ScrollView>
       </SafeAreaView>
     </View>
-  );
-};
+  )
+}
 
-export default ProfileScreen;
+export default ProfileScreen

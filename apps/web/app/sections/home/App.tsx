@@ -1,19 +1,19 @@
-import "./index.css";
-import { Box, ChakraProvider, Link, VStack } from "@chakra-ui/react";
-import { customTheme } from "@app/theme";
-import { RequireAuth } from "@app";
-import { useMemo } from "react";
-import { Outlet, Route, Routes, useLocation } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./routes/Home";
-import { Profile } from "./routes/Profile";
-import Register from "./routes/Register";
-import Resume from "./routes/Resume";
-import Speakers from "./routes/Speakers/Speakers";
-import AppScreen from "./routes/AppScreen";
-import NotFound from "./routes/NotFound";
+import './index.css'
+import { Box, ChakraProvider, Link, VStack } from '@chakra-ui/react'
+import { customTheme } from '@app/theme'
+import { RequireAuth } from '@app'
+import { useMemo } from 'react'
+import { Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import Home from './routes/Home'
+import { Profile } from './routes/Profile'
+import Register from './routes/Register'
+import Resume from './routes/Resume'
+import Speakers from './routes/Speakers/Speakers'
+import AppScreen from './routes/AppScreen'
+import NotFound from './routes/NotFound'
 
-document.title = "R|P 2025";
+document.title = 'R|P 2025'
 
 function App() {
   return (
@@ -34,15 +34,15 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ChakraProvider>
-  );
+  )
 }
 
-const FLUSH_ROUTES = ["/register"];
+const FLUSH_ROUTES = ['/register']
 
 function Main() {
-  const { pathname } = useLocation();
+  const { pathname } = useLocation()
 
-  const isFlush = useMemo(() => FLUSH_ROUTES.includes(pathname), [pathname]);
+  const isFlush = useMemo(() => FLUSH_ROUTES.includes(pathname), [pathname])
 
   return (
     <VStack
@@ -52,23 +52,23 @@ function Main() {
       zIndex={9}
       gap={0}
       backgroundColor="#100e0e"
-      overflowY={isFlush ? undefined : "scroll"}
+      overflowY={isFlush ? undefined : 'scroll'}
       sx={{
-        scrollbarWidth: "thin",
-        scrollbarColor: "#888 transparent",
-        scrollbarGutter: "stable",
-        "&::-webkit-scrollbar": {
-          width: "8px"
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#888 transparent',
+        scrollbarGutter: 'stable',
+        '&::-webkit-scrollbar': {
+          width: '8px'
         },
-        "&::-webkit-scrollbar-track": {
-          background: "none"
+        '&::-webkit-scrollbar-track': {
+          background: 'none'
         },
-        "&::-webkit-scrollbar-thumb": {
-          background: "#888",
-          borderRadius: "8px"
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '8px'
         },
-        "&::-webkit-scrollbar-thumb:hover": {
-          background: "#555"
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555'
         }
       }}
     >
@@ -80,7 +80,7 @@ function Main() {
         textAlign="center"
         fontFamily="magistral"
         fontWeight="bold"
-        fontSize={{ base: "sm", xl: "md" }}
+        fontSize={{ base: 'sm', xl: 'md' }}
         color="gray.900"
         letterSpacing="wide"
         zIndex={16}
@@ -90,7 +90,7 @@ function Main() {
           href="https://docs.google.com/forms/d/e/1FAIpQLSdRfU2T4qJDBKvHDWvMLKufP8iJ6zSfq6hhypPxVHPvr2S8xA/viewform"
           isExternal
           color="gray.900"
-          _hover={{ textDecoration: "underline", color: "gray.700" }}
+          _hover={{ textDecoration: 'underline', color: 'gray.700' }}
         >
           R|P 2026 staff applications are now open! Click here to apply! 🎉
         </Link>
@@ -100,12 +100,12 @@ function Main() {
         w="100%"
         h="100%"
         position="relative"
-        overflowY={isFlush ? "hidden" : undefined}
+        overflowY={isFlush ? 'hidden' : undefined}
       >
         <Outlet />
       </Box>
     </VStack>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -1,50 +1,50 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { AddIcon } from "@chakra-ui/icons";
-import { Button, useDisclosure, useToast } from "@chakra-ui/react";
-import type { FormikHelpers } from "formik";
-import type { SpeakerFormValues } from "./SpeakerSchema";
-import { SpeakerFormInitialValues } from "./SpeakerSchema";
-import SpeakerForm from "./SpeakerForm";
-import { api } from "@app";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { AddIcon } from '@chakra-ui/icons'
+import { Button, useDisclosure, useToast } from '@chakra-ui/react'
+import type { FormikHelpers } from 'formik'
+import type { SpeakerFormValues } from './SpeakerSchema'
+import { SpeakerFormInitialValues } from './SpeakerSchema'
+import SpeakerForm from './SpeakerForm'
+import { api } from '@app'
 
 type AddModalProps = {
-  updateSpeakers: () => void;
-};
+  updateSpeakers: () => void
+}
 
 const AddModal: React.FC<AddModalProps> = ({ updateSpeakers }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const mirrorStyles = useMirrorStyles();
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const mirrorStyles = useMirrorStyles()
+  const toast = useToast()
 
   const createSpeaker = (
     values: SpeakerFormValues,
     helpers: FormikHelpers<SpeakerFormValues>
   ) => {
     const request = api
-      .post("/speakers", values)
+      .post('/speakers', values)
       .then(() => {
-        updateSpeakers();
-        onClose();
+        updateSpeakers()
+        onClose()
       })
       .finally(() => {
-        helpers.setSubmitting(false);
-      });
+        helpers.setSubmitting(false)
+      })
 
     toast.promise(request, {
-      success: { title: "Speaker created successfully" },
-      error: { title: "Error creating speaker" },
-      loading: { title: "Creating speaker..." }
-    });
+      success: { title: 'Speaker created successfully' },
+      error: { title: 'Error creating speaker' },
+      loading: { title: 'Creating speaker...' }
+    })
 
-    return request;
-  };
+    return request
+  }
 
   return (
     <>
       <SpeakerForm
         initialValues={SpeakerFormInitialValues}
         onSubmit={(values, helpers) => {
-          void createSpeaker(values, helpers);
+          void createSpeaker(values, helpers)
         }}
         onCancel={onClose}
         title="Create a new speaker"
@@ -66,7 +66,7 @@ const AddModal: React.FC<AddModalProps> = ({ updateSpeakers }) => {
         <AddIcon />
       </Button>
     </>
-  );
-};
+  )
+}
 
-export default AddModal;
+export default AddModal

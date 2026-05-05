@@ -7,16 +7,16 @@ import {
   Text,
   Tooltip,
   VStack
-} from "@chakra-ui/react";
-import { FaFilePdf } from "react-icons/fa6";
-import PortfolioLinks from "../../components/PortfolioLinks";
-import { Config } from "../../config";
-import type { Resume } from "./ResumeBook";
+} from '@chakra-ui/react'
+import { FaFilePdf } from 'react-icons/fa6'
+import PortfolioLinks from '../../components/PortfolioLinks'
+import { Config } from '../../config'
+import type { Resume } from './ResumeBook'
 
 interface MajorsMinorsListProps {
-  degreeType?: string;
-  majors: string[];
-  minors: string[];
+  degreeType?: string
+  majors: string[]
+  minors: string[]
 }
 
 const MajorsMinorsList: React.FC<MajorsMinorsListProps> = ({
@@ -25,15 +25,15 @@ const MajorsMinorsList: React.FC<MajorsMinorsListProps> = ({
   minors
 }) => {
   return (
-    <VStack alignItems={"flex-start"} gap={0}>
+    <VStack alignItems={'flex-start'} gap={0}>
       {degreeType && (
-        <Text fontSize="sm" color="gray.700" fontWeight={"bold"}>
+        <Text fontSize="sm" color="gray.700" fontWeight={'bold'}>
           {degreeType}
         </Text>
       )}
       {majors.map((major) => (
         <Text key={major} fontSize="sm" color="gray.700">
-          {major}{" "}
+          {major}{' '}
           {
             <Text as="span" color="gray.500">
               (Major)
@@ -43,24 +43,24 @@ const MajorsMinorsList: React.FC<MajorsMinorsListProps> = ({
       ))}
       {minors.map((minor) => (
         <Text key={minor} fontSize="sm" color="gray.700">
-          {minor}{" "}
+          {minor}{' '}
           <Text as="span" color="gray.500">
             (Minor)
           </Text>
         </Text>
       ))}
     </VStack>
-  );
-};
+  )
+}
 
 interface ResumeComponentProps {
-  resume: Resume;
-  isSelected: boolean;
-  screenIsLarge: boolean;
-  toggleResume: (id: string) => void;
-  openResume: (resume: Resume) => void;
-  baseColor: string;
-  bgColor: string;
+  resume: Resume
+  isSelected: boolean
+  screenIsLarge: boolean
+  toggleResume: (id: string) => void
+  openResume: (resume: Resume) => void
+  baseColor: string
+  bgColor: string
 }
 
 const ResumeGridBox: React.FC<ResumeComponentProps> = ({
@@ -76,8 +76,8 @@ const ResumeGridBox: React.FC<ResumeComponentProps> = ({
     <Box
       key={resume.id}
       display="flex"
-      flexDirection={"column"}
-      alignItems={"space-between"}
+      flexDirection={'column'}
+      alignItems={'space-between'}
       onClick={() => toggleResume(resume.id)}
       borderWidth="1px"
       borderRadius="lg"
@@ -86,23 +86,23 @@ const ResumeGridBox: React.FC<ResumeComponentProps> = ({
       boxShadow="sm"
       position="relative"
       cursor="pointer"
-      borderColor={isSelected ? "blue.500" : `gray.${baseColor}`}
+      borderColor={isSelected ? 'blue.500' : `gray.${baseColor}`}
       transition="all 0.2s"
       bgColor={isSelected ? `blue.${baseColor}` : bgColor}
       _hover={{
         bgColor: isSelected ? `blue.${baseColor}` : `gray.200`,
-        borderColor: "black",
-        transform: "scale(1.05)"
+        borderColor: 'black',
+        transform: 'scale(1.05)'
       }}
     >
-      <VStack alignItems={"flex-start"} mb={"auto"}>
-        <Flex w="100%" alignItems={"center"} flexWrap="wrap" gap={2}>
+      <VStack alignItems={'flex-start'} mb={'auto'}>
+        <Flex w="100%" alignItems={'center'} flexWrap="wrap" gap={2}>
           {Config.STAFF_UIDs.includes(resume.id) && (
             <Tooltip label="Staff Member" fontSize="md">
               <Image src="/rp_logo.svg" width="16px" height="16px" />
             </Tooltip>
           )}
-          <Text fontWeight="bold" fontSize="lg" maxW={"70%"} my={0}>
+          <Text fontWeight="bold" fontSize="lg" maxW={'70%'} my={0}>
             {resume.name}
           </Text>
         </Flex>
@@ -130,49 +130,49 @@ const ResumeGridBox: React.FC<ResumeComponentProps> = ({
           size={
             screenIsLarge
               ? {
-                  base: "35px",
-                  lg: "40px"
+                  base: '35px',
+                  lg: '40px'
                 }
-              : "md"
+              : 'md'
           }
           w={
             screenIsLarge
               ? {
-                  base: "35px",
-                  lg: "40px"
+                  base: '35px',
+                  lg: '40px'
                 }
-              : "40px"
+              : '40px'
           }
           height={
             screenIsLarge
               ? {
-                  base: "32px",
-                  lg: "40px"
+                  base: '32px',
+                  lg: '40px'
                 }
-              : "40px"
+              : '40px'
           }
           fontSize={
             screenIsLarge
               ? {
-                  base: "md",
-                  lg: "xl"
+                  base: 'md',
+                  lg: 'xl'
                 }
-              : "20px"
+              : '20px'
           }
           variant="solid"
-          backgroundColor={"blue.600"}
+          backgroundColor={'blue.600'}
           _hover={{
-            backgroundColor: "gray.500"
+            backgroundColor: 'gray.500'
           }}
-          color={"white"}
+          color={'white'}
           onClick={(e) => {
-            e.stopPropagation();
-            openResume(resume);
+            e.stopPropagation()
+            openResume(resume)
           }}
         />
       </HStack>
     </Box>
-  );
-};
+  )
+}
 
-export default ResumeGridBox;
+export default ResumeGridBox

@@ -1,136 +1,136 @@
 // Create a function to generate GoogleStrategy instances
-import { TokenPayload } from "google-auth-library";
-import { Config, EnvironmentEnum } from "../../config";
-import { SupabaseDB } from "../../database";
-import { JwtPayloadType, Role } from "./auth-models";
-import jsonwebtoken from "jsonwebtoken";
-import { randomUUID } from "crypto";
+import { TokenPayload } from 'google-auth-library'
+import { Config, EnvironmentEnum } from '../../config'
+import { SupabaseDB } from '../../database'
+import { JwtPayloadType, Role } from './auth-models'
+import jsonwebtoken from 'jsonwebtoken'
+import { randomUUID } from 'crypto'
 
 export type TokenPayloadWithProperScopes = TokenPayload & {
-    sub: string;
-    name: string;
-    email: string;
-};
+  sub: string
+  name: string
+  email: string
+}
 export function payloadHasProperScopes(
-    payload: TokenPayload
+  payload: TokenPayload
 ): payload is TokenPayloadWithProperScopes {
-    return "email" in payload && "sub" in payload && "name" in payload;
+  return 'email' in payload && 'sub' in payload && 'name' in payload
 }
 
 export async function updateDatabaseWithAuthPayload(
-    payload: TokenPayloadWithProperScopes
+  payload: TokenPayloadWithProperScopes
 ): Promise<string> {
-    const authId = payload.sub; // If we ever support multiple platforms, will need to change this, but fine for now
-    const displayName = payload.name;
-    const email = payload.email;
+  const authId = payload.sub // If we ever support multiple platforms, will need to change this, but fine for now
+  const displayName = payload.name
+  const email = payload.email
 
-    // Check for an existing user
-    const { data } = await SupabaseDB.AUTH_INFO.select("userId")
-        .eq("authId", authId)
-        .maybeSingle()
-        .throwOnError();
+  // Check for an existing user
+  const { data } = await SupabaseDB.AUTH_INFO.select('userId')
+    .eq('authId', authId)
+    .maybeSingle()
+    .throwOnError()
 
-    // If they exist, use that userId - otherwise generate a new one
-    const userId = data ? data.userId : randomUUID();
+  // If they exist, use that userId - otherwise generate a new one
+  const userId = data ? data.userId : randomUUID()
 
-    // Create or update that user
-    await SupabaseDB.AUTH_INFO.upsert(
-        {
-            authId,
-            email,
-            displayName,
-            userId,
-        },
-        {
-            onConflict: "authId",
-        }
-    ).throwOnError();
-
-    // If the user is STAFF, add the staff role to them
-    const { data: staff } = await SupabaseDB.STAFF.select()
-        .eq("email", email)
-        .maybeSingle();
-    if (staff) {
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.STAFF,
-        });
+  // Create or update that user
+  await SupabaseDB.AUTH_INFO.upsert(
+    {
+      authId,
+      email,
+      displayName,
+      userId
+    },
+    {
+      onConflict: 'authId'
     }
+  ).throwOnError()
 
-    // In development, allow a specific email to be admin for local testing
-    if (
-        Config.ENV === EnvironmentEnum.DEVELOPMENT &&
-        Config.DEV_ADMIN_EMAIL &&
-        email === Config.DEV_ADMIN_EMAIL
-    ) {
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.SUPER_ADMIN,
-        });
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.ADMIN,
-        });
+  // If the user is STAFF, add the staff role to them
+  const { data: staff } = await SupabaseDB.STAFF.select()
+    .eq('email', email)
+    .maybeSingle()
+  if (staff) {
+    await SupabaseDB.AUTH_ROLES.upsert({
+      userId,
+      role: Role.Enum.STAFF
+    })
+  }
 
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.STAFF,
-        });
-    }
+  // In development, allow a specific email to be admin for local testing
+  if (
+    Config.ENV === EnvironmentEnum.DEVELOPMENT &&
+    Config.DEV_ADMIN_EMAIL &&
+    email === Config.DEV_ADMIN_EMAIL
+  ) {
+    await SupabaseDB.AUTH_ROLES.upsert({
+      userId,
+      role: Role.Enum.SUPER_ADMIN
+    })
+    await SupabaseDB.AUTH_ROLES.upsert({
+      userId,
+      role: Role.Enum.ADMIN
+    })
 
-    // If the user is ADMIN, add the admin role to them
-    if (Config.AUTH_ADMIN_WHITELIST.has(email)) {
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.ADMIN,
-        });
-    }
+    await SupabaseDB.AUTH_ROLES.upsert({
+      userId,
+      role: Role.Enum.STAFF
+    })
+  }
 
-    // Return the userId updated
-    return userId;
+  // If the user is ADMIN, add the admin role to them
+  if (Config.AUTH_ADMIN_WHITELIST.has(email)) {
+    await SupabaseDB.AUTH_ROLES.upsert({
+      userId,
+      role: Role.Enum.ADMIN
+    })
+  }
+
+  // Return the userId updated
+  return userId
 }
 
 export async function getJwtPayloadFromDatabase(
-    userId: string
+  userId: string
 ): Promise<JwtPayloadType> {
-    const { data } = await SupabaseDB.AUTH_INFO.select("email, displayName")
-        .eq("userId", userId)
-        .maybeSingle()
-        .throwOnError();
+  const { data } = await SupabaseDB.AUTH_INFO.select('email, displayName')
+    .eq('userId', userId)
+    .maybeSingle()
+    .throwOnError()
 
-    if (!data) {
-        throw new Error("NoUserFound");
-    }
-    const { email, displayName } = data;
+  if (!data) {
+    throw new Error('NoUserFound')
+  }
+  const { email, displayName } = data
 
-    const { data: rolesRows } = await SupabaseDB.AUTH_ROLES.select()
-        .eq("userId", userId)
-        .throwOnError();
-    const roles = rolesRows.map((row: { role: Role }) => row.role);
+  const { data: rolesRows } = await SupabaseDB.AUTH_ROLES.select()
+    .eq('userId', userId)
+    .throwOnError()
+  const roles = rolesRows.map((row: { role: Role }) => row.role)
 
-    return {
-        userId,
-        email,
-        displayName,
-        roles,
-    };
+  return {
+    userId,
+    email,
+    displayName,
+    roles
+  }
 }
 
 export async function generateJWT(userId: string) {
-    const jwtPayload = await getJwtPayloadFromDatabase(userId);
-    return jsonwebtoken.sign(jwtPayload, Config.JWT_SIGNING_SECRET, {
-        expiresIn: Config.JWT_EXPIRATION_TIME,
-    });
+  const jwtPayload = await getJwtPayloadFromDatabase(userId)
+  return jsonwebtoken.sign(jwtPayload, Config.JWT_SIGNING_SECRET, {
+    expiresIn: Config.JWT_EXPIRATION_TIME
+  })
 }
 
 export function isUser(payload?: JwtPayloadType) {
-    return payload?.roles.includes(Role.Enum.USER);
+  return payload?.roles.includes(Role.Enum.USER)
 }
 
 export function isStaff(payload?: JwtPayloadType) {
-    return payload?.roles.includes(Role.Enum.STAFF);
+  return payload?.roles.includes(Role.Enum.STAFF)
 }
 
 export function isAdmin(payload?: JwtPayloadType) {
-    return payload?.roles.includes(Role.Enum.ADMIN);
+  return payload?.roles.includes(Role.Enum.ADMIN)
 }

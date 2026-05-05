@@ -1,4 +1,4 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 import {
   Card,
   CardBody,
@@ -12,23 +12,23 @@ import {
   Skeleton,
   SkeletonText,
   Avatar
-} from "@chakra-ui/react";
-import type { Speaker } from "@app";
-import React from "react";
-import EditModal from "./EditModal";
-import DeleteModal from "./DeleteModal";
+} from '@chakra-ui/react'
+import type { Speaker } from '@app'
+import React from 'react'
+import EditModal from './EditModal'
+import DeleteModal from './DeleteModal'
 
 type SpeakerCardProps = {
-  speaker: Speaker;
-  updateSpeakers: () => void;
-};
+  speaker: Speaker
+  updateSpeakers: () => void
+}
 
 const SpeakerCard: React.FC<SpeakerCardProps> = ({
   speaker,
   updateSpeakers
 }) => {
-  const mirrorStyles = useMirrorStyles(true, true);
-  const isDefaultImage = speaker.imgUrl === "http://reflectionsprojections.org";
+  const mirrorStyles = useMirrorStyles(true, true)
+  const isDefaultImage = speaker.imgUrl === 'http://reflectionsprojections.org'
 
   return (
     <Card sx={mirrorStyles} maxW="sm">
@@ -70,18 +70,18 @@ const SpeakerCard: React.FC<SpeakerCardProps> = ({
         </Flex>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
 type SpeakerCardSkeletonProps = {
-  animation?: boolean;
-};
+  animation?: boolean
+}
 
 export const SpeakerCardSkeleton: React.FC<SpeakerCardSkeletonProps> = ({
   animation = true
 }) => {
-  const mirrorStyles = useMirrorStyles();
-  const speed = animation ? undefined : 0;
+  const mirrorStyles = useMirrorStyles()
+  const speed = animation ? undefined : 0
 
   return (
     <Card sx={mirrorStyles} w="sm">
@@ -120,7 +120,7 @@ export const SpeakerCardSkeleton: React.FC<SpeakerCardSkeletonProps> = ({
         </Flex>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
-export default SpeakerCard;
+export default SpeakerCard

@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   View,
   ScrollView,
   Image,
   Dimensions,
   NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
-import ProfileImage from '@/assets/profile/red_helmet.svg';
-import { LinearGradient } from 'expo-linear-gradient';
+  NativeScrollEvent
+} from 'react-native'
+import ProfileImage from '@/assets/profile/red_helmet.svg'
+import { LinearGradient } from 'expo-linear-gradient'
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get('window')
 // Calculate image size based on 75% of screen width
-const IMAGE_SIZE = width * 0.55;
+const IMAGE_SIZE = width * 0.55
 
 const ImageCarousel = () => {
   return (
@@ -32,7 +32,7 @@ const ImageCarousel = () => {
           bottom: 0,
           width: '100%',
           height: '100%',
-          zIndex: 0,
+          zIndex: 0
         }}
       />
       <ProfileImage
@@ -41,11 +41,11 @@ const ImageCarousel = () => {
         style={{
           position: 'absolute',
           bottom: -15,
-          zIndex: 1,
+          zIndex: 1
         }}
       />
     </View>
-  );
-};
+  )
+}
 
-export default ImageCarousel;
+export default ImageCarousel

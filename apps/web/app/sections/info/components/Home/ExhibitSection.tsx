@@ -1,8 +1,8 @@
-import { Box, Image, Link, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Image, Link, Text, useBreakpointValue } from '@chakra-ui/react'
 
 export const ExhibitSection = () => {
   //const titleFontSize = useBreakpointValue({ base: "2xl", md: "3xl", lg: "4xl" });
-  const subtitleFontSize = useBreakpointValue({ base: "xl", md: "2xl" });
+  const subtitleFontSize = useBreakpointValue({ base: 'xl', md: '2xl' })
 
   return (
     <section data-label="exhibit section">
@@ -16,14 +16,14 @@ export const ExhibitSection = () => {
         zIndex={-10}
         style={{
           maskImage:
-            "linear-gradient(transparent 10%, black 50%, black 70%, transparent 100%)"
+            'linear-gradient(transparent 10%, black 50%, black 70%, transparent 100%)'
         }}
       />
       <Box
         display="flex"
-        flexDirection={{ base: "column", md: "row" }}
+        flexDirection={{ base: 'column', md: 'row' }}
         justifyContent="space-between"
-        alignItems={{ base: "center", md: "center" }}
+        alignItems={{ base: 'center', md: 'center' }}
         maxWidth="6xl"
         mx="auto"
         minH="600px"
@@ -32,31 +32,31 @@ export const ExhibitSection = () => {
         px={{ base: 5, md: 10 }}
         gap={{ base: 8, md: 0 }}
       >
-        <Box textAlign={{ base: "center", md: "left" }}>
+        <Box textAlign={{ base: 'center', md: 'left' }}>
           <Text
             //fontSize={titleFontSize}
-            textStyle={"textBlock"}
+            textStyle={'textBlock'}
           >
             {/* EXHIBIT&ensp;A */}
             RP 2025
           </Text>
           <Text
             fontSize={subtitleFontSize}
-            fontFamily={"body"}
+            fontFamily={'body'}
             fontWeight="500"
           >
             Check out our website!
           </Text>
         </Box>
 
-        <Box width={{ base: "100%", md: "auto" }}>
+        <Box width={{ base: '100%', md: 'auto' }}>
           <Box
             bgColor="black"
             px={{ base: 5 }}
             py={{ base: 5 }}
             borderRadius={20}
             mx="auto"
-            maxWidth={{ base: "400px", md: "400px" }}
+            maxWidth={{ base: '400px', md: '400px' }}
           >
             {/* <Text
               fontFamily="mono"
@@ -88,7 +88,7 @@ export const ExhibitSection = () => {
             borderRadius={5}
             mt={5}
             mx="auto"
-            maxWidth={{ base: "400px", md: "none" }}
+            maxWidth={{ base: '400px', md: 'none' }}
           />
           {/* on click:
             - set scroll
@@ -101,7 +101,7 @@ export const ExhibitSection = () => {
             px={{ base: 5, md: 10 }}
             display="flex"
             justifyContent="space-between"
-            maxWidth={{ base: "400px", md: "none" }}
+            maxWidth={{ base: '400px', md: 'none' }}
             mx="auto"
           >
             <Box bgColor="black" w={{ base: 5, md: 8 }} h={6} />
@@ -110,5 +110,5 @@ export const ExhibitSection = () => {
         </Box>
       </Box>
     </section>
-  );
-};
+  )
+}

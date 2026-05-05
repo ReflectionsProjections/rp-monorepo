@@ -10,20 +10,20 @@ import {
   Icon,
   Box,
   Link
-} from "@chakra-ui/react";
-import type { FieldProps } from "formik";
-import { FastField, FieldArray } from "formik";
-import { DeleteIcon } from "@chakra-ui/icons";
-import { FaGithub, FaLinkedin, FaGlobe } from "react-icons/fa";
+} from '@chakra-ui/react'
+import type { FieldProps } from 'formik'
+import { FastField, FieldArray } from 'formik'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { FaGithub, FaLinkedin, FaGlobe } from 'react-icons/fa'
 
-const LINK_ROW_HEIGHT = 56;
-const PLATFORM_PREFIX = ["https://github.com/", "https://linkedin.com/in/"];
+const LINK_ROW_HEIGHT = 56
+const PLATFORM_PREFIX = ['https://github.com/', 'https://linkedin.com/in/']
 
 type Props<TValues, TFieldName extends keyof TValues> = {
-  name: TFieldName;
-  label: string;
-  maxLinks?: number;
-};
+  name: TFieldName
+  label: string
+  maxLinks?: number
+}
 
 const FormLinks = <
   TValues extends Record<string, unknown> & Record<TFieldName, string[]>,
@@ -37,7 +37,7 @@ const FormLinks = <
     {({ field, form }: FieldProps<TValues[TFieldName], TValues>) => (
       <FormControl isInvalid={!!form.errors[name] && !!form.touched[name]}>
         <Text fontSize="2xl" fontWeight="bold" mb={2}>
-          {label}{" "}
+          {label}{' '}
           <Text as="span" fontSize="sm" color="#CCCCCC">
             (max {maxLinks})
           </Text>
@@ -48,20 +48,20 @@ const FormLinks = <
             push,
             remove
           }: {
-            push: (this: void, value: string) => void;
-            remove: (this: void, index: number) => void;
+            push: (this: void, value: string) => void
+            remove: (this: void, index: number) => void
           }) => {
-            const minHeight = LINK_ROW_HEIGHT * maxLinks;
+            const minHeight = LINK_ROW_HEIGHT * maxLinks
 
             return (
               <VStack align="start" gap={4} minH={`${minHeight}px`}>
                 <HStack>
                   <Button
-                    onClick={() => push("https://github.com/")}
+                    onClick={() => push('https://github.com/')}
                     isDisabled={
                       field.value.length >= maxLinks ||
                       field.value.some((link) =>
-                        link.startsWith("https://github.com/")
+                        link.startsWith('https://github.com/')
                       )
                     }
                     size="sm"
@@ -72,11 +72,11 @@ const FormLinks = <
                   </Button>
 
                   <Button
-                    onClick={() => push("https://linkedin.com/in/")}
+                    onClick={() => push('https://linkedin.com/in/')}
                     isDisabled={
                       field.value.length >= maxLinks ||
                       field.value.some((link) =>
-                        link.startsWith("https://linkedin.com/in/")
+                        link.startsWith('https://linkedin.com/in/')
                       )
                     }
                     size="sm"
@@ -88,34 +88,34 @@ const FormLinks = <
                 </HStack>
 
                 {(field.value.length < maxLinks
-                  ? [...field.value, ""]
+                  ? [...field.value, '']
                   : field.value
                 ).map((link, index) => {
                   const specialPrefix = PLATFORM_PREFIX.find((prefix) =>
                     link.startsWith(prefix)
-                  );
+                  )
 
-                  const inputError = form.errors[name]?.[index];
-                  const touchedValue = form.touched[name];
+                  const inputError = form.errors[name]?.[index]
+                  const touchedValue = form.touched[name]
                   const inputTouched =
-                    Array.isArray(touchedValue) && touchedValue[index];
-                  const isInvalid = !!inputError && !!inputTouched;
+                    Array.isArray(touchedValue) && touchedValue[index]
+                  const isInvalid = !!inputError && !!inputTouched
 
                   const isActive =
                     index < field.value.length ||
-                    field.value.length === maxLinks;
+                    field.value.length === maxLinks
 
                   return (
                     <Box key={index}>
                       <HStack align="center" w="min(500px, 80vw)" gap={4}>
                         {isActive &&
-                          (specialPrefix === "https://github.com/" ? (
+                          (specialPrefix === 'https://github.com/' ? (
                             <Icon
                               as={FaGithub}
                               boxSize={5}
                               borderRadius="full"
                             />
-                          ) : specialPrefix === "https://linkedin.com/in/" ? (
+                          ) : specialPrefix === 'https://linkedin.com/in/' ? (
                             <Icon as={FaLinkedin} boxSize={5} />
                           ) : (
                             <Icon
@@ -129,40 +129,40 @@ const FormLinks = <
                           <Input
                             value={
                               specialPrefix
-                                ? link.replace(specialPrefix, "")
+                                ? link.replace(specialPrefix, '')
                                 : link
                             }
                             onChange={(e) => {
-                              const updated = [...field.value];
+                              const updated = [...field.value]
 
                               if (specialPrefix) {
                                 updated[index] =
-                                  specialPrefix + e.target.value.trim();
+                                  specialPrefix + e.target.value.trim()
                               } else {
                                 updated[index] = e.target.value
                                   .trim()
                                   .replace(
                                     /^(https?:\/\/)?(www\.)?github\.com\/?/,
-                                    "https://github.com/"
+                                    'https://github.com/'
                                   )
                                   .replace(
                                     /^(https?:\/\/)?(www\.)?linkedin\.com(\/in\/?)?/,
-                                    "https://linkedin.com/in/"
-                                  );
+                                    'https://linkedin.com/in/'
+                                  )
                               }
 
-                              void form.setFieldValue(name, updated);
+                              void form.setFieldValue(name, updated)
                             }}
                             id={`${name}-${index}`}
                             placeholder={
-                              specialPrefix ? "username" : "example.com"
+                              specialPrefix ? 'username' : 'example.com'
                             }
-                            _placeholder={{ color: "#CCCCCC" }}
+                            _placeholder={{ color: '#CCCCCC' }}
                             flex="1"
                             isInvalid={isInvalid}
-                            variant={isActive ? "outline" : "flushed"}
+                            variant={isActive ? 'outline' : 'flushed'}
                             backgroundColor={
-                              isActive ? "#12131A" : "transparent"
+                              isActive ? '#12131A' : 'transparent'
                             }
                             py={0.5}
                             w="100%"
@@ -196,15 +196,15 @@ const FormLinks = <
                         {inputError as string}
                       </FormErrorMessage>
                     </Box>
-                  );
+                  )
                 })}
               </VStack>
-            );
+            )
           }}
         </FieldArray>
       </FormControl>
     )}
   </FastField>
-);
+)
 
-export default FormLinks;
+export default FormLinks

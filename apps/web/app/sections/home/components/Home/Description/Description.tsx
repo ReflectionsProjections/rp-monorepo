@@ -1,66 +1,66 @@
-import { Box, Heading, Text, useMediaQuery } from "@chakra-ui/react";
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { Box, Heading, Text, useMediaQuery } from '@chakra-ui/react'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 
-const MotionBox = motion(Box);
-const MotionHeading = motion(Heading);
-const MotionText = motion(Text);
+const MotionBox = motion(Box)
+const MotionHeading = motion(Heading)
+const MotionText = motion(Text)
 
 const CARS = [
   {
-    car: "/site/description/cars/blue.svg",
+    car: '/site/description/cars/blue.svg',
     from: {
-      desktop: { left: "33%", top: "-10%", opacity: 0 },
-      mobile: { left: "20%", top: "-10%", opacity: 0 }
+      desktop: { left: '33%', top: '-10%', opacity: 0 },
+      mobile: { left: '20%', top: '-10%', opacity: 0 }
     },
     to: {
-      desktop: { left: "18%", top: "30%", opacity: 1 },
-      mobile: { left: "5%", top: "25%", opacity: 1 }
+      desktop: { left: '18%', top: '30%', opacity: 1 },
+      mobile: { left: '5%', top: '25%', opacity: 1 }
     },
     delay: 0,
-    width: "150px",
-    trailGradient: "linear(to top, #3B82F6 0%, transparent 25%)",
-    trailColor: "#3B82F6"
+    width: '150px',
+    trailGradient: 'linear(to top, #3B82F6 0%, transparent 25%)',
+    trailColor: '#3B82F6'
   },
   {
-    car: "/site/description/cars/red.svg",
+    car: '/site/description/cars/red.svg',
     from: {
-      desktop: { left: "57%", top: "-10%", opacity: 0 },
-      mobile: { left: "60%", top: "-10%", opacity: 0 }
+      desktop: { left: '57%', top: '-10%', opacity: 0 },
+      mobile: { left: '60%', top: '-10%', opacity: 0 }
     },
     to: {
-      desktop: { left: "41%", top: "28%", opacity: 1 },
-      mobile: { left: "25%", top: "50%", opacity: 1 }
+      desktop: { left: '41%', top: '28%', opacity: 1 },
+      mobile: { left: '25%', top: '50%', opacity: 1 }
     },
     delay: 0.12,
-    width: "150px",
-    trailGradient: "linear(to top, #EF4444 0%, transparent 25%)",
-    trailColor: "#EF4444"
+    width: '150px',
+    trailGradient: 'linear(to top, #EF4444 0%, transparent 25%)',
+    trailColor: '#EF4444'
   },
   {
-    car: "/site/description/cars/green.svg",
+    car: '/site/description/cars/green.svg',
     from: {
-      desktop: { left: "80%", top: "-10%", opacity: 0 },
-      mobile: { left: "95%", top: "-10%", opacity: 0 }
+      desktop: { left: '80%', top: '-10%', opacity: 0 },
+      mobile: { left: '95%', top: '-10%', opacity: 0 }
     },
     to: {
-      desktop: { left: "55%", top: "50%", opacity: 1 },
-      mobile: { left: "65%", top: "50%", opacity: 1 }
+      desktop: { left: '55%', top: '50%', opacity: 1 },
+      mobile: { left: '65%', top: '50%', opacity: 1 }
     },
     delay: 0.24,
-    width: "150px",
-    trailGradient: "linear(to top, #10B981 0%, transparent 40%)",
-    trailColor: "#10B981"
+    width: '150px',
+    trailGradient: 'linear(to top, #10B981 0%, transparent 40%)',
+    trailColor: '#10B981'
   }
-];
+]
 
 export const Description = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  const [isMobile] = useMediaQuery("(max-width: 1000px)");
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, amount: 0.5 })
+  const [isMobile] = useMediaQuery('(max-width: 1000px)')
 
-  const textRef = useRef(null);
-  const textInView = useInView(textRef, { once: true, margin: "-100px" });
+  const textRef = useRef(null)
+  const textInView = useInView(textRef, { once: true, margin: '-100px' })
 
   return (
     <Box
@@ -68,7 +68,7 @@ export const Description = () => {
       display="flex"
       maxW="1500px"
       mx="auto"
-      flexDirection={{ base: "column", lg: "row" }}
+      flexDirection={{ base: 'column', lg: 'row' }}
       alignItems="center"
       justifyContent="space-between"
       position="relative"
@@ -81,11 +81,11 @@ export const Description = () => {
       {/* Cars wrapper */}
       <Box
         ref={ref}
-        flexBasis={{ lg: "50%" }}
-        w={{ base: "100%", md: "75%", lg: "100%" }}
+        flexBasis={{ lg: '50%' }}
+        w={{ base: '100%', md: '75%', lg: '100%' }}
         maxW="700px"
-        h={{ base: isMobile ? "50vh" : "70vh", md: "40vh", lg: "70vh" }}
-        transform={{ base: "scale(0.7)", md: "scale(1)" }}
+        h={{ base: isMobile ? '50vh' : '70vh', md: '40vh', lg: '70vh' }}
+        transform={{ base: 'scale(0.7)', md: 'scale(1)' }}
         position="relative"
         zIndex={0}
       >
@@ -112,9 +112,9 @@ export const Description = () => {
                 : {}
             }
             transition={{
-              type: "tween",
+              type: 'tween',
               duration: 0.8,
-              ease: "linear",
+              ease: 'linear',
               delay: c.delay
             }}
           >
@@ -129,11 +129,11 @@ export const Description = () => {
               bgGradient={c.trailGradient}
               transformOrigin="bottom"
               initial={{
-                transform: "rotate(28deg) scaleY(0)",
+                transform: 'rotate(28deg) scaleY(0)',
                 filter: `drop-shadow(0 0 8px ${c.trailColor})`
               }}
               animate={{
-                transform: "rotate(28deg) scaleY(1)",
+                transform: 'rotate(28deg) scaleY(1)',
                 filter: [
                   `drop-shadow(0 0 4px ${c.trailColor})`,
                   `drop-shadow(0 0 8px ${c.trailColor})`,
@@ -143,13 +143,13 @@ export const Description = () => {
               transition={{
                 transform: {
                   duration: 1.2,
-                  ease: "easeInOut",
+                  ease: 'easeInOut',
                   delay: c.delay + 0.3
                 },
                 filter: {
                   repeat: Infinity,
                   duration: 1.5,
-                  ease: "easeInOut",
+                  ease: 'easeInOut',
                   delay: c.delay + 0.1
                 }
               }}
@@ -161,7 +161,7 @@ export const Description = () => {
       </Box>
 
       {/* Text card */}
-      <Box flexBasis={{ lg: "50%" }} maxW={{ lg: "52vw" }} zIndex={1}>
+      <Box flexBasis={{ lg: '50%' }} maxW={{ lg: '52vw' }} zIndex={1}>
         <Box
           ref={textRef}
           color="white"
@@ -180,59 +180,59 @@ export const Description = () => {
             mb={4}
             fontFamily="ProRacingSlant"
             letterSpacing={1.5}
-            fontSize={{ base: "3xl", md: "6xl" }}
+            fontSize={{ base: '3xl', md: '6xl' }}
             initial={{ y: -30, opacity: 0 }}
             animate={textInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
           >
             Welcome to R|P!
           </MotionHeading>
           <MotionText
             mb={4}
-            maxW={{ lg: "600px" }}
-            fontSize={{ base: "xl", md: "2xl" }}
+            maxW={{ lg: '600px' }}
+            fontSize={{ base: 'xl', md: '2xl' }}
             lineHeight="1.8"
             fontFamily="Magistral"
             fontWeight={700}
             initial={{ y: -20, opacity: 0 }}
             animate={textInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
           >
             Start your engines and step into the driver’s seat at the Midwest’s
-            largest student-run technology conference!{" "}
+            largest student-run technology conference!{' '}
             <Box
               as="img"
               lineHeight={0}
               src="/site/description/car.svg"
               alt="Flag"
               h="auto"
-              transform={"translateY(2px)"}
-              w={{ base: "3rem", md: "3.5rem" }}
+              transform={'translateY(2px)'}
+              w={{ base: '3rem', md: '3.5rem' }}
               display="inline-block"
               verticalAlign="text-top"
             />
           </MotionText>
 
           <MotionText
-            fontSize={{ base: "xl", md: "2xl" }}
-            maxW={{ lg: "600px" }}
+            fontSize={{ base: 'xl', md: '2xl' }}
+            maxW={{ lg: '600px' }}
             lineHeight="1.8"
             fontFamily="Magistral"
             fontWeight={700}
             initial={{ y: -20, opacity: 0 }}
             animate={textInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.55, ease: 'easeOut' }}
           >
             Hosted at the Siebel Center for Computer Science at UIUC from
             September 16–20, we’ll race towards the future with guest speakers,
             tech talks, a career fair, free merch, and more. At R|P, you’ll gear
-            up for the road ahead.{" "}
+            up for the road ahead.{' '}
             <Box
               as="img"
               src="/site/description/flag.svg"
               alt="Flag"
-              h={{ base: "2rem", md: "2.5rem" }}
-              transform={{ base: "translateY(-11px)", md: "translateY(-15px)" }}
+              h={{ base: '2rem', md: '2.5rem' }}
+              transform={{ base: 'translateY(-11px)', md: 'translateY(-15px)' }}
               w="auto"
               display="inline-block"
               verticalAlign="text-top"
@@ -252,7 +252,7 @@ export const Description = () => {
         zIndex={1}
       /> */}
     </Box>
-  );
-};
+  )
+}
 
-export default Description;
+export default Description

@@ -1,115 +1,128 @@
 // apps/tabs/home.tsx
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, StyleSheet, Dimensions } from 'react-native';
-import { ThemedText } from '@/components/themed/ThemedText';
-import { Header } from '@/components/home/Header';
-import { CarouselSection } from '@/components/home/CarouselSection';
-import { EventModal } from '@/components/home/EventModal';
-import { CardType } from '@/components/home/types';
-import { Event as ApiEvent, path, RoleObject } from '@/api/types';
-import { api } from '@/api/api';
+import React, { useState, useEffect } from 'react'
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  StyleSheet,
+  Dimensions
+} from 'react-native'
+import { ThemedText } from '@/components/themed/ThemedText'
+import { Header } from '@/components/home/Header'
+import { CarouselSection } from '@/components/home/CarouselSection'
+import { EventModal } from '@/components/home/EventModal'
+import { CardType } from '@/components/home/types'
+import { Event as ApiEvent, path, RoleObject } from '@/api/types'
+import { api } from '@/api/api'
 
 // import HomeBar from '@/assets/home/homeBar.svg';
-import BackgroundSvg from '@/assets/home/home_background.svg';
-import CarSvg from '@/assets/home/home_car.svg';
-import LottieView from 'lottie-react-native';
-import Toast from 'react-native-toast-message';
+import BackgroundSvg from '@/assets/home/home_background.svg'
+import CarSvg from '@/assets/home/home_car.svg'
+import LottieView from 'lottie-react-native'
+import Toast from 'react-native-toast-message'
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 
 export default function HomeScreen() {
   // fetched cards
-  const [cards, setCards] = useState<CardType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<RoleObject | null>(null);
+  const [cards, setCards] = useState<CardType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [user, setUser] = useState<RoleObject | null>(null)
 
   // flags + modal state
-  const [flaggedIds, setFlaggedIds] = useState<Set<string>>(new Set());
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<CardType | null>(null);
+  const [flaggedIds, setFlaggedIds] = useState<Set<string>>(new Set())
+  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState<CardType | null>(null)
 
   // scrolling lock
-  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [scrollEnabled, setScrollEnabled] = useState(true)
 
   const toggleFlag = async (id: string) => {
     if (!user?.userId) {
-      closeEvent();
+      closeEvent()
       Toast.show({
         type: 'error',
         text1: 'Registration Required',
         text2: 'You must be registered to flag an event.',
         position: 'top',
-        visibilityTime: 3000,
-      });
-      return;
+        visibilityTime: 3000
+      })
+      return
     }
-    const response = await api.post(path('/attendee/favorites/:eventId', { eventId: id }), {
-      userId: user.userId,
-    });
+    const response = await api.post(
+      path('/attendee/favorites/:eventId', { eventId: id }),
+      {
+        userId: user.userId
+      }
+    )
     if (response.status === 200) {
       setFlaggedIds((prev) => {
-        const next = new Set(prev);
-        prev.has(id) ? next.delete(id) : next.add(id);
-        return next;
-      });
+        const next = new Set(prev)
+        prev.has(id) ? next.delete(id) : next.add(id)
+        return next
+      })
     } else {
-      console.error('Failed to toggle flag:', response.data);
+      console.error('Failed to toggle flag:', response.data)
     }
-  };
+  }
 
   const openEvent = (evt: CardType) => {
-    setSelectedEvent(evt);
-    setModalVisible(true);
-  };
+    setSelectedEvent(evt)
+    setModalVisible(true)
+  }
 
   const closeEvent = () => {
-    setModalVisible(false);
-    setSelectedEvent(null);
-  };
+    setModalVisible(false)
+    setSelectedEvent(null)
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await api.get('/auth/info');
-      setUser(response.data);
-    };
-    fetchUser();
-  }, []);
+      const response = await api.get('/auth/info')
+      setUser(response.data)
+    }
+    fetchUser()
+  }, [])
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const start = Date.now();
+      const start = Date.now()
       try {
-        const response = await api.get('/events');
-        const formattedEvents = (response.data as ApiEvent[]).map((event: ApiEvent) => ({
-          id: event.eventId,
-          title: event.name,
-          time: new Date(event.startTime).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-          location: event.location,
-          pts: event.points,
-          description: event.description,
-        }));
-        setCards(formattedEvents);
+        const response = await api.get('/events')
+        const formattedEvents = (response.data as ApiEvent[]).map(
+          (event: ApiEvent) => ({
+            id: event.eventId,
+            title: event.name,
+            time: new Date(event.startTime).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit'
+            }),
+            location: event.location,
+            pts: event.points,
+            description: event.description
+          })
+        )
+        setCards(formattedEvents)
         // Only fetch favorites if user is registered
         if (user?.userId) {
-          const favResponse = await api.get(path('/attendee/favorites', { userId: user.userId }));
-          setFlaggedIds(new Set(favResponse.data.favorites));
+          const favResponse = await api.get(
+            path('/attendee/favorites', { userId: user.userId })
+          )
+          setFlaggedIds(new Set(favResponse.data.favorites))
         }
       } catch (e: any) {
-        console.error('Failed to fetch or process events:', e);
-        setError(e.message || 'Failed to load events');
+        console.error('Failed to fetch or process events:', e)
+        setError(e.message || 'Failed to load events')
       } finally {
-        const elapsed = Date.now() - start;
-        const remaining = 500 - elapsed;
-        setTimeout(() => setLoading(false), remaining > 0 ? remaining : 0);
+        const elapsed = Date.now() - start
+        const remaining = 500 - elapsed
+        setTimeout(() => setLoading(false), remaining > 0 ? remaining : 0)
       }
-    };
+    }
 
-    fetchEvents();
-  }, [user?.userId]);
+    fetchEvents()
+  }, [user?.userId])
 
   if (loading) {
     return (
@@ -128,7 +141,7 @@ export default function HomeScreen() {
           speed={4}
         />
       </SafeAreaView>
-    );
+    )
   }
 
   if (error) {
@@ -142,7 +155,7 @@ export default function HomeScreen() {
         />
         <ThemedText className="text-white text-base">Error: {error}</ThemedText>
       </SafeAreaView>
-    );
+    )
   }
 
   return (
@@ -164,7 +177,10 @@ export default function HomeScreen() {
       >
         <Header />
 
-        <ThemedText variant="bigName" className="text-left my-2 mx-4 text-white">
+        <ThemedText
+          variant="bigName"
+          className="text-left my-2 mx-4 text-white"
+        >
           R|P 2025
         </ThemedText>
 
@@ -223,5 +239,5 @@ export default function HomeScreen() {
         onToggleFlag={toggleFlag}
       />
     </SafeAreaView>
-  );
+  )
 }

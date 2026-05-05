@@ -1,6 +1,6 @@
-import { useElementHeight } from "@app/sections/home/hooks/use-element-height-hook";
-import type { SpeakerRow } from "@app/sections/home/types/speaker-types";
-import { CloseIcon } from "@chakra-ui/icons";
+import { useElementHeight } from '@app/sections/home/hooks/use-element-height-hook'
+import type { SpeakerRow } from '@app/sections/home/types/speaker-types'
+import { CloseIcon } from '@chakra-ui/icons'
 import {
   Box,
   HStack,
@@ -8,58 +8,58 @@ import {
   Text,
   useMediaQuery,
   VStack
-} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import SpeakerImageCard from "./SpeakerImageCard";
+} from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import SpeakerImageCard from './SpeakerImageCard'
 
 export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
-  const [isSmallScreen] = useMediaQuery("(max-width: 768px)");
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isSmallScreen] = useMediaQuery('(max-width: 768px)')
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const { ref: bioTextRef, height: bioTextHeight } =
-    useElementHeight<HTMLParagraphElement>();
+    useElementHeight<HTMLParagraphElement>()
 
-  const bioTextDisplayedHeight = Math.max(bioTextHeight + 20, 150);
+  const bioTextDisplayedHeight = Math.max(bioTextHeight + 20, 150)
 
   const handleSetSelectedIndex = (index: number) => {
     if (selectedIndex) {
-      return;
+      return
     }
-    setSelectedIndex(index);
-  };
+    setSelectedIndex(index)
+  }
 
   const handleLeave = () => {
     if (selectedIndex !== null) {
-      setSelectedIndex(null);
+      setSelectedIndex(null)
     }
-  };
+  }
 
   useEffect(() => {
     // Reset selected index when the number of speakers changes
-    setSelectedIndex(null);
-  }, [row.speakers.length]);
+    setSelectedIndex(null)
+  }, [row.speakers.length])
 
-  const speakerSelected = selectedIndex !== null;
+  const speakerSelected = selectedIndex !== null
 
   /** For the split-second between changing the number of speakers in a row on a screen width change */
   const displayedSelectedIndex =
     selectedIndex !== null
       ? Math.min(selectedIndex, row.speakers.length - 1)
-      : null;
+      : null
 
   const displayedContent =
     displayedSelectedIndex !== null
       ? row.speakers[displayedSelectedIndex].bio
-      : null;
+      : null
 
   useEffect(() => {
-    console.log("displayedContent", displayedContent?.split("\n"));
-  }, [displayedContent]);
+    console.log('displayedContent', displayedContent?.split('\n'))
+  }, [displayedContent])
 
   return (
     <VStack
       w={{
-        base: "80%",
-        lg: "80%"
+        base: '80%',
+        lg: '80%'
       }}
       mb={10}
       maxW="1000px"
@@ -70,10 +70,10 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
         w={
           row.speakers.length === 1 && !speakerSelected
             ? {
-                base: "50%",
-                md: "33%"
+                base: '50%',
+                md: '33%'
               }
-            : "100%"
+            : '100%'
         }
         maxW="1000px"
         ml={{
@@ -82,8 +82,8 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
         }}
         transition={
           row.speakers.length === 1 && !speakerSelected
-            ? "all 0.5s"
-            : "all 0.3s"
+            ? 'all 0.5s'
+            : 'all 0.3s'
         }
         mb={{
           base: 1,
@@ -91,11 +91,11 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
         }}
       >
         {row.speakers.map((speaker, index) => {
-          const isKeynote = speaker.name.split(" ")[0] === "Sue";
+          const isKeynote = speaker.name.split(' ')[0] === 'Sue'
           return (
             <Text
               key={`speaker-name-${index}`}
-              display={"flex"}
+              display={'flex'}
               flex={
                 displayedSelectedIndex !== null
                   ? displayedSelectedIndex === index
@@ -105,20 +105,20 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
               }
               color={row.color}
               fontFamily="Magistral"
-              fontSize={{ base: "lg", md: "2xl" }}
-              letterSpacing={"1px"}
-              fontWeight={"bold"}
+              fontSize={{ base: 'lg', md: '2xl' }}
+              letterSpacing={'1px'}
+              fontWeight={'bold'}
               transition={
                 row.speakers.length === 1 && !speakerSelected
-                  ? "all 0.5s"
-                  : "all 0.3s"
+                  ? 'all 0.5s'
+                  : 'all 0.3s'
               }
               w={
                 displayedSelectedIndex !== null
                   ? displayedSelectedIndex === index
-                    ? "100%"
-                    : "0"
-                  : "100%"
+                    ? '100%'
+                    : '0'
+                  : '100%'
               }
               opacity={
                 displayedSelectedIndex !== null
@@ -129,42 +129,42 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
               }
               isTruncated
               minWidth="0"
-              overflow={"hidden"}
+              overflow={'hidden'}
               // Keynote speaker emphasis - keep name glow and star always
-              textShadow={isKeynote ? "0 0 1px rgba(255, 215, 0, 0.3)" : "none"}
+              textShadow={isKeynote ? '0 0 1px rgba(255, 215, 0, 0.3)' : 'none'}
               _before={
                 isKeynote
                   ? {
                       content: '"★ "',
-                      color: "gold"
+                      color: 'gold'
                     }
                   : undefined
               }
             >
               {speaker.name}
             </Text>
-          );
+          )
         })}
       </HStack>
       <HStack
         display="flex"
         position="relative"
-        h={speakerSelected ? `${bioTextDisplayedHeight}px` : "150px"}
+        h={speakerSelected ? `${bioTextDisplayedHeight}px` : '150px'}
         w={
           row.speakers.length === 1 && !speakerSelected
             ? {
-                base: "50%",
-                md: "33%"
+                base: '50%',
+                md: '33%'
               }
-            : "100%"
+            : '100%'
         }
         maxW="1000px"
-        alignItems={"center"}
+        alignItems={'center'}
         gap={displayedSelectedIndex !== null ? 0 : 5}
         transition={
           row.speakers.length === 1 && !speakerSelected
-            ? "all 0.5s"
-            : "all 0.3s"
+            ? 'all 0.5s'
+            : 'all 0.3s'
         }
         ml={{
           base: 0,
@@ -180,46 +180,46 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
             speakerSelected={speakerSelected}
             speaker={speaker}
             customHeight={
-              speakerSelected ? `${bioTextDisplayedHeight}px` : "150px"
+              speakerSelected ? `${bioTextDisplayedHeight}px` : '150px'
             }
             handleSetSelectedIndex={handleSetSelectedIndex}
           />
         ))}
         <Box
-          display={"flex"}
-          alignItems={"flex-start"}
-          justifyContent={"center"}
+          display={'flex'}
+          alignItems={'flex-start'}
+          justifyContent={'center'}
           position="absolute"
           top={2}
           left={0}
           right={0}
-          pl={{ base: "1rem", md: "3rem" }}
+          pl={{ base: '1rem', md: '3rem' }}
           pr={{ base: 14, md: 16 }}
           h={`${bioTextDisplayedHeight}px`}
           textAlign="left"
           color="white"
           fontFamily="Magistral"
           fontSize={{
-            base: "md",
-            lg: "xl"
+            base: 'md',
+            lg: 'xl'
           }}
           opacity={displayedSelectedIndex !== null ? 1 : 0.5}
           transition={
             row.speakers.length === 1 && !speakerSelected
-              ? "all 0.5s"
-              : "all 0.3s"
+              ? 'all 0.5s'
+              : 'all 0.3s'
           }
           zIndex={3}
-          pointerEvents={displayedSelectedIndex !== null ? undefined : "none"}
-          fontWeight={"semibold"}
-          overflow={"hidden"}
+          pointerEvents={displayedSelectedIndex !== null ? undefined : 'none'}
+          fontWeight={'semibold'}
+          overflow={'hidden'}
         >
-          <Text ref={bioTextRef} whiteSpace={"pre-wrap"} m="5px" maxW="80%">
+          <Text ref={bioTextRef} whiteSpace={'pre-wrap'} m="5px" maxW="80%">
             {displayedContent ? (
-              displayedContent.split("\\n").map((line, i) => (
+              displayedContent.split('\\n').map((line, i) => (
                 <>
                   {line}
-                  {i < displayedContent.split("\\n").length - 1 && (
+                  {i < displayedContent.split('\\n').length - 1 && (
                     <>
                       <br />
                     </>
@@ -236,16 +236,16 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
           top={2}
           right={1}
           zIndex={4}
-          opacity={displayedSelectedIndex !== null ? "1" : "0"}
-          display={displayedSelectedIndex !== null ? "flex" : "none"}
+          opacity={displayedSelectedIndex !== null ? '1' : '0'}
+          display={displayedSelectedIndex !== null ? 'flex' : 'none'}
         >
           {/* Exit button, x icon */}
           <IconButton
             size="sm"
             aria-label="Exit"
-            icon={<CloseIcon transform={{ md: "skewX(10deg)" }} />}
+            icon={<CloseIcon transform={{ md: 'skewX(10deg)' }} />}
             onClick={handleLeave}
-            transform={{ base: "", md: "skewX(-10deg)" }}
+            transform={{ base: '', md: 'skewX(-10deg)' }}
             px={4}
           />
         </Box>
@@ -258,16 +258,16 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
         w={
           row.speakers.length === 1 && !speakerSelected
             ? {
-                base: "50%",
-                md: "33%"
+                base: '50%',
+                md: '33%'
               }
-            : "100%"
+            : '100%'
         }
         maxW="1000px"
         transition={
           row.speakers.length === 1 && !speakerSelected
-            ? "all 0.5s"
-            : "all 0.3s"
+            ? 'all 0.5s'
+            : 'all 0.3s'
         }
         mt={{
           base: 0,
@@ -279,11 +279,11 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
         }}
       >
         {row.speakers.map((speaker, index) => {
-          const isKeynote = speaker.name.split(" ")[0] === "Sue";
+          const isKeynote = speaker.name.split(' ')[0] === 'Sue'
           return (
             <Text
               key={`speaker-title-${index}`}
-              display={"block"}
+              display={'block'}
               flex={
                 displayedSelectedIndex !== null
                   ? displayedSelectedIndex === index
@@ -293,12 +293,12 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
               }
               color={row.color}
               fontFamily="Magistral"
-              letterSpacing={"1px"}
+              letterSpacing={'1px'}
               fontSize={{
-                base: "sm,",
-                md: "xl"
+                base: 'sm,',
+                md: 'xl'
               }}
-              h={displayedSelectedIndex ? "30px" : "100px"}
+              h={displayedSelectedIndex ? '30px' : '100px'}
               isTruncated={
                 isSmallScreen ? false : displayedSelectedIndex !== null
               }
@@ -313,31 +313,31 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
               minWidth="0"
               transition={
                 row.speakers.length === 1 && !speakerSelected
-                  ? "all 0.5s"
-                  : "all 0.3s"
+                  ? 'all 0.5s'
+                  : 'all 0.3s'
               }
               w={
                 displayedSelectedIndex !== null
                   ? displayedSelectedIndex === index
-                    ? "100%"
-                    : "0"
-                  : "100%"
+                    ? '100%'
+                    : '0'
+                  : '100%'
               }
-              overflow={"hidden"}
+              overflow={'hidden'}
               // Keynote speaker emphasis - only show when not selected
               textShadow={
                 isKeynote && !speakerSelected
-                  ? "0 0 8px rgba(255, 215, 0, 0.6)"
-                  : "none"
+                  ? '0 0 8px rgba(255, 215, 0, 0.6)'
+                  : 'none'
               }
             >
               {isKeynote && !speakerSelected
-                ? "Keynote Speaker"
+                ? 'Keynote Speaker'
                 : speaker.title}
             </Text>
-          );
+          )
         })}
       </HStack>
     </VStack>
-  );
+  )
 }

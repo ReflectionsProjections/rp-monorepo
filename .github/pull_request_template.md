@@ -2,16 +2,15 @@
 
 <!-- What does this PR do? Give a short overview. -->
 
-
 ## Changes
 
 <!-- List the main changes in this PR. -->
 
-- 
+-
 
-- 
+-
 
-- 
+-
 
 ## Screenshots / Recordings
 
@@ -35,11 +34,11 @@
 
 <!-- Write clear reproduction / verification steps. -->
 
-1. 
+1.
 
-2. 
+2.
 
-3. 
+3.
 
 ## Impact
 
@@ -72,7 +71,6 @@
 ## Related Issues
 
 <!-- Link Linear issues here. -->
-
 
 ## Reviewer Notes
 

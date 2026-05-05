@@ -1,5 +1,5 @@
-import animationData from "@app/sections/home/assets/Landing/homeScreen1.json";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import animationData from '@app/sections/home/assets/Landing/homeScreen1.json'
+import { ChevronDownIcon } from '@chakra-ui/icons'
 import {
   Box,
   Button,
@@ -10,55 +10,55 @@ import {
   Text,
   useMediaQuery,
   VStack
-} from "@chakra-ui/react";
-import { motion, useAnimation, useInView } from "framer-motion";
-import lottie from "lottie-web";
-import { useEffect, useRef, useCallback } from "react";
+} from '@chakra-ui/react'
+import { motion, useAnimation, useInView } from 'framer-motion'
+import lottie from 'lottie-web'
+import { useEffect, useRef, useCallback } from 'react'
 
-const MotionBox = motion(Box);
-const MotionText = motion(Text);
-const MotionVStack = motion(VStack);
-const MotionHStack = motion(HStack);
+const MotionBox = motion(Box)
+const MotionText = motion(Text)
+const MotionVStack = motion(VStack)
+const MotionHStack = motion(HStack)
 
 export const Landing = () => {
-  const [isMobile] = useMediaQuery("(max-width: 850px)");
-  const [isSmall] = useMediaQuery("(max-width: 500px)");
-  const [isShort] = useMediaQuery("(max-height: 500px)");
+  const [isMobile] = useMediaQuery('(max-width: 850px)')
+  const [isSmall] = useMediaQuery('(max-width: 500px)')
+  const [isShort] = useMediaQuery('(max-height: 500px)')
 
   // compute separator height
-  const sepH = isSmall ? 42 : isMobile ? 90 : 150;
+  const sepH = isSmall ? 42 : isMobile ? 90 : 150
 
   // refs & animation controls
-  const barRef = useRef(null);
-  const inView = useInView(barRef, { once: true });
-  const barCtrl = useAnimation();
-  const refCtrl = useAnimation();
-  const projCtrl = useAnimation();
+  const barRef = useRef(null)
+  const inView = useInView(barRef, { once: true })
+  const barCtrl = useAnimation()
+  const refCtrl = useAnimation()
+  const projCtrl = useAnimation()
 
   const handleLoad = useCallback(async () => {
     // 1) grow the bar
     await barCtrl.start({
       height: sepH,
-      transition: { duration: 0.8, ease: "easeInOut" }
-    });
+      transition: { duration: 0.8, ease: 'easeInOut' }
+    })
 
     // 2) slide in "reflections" from left
     await refCtrl.start({
       x: isSmall ? -10 : -20,
-      transition: { duration: 0.8, ease: "easeOut" }
-    });
+      transition: { duration: 0.8, ease: 'easeOut' }
+    })
 
     // 3) slide in "projections" from right
     await projCtrl.start({
       x: isSmall ? 10 : 20,
-      transition: { duration: 0.8, ease: "easeOut" }
-    });
-  }, [barCtrl, refCtrl, projCtrl, sepH, isSmall]);
+      transition: { duration: 0.8, ease: 'easeOut' }
+    })
+  }, [barCtrl, refCtrl, projCtrl, sepH, isSmall])
 
   useEffect(() => {
-    if (!inView) return;
-    void handleLoad();
-  }, [inView, handleLoad]);
+    if (!inView) return
+    void handleLoad()
+  }, [inView, handleLoad])
 
   return (
     <Box
@@ -66,7 +66,7 @@ export const Landing = () => {
       overflow="hidden"
       id="hero"
       display="flex"
-      flexDirection={"column"}
+      flexDirection={'column'}
       justifyContent="center"
     >
       {/* background animation */}
@@ -86,12 +86,12 @@ export const Landing = () => {
               justifyContent="flex-end"
             >
               <MotionText
-                fontSize={{ base: "2xl", sm: "3xl", md: "5xl", lg: "6xl" }}
+                fontSize={{ base: '2xl', sm: '3xl', md: '5xl', lg: '6xl' }}
                 fontFamily="Roboto Slab"
                 fontWeight="400"
                 letterSpacing="0.08em"
                 color="white"
-                style={{ x: "100%" }}
+                style={{ x: '100%' }}
                 animate={refCtrl}
                 textAlign="right"
               >
@@ -104,7 +104,7 @@ export const Landing = () => {
               ref={barRef}
               as="span"
               display="inline-block"
-              w={isSmall ? "2px" : isMobile ? "4px" : "6px"}
+              w={isSmall ? '2px' : isMobile ? '4px' : '6px'}
               bg="white"
               borderRadius="1px"
               height={0} // start collapsed
@@ -119,12 +119,12 @@ export const Landing = () => {
               alignItems="center"
             >
               <MotionText
-                fontSize={{ base: "2xl", sm: "3xl", md: "5xl", lg: "6xl" }}
+                fontSize={{ base: '2xl', sm: '3xl', md: '5xl', lg: '6xl' }}
                 fontFamily="Roboto Slab"
                 fontWeight="400"
                 letterSpacing="0.08em"
                 color="white"
-                style={{ x: "-100%" }}
+                style={{ x: '-100%' }}
                 animate={projCtrl}
                 textAlign="left"
               >
@@ -154,7 +154,7 @@ export const Landing = () => {
         <MotionBox
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3, duration: 0.6, ease: "easeOut" }}
+          transition={{ delay: 3, duration: 0.6, ease: 'easeOut' }}
         >
           <Button
             as="a"
@@ -162,8 +162,8 @@ export const Landing = () => {
             target="_blank"
             rel="noopener noreferrer"
             size={{
-              base: "md",
-              md: "lg"
+              base: 'md',
+              md: 'lg'
             }}
             p={{
               base: 6,
@@ -172,13 +172,13 @@ export const Landing = () => {
             bg="#f5bc43ff"
             color="black"
             rounded="lg"
-            _hover={{ bg: "gray.800", color: "white" }}
-            _active={{ bg: "#EAA001" }}
+            _hover={{ bg: 'gray.800', color: 'white' }}
+            _active={{ bg: '#EAA001' }}
             boxShadow="lg"
             fontFamily="ProRacing"
           >
             <Text
-              fontSize={{ base: "2xl", md: "3xl" }}
+              fontSize={{ base: '2xl', md: '3xl' }}
               fontWeight="800"
               fontStyle="italic"
               letterSpacing="0.01em"
@@ -191,27 +191,27 @@ export const Landing = () => {
         <MotionHStack
           spacing={6}
           pt={4}
-          flexDir={{ base: "column", sm: "row" }}
+          flexDir={{ base: 'column', sm: 'row' }}
           align="center"
           justify="center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3, duration: 0.6, ease: "easeOut" }}
+          transition={{ delay: 3, duration: 0.6, ease: 'easeOut' }}
         >
           <Link
             href="https://apps.apple.com/us/app/r-p-2025/id6744465190"
             isExternal
-            _hover={{ transform: "scale(1.05)" }}
+            _hover={{ transform: 'scale(1.05)' }}
             transition="all 0.3s ease"
           >
             <Image
               src="/site/appscreen/app_store.png"
               alt="Download on the App Store"
-              h={{ base: "50px", md: "60px" }}
+              h={{ base: '50px', md: '60px' }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{
-                filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"
+                filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))'
               }}
             />
           </Link>
@@ -219,17 +219,17 @@ export const Landing = () => {
           <Link
             href="https://play.google.com/store/apps/details?id=com.reflectionsprojections&utm_source=na_Med"
             isExternal
-            _hover={{ transform: "scale(1.05)" }}
+            _hover={{ transform: 'scale(1.05)' }}
             transition="all 0.3s ease"
           >
             <Image
               src="/site/appscreen/google_play.png"
               alt="Get it on Google Play"
-              h={{ base: "50px", md: "60px" }}
+              h={{ base: '50px', md: '60px' }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{
-                filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"
+                filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))'
               }}
             />
           </Link>
@@ -245,21 +245,21 @@ export const Landing = () => {
           mb={6}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 4, duration: 0.8, ease: "easeInOut" }}
+          transition={{ delay: 4, duration: 0.8, ease: 'easeInOut' }}
           cursor="pointer"
           onClick={() => {
-            const descriptionSection = document.getElementById("description");
+            const descriptionSection = document.getElementById('description')
             if (descriptionSection) {
               descriptionSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-              });
+                behavior: 'smooth',
+                block: 'start'
+              })
             }
           }}
         >
           <Text
             color="white"
-            fontSize={{ base: "2xl", md: "3xl" }}
+            fontSize={{ base: '2xl', md: '3xl' }}
             fontFamily="Magistral"
             fontWeight="600"
             textAlign="center"
@@ -273,7 +273,7 @@ export const Landing = () => {
             transition={{
               repeat: Infinity,
               duration: 1.2,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: 4
             }}
           >
@@ -293,57 +293,57 @@ export const Landing = () => {
         zIndex={1}
       />
     </Box>
-  );
-};
+  )
+}
 const LandingBackground = () => {
-  const controls = useAnimation();
-  const animationRef = useRef<HTMLDivElement | null>(null);
+  const controls = useAnimation()
+  const animationRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     // kick off the brightness fade
     void controls.start({
-      filter: ["blur(3px) brightness(1)", "blur(3px) brightness(0.7)"],
-      transition: { delay: 4.0, duration: 1, ease: "easeInOut" }
-    });
-  }, [controls]);
+      filter: ['blur(3px) brightness(1)', 'blur(3px) brightness(0.7)'],
+      transition: { delay: 4.0, duration: 1, ease: 'easeInOut' }
+    })
+  }, [controls])
 
   useEffect(() => {
-    if (!animationRef.current) return;
+    if (!animationRef.current) return
 
     const animation = lottie.loadAnimation({
       container: animationRef.current,
-      renderer: "svg",
+      renderer: 'svg',
       loop: true,
       autoplay: true,
       animationData,
       rendererSettings: {
-        preserveAspectRatio: "xMidYMid slice"
+        preserveAspectRatio: 'xMidYMid slice'
       }
-    });
+    })
 
     return () => {
-      animation.destroy();
-    };
-  }, []);
+      animation.destroy()
+    }
+  }, [])
 
   return (
     <MotionBox
       position="absolute"
       inset={0}
-      initial={{ filter: "blur(3px) brightness(1)" }}
+      initial={{ filter: 'blur(3px) brightness(1)' }}
       animate={controls}
     >
       <Box
         ref={animationRef}
         style={{
-          width: "100%",
-          height: "100%",
-          pointerEvents: "none",
-          transform: "scale(1.05)"
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          transform: 'scale(1.05)'
         }}
       />
     </MotionBox>
-  );
-};
+  )
+}
 
-export default Landing;
+export default Landing

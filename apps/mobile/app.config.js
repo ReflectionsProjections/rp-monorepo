@@ -1,18 +1,20 @@
 /* global __dirname */
-const dotenv = require('dotenv');
-const path = require('path');
+const dotenv = require('dotenv')
+const path = require('path')
 
-dotenv.config();
+dotenv.config()
 dotenv.config({
   path: path.resolve(__dirname, '../../.env'),
-  override: false,
-});
+  override: false
+})
 
-const appEnv = process.env.ENV || process.env.VITE_ENV || 'PRODUCTION';
-const isDevelopment = appEnv === 'DEVELOPMENT';
+const appEnv = process.env.ENV || process.env.VITE_ENV || 'PRODUCTION'
+const isDevelopment = appEnv === 'DEVELOPMENT'
 const apiUrl =
   process.env.API_URL ||
-  (isDevelopment ? 'http://localhost:3000' : 'https://api.reflectionsprojections.org');
+  (isDevelopment
+    ? 'http://localhost:3000'
+    : 'https://api.reflectionsprojections.org')
 
 module.exports = {
   expo: {
@@ -28,7 +30,7 @@ module.exports = {
       supportsTablet: false,
       bundleIdentifier: 'com.reflectionsprojections',
       config: {
-        usesNonExemptEncryption: false,
+        usesNonExemptEncryption: false
       },
       googleServicesFile: './googleServices/GoogleService-Info-RP.plist',
       infoPlist: {
@@ -36,25 +38,25 @@ module.exports = {
           {
             CFBundleURLSchemes: [
               'reflectionsprojections',
-              'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
-            ],
-          },
+              'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0'
+            ]
+          }
         ],
-        UIBackgroundModes: ['remote-notification'],
-      },
+        UIBackgroundModes: ['remote-notification']
+      }
     },
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/images/adaptive-icon.png',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#ffffff'
       },
       package: 'com.reflectionsprojections',
-      googleServicesFile: './googleServices/google-services.json',
+      googleServicesFile: './googleServices/google-services.json'
     },
     web: {
       bundler: 'metro',
       output: 'static',
-      favicon: './assets/images/favicon.png',
+      favicon: './assets/images/favicon.png'
     },
     plugins: [
       'expo-router',
@@ -66,20 +68,20 @@ module.exports = {
           image: './assets/images/splash-icon.png',
           imageWidth: 200,
           resizeMode: 'contain',
-          backgroundColor: '#ffffff',
-        },
+          backgroundColor: '#ffffff'
+        }
       ],
       'expo-font',
       '@react-native-firebase/app',
-      '@react-native-firebase/messaging',
+      '@react-native-firebase/messaging'
     ],
     experiments: {
-      typedRoutes: true,
+      typedRoutes: true
     },
     extra: {
       env: appEnv,
       googleClientId: process.env.OAUTH_GOOGLE_CLIENT_ID,
-      apiUrl,
-    },
-  },
-};
+      apiUrl
+    }
+  }
+}

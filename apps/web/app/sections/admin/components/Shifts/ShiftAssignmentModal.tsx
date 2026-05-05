@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef } from 'react'
 import {
   VStack,
   HStack,
@@ -24,34 +24,34 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay
-} from "@chakra-ui/react";
-import { AddIcon, CloseIcon, EditIcon, DeleteIcon } from "@chakra-ui/icons";
-import moment from "moment-timezone";
-import type { Shift, Staff, ShiftAssignment, CommitteeType } from "@app";
-import { api } from "@app";
+} from '@chakra-ui/react'
+import { AddIcon, CloseIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons'
+import moment from 'moment-timezone'
+import type { Shift, Staff, ShiftAssignment, CommitteeType } from '@app'
+import { api } from '@app'
 
 // Set timezone to Chicago (Central Time)
-moment.tz.setDefault("America/Chicago");
+moment.tz.setDefault('America/Chicago')
 
 type ShiftAssignmentModalProps = {
-  shift: Shift;
-  staff: Staff[];
-  assignments: ShiftAssignment[];
-  onUpdate: () => void;
-  onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-};
+  shift: Shift
+  staff: Staff[]
+  assignments: ShiftAssignment[]
+  onUpdate: () => void
+  onClose: () => void
+  onEdit: () => void
+  onDelete: () => void
+}
 
 const teamColors = {
-  CONTENT: "cyan",
-  CORPORATE: "green",
-  DESIGN: "purple",
-  DEV: "orange",
-  MARKETING: "pink",
-  OPERATIONS: "teal",
-  "FULL TEAM": "gray"
-};
+  CONTENT: 'cyan',
+  CORPORATE: 'green',
+  DESIGN: 'purple',
+  DEV: 'orange',
+  MARKETING: 'pink',
+  OPERATIONS: 'teal',
+  'FULL TEAM': 'gray'
+}
 
 const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
   shift,
@@ -62,39 +62,37 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
   onEdit,
   onDelete
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [staffToUnassign, setStaffToUnassign] = useState<Staff | null>(null);
+  const [isLoading, setIsLoading] = useState(false)
+  const [staffToUnassign, setStaffToUnassign] = useState<Staff | null>(null)
   const {
     isOpen: isUnassignOpen,
     onOpen: onUnassignOpen,
     onClose: onUnassignClose
-  } = useDisclosure();
-  const toast = useToast();
-  const borderColor = useColorModeValue("gray.200", "gray.600");
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  } = useDisclosure()
+  const toast = useToast()
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const cancelRef = useRef<HTMLButtonElement>(null)
 
   // Get current assignments for this shift with acknowledgment status
   const currentAssignments = useMemo(() => {
-    if (!assignments || assignments.length === 0) return [];
+    if (!assignments || assignments.length === 0) return []
 
     return assignments
       .filter((assignment) => assignment.shiftId === shift.shiftId)
       .map((assignment) => {
-        const staffMember = staff.find(
-          (s) => s.email === assignment.staffEmail
-        );
+        const staffMember = staff.find((s) => s.email === assignment.staffEmail)
         return staffMember
           ? { ...staffMember, acknowledged: assignment.acknowledged }
-          : null;
+          : null
       })
-      .filter(Boolean) as (Staff & { acknowledged: boolean })[];
-  }, [assignments, staff, shift.shiftId]);
+      .filter(Boolean) as (Staff & { acknowledged: boolean })[]
+  }, [assignments, staff, shift.shiftId])
 
   // Get available staff (not assigned to this shift)
   const availableStaff = useMemo(() => {
-    const assignedEmails = currentAssignments.map((s) => s.email);
-    return staff.filter((s) => !assignedEmails.includes(s.email));
-  }, [staff, currentAssignments]);
+    const assignedEmails = currentAssignments.map((s) => s.email)
+    return staff.filter((s) => !assignedEmails.includes(s.email))
+  }, [staff, currentAssignments])
 
   // Group staff by team
   const staffByTeam = useMemo(() => {
@@ -105,91 +103,91 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
       DEV: [],
       MARKETING: [],
       OPERATIONS: [],
-      "FULL TEAM": []
-    };
+      'FULL TEAM': []
+    }
 
     availableStaff.forEach((member) => {
       if (grouped[member.team]) {
-        grouped[member.team].push(member);
+        grouped[member.team].push(member)
       }
-    });
+    })
 
-    return grouped;
-  }, [availableStaff]);
+    return grouped
+  }, [availableStaff])
 
   const handleAssignStaff = async (staffEmail: string) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       await api.post(
-        `/shifts/${shift.shiftId}/assignments` as "/shifts/:shiftId/assignments",
+        `/shifts/${shift.shiftId}/assignments` as '/shifts/:shiftId/assignments',
         {
           staffEmail
         }
-      );
+      )
 
       toast({
-        title: "Staff assigned successfully",
-        status: "success",
+        title: 'Staff assigned successfully',
+        status: 'success',
         duration: 3000,
         isClosable: true
-      });
+      })
 
-      onUpdate();
+      onUpdate()
     } catch (error) {
-      console.error("Error assigning staff:", error);
+      console.error('Error assigning staff:', error)
       toast({
-        title: "Error assigning staff",
-        description: "Please try again",
-        status: "error",
+        title: 'Error assigning staff',
+        description: 'Please try again',
+        status: 'error',
         duration: 5000,
         isClosable: true
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleUnassignStaff = async (staffEmail: string) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       await api.delete(
-        `/shifts/${shift.shiftId}/assignments` as "/shifts/:shiftId/assignments",
+        `/shifts/${shift.shiftId}/assignments` as '/shifts/:shiftId/assignments',
         {
           data: { staffEmail }
         }
-      );
+      )
 
       toast({
-        title: "Staff unassigned successfully",
-        status: "success",
+        title: 'Staff unassigned successfully',
+        status: 'success',
         duration: 3000,
         isClosable: true
-      });
+      })
 
-      onUpdate();
-      onUnassignClose();
+      onUpdate()
+      onUnassignClose()
     } catch (error) {
-      console.error("Error unassigning staff:", error);
+      console.error('Error unassigning staff:', error)
       toast({
-        title: "Error unassigning staff",
-        description: "Please try again",
-        status: "error",
+        title: 'Error unassigning staff',
+        description: 'Please try again',
+        status: 'error',
         duration: 5000,
         isClosable: true
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const confirmUnassign = (staff: Staff) => {
-    setStaffToUnassign(staff);
-    onUnassignOpen();
-  };
+    setStaffToUnassign(staff)
+    onUnassignOpen()
+  }
 
   const formatTime = (time: string) => {
-    return moment.tz(time, "America/Chicago").format("MMM D, h:mm A");
-  };
+    return moment.tz(time, 'America/Chicago').format('MMM D, h:mm A')
+  }
 
   return (
     <VStack spacing={6} align="stretch">
@@ -227,7 +225,7 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
                 Role:
               </Text>
               <Badge colorScheme="blue" variant="subtle">
-                {shift.role.replace("_", " ")}
+                {shift.role.replace('_', ' ')}
               </Badge>
             </HStack>
             <HStack justify="space-between">
@@ -257,11 +255,11 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
           {currentAssignments.length > 0 && (
             <HStack spacing={2}>
               <Badge colorScheme="green" variant="subtle">
-                {currentAssignments.filter((m) => m.acknowledged).length}{" "}
+                {currentAssignments.filter((m) => m.acknowledged).length}{' '}
                 Acknowledged
               </Badge>
               <Badge colorScheme="orange" variant="subtle">
-                {currentAssignments.filter((m) => !m.acknowledged).length}{" "}
+                {currentAssignments.filter((m) => !m.acknowledged).length}{' '}
                 Pending
               </Badge>
             </HStack>
@@ -284,7 +282,7 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
             {currentAssignments.map((member) => (
               <Tooltip
                 key={member.email}
-                label={`${member.name} (${member.team}) - ${member.acknowledged ? "Acknowledged" : "Pending"}`}
+                label={`${member.name} (${member.team}) - ${member.acknowledged ? 'Acknowledged' : 'Pending'}`}
                 placement="top"
                 hasArrow
               >
@@ -303,8 +301,8 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
                     bottom="-1"
                     right="-1"
                     size="sm"
-                    colorScheme={member.acknowledged ? "green" : "orange"}
-                    bg={member.acknowledged ? "green.500" : "orange.500"}
+                    colorScheme={member.acknowledged ? 'green' : 'orange'}
+                    bg={member.acknowledged ? 'green.500' : 'orange.500'}
                     borderRadius="full"
                     minW="16px"
                     h="16px"
@@ -313,7 +311,7 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
                     alignItems="center"
                     justifyContent="center"
                   >
-                    {member.acknowledged ? "✓" : "!"}
+                    {member.acknowledged ? '✓' : '!'}
                   </Badge>
                   <IconButton
                     aria-label="Remove assignment"
@@ -329,7 +327,7 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
                     h="20px"
                     onClick={() => confirmUnassign(member)}
                     isLoading={isLoading}
-                    _hover={{ bg: "red.600" }}
+                    _hover={{ bg: 'red.600' }}
                   />
                 </Box>
               </Tooltip>
@@ -360,7 +358,7 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
         ) : (
           <VStack spacing={4} align="stretch">
             {Object.entries(staffByTeam).map(([team, teamMembers]) => {
-              if (teamMembers.length === 0) return null;
+              if (teamMembers.length === 0) return null
 
               return (
                 <Box key={team}>
@@ -402,14 +400,14 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
                             h="20px"
                             onClick={() => void handleAssignStaff(member.email)}
                             isLoading={isLoading}
-                            _hover={{ bg: "green.600" }}
+                            _hover={{ bg: 'green.600' }}
                           />
                         </Box>
                       </Tooltip>
                     ))}
                   </HStack>
                 </Box>
-              );
+              )
             })}
           </VStack>
         )}
@@ -457,7 +455,7 @@ const ShiftAssignmentModal: React.FC<ShiftAssignmentModalProps> = ({
         </AlertDialogOverlay>
       </AlertDialog>
     </VStack>
-  );
-};
+  )
+}
 
-export default ShiftAssignmentModal;
+export default ShiftAssignmentModal

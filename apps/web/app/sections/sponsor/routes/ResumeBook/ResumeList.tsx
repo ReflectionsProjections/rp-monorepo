@@ -1,4 +1,4 @@
-import useWindowWidth from "@app/sections/sponsor/util/use-window-width-hook";
+import useWindowWidth from '@app/sections/sponsor/util/use-window-width-hook'
 import {
   Box,
   Grid,
@@ -9,79 +9,79 @@ import {
   Text,
   useMediaQuery,
   VStack
-} from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+} from '@chakra-ui/react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   FaBook,
   FaFileDownload,
   FaGraduationCap,
   FaUniversity,
   FaUser
-} from "react-icons/fa";
+} from 'react-icons/fa'
 import {
   FaArrowDownWideShort,
   FaArrowUpWideShort,
   FaUserTie
-} from "react-icons/fa6";
-import type { Resume } from "./ResumeBook";
-import ResumeListBox from "./ResumeListBox";
+} from 'react-icons/fa6'
+import type { Resume } from './ResumeBook'
+import ResumeListBox from './ResumeListBox'
 
 interface ResumeListProps {
-  loading: boolean;
-  resumes: Resume[];
-  selectedResumes: string[];
-  openResume: (resume: Resume) => void;
-  toggleResume: (resumeId: string) => void;
-  baseColor: string;
-  sortByColumn?: SingleCol;
-  sortDirection: "asc" | "desc";
-  onSortByColumn: (column: SingleCol) => void;
+  loading: boolean
+  resumes: Resume[]
+  selectedResumes: string[]
+  openResume: (resume: Resume) => void
+  toggleResume: (resumeId: string) => void
+  baseColor: string
+  sortByColumn?: SingleCol
+  sortDirection: 'asc' | 'desc'
+  onSortByColumn: (column: SingleCol) => void
 }
 
 const TableColumn: React.FC<{
-  onClick: () => void;
-  children: React.ReactNode;
+  onClick: () => void
+  children: React.ReactNode
 }> = ({ onClick, children }) => {
   return (
     <Box
       position="relative"
       display="flex"
-      alignItems={"center"}
+      alignItems={'center'}
       gap={1.5}
       minWidth="50px"
       cursor="default"
       onClick={onClick}
       _hover={{
-        color: "gray.600",
-        cursor: "pointer"
+        color: 'gray.600',
+        cursor: 'pointer'
       }}
     >
       {children}
     </Box>
-  );
-};
+  )
+}
 
 export type SingleCol =
-  | "checkbox"
-  | "name"
-  | "fieldsOfStudy"
-  | "degree"
-  | "graduationYear"
-  | "actions"
-  | "data"
-  | "links"
-  | "resume";
+  | 'checkbox'
+  | 'name'
+  | 'fieldsOfStudy'
+  | 'degree'
+  | 'graduationYear'
+  | 'actions'
+  | 'data'
+  | 'links'
+  | 'resume'
 
 type ColumnProps = {
-  id: SingleCol;
-  sortColId?: SingleCol;
-  sortDirection?: "asc" | "desc";
-  selectedSingleCol?: SingleCol;
-  name: string;
-  icon: React.ElementType;
-  boxSize?: number;
-  onSort?: (col: SingleCol) => void;
-};
+  id: SingleCol
+  sortColId?: SingleCol
+  sortDirection?: 'asc' | 'desc'
+  selectedSingleCol?: SingleCol
+  name: string
+  icon: React.ElementType
+  boxSize?: number
+  onSort?: (col: SingleCol) => void
+}
 
 const Column = ({
   id,
@@ -95,18 +95,18 @@ const Column = ({
   return (
     <GridItem
       _groupHover={{
-        cursor: onSort ? "pointer" : undefined
+        cursor: onSort ? 'pointer' : undefined
       }}
       onClick={() => {
         if (onSort) {
-          onSort(id);
+          onSort(id)
         }
       }}
     >
       <TableColumn
         onClick={() => {
           if (onSort) {
-            onSort(id);
+            onSort(id)
           }
         }}
       >
@@ -115,15 +115,15 @@ const Column = ({
           boxSize={boxSize}
           color="gray.600"
           _groupHover={{
-            color: onSort ? "gray.400" : undefined
+            color: onSort ? 'gray.400' : undefined
           }}
         />
         <Text
           fontWeight="bold"
           userSelect="none"
           fontSize={{
-            base: "sm",
-            lg: "md"
+            base: 'sm',
+            lg: 'md'
           }}
         >
           {name}
@@ -131,7 +131,7 @@ const Column = ({
         {sortColId === id && (
           <Icon
             as={
-              sortDirection === "asc"
+              sortDirection === 'asc'
                 ? FaArrowUpWideShort
                 : FaArrowDownWideShort
             }
@@ -142,8 +142,8 @@ const Column = ({
         )}
       </TableColumn>
     </GridItem>
-  );
-};
+  )
+}
 
 const ResumeList: React.FC<ResumeListProps> = ({
   loading,
@@ -156,38 +156,38 @@ const ResumeList: React.FC<ResumeListProps> = ({
   sortDirection,
   onSortByColumn
 }) => {
-  const navbarRef = useRef<HTMLDivElement>(null);
-  const [navbarTop, setNavbarTop] = useState(0);
+  const navbarRef = useRef<HTMLDivElement>(null)
+  const [navbarTop, setNavbarTop] = useState(0)
 
   const bgColor =
     parseInt(baseColor) < 500
-      ? "gray." + (parseInt(baseColor) - 100)
-      : "gray." + (100 + parseInt(baseColor));
+      ? 'gray.' + (parseInt(baseColor) - 100)
+      : 'gray.' + (100 + parseInt(baseColor))
 
   useEffect(() => {
-    const navbar = navbarRef.current;
+    const navbar = navbarRef.current
     if (navbar) {
-      setNavbarTop(navbar.offsetTop);
+      setNavbarTop(navbar.offsetTop)
     }
-  }, [navbarTop, baseColor]);
+  }, [navbarTop, baseColor])
 
-  const [screenIsLarge] = useMediaQuery("(min-width: 800px)");
+  const [screenIsLarge] = useMediaQuery('(min-width: 800px)')
 
-  const width = useWindowWidth();
-  const screenIsLargeButton = width >= 1200;
+  const width = useWindowWidth()
+  const screenIsLargeButton = width >= 1200
 
   return (
     <VStack
       id="resume-list"
       display="flex"
-      flexDirection={"column"}
+      flexDirection={'column'}
       spacing="0"
-      paddingTop={"0px"}
+      paddingTop={'0px'}
       w="100%"
       maxW="100%"
       h="100%"
       maxH="100%"
-      borderRadius={"lg"}
+      borderRadius={'lg'}
       border="1px solid"
       borderColor="gray.300"
       flex={1}
@@ -196,7 +196,7 @@ const ResumeList: React.FC<ResumeListProps> = ({
     >
       <Box
         ref={navbarRef}
-        position={"relative"}
+        position={'relative'}
         padding="10px"
         pr="20px"
         width="100%"
@@ -207,8 +207,8 @@ const ResumeList: React.FC<ResumeListProps> = ({
         <Grid
           templateColumns={
             screenIsLarge
-              ? "80px 1fr 1fr 1.5fr 1fr 1.2fr 100px"
-              : "60px minmax(0, 1.5fr) minmax(0, 1fr) 100px"
+              ? '80px 1fr 1fr 1.5fr 1fr 1.2fr 100px'
+              : '60px minmax(0, 1.5fr) minmax(0, 1fr) 100px'
           }
           gap={4}
           alignItems="center"
@@ -324,12 +324,12 @@ const ResumeList: React.FC<ResumeListProps> = ({
                 baseColor={baseColor}
                 bgColor={bgColor}
               />
-            );
+            )
           })}
         </VStack>
       )}
     </VStack>
-  );
-};
+  )
+}
 
-export default ResumeList;
+export default ResumeList

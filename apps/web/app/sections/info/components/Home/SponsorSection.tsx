@@ -7,7 +7,7 @@ import {
   VStack,
   Button,
   Image
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
 export const SponsorSection = () => {
   return (
@@ -27,7 +27,7 @@ export const SponsorSection = () => {
 
         {/* Desktop layout: three disjoint stacks (rotated left, straight middle, rotated right) */}
         <Flex
-          display={{ base: "none", lg: "flex" }}
+          display={{ base: 'none', lg: 'flex' }}
           direction="row"
           gap={0}
           justify="center"
@@ -140,7 +140,7 @@ export const SponsorSection = () => {
         </Flex>
 
         {/* Mobile layout: keep original stacked three cards within one backdrop */}
-        <Box display={{ base: "block", lg: "none" }}>
+        <Box display={{ base: 'block', lg: 'none' }}>
           <Box>
             {/* OUTER BACKDROP (lighter) */}
             <Box bg="#B8B8B8" p={{ base: 3 }}>
@@ -230,17 +230,17 @@ export const SponsorSection = () => {
 
         <Button
           margin="60px auto 20px"
-          w={{ base: "70%", md: "20%" }}
+          w={{ base: '70%', md: '20%' }}
           display="block"
           bg="#5F5D58"
           borderRadius="100px"
           color="white"
           textAlign="center"
-          _hover={{ bg: "gray.200", color: "#5F5D58" }}
+          _hover={{ bg: 'gray.200', color: '#5F5D58' }}
         >
           Interest Form
         </Button>
       </Container>
     </Box>
-  );
-};
+  )
+}

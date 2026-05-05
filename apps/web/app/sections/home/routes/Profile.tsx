@@ -8,123 +8,123 @@ import {
   Text,
   useToast,
   VStack
-} from "@chakra-ui/react";
-import type { Attendee, RoleObject, TierTypes } from "@app";
-import { api, path } from "@app";
-import { motion } from "framer-motion";
-import { QRCodeSVG } from "qrcode.react";
-import { useEffect, useState } from "react";
-import { FaMedal } from "react-icons/fa";
-import { MdRefresh } from "react-icons/md";
+} from '@chakra-ui/react'
+import type { Attendee, RoleObject, TierTypes } from '@app'
+import { api, path } from '@app'
+import { motion } from 'framer-motion'
+import { QRCodeSVG } from 'qrcode.react'
+import { useEffect, useState } from 'react'
+import { FaMedal } from 'react-icons/fa'
+import { MdRefresh } from 'react-icons/md'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 const tierToName: Record<TierTypes, string> = {
-  TIER1: "Tier 0",
-  TIER2: "Tier 1",
-  TIER3: "Tier 2",
-  TIER4: "Tier 3"
-};
+  TIER1: 'Tier 0',
+  TIER2: 'Tier 1',
+  TIER3: 'Tier 2',
+  TIER4: 'Tier 3'
+}
 
 const tierToLeftMargin: Record<TierTypes, string> = {
-  TIER1: "0%",
-  TIER2: "30%",
-  TIER3: "60%",
-  TIER4: "85%"
-};
+  TIER1: '0%',
+  TIER2: '30%',
+  TIER3: '60%',
+  TIER4: '85%'
+}
 
-type FoodWave = "standard" | "priority" | "not-yet" | null;
+type FoodWave = 'standard' | 'priority' | 'not-yet' | null
 
 export function Profile() {
-  const toast = useToast();
+  const toast = useToast()
 
-  const [qr, setQr] = useState<string>("");
-  const [roleObject, setRoleObject] = useState<RoleObject | null>(null);
-  const [attendee, setAttendee] = useState<Attendee | null>(null);
-  const [foodWave, setFoodWave] = useState<FoodWave>(null);
-  const [currDay, setCurrDay] = useState<string>("");
+  const [qr, setQr] = useState<string>('')
+  const [roleObject, setRoleObject] = useState<RoleObject | null>(null)
+  const [attendee, setAttendee] = useState<Attendee | null>(null)
+  const [foodWave, setFoodWave] = useState<FoodWave>(null)
+  const [currDay, setCurrDay] = useState<string>('')
 
   const handleLoadQr = async () => {
-    const qrCode = await api.get("/attendee/qr");
-    setQr(qrCode.data.qrCode);
-  };
+    const qrCode = await api.get('/attendee/qr')
+    setQr(qrCode.data.qrCode)
+  }
 
   const handleLoadAuthData = async () => {
-    let role: RoleObject | null;
+    let role: RoleObject | null
     try {
-      role = (await api.get("/auth/info")).data;
-      setRoleObject(role);
+      role = (await api.get('/auth/info')).data
+      setRoleObject(role)
     } catch {
       toast({
-        title: "Error loading authentication data",
-        description: "Please try again later.",
-        status: "error",
+        title: 'Error loading authentication data',
+        description: 'Please try again later.',
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        position: "top"
-      });
-      return;
+        position: 'top'
+      })
+      return
     }
 
     if (!role) {
       toast({
-        title: "Error loading authentication data",
-        description: "Please try again later.",
-        status: "error",
+        title: 'Error loading authentication data',
+        description: 'Please try again later.',
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        position: "top"
-      });
-      return;
+        position: 'top'
+      })
+      return
     }
 
     if (role.userId) {
-      let newAttendee: Attendee | null = null;
+      let newAttendee: Attendee | null = null
       try {
-        newAttendee = (await api.get(path(`/attendee`, {}))).data;
+        newAttendee = (await api.get(path(`/attendee`, {}))).data
       } catch (error) {
-        console.error("Failed to fetch attendee data:", error);
+        console.error('Failed to fetch attendee data:', error)
         toast({
-          title: "Error loading attendee data",
-          description: "Please try again later.",
-          status: "error",
+          title: 'Error loading attendee data',
+          description: 'Please try again later.',
+          status: 'error',
           duration: 5000,
           isClosable: true,
-          position: "top"
-        });
-        return;
+          position: 'top'
+        })
+        return
       }
-      setAttendee(newAttendee);
+      setAttendee(newAttendee)
 
-      const now = new Date();
-      const todayShort = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        timeZone: "America/Chicago"
-      }).format(now);
-      const rpStartDate = new Date("2025-09-16T00:00:00-05:00");
-      const rpEndDate = new Date("2025-09-20T23:59:59-05:00");
+      const now = new Date()
+      const todayShort = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        timeZone: 'America/Chicago'
+      }).format(now)
+      const rpStartDate = new Date('2025-09-16T00:00:00-05:00')
+      const rpEndDate = new Date('2025-09-20T23:59:59-05:00')
 
-      setCurrDay(todayShort);
+      setCurrDay(todayShort)
       if (now > rpStartDate && now < rpEndDate) {
         // RP in progress
         const hasPriority =
           newAttendee[`hasPriority${todayShort}` as keyof typeof newAttendee] ||
-          false;
-        setFoodWave(hasPriority ? "priority" : "standard");
+          false
+        setFoodWave(hasPriority ? 'priority' : 'standard')
       } else if (now < rpStartDate) {
         // RP has not started
-        setFoodWave("not-yet");
+        setFoodWave('not-yet')
       } else {
         // RP is over
-        setFoodWave(null);
+        setFoodWave(null)
       }
     }
-  };
+  }
 
   useEffect(() => {
-    void handleLoadQr();
-    void handleLoadAuthData();
-  }, []);
+    void handleLoadQr()
+    void handleLoadAuthData()
+  }, [])
 
   return (
     <VStack
@@ -134,30 +134,30 @@ export function Profile() {
       spacing={0}
       align="stretch"
       bgImage="/site/profile_qr_bg.svg"
-      bgSize={"cover"}
+      bgSize={'cover'}
       pb={32}
     >
       <Box px={6} pt={6} pb={4} maxW="400px" w="100%" mx="auto">
         <Link
-          href={"/"}
+          href={'/'}
           color="blue.300"
-          fontFamily={"Magistral"}
-          fontSize={"lg"}
-          fontWeight={"bold"}
+          fontFamily={'Magistral'}
+          fontSize={'lg'}
+          fontWeight={'bold'}
           py={4}
         >
           Back to main site
         </Link>
         <VStack
-          border={"1px solid #ccc"}
+          border={'1px solid #ccc'}
           p={2}
           pt={0}
-          borderRadius={"xl"}
+          borderRadius={'xl'}
           mt={3}
           gap={0}
         >
-          <HStack justifyContent={"flex-end"} w="100%">
-            <HStack alignItems={"center"} gap={2}>
+          <HStack justifyContent={'flex-end'} w="100%">
+            <HStack alignItems={'center'} gap={2}>
               <Text fontFamily="ProRacing" fontSize="3xl" ps="auto">
                 {attendee?.points ?? 0}
               </Text>
@@ -165,9 +165,9 @@ export function Profile() {
                 fontFamily="ProRacing"
                 fontSize="lg"
                 ps="auto"
-                bgColor={"red.500"}
+                bgColor={'red.500'}
                 px={3}
-                borderRadius={"lg"}
+                borderRadius={'lg'}
               >
                 PTS TOTAL
               </Text>
@@ -180,12 +180,12 @@ export function Profile() {
           p={5}
           py={3}
           my={3}
-          justifyContent={"space-between"}
+          justifyContent={'space-between'}
           borderRadius="xl"
           borderLeftWidth="8px"
           borderLeftColor="red.500" // or whatever exact red you need
         >
-          <VStack gap={0} alignItems={"flex-start"}>
+          <VStack gap={0} alignItems={'flex-start'}>
             <Text
               fontFamily="Magistral"
               fontSize="3xl"
@@ -213,12 +213,12 @@ export function Profile() {
                 fontSize="xl"
                 fontWeight="bold"
                 color="white"
-                fontStyle={"italic"}
+                fontStyle={'italic'}
               >
                 Food Wave
-                {currDay && foodWave !== "not-yet" ? ` (${currDay})` : ""}:
+                {currDay && foodWave !== 'not-yet' ? ` (${currDay})` : ''}:
               </Text>
-              {foodWave === "priority" ? (
+              {foodWave === 'priority' ? (
                 <HStack spacing={2} alignItems="center">
                   <Text
                     fontFamily="Magistral"
@@ -231,7 +231,7 @@ export function Profile() {
                   </Text>
                   <Icon as={FaMedal} color="yellow.500" w={4} h={4} />
                 </HStack>
-              ) : foodWave === "standard" ? (
+              ) : foodWave === 'standard' ? (
                 <Text
                   fontFamily="Magistral"
                   fontSize="xl"
@@ -240,7 +240,7 @@ export function Profile() {
                 >
                   Standard
                 </Text>
-              ) : foodWave === "not-yet" ? (
+              ) : foodWave === 'not-yet' ? (
                 <Text
                   fontFamily="Magistral"
                   fontSize="xl"
@@ -261,16 +261,16 @@ export function Profile() {
           fontWeight="bold"
           mb={6}
           color="white"
-          fontStyle={"italic"}
+          fontStyle={'italic'}
         >
-          Prize Tier:{" "}
+          Prize Tier:{' '}
           {attendee?.currentTier
             ? tierToName[attendee.currentTier]
-            : "Not available"}
+            : 'Not available'}
           {attendee?.currentTier ? (
             <PrizeTier tier={attendee.currentTier} />
           ) : (
-            " Not available"
+            ' Not available'
           )}
         </Text>
 
@@ -292,29 +292,29 @@ export function Profile() {
           fontSize="xl"
           pb={3}
           display="flex"
-          alignItems={"center"}
+          alignItems={'center'}
           gap={1}
           color="blue.300"
           cursor="pointer"
           _hover={{
-            color: "blue.500"
+            color: 'blue.500'
           }}
-          fontWeight={"bold"}
+          fontWeight={'bold'}
           onClick={() => {
-            void handleLoadQr();
+            void handleLoadQr()
             toast({
-              title: "QR Code Refreshed",
-              status: "success",
+              title: 'QR Code Refreshed',
+              status: 'success',
               duration: 3000,
               isClosable: true,
-              position: "top"
-            });
+              position: 'top'
+            })
           }}
         >
           <Icon as={MdRefresh} w={5} h={5} />
           Refresh QR Code
         </Text>
-        <Box p={8} bgColor={"#ccc"} borderRadius={"xl"}>
+        <Box p={8} bgColor={'#ccc'} borderRadius={'xl'}>
           {qr ? (
             <QRCodeSVG
               value={qr}
@@ -328,12 +328,12 @@ export function Profile() {
         </Box>
       </Box>
     </VStack>
-  );
+  )
 }
 
 export function PrizeTier({ tier }: { tier: TierTypes }) {
   // map tiers 1–4 → percent offsets
-  const tierIndex = Number(tier.slice(-1)) - 1; // 0–3
+  const tierIndex = Number(tier.slice(-1)) - 1 // 0–3
 
   // create 4 markers
   const roadMarkers = Array.from({ length: 50 }, (_, i) => (
@@ -350,19 +350,19 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
       zIndex={1}
       opacity={0.5}
     />
-  ));
+  ))
 
   const markers = [1, 2, 3, 4].map((n, i) => {
-    const isCurrent = i <= tierIndex;
+    const isCurrent = i <= tierIndex
     return {
       label: n - 1,
       left: `${(i / 3) * 100}%`,
       size: isCurrent ? 24 : 20,
-      bg: isCurrent ? "#ffd700" : "#555",
-      color: isCurrent ? "black" : "white",
-      fontSize: isCurrent ? "md" : "sm"
-    };
-  });
+      bg: isCurrent ? '#ffd700' : '#555',
+      color: isCurrent ? 'black' : 'white',
+      fontSize: isCurrent ? 'md' : 'sm'
+    }
+  })
 
   return (
     <Box width="100%" position="relative" height="60px" mt={2}>
@@ -378,7 +378,7 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
         {/* ROAD */}
         <MotionBox
           height="100%"
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
           backgroundColor="#666"
           transition="width 0.8s ease-out"
           position="absolute"
@@ -394,7 +394,7 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
           position="absolute"
           top="50%"
           initial={{ left: tierToLeftMargin[tier] }}
-          style={{ left: "0%" }}
+          style={{ left: '0%' }}
           transform="translateY(-50%)"
           zIndex={2}
           transition="left 0.8s ease-out"
@@ -402,16 +402,16 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
           <img
             src="/site/registration/progress-icon.svg"
             alt="Progress"
-            style={{ display: "block", height: "22px" }}
+            style={{ display: 'block', height: '22px' }}
           />
         </MotionBox>
       </Box>
 
       {/* TIER MARKERS BELOW ROAD */}
       <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent={'space-between'}
         mt={2}
       >
         {markers.map(({ label, size, bg, color, fontSize }) => (
@@ -420,8 +420,8 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
             display="flex"
             top="36px"
             textAlign="center"
-            flexDir={"column"}
-            alignItems={"center"}
+            flexDir={'column'}
+            alignItems={'center'}
           >
             <Box
               width={`${size}px`}
@@ -437,7 +437,7 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
                 fontSize={fontSize}
                 fontWeight="bold"
                 color={color}
-                ml={"-2px"}
+                ml={'-2px'}
               >
                 {label}
               </Text>
@@ -446,5 +446,5 @@ export function PrizeTier({ tier }: { tier: TierTypes }) {
         ))}
       </Box>
     </Box>
-  );
+  )
 }

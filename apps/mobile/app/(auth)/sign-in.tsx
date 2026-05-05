@@ -1,5 +1,5 @@
-import '@/global.css';
-import React, { useState } from 'react';
+import '@/global.css'
+import React, { useState } from 'react'
 import {
   View,
   KeyboardAvoidingView,
@@ -7,71 +7,75 @@ import {
   Pressable,
   Text,
   Alert,
-  Dimensions,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import * as AuthSession from 'expo-auth-session';
-import LottieView from 'lottie-react-native';
-import { api } from '@/api/api';
-import { path } from '@/api/types';
-import * as WebBrowser from 'expo-web-browser';
-import { ThemedText } from '@/components/themed/ThemedText';
-import { SlantedButton } from '@/components/auth/SlantedButton';
-import { SlantedButtonGroup } from '@/components/auth/SlantedButtonGroup';
-import ReflectionsProjections from '@/assets/images/rp_2025.svg';
-import LoginIcon from '@/assets/icons/logos/rp_signin_logo.svg';
-import Background from '@/assets/background/rp_background.svg';
-import { googleAuth } from '@/lib/auth';
+  Dimensions
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
+import * as AuthSession from 'expo-auth-session'
+import LottieView from 'lottie-react-native'
+import { api } from '@/api/api'
+import { path } from '@/api/types'
+import * as WebBrowser from 'expo-web-browser'
+import { ThemedText } from '@/components/themed/ThemedText'
+import { SlantedButton } from '@/components/auth/SlantedButton'
+import { SlantedButtonGroup } from '@/components/auth/SlantedButtonGroup'
+import ReflectionsProjections from '@/assets/images/rp_2025.svg'
+import LoginIcon from '@/assets/icons/logos/rp_signin_logo.svg'
+import Background from '@/assets/background/rp_background.svg'
+import { googleAuth } from '@/lib/auth'
 
 export default function SignInScreen() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
   const handleEmailLogin = async () => {
     try {
-      setIsLoading(true);
+      setIsLoading(true)
 
       const redirectUri = AuthSession.makeRedirectUri({
-        scheme: 'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
-        path: '/(auth)/callback',
-      });
+        scheme:
+          'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
+        path: '/(auth)/callback'
+      })
 
-      const authResult = await googleAuth();
+      const authResult = await googleAuth()
       if (!authResult || authResult.result.type !== 'success') {
-        throw new Error('Authentication was cancelled or failed');
+        throw new Error('Authentication was cancelled or failed')
       }
-      const { result, codeVerifier } = authResult;
+      const { result, codeVerifier } = authResult
 
-      const response = await api.post(path('/auth/login/:platform', { platform: 'ios' }), {
-        code: result.params.code,
-        redirectUri: redirectUri,
-        codeVerifier: codeVerifier,
-      });
+      const response = await api.post(
+        path('/auth/login/:platform', { platform: 'ios' }),
+        {
+          code: result.params.code,
+          redirectUri: redirectUri,
+          codeVerifier: codeVerifier
+        }
+      )
 
-      await SecureStore.setItemAsync('jwt', response.data.token);
-      const roles = await api.get('/auth/info').then((res) => res.data.roles);
+      await SecureStore.setItemAsync('jwt', response.data.token)
+      const roles = await api.get('/auth/info').then((res) => res.data.roles)
       if (roles.length > 0) {
-        router.replace('/(tabs)/home');
+        router.replace('/(tabs)/home')
       } else {
-        Alert.alert('Make sure to register for the event first!');
-        await SecureStore.deleteItemAsync('jwt');
+        Alert.alert('Make sure to register for the event first!')
+        await SecureStore.deleteItemAsync('jwt')
       }
     } catch (error: any) {
-      console.error('Login error:', error);
+      console.error('Login error:', error)
       Alert.alert(
         'Login Failed',
         error.message || 'An error occurred during login. Please try again.',
-        [{ text: 'OK' }],
-      );
+        [{ text: 'OK' }]
+      )
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleGuestLogin = () => {
-    router.replace('/(tabs)/home');
-  };
+    router.replace('/(tabs)/home')
+  }
 
   return (
     <SafeAreaView className="flex-1">
@@ -91,7 +95,9 @@ export default function SignInScreen() {
             </View>
 
             <View className="w-full bg-[#A3A3A3FF] rounded-2xl p-6 py-10 mt-[-30px]">
-              <Text className="font-proRacing text-3xl text-center mt-5 mb-6 z-10">LOGIN</Text>
+              <Text className="font-proRacing text-3xl text-center mt-5 mb-6 z-10">
+                LOGIN
+              </Text>
 
               {/* <LottieView
                 source={require('@/assets/lottie/rp_animation.json')}
@@ -110,11 +116,16 @@ export default function SignInScreen() {
 
               <View className="relative">
                 <SlantedButtonGroup>
-                  <SlantedButton onPress={handleEmailLogin} disabled={isLoading}>
+                  <SlantedButton
+                    onPress={handleEmailLogin}
+                    disabled={isLoading}
+                  >
                     {isLoading ? 'Signing in...' : 'Login with Google'}
                   </SlantedButton>
                   <View className="h-px bg-white" />
-                  <SlantedButton onPress={handleGuestLogin}>Continue as Guest</SlantedButton>
+                  <SlantedButton onPress={handleGuestLogin}>
+                    Continue as Guest
+                  </SlantedButton>
                 </SlantedButtonGroup>
               </View>
 
@@ -132,10 +143,15 @@ export default function SignInScreen() {
                 </ThemedText>
                 <Pressable
                   onPress={() => {
-                    WebBrowser.openBrowserAsync('https://reflectionsprojections.org');
+                    WebBrowser.openBrowserAsync(
+                      'https://reflectionsprojections.org'
+                    )
                   }}
                 >
-                  <ThemedText variant="body-bold" className="underline text-black">
+                  <ThemedText
+                    variant="body-bold"
+                    className="underline text-black"
+                  >
                     here!
                   </ThemedText>
                 </Pressable>
@@ -145,5 +161,5 @@ export default function SignInScreen() {
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
+  )
 }

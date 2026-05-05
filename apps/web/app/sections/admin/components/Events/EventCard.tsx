@@ -1,4 +1,4 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
 import {
   Card,
   CardBody,
@@ -10,25 +10,25 @@ import {
   Text,
   Skeleton,
   SkeletonText
-} from "@chakra-ui/react";
-import type { Event } from "@app";
-import moment from "moment";
-import React from "react";
-import EditModal from "./EditModal";
-import DeleteModal from "./DeleteModal";
+} from '@chakra-ui/react'
+import type { Event } from '@app'
+import moment from 'moment'
+import React from 'react'
+import EditModal from './EditModal'
+import DeleteModal from './DeleteModal'
 
 type EventCardProps = {
-  event: Event;
-  updateEvents: () => void;
-};
+  event: Event
+  updateEvents: () => void
+}
 
-const dateFormat = "MMMM Do YYYY, h:mm a";
+const dateFormat = 'MMMM Do YYYY, h:mm a'
 
 const EventCard: React.FC<EventCardProps> = ({ event, updateEvents }) => {
-  const mirrorStyles = useMirrorStyles(true, true);
+  const mirrorStyles = useMirrorStyles(true, true)
 
-  const startCST = moment.tz(event.startTime, "America/Chicago");
-  const endCST = moment.tz(event.endTime, "America/Chicago");
+  const startCST = moment.tz(event.startTime, 'America/Chicago')
+  const endCST = moment.tz(event.endTime, 'America/Chicago')
 
   return (
     <Card sx={mirrorStyles} maxW="sm">
@@ -38,9 +38,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, updateEvents }) => {
           <Badge
             borderRadius="full"
             px="2"
-            colorScheme={event.isVirtual ? "green" : "blue"}
+            colorScheme={event.isVirtual ? 'green' : 'blue'}
           >
-            {event.isVirtual ? "Virtual" : "In-person"}
+            {event.isVirtual ? 'Virtual' : 'In-person'}
           </Badge>
           <Text>
             {startCST.format(dateFormat)} - {endCST.format(dateFormat)}
@@ -58,18 +58,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, updateEvents }) => {
         </Flex>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
 type EventCardSkeletonProps = {
-  animation?: boolean;
-};
+  animation?: boolean
+}
 
 export const EventCardSkeleton: React.FC<EventCardSkeletonProps> = ({
   animation = true
 }) => {
-  const mirrorStyles = useMirrorStyles();
-  const speed = animation ? undefined : 0;
+  const mirrorStyles = useMirrorStyles()
+  const speed = animation ? undefined : 0
 
   return (
     <Card sx={mirrorStyles} w="sm">
@@ -105,7 +105,7 @@ export const EventCardSkeleton: React.FC<EventCardSkeletonProps> = ({
         </Flex>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
-export default EventCard;
+export default EventCard

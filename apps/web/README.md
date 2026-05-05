@@ -15,15 +15,15 @@ yarn dev
 
 These commands assume you are in `apps/web`.
 
-| Task | Command |
-| --- | --- |
-| Install dependencies | `yarn` |
-| Start the website | `yarn dev` |
-| Build the website | `yarn build` |
-| Type-check | `yarn type-check` |
-| Lint | `yarn lint` |
-| Verify | `yarn verify` |
-| Format workspace files | `yarn format` |
+| Task                   | Command           |
+| ---------------------- | ----------------- |
+| Install dependencies   | `yarn`            |
+| Start the website      | `yarn dev`        |
+| Build the website      | `yarn build`      |
+| Type-check             | `yarn type-check` |
+| Lint                   | `yarn lint`       |
+| Verify                 | `yarn verify`     |
+| Format workspace files | `yarn format`     |
 
 ## Workspace Structure
 

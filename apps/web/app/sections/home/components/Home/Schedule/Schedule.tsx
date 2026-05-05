@@ -6,130 +6,128 @@ import {
   Spacer,
   Text,
   useToast
-} from "@chakra-ui/react";
-import type { Event } from "@app";
-import { api, circleColors, DayEvent, path } from "@app";
-import moment from "moment-timezone";
-import { useCallback, useEffect, useState } from "react";
+} from '@chakra-ui/react'
+import type { Event } from '@app'
+import { api, circleColors, DayEvent, path } from '@app'
+import moment from 'moment-timezone'
+import { useCallback, useEffect, useState } from 'react'
 
-import { AnimatedHeader } from "../shared/AnimatedHeader";
-import { AudioVisualizer } from "./AudioVisualizer";
-import EventModal from "./EventModal";
-import { RaceTrack } from "./RaceTrack";
-import ScheduleDaySelector from "./ScheduleDaySelector";
+import { AnimatedHeader } from '../shared/AnimatedHeader'
+import { AudioVisualizer } from './AudioVisualizer'
+import EventModal from './EventModal'
+import { RaceTrack } from './RaceTrack'
+import ScheduleDaySelector from './ScheduleDaySelector'
 
 export default function Schedule() {
-  const toast = useToast();
-  const [eventsByDay, setEventsByDay] = useState<{ [key: string]: Event[] }>(
-    {}
-  );
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const toast = useToast()
+  const [eventsByDay, setEventsByDay] = useState<{ [key: string]: Event[] }>({})
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [hoveredEventIndex, setHoveredEventIndex] = useState<number | null>(
     null
-  );
+  )
 
-  const [currentEvents, setCurrentEvents] = useState<Event[]>([]);
-  const [nextEvent, setNextEvent] = useState<Event | null>(null);
+  const [currentEvents, setCurrentEvents] = useState<Event[]>([])
+  const [nextEvent, setNextEvent] = useState<Event | null>(null)
 
   const selectedDayIndex = Math.max(
-    Object.keys(eventsByDay).indexOf(selectedDay || "") + 1,
+    Object.keys(eventsByDay).indexOf(selectedDay || '') + 1,
     1
-  );
-  const dayEvents = selectedDay ? eventsByDay[selectedDay] : [];
+  )
+  const dayEvents = selectedDay ? eventsByDay[selectedDay] : []
 
   const handleLoadEvents = useCallback(() => {
     api
-      .get(path("/events", {}))
+      .get(path('/events', {}))
       .then((events) => {
-        const grouped: { [key: string]: Event[] } = {};
+        const grouped: { [key: string]: Event[] } = {}
         events.data.forEach((evt) => {
-          const date = moment(evt.startTime).format("ddd M/D");
-          if (!grouped[date]) grouped[date] = [];
-          grouped[date].push(evt);
-        });
+          const date = moment(evt.startTime).format('ddd M/D')
+          if (!grouped[date]) grouped[date] = []
+          grouped[date].push(evt)
+        })
 
-        setEventsByDay(grouped);
+        setEventsByDay(grouped)
 
         const dates = Object.keys(grouped).map((key) => {
           const date = moment(
-            key + " " + moment().year(),
-            "ddd M/D YYYY"
-          ).startOf("day");
-          return { key, date };
-        });
+            key + ' ' + moment().year(),
+            'ddd M/D YYYY'
+          ).startOf('day')
+          return { key, date }
+        })
 
-        dates.sort((a, b) => a.date.valueOf() - b.date.valueOf());
+        dates.sort((a, b) => a.date.valueOf() - b.date.valueOf())
 
-        const today = moment();
-        let selectedKey: string;
+        const today = moment()
+        let selectedKey: string
 
         if (today.isBefore(dates[0].date)) {
-          selectedKey = dates[0].key;
+          selectedKey = dates[0].key
         } else {
-          const past = dates.filter((d) => today.isSameOrAfter(d.date));
-          selectedKey = past.length ? past[past.length - 1].key : dates[0].key;
+          const past = dates.filter((d) => today.isSameOrAfter(d.date))
+          selectedKey = past.length ? past[past.length - 1].key : dates[0].key
         }
 
-        setSelectedDay(selectedKey);
+        setSelectedDay(selectedKey)
       })
       .catch((err) => {
-        console.error(err);
+        console.error(err)
         toast({
-          title: "Error fetching events",
-          status: "error",
+          title: 'Error fetching events',
+          status: 'error',
           duration: 9000,
           isClosable: true
-        });
-      });
-  }, [toast]);
+        })
+      })
+  }, [toast])
 
   useEffect(() => {
-    handleLoadEvents();
-  }, [handleLoadEvents]);
+    handleLoadEvents()
+  }, [handleLoadEvents])
 
-  const handleHover = (index: number) => setHoveredEventIndex(index);
+  const handleHover = (index: number) => setHoveredEventIndex(index)
   const handleSelectDay = (date: string) => {
-    setHoveredEventIndex(null);
-    setSelectedDay(date);
-  };
-  const handleSelectEvent = (evt: Event) => setSelectedEvent(evt);
+    setHoveredEventIndex(null)
+    setSelectedDay(date)
+  }
+  const handleSelectEvent = (evt: Event) => setSelectedEvent(evt)
 
   const updateCurrentAndNext = useCallback(() => {
-    const all = Object.values(eventsByDay).flat();
+    const all = Object.values(eventsByDay).flat()
     const sorted = all.sort((a, b) =>
       moment(a.startTime).diff(moment(b.startTime))
-    );
+    )
 
-    const now = moment();
-    const currentEvents: Event[] = [];
-    let nxt: Event | null = null;
+    const now = moment()
+    const currentEvents: Event[] = []
+    let nxt: Event | null = null
 
     for (const evt of sorted) {
-      const start = moment(evt.startTime);
-      const end = moment(evt.endTime);
+      const start = moment(evt.startTime)
+      const end = moment(evt.endTime)
 
       if (start.isSameOrBefore(now) && end.isAfter(now)) {
-        currentEvents.push(evt);
-        continue;
+        currentEvents.push(evt)
+        continue
       }
       if (!nxt && start.isAfter(now)) {
-        nxt = evt;
-        break;
+        nxt = evt
+        break
       }
     }
 
-    setCurrentEvents(currentEvents);
-    setNextEvent(nxt);
-  }, [eventsByDay]);
+    setCurrentEvents(currentEvents)
+    setNextEvent(nxt)
+  }, [eventsByDay])
 
   useEffect(() => {
-    updateCurrentAndNext();
+    updateCurrentAndNext()
     const timer = setInterval(() => {
-      updateCurrentAndNext();
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [updateCurrentAndNext, eventsByDay]);
+      updateCurrentAndNext()
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [updateCurrentAndNext, eventsByDay])
 
   return (
     <>
@@ -146,8 +144,8 @@ export default function Schedule() {
         <Image
           src="/site/schedule/schedule-accent.svg"
           position="absolute"
-          top={{ base: "-15%", lg: "-50%" }}
-          left={{ base: "-25%", lg: "-10%" }}
+          top={{ base: '-15%', lg: '-50%' }}
+          left={{ base: '-25%', lg: '-10%' }}
           opacity={0.5}
           pointerEvents="none"
         />
@@ -165,7 +163,7 @@ export default function Schedule() {
           w="100%"
           maxWidth="1500px"
           justifyContent="center"
-          flexDirection={{ md: "column-reverse", lg: "row" }}
+          flexDirection={{ md: 'column-reverse', lg: 'row' }}
           mt={{ base: 5, md: 5 }}
           mx="auto"
           gap={0}
@@ -198,40 +196,40 @@ export default function Schedule() {
         onClose={() => setSelectedEvent(null)}
       />
     </>
-  );
+  )
 }
 
 function formatEventTime(iso: string): string {
-  const m = moment(iso).tz("America/Chicago");
-  const now = moment().tz("America/Chicago");
+  const m = moment(iso).tz('America/Chicago')
+  const now = moment().tz('America/Chicago')
 
-  if (m.isSame(now, "day")) {
-    return m.format("h:mma");
+  if (m.isSame(now, 'day')) {
+    return m.format('h:mma')
   }
-  if (Math.abs(m.diff(now, "days")) <= 7) {
+  if (Math.abs(m.diff(now, 'days')) <= 7) {
     return m.calendar(null, {
-      sameDay: "[Today] h:mma",
-      nextDay: "[Tomorrow] h:mma",
-      nextWeek: "dddd h:mma",
-      lastDay: "[Yesterday] h:mma",
-      lastWeek: "[Last] dddd h:mma",
-      sameElse: "MMM D, h:mma"
-    });
+      sameDay: '[Today] h:mma',
+      nextDay: '[Tomorrow] h:mma',
+      nextWeek: 'dddd h:mma',
+      lastDay: '[Yesterday] h:mma',
+      lastWeek: '[Last] dddd h:mma',
+      sameElse: 'MMM D, h:mma'
+    })
   }
-  return m.format("MMM D, h:mma");
+  return m.format('MMM D, h:mma')
 }
 
 function formatEventRange(startIso: string, endIso: string): string {
-  const start = moment(startIso).tz("America/Chicago");
-  const end = moment(endIso).tz("America/Chicago");
+  const start = moment(startIso).tz('America/Chicago')
+  const end = moment(endIso).tz('America/Chicago')
 
-  const startLabel = formatEventTime(startIso);
+  const startLabel = formatEventTime(startIso)
 
-  const endLabel = start.isSame(end, "day")
-    ? end.format("h:mma")
-    : formatEventTime(endIso);
+  const endLabel = start.isSame(end, 'day')
+    ? end.format('h:mma')
+    : formatEventTime(endIso)
 
-  return `${startLabel} – ${endLabel} CT`;
+  return `${startLabel} – ${endLabel} CT`
 }
 
 function DayEventsSection({
@@ -242,31 +240,31 @@ function DayEventsSection({
   onHover,
   onClick
 }: {
-  selectedDayIndex: number;
-  numDays: number;
-  hoveredIndex: number | null;
-  dayEvents: Event[];
-  onHover: (index: number) => void;
-  onClick: (event: Event) => void;
+  selectedDayIndex: number
+  numDays: number
+  hoveredIndex: number | null
+  dayEvents: Event[]
+  onHover: (index: number) => void
+  onClick: (event: Event) => void
 }) {
   return (
     <Box flex={1} h="100%" py={0}>
       <HStack
         display={{
-          base: "none",
-          lg: "flex"
+          base: 'none',
+          lg: 'flex'
         }}
-        alignItems={"center"}
-        justifyContent={"center"}
+        alignItems={'center'}
+        justifyContent={'center'}
         gap={3}
         bgColor="#4D4C4C"
-        borderTopRadius={"xl"}
+        borderTopRadius={'xl'}
         mb={3}
         py={2}
         boxShadow="md"
       >
         <Text
-          fontSize={"3xl"}
+          fontSize={'3xl'}
           color="#8A8A8A"
           fontFamily="ProRacingSlant"
           my={0}
@@ -275,7 +273,7 @@ function DayEventsSection({
         </Text>
         <HStack gap={0}>
           <Text
-            fontSize={"3xl"}
+            fontSize={'3xl'}
             fontWeight="bold"
             color="white"
             fontFamily="Magistral"
@@ -283,24 +281,24 @@ function DayEventsSection({
           >
             {selectedDayIndex}
           </Text>
-          <Text fontSize={"3xl"} color="#8A8A8A" fontFamily="Magistral" my={0}>
+          <Text fontSize={'3xl'} color="#8A8A8A" fontFamily="Magistral" my={0}>
             /{numDays}
           </Text>
         </HStack>
       </HStack>
       <Box
-        bgColor={{ md: "#242424" }}
+        bgColor={{ md: '#242424' }}
         pb={5}
         borderTopRadius={{
-          base: "xl",
-          lg: "none"
+          base: 'xl',
+          lg: 'none'
         }}
         borderBottomRadius="xl"
-        overflowY={{ md: "auto" }}
-        shadow={"md"}
+        overflowY={{ md: 'auto' }}
+        shadow={'md'}
         boxShadow="md"
       >
-        <Box h={{ lg: "500px" }} maxH={{ lg: "500px" }} pt={3} overflowY="auto">
+        <Box h={{ lg: '500px' }} maxH={{ lg: '500px' }} pt={3} overflowY="auto">
           {dayEvents.length === 0 && (
             <Text
               fontSize="xl"
@@ -324,7 +322,7 @@ function DayEventsSection({
         </Box>
       </Box>
     </Box>
-  );
+  )
 }
 
 function RaceTrackSection({
@@ -336,27 +334,27 @@ function RaceTrackSection({
   currentEvents,
   nextEvent
 }: {
-  selectedDayIndex: number;
-  dayEvents: Event[];
-  hoveredEventIndex: number | null;
-  currentEvents: Event[];
-  nextEvent: Event | null;
-  handleHover: (index: number) => void;
-  handleSelectEvent: (event: Event) => void;
+  selectedDayIndex: number
+  dayEvents: Event[]
+  hoveredEventIndex: number | null
+  currentEvents: Event[]
+  nextEvent: Event | null
+  handleHover: (index: number) => void
+  handleSelectEvent: (event: Event) => void
 }) {
   return (
     <Flex
       display={{
-        base: "none",
-        md: "flex"
+        base: 'none',
+        md: 'flex'
       }}
       flex={1}
-      justifyContent={"center"}
-      alignItems={"center"}
+      justifyContent={'center'}
+      alignItems={'center'}
     >
       <Box
         display="flex"
-        flexDir={"column"}
+        flexDir={'column'}
         flex={1}
         borderRadius="lg"
         h="100%"
@@ -365,12 +363,12 @@ function RaceTrackSection({
         <Box
           w="100%"
           transform={{
-            base: "scale(0.9)",
-            md: "scale(0.7)",
-            lg: "scale(0.8)"
+            base: 'scale(0.9)',
+            md: 'scale(0.7)',
+            lg: 'scale(0.8)'
           }}
-          flexDirection={"column"}
-          justifyContent={"center"}
+          flexDirection={'column'}
+          justifyContent={'center'}
           mt={{
             base: -16,
             lg: 0
@@ -391,19 +389,19 @@ function RaceTrackSection({
         </Box>
         <Spacer flex={1} />
         <Box
-          display={{ base: "none", lg: "flex" }}
+          display={{ base: 'none', lg: 'flex' }}
           flexDir="column"
           bgGradient="linear(to-b, #454242 0%, #272727 100%)"
           px={4}
           py={2}
           pb={5}
           ml={4}
-          borderRadius={"xl"}
-          alignItems={"flex-start"}
-          shadow={"md"}
+          borderRadius={'xl'}
+          alignItems={'flex-start'}
+          shadow={'md'}
         >
           <Flex
-            alignItems={"center"}
+            alignItems={'center'}
             mb={2}
             w="100%"
             gap={7}
@@ -424,8 +422,8 @@ function RaceTrackSection({
             w="100%"
             gap={2}
             flexDir={{
-              base: "column",
-              md: "row"
+              base: 'column',
+              md: 'row'
             }}
           >
             {currentEvents.length === 0 && !nextEvent && (
@@ -443,7 +441,7 @@ function RaceTrackSection({
                         event={event}
                         showLabel={index === 0}
                         onClick={() => {
-                          handleSelectEvent(event);
+                          handleSelectEvent(event)
                         }}
                       />
                     </Box>
@@ -455,15 +453,15 @@ function RaceTrackSection({
                 flex={1}
                 gap={2}
                 display="flex"
-                flexDir={"column"}
-                justifyContent={"space-between"}
+                flexDir={'column'}
+                justifyContent={'space-between'}
               >
                 <PreviewEvent
                   showLabel
                   label="Next Up"
                   event={nextEvent}
                   onClick={() => {
-                    handleSelectEvent(nextEvent);
+                    handleSelectEvent(nextEvent)
                   }}
                 />
               </Box>
@@ -472,7 +470,7 @@ function RaceTrackSection({
         </Box>
       </Box>
     </Flex>
-  );
+  )
 }
 
 function PreviewEvent({
@@ -482,47 +480,47 @@ function PreviewEvent({
   compact,
   onClick
 }: {
-  label: string;
-  event: Event;
-  showLabel?: boolean;
-  compact?: boolean;
-  onClick: (event: Event) => void;
+  label: string
+  event: Event
+  showLabel?: boolean
+  compact?: boolean
+  onClick: (event: Event) => void
 }) {
   return (
-    <Box w="100%" display="flex" flexDirection={"column"} gap={1}>
+    <Box w="100%" display="flex" flexDirection={'column'} gap={1}>
       <Box h={5} pb={2}>
         {showLabel && (
-          <Text color="white" fontFamily="Magistral" fontSize={"md"}>
+          <Text color="white" fontFamily="Magistral" fontSize={'md'}>
             {label}
           </Text>
         )}
       </Box>
       <Flex
-        alignItems={"center"}
-        bgColor={"#1e1e1eff"}
-        borderRadius={"lg"}
+        alignItems={'center'}
+        bgColor={'#1e1e1eff'}
+        borderRadius={'lg'}
         p={2}
         onClick={() => {
-          onClick(event);
+          onClick(event)
         }}
         transition="all 0.2s ease-in-out"
         _hover={{
-          bgColor: "rgba(72, 72, 72, 1)",
-          cursor: "pointer"
+          bgColor: 'rgba(72, 72, 72, 1)',
+          cursor: 'pointer'
         }}
       >
         <Flex direction="column" flex={1} w="100%" gap={0}>
-          <Flex alignItems={"center"} gap={2}>
+          <Flex alignItems={'center'} gap={2}>
             <Box
-              w={compact ? "10px" : "10px"}
-              h={compact ? "10px" : "10px"}
+              w={compact ? '10px' : '10px'}
+              h={compact ? '10px' : '10px'}
               minW="10px"
               minH="10px"
-              bg={label === "Current" ? "green.500" : "red.500"}
+              bg={label === 'Current' ? 'green.500' : 'red.500'}
               borderRadius="full"
             />
             <Text
-              fontSize={compact ? "md" : "sm"}
+              fontSize={compact ? 'md' : 'sm'}
               color="white"
               fontFamily="ProRacing"
             >
@@ -532,28 +530,28 @@ function PreviewEvent({
           {!compact ? (
             <Flex direction="column" gap={0}>
               <Text
-                fontSize={{ base: "md", md: "sm" }}
+                fontSize={{ base: 'md', md: 'sm' }}
                 color="gray.100"
                 fontWeight="bold"
                 fontFamily="Magistral"
                 letterSpacing="0.5px"
-                transformOrigin={"top left"}
+                transformOrigin={'top left'}
                 wordBreak="break-all"
                 whiteSpace="normal"
                 mr={3}
               >
-                {event.location || "Siebel CS"}
+                {event.location || 'Siebel CS'}
               </Text>
 
               <Text
-                fontSize={{ base: "md", md: "sm" }}
+                fontSize={{ base: 'md', md: 'sm' }}
                 color="gray.400"
                 fontWeight="bold"
                 fontFamily="Magistral"
                 letterSpacing="0.5px"
-                transformOrigin={"top left"}
+                transformOrigin={'top left'}
                 whiteSpace={{
-                  md: "nowrap"
+                  md: 'nowrap'
                 }}
               >
                 {formatEventRange(event.startTime, event.endTime)}
@@ -565,5 +563,5 @@ function PreviewEvent({
         </Flex>
       </Flex>
     </Box>
-  );
+  )
 }

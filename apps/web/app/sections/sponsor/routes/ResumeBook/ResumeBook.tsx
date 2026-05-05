@@ -4,63 +4,63 @@ import {
   useColorModeValue,
   useMediaQuery,
   useToast
-} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+} from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 
-import { useModalNavHook } from "@app/sections/sponsor/hooks/use-modal-nav-hook";
-import { useResumeDataPaginationHook } from "@app/sections/sponsor/hooks/use-resume-data-pagination-hook";
-import ResumePopupModal from "./ResumePopupModal";
-import type { ResumeBookProps } from "./ResumeBookContent";
-import { ResumeBookContent } from "./ResumeBookContent";
-import { ResumeBookFooter } from "./ResumeBookFooter";
-import type { ResumeBookHeaderProps } from "./ResumeBookHeader";
-import { ResumeBookHeader } from "./ResumeBookHeader";
-import { ResumeBookNavbar } from "./ResumeBookNavbar";
+import { useModalNavHook } from '@app/sections/sponsor/hooks/use-modal-nav-hook'
+import { useResumeDataPaginationHook } from '@app/sections/sponsor/hooks/use-resume-data-pagination-hook'
+import ResumePopupModal from './ResumePopupModal'
+import type { ResumeBookProps } from './ResumeBookContent'
+import { ResumeBookContent } from './ResumeBookContent'
+import { ResumeBookFooter } from './ResumeBookFooter'
+import type { ResumeBookHeaderProps } from './ResumeBookHeader'
+import { ResumeBookHeader } from './ResumeBookHeader'
+import { ResumeBookNavbar } from './ResumeBookNavbar'
 
 export interface Resume {
-  id: string;
-  name: string;
-  majors: string[];
-  minors: string[];
-  degree?: string;
-  graduationYear: string | null;
-  jobInterest: Array<string>;
-  portfolios?: Array<string>;
+  id: string
+  name: string
+  majors: string[]
+  minors: string[]
+  degree?: string
+  graduationYear: string | null
+  jobInterest: Array<string>
+  portfolios?: Array<string>
 }
 
 export function ResumeBook() {
-  const toast = useToast();
-  const [showList, setShowList] = useState(true);
-  const [isMediumScreen] = useMediaQuery("(min-width: 960px)");
-  const viewColor = useColorModeValue("200", "700");
+  const toast = useToast()
+  const [showList, setShowList] = useState(true)
+  const [isMediumScreen] = useMediaQuery('(min-width: 960px)')
+  const viewColor = useColorModeValue('200', '700')
 
   useEffect(() => {
-    setShowList(isMediumScreen);
-  }, [isMediumScreen]);
+    setShowList(isMediumScreen)
+  }, [isMediumScreen])
 
   const showToast = (message: string) => {
     toast({
       title: message,
-      status: "error",
+      status: 'error',
       duration: 9000,
       isClosable: true
-    });
-  };
+    })
+  }
 
   const resumeDataPaginationHook = useResumeDataPaginationHook({
     onToast: showToast
-  });
+  })
 
   const modalNavHook = useModalNavHook({
     resumes: resumeDataPaginationHook.resumeData.resumes,
     allFilteredResumes: resumeDataPaginationHook.resumeData.allFilteredResumes,
     onToast: showToast
-  });
+  })
 
   return (
     <>
       <Flex
-        flexDirection={"column"}
+        flexDirection={'column'}
         h="100dvh"
         maxH="100dvh"
         bgColor="gray.200"
@@ -72,24 +72,24 @@ export function ResumeBook() {
           mx="auto"
           flex={1}
           display="flex"
-          flexDir={"column"}
-          h={"calc(100dvh - 4rem)"}
+          flexDir={'column'}
+          h={'calc(100dvh - 4rem)'}
         >
           <ResumeBookHeader
             filtering={
-              resumeDataPaginationHook.filtering satisfies ResumeBookHeaderProps["filtering"]
+              resumeDataPaginationHook.filtering satisfies ResumeBookHeaderProps['filtering']
             }
             pagination={
-              resumeDataPaginationHook.pagination satisfies ResumeBookHeaderProps["pagination"]
+              resumeDataPaginationHook.pagination satisfies ResumeBookHeaderProps['pagination']
             }
             selection={
-              resumeDataPaginationHook.selection satisfies ResumeBookHeaderProps["selection"]
+              resumeDataPaginationHook.selection satisfies ResumeBookHeaderProps['selection']
             }
             resumeData={
-              resumeDataPaginationHook.resumeData satisfies ResumeBookHeaderProps["resumeData"]
+              resumeDataPaginationHook.resumeData satisfies ResumeBookHeaderProps['resumeData']
             }
             exportResumes={
-              resumeDataPaginationHook.exportResumes satisfies ResumeBookHeaderProps["exportResumes"]
+              resumeDataPaginationHook.exportResumes satisfies ResumeBookHeaderProps['exportResumes']
             }
             viewColor={viewColor}
             isMediumScreen={isMediumScreen}
@@ -97,13 +97,13 @@ export function ResumeBook() {
           <ResumeBookContent
             loading={resumeDataPaginationHook.loading}
             resumeData={
-              resumeDataPaginationHook.resumeData satisfies ResumeBookProps["resumeData"]
+              resumeDataPaginationHook.resumeData satisfies ResumeBookProps['resumeData']
             }
             selection={
-              resumeDataPaginationHook.selection satisfies ResumeBookProps["selection"]
+              resumeDataPaginationHook.selection satisfies ResumeBookProps['selection']
             }
             sorting={
-              resumeDataPaginationHook.sorting satisfies ResumeBookProps["sorting"]
+              resumeDataPaginationHook.sorting satisfies ResumeBookProps['sorting']
             }
             showList={showList}
             handleOpenResume={modalNavHook.handleOpenResume}
@@ -138,7 +138,7 @@ export function ResumeBook() {
         numNext={modalNavHook.numNext}
       />
     </>
-  );
+  )
 }
 
-export default ResumeBook;
+export default ResumeBook

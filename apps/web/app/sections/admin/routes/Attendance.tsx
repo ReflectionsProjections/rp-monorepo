@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import { useSearchParams, Link } from 'react-router-dom'
 import {
   Box,
   Heading,
@@ -9,133 +9,133 @@ import {
   Text,
   Button,
   VStack
-} from "@chakra-ui/react";
-import Lottie from "lottie-react";
-import successAnimation from "../assets/animations/success.json";
-import axios from "axios";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { MdArrowBack } from "react-icons/md";
-import { api } from "@app";
+} from '@chakra-ui/react'
+import Lottie from 'lottie-react'
+import successAnimation from '../assets/animations/success.json'
+import axios from 'axios'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { MdArrowBack } from 'react-icons/md'
+import { api } from '@app'
 
 type Status =
-  | "loading"
-  | "success"
-  | "alreadyCheckedIn"
-  | "expired"
-  | "notFound"
-  | "clientError"
-  | "serverError";
+  | 'loading'
+  | 'success'
+  | 'alreadyCheckedIn'
+  | 'expired'
+  | 'notFound'
+  | 'clientError'
+  | 'serverError'
 
 const AttendancePage = () => {
-  const toast = useToast();
-  const [searchParams] = useSearchParams();
-  const meetingId = searchParams.get("meetingId");
-  const mirrorStyles = useMirrorStyles();
+  const toast = useToast()
+  const [searchParams] = useSearchParams()
+  const meetingId = searchParams.get('meetingId')
+  const mirrorStyles = useMirrorStyles()
 
-  const [status, setStatus] = useState<Status>("loading");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [status, setStatus] = useState<Status>('loading')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
     const checkInToMeeting = async () => {
       if (!meetingId) {
         toast({
-          title: "Missing Meeting ID",
-          description: "No meeting ID provided in the URL.",
-          status: "error",
+          title: 'Missing Meeting ID',
+          description: 'No meeting ID provided in the URL.',
+          status: 'error',
           duration: 5000,
           isClosable: true
-        });
-        setStatus("clientError");
-        return;
+        })
+        setStatus('clientError')
+        return
       }
 
       try {
-        const res = await api.post("/staff/check-in", { meetingId });
+        const res = await api.post('/staff/check-in', { meetingId })
 
         if (res.status === 200) {
           toast({
-            title: "Attendance Marked",
-            description: "You have been checked into the meeting.",
-            status: "success",
+            title: 'Attendance Marked',
+            description: 'You have been checked into the meeting.',
+            status: 'success',
             duration: 5000,
             isClosable: true
-          });
-          setStatus("success");
-          return;
+          })
+          setStatus('success')
+          return
         }
       } catch (err) {
-        console.error("Check-in failed:", err);
+        console.error('Check-in failed:', err)
         if (axios.isAxiosError(err) && err.response?.data) {
           // Pull these off err.response.data
-          console.log("Check-in response:", err);
+          console.log('Check-in response:', err)
           const { error: code, message: msg } = err.response.data as {
-            error?: string;
-            message?: string;
-          };
-          if (code === "AlreadyCheckedIn") {
+            error?: string
+            message?: string
+          }
+          if (code === 'AlreadyCheckedIn') {
             toast({
-              title: "Already Checked In",
-              description: "You have already checked into this meeting!",
-              status: "info",
+              title: 'Already Checked In',
+              description: 'You have already checked into this meeting!',
+              status: 'info',
               duration: 5000,
               isClosable: true
-            });
-            setStatus("alreadyCheckedIn");
-            return;
-          } else if (code === "Expired") {
+            })
+            setStatus('alreadyCheckedIn')
+            return
+          } else if (code === 'Expired') {
             toast({
-              title: "Check‑in Expired",
-              description: "This check-in link has expired.",
-              status: "warning",
+              title: 'Check‑in Expired',
+              description: 'This check-in link has expired.',
+              status: 'warning',
               duration: 5000,
               isClosable: true
-            });
-            setStatus("expired");
-            return;
-          } else if (code === "NotFound") {
+            })
+            setStatus('expired')
+            return
+          } else if (code === 'NotFound') {
             toast({
-              title: "Meeting Not Found",
-              description: "The specified meeting ID does not exist.",
-              status: "error",
+              title: 'Meeting Not Found',
+              description: 'The specified meeting ID does not exist.',
+              status: 'error',
               duration: 5000,
               isClosable: true
-            });
-            setStatus("notFound");
-            return;
+            })
+            setStatus('notFound')
+            return
           } else {
-            console.error("Unexpected error code:", code);
+            console.error('Unexpected error code:', code)
             toast({
               title:
-                code === "AlreadyCheckedIn"
-                  ? "Already Checked In"
-                  : "Check‑in Failed",
-              description: msg ?? "Please try again.",
-              status: "error",
+                code === 'AlreadyCheckedIn'
+                  ? 'Already Checked In'
+                  : 'Check‑in Failed',
+              description: msg ?? 'Please try again.',
+              status: 'error',
               duration: 5000,
               isClosable: true
-            });
-            setErrorMessage(msg ?? "Unexpected response");
-            setStatus("serverError");
-            return;
+            })
+            setErrorMessage(msg ?? 'Unexpected response')
+            setStatus('serverError')
+            return
           }
         } else {
-          const message = (err as Error).message;
+          const message = (err as Error).message
           toast({
-            title: "Unexpected Error",
+            title: 'Unexpected Error',
             description: message,
-            status: "error",
+            status: 'error',
             duration: 5000,
             isClosable: true
-          });
-          setErrorMessage(message);
-          setStatus("serverError");
-          return;
+          })
+          setErrorMessage(message)
+          setStatus('serverError')
+          return
         }
       }
-    };
+    }
 
-    void checkInToMeeting();
-  }, [meetingId, toast]);
+    void checkInToMeeting()
+  }, [meetingId, toast])
 
   return (
     <Center padding={8} minHeight="100vh">
@@ -156,14 +156,14 @@ const AttendancePage = () => {
           </Box>
 
           {/* Content */}
-          {status === "loading" && (
+          {status === 'loading' && (
             <Box textAlign="center">
               <Heading size="md">Checking you in…</Heading>
               <Spinner mt={4} />
             </Box>
           )}
 
-          {status === "success" && (
+          {status === 'success' && (
             <Box textAlign="center">
               <Lottie
                 animationData={successAnimation}
@@ -174,14 +174,14 @@ const AttendancePage = () => {
             </Box>
           )}
 
-          {status === "alreadyCheckedIn" && (
+          {status === 'alreadyCheckedIn' && (
             <Box textAlign="center">
               <Heading size="md">You already checked in 👀</Heading>
               <Text mt={2}>No need to worry, you're counted.</Text>
             </Box>
           )}
 
-          {status === "expired" && (
+          {status === 'expired' && (
             <Box textAlign="center">
               <Heading size="md" color="orange.500">
                 Check‑in Expired
@@ -193,7 +193,7 @@ const AttendancePage = () => {
             </Box>
           )}
 
-          {status === "notFound" && (
+          {status === 'notFound' && (
             <Box textAlign="center">
               <Heading size="md" color="red.500">
                 Meeting Not Found
@@ -205,17 +205,17 @@ const AttendancePage = () => {
             </Box>
           )}
 
-          {status === "serverError" && (
+          {status === 'serverError' && (
             <Box textAlign="center">
               <Heading size="md" color="red.500">
-                {errorMessage || "Check‑in Failed"}
+                {errorMessage || 'Check‑in Failed'}
               </Heading>
             </Box>
           )}
         </VStack>
       </Box>
     </Center>
-  );
-};
+  )
+}
 
-export default AttendancePage;
+export default AttendancePage

@@ -1,26 +1,26 @@
-import React from 'react';
-import { View, Dimensions } from 'react-native';
-import SwipeDeck from '@/components/home/SwipeDeck';
-import { ThemedText } from '@/components/themed/ThemedText';
-import { CardType } from './types';
+import React from 'react'
+import { View, Dimensions } from 'react-native'
+import SwipeDeck from '@/components/home/SwipeDeck'
+import { ThemedText } from '@/components/themed/ThemedText'
+import { CardType } from './types'
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.9;
-const CARD_HEIGHT = 100;
-const STACK_SEPARATION = 6;
-const DOTS_HEIGHT = 24;
-const STACK_SIZE = 3;
+const { width } = Dimensions.get('window')
+const CARD_WIDTH = width * 0.9
+const CARD_HEIGHT = 100
+const STACK_SEPARATION = 6
+const DOTS_HEIGHT = 24
+const STACK_SIZE = 3
 
 interface CarouselSectionProps {
-  title: string;
-  data: CardType[];
-  flaggedIds: Set<string>;
-  onToggleFlag(id: string): void;
-  onCardPress(item: CardType): void;
+  title: string
+  data: CardType[]
+  flaggedIds: Set<string>
+  onToggleFlag(id: string): void
+  onCardPress(item: CardType): void
   /* Maximum number of cards to display */
-  limit?: number;
-  onSwipeTouchStart?: () => void;
-  onSwipeTouchEnd?: () => void;
+  limit?: number
+  onSwipeTouchStart?: () => void
+  onSwipeTouchEnd?: () => void
 }
 
 export const CarouselSection: React.FC<CarouselSectionProps> = ({
@@ -31,11 +31,12 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({
   onCardPress,
   limit,
   onSwipeTouchStart,
-  onSwipeTouchEnd,
+  onSwipeTouchEnd
 }) => {
-  const displayData = typeof limit === 'number' ? data.slice(0, limit) : data;
+  const displayData = typeof limit === 'number' ? data.slice(0, limit) : data
 
-  const containerHeight = CARD_HEIGHT + STACK_SEPARATION * (STACK_SIZE - 1) + DOTS_HEIGHT;
+  const containerHeight =
+    CARD_HEIGHT + STACK_SEPARATION * (STACK_SIZE - 1) + DOTS_HEIGHT
 
   return (
     <View className="mt-6 mb-6">
@@ -43,7 +44,10 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({
         {title}
       </ThemedText>
 
-      <View className="self-center mb-3" style={{ width: CARD_WIDTH, height: containerHeight }}>
+      <View
+        className="self-center mb-3"
+        style={{ width: CARD_WIDTH, height: containerHeight }}
+      >
         <SwipeDeck
           data={displayData}
           onCardPress={onCardPress}
@@ -54,5 +58,5 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({
         />
       </View>
     </View>
-  );
-};
+  )
+}

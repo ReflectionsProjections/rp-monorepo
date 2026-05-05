@@ -1,5 +1,5 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { AddIcon } from "@chakra-ui/icons";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { AddIcon } from '@chakra-ui/icons'
 import {
   Modal,
   ModalOverlay,
@@ -7,44 +7,44 @@ import {
   Button,
   useDisclosure,
   useToast
-} from "@chakra-ui/react";
-import type { FormikHelpers } from "formik";
-import type { MeetingFormValues } from "./MeetingSchema";
-import { MeetingFormInitialValues } from "./MeetingSchema";
-import MeetingForm from "./MeetingForm";
-import { api } from "@app";
+} from '@chakra-ui/react'
+import type { FormikHelpers } from 'formik'
+import type { MeetingFormValues } from './MeetingSchema'
+import { MeetingFormInitialValues } from './MeetingSchema'
+import MeetingForm from './MeetingForm'
+import { api } from '@app'
 
 type AddModalProps = {
-  updateMeetings: () => void;
-};
+  updateMeetings: () => void
+}
 
 const AddModal: React.FC<AddModalProps> = ({ updateMeetings }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const mirrorStyles = useMirrorStyles();
-  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const mirrorStyles = useMirrorStyles()
+  const toast = useToast()
 
   const createMeeting = (
     values: MeetingFormValues,
     helpers: FormikHelpers<MeetingFormValues>
   ) => {
     const request = api
-      .post("/meetings", values)
+      .post('/meetings', values)
       .then(() => {
-        updateMeetings();
-        onClose();
+        updateMeetings()
+        onClose()
       })
       .finally(() => {
-        helpers.setSubmitting(false);
-      });
+        helpers.setSubmitting(false)
+      })
 
     toast.promise(request, {
-      success: { title: "Meeting created" },
-      error: { title: "Error creating meeting" },
-      loading: { title: "Creating meeting..." }
-    });
+      success: { title: 'Meeting created' },
+      error: { title: 'Error creating meeting' },
+      loading: { title: 'Creating meeting...' }
+    })
 
-    return request;
-  };
+    return request
+  }
 
   return (
     <>
@@ -74,7 +74,7 @@ const AddModal: React.FC<AddModalProps> = ({ updateMeetings }) => {
         <AddIcon />
       </Button>
     </>
-  );
-};
+  )
+}
 
-export default AddModal;
+export default AddModal

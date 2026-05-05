@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -12,23 +12,23 @@ import {
   Flex,
   Button,
   useToast
-} from "@chakra-ui/react";
-import type { BasicAttendee } from "@app/sections/admin/routes/pages/Checkin";
-import type { Tier } from "@app";
-import { api, path, usePolling } from "@app";
+} from '@chakra-ui/react'
+import type { BasicAttendee } from '@app/sections/admin/routes/pages/Checkin'
+import type { Tier } from '@app'
+import { api, path, usePolling } from '@app'
 
 const ITEMS = {
-  TIER1: "T-Shirt",
-  TIER2: "Keychain",
-  TIER3: "Car Squishie",
-  TIER4: "Beanie"
-};
+  TIER1: 'T-Shirt',
+  TIER2: 'Keychain',
+  TIER3: 'Car Squishie',
+  TIER4: 'Beanie'
+}
 
 type MerchModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedAttendee: BasicAttendee | null;
-};
+  isOpen: boolean
+  onClose: () => void
+  selectedAttendee: BasicAttendee | null
+}
 
 const MerchModal: React.FC<MerchModalProps> = ({
   isOpen,
@@ -36,50 +36,50 @@ const MerchModal: React.FC<MerchModalProps> = ({
   selectedAttendee
 }) => {
   const { data, update } = usePolling(
-    path("/attendee/redeemable/:userId", {
-      userId: selectedAttendee?.userId ?? ""
+    path('/attendee/redeemable/:userId', {
+      userId: selectedAttendee?.userId ?? ''
     })
-  );
+  )
   const [merchToRedeem, setMerchToRedeem] = useState<
     Partial<Record<Tier, boolean>>
-  >({});
-  const toast = useToast();
+  >({})
+  const toast = useToast()
 
   // Handle merch redemption
   const handleMerchRedemption = () => {
-    if (!selectedAttendee) return;
+    if (!selectedAttendee) return
 
     const itemsToRedeem = Object.entries(merchToRedeem)
       .filter(([, selected]) => selected)
-      .map(([item]) => item as Tier);
+      .map(([item]) => item as Tier)
 
     if (itemsToRedeem.length === 0) {
-      onClose();
-      return;
+      onClose()
+      return
     }
 
     // Redeem each selected item
     const redeemPromises = itemsToRedeem.map((tier) => {
-      return api.post("/attendee/redeem", {
+      return api.post('/attendee/redeem', {
         userId: selectedAttendee.userId,
         tier
-      });
-    });
+      })
+    })
 
     toast.promise(
       Promise.all(redeemPromises).then(() => update()),
       {
         success: {
-          title: "Merch redeemed successfully!",
-          description: `Redeemed: ${itemsToRedeem.map((tier) => ITEMS[tier]).join(", ")}`
+          title: 'Merch redeemed successfully!',
+          description: `Redeemed: ${itemsToRedeem.map((tier) => ITEMS[tier]).join(', ')}`
         },
-        error: { title: "Failed to redeem merch" },
-        loading: { title: "Redeeming merch" }
+        error: { title: 'Failed to redeem merch' },
+        loading: { title: 'Redeeming merch' }
       }
-    );
+    )
 
-    onClose();
-  };
+    onClose()
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -150,16 +150,16 @@ const MerchModal: React.FC<MerchModalProps> = ({
             <Button
               variant="outline"
               onClick={() => {
-                onClose();
+                onClose()
               }}
             >
-              {data?.redeemableTiers?.length ? "Skip Merch" : "Close"}
+              {data?.redeemableTiers?.length ? 'Skip Merch' : 'Close'}
             </Button>
           </Flex>
         </ModalBody>
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
-export default MerchModal;
+export default MerchModal

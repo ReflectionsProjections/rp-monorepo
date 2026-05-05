@@ -1,4 +1,4 @@
-import { Box, Image } from "@chakra-ui/react";
+import { Box, Image } from '@chakra-ui/react'
 
 export function NavBar() {
   return (
@@ -14,14 +14,14 @@ export function NavBar() {
         src="/rp_logo.svg"
         maxH="100%"
         _hover={{
-          filter: "brightness(30%)",
-          transition: "filter 0.2s ease-in-out",
-          cursor: "pointer"
+          filter: 'brightness(30%)',
+          transition: 'filter 0.2s ease-in-out',
+          cursor: 'pointer'
         }}
         onClick={() => {
-          window.location.href = "https://reflectionsprojections.org";
+          window.location.href = 'https://reflectionsprojections.org'
         }}
       />
     </Box>
-  );
+  )
 }

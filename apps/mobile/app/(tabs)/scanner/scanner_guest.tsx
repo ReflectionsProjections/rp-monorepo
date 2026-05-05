@@ -1,4 +1,4 @@
-import { SafeAreaView, Text } from 'react-native';
+import { SafeAreaView, Text } from 'react-native'
 
 const ScannerGuestScreen = () => {
   return (
@@ -7,7 +7,7 @@ const ScannerGuestScreen = () => {
         Make sure to register for R|P first!
       </Text>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-export default ScannerGuestScreen;
+export default ScannerGuestScreen

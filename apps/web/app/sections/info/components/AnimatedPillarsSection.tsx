@@ -1,45 +1,45 @@
-import { Box, VStack, Image, Flex, Container } from "@chakra-ui/react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { createPortal } from "react-dom";
-import { useRef } from "react";
-import AnimatedPillar from "./AnimatedPillar";
+import { Box, VStack, Image, Flex, Container } from '@chakra-ui/react'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { createPortal } from 'react-dom'
+import { useRef } from 'react'
+import AnimatedPillar from './AnimatedPillar'
 
 interface AnimatedPillarsSectionProps {
-  icons: string[];
+  icons: string[]
 }
 
-const MotionBox = motion(Box);
-const MotionContainer = motion(Container);
-const spotlightHeight = "975px";
+const MotionBox = motion(Box)
+const MotionContainer = motion(Container)
+const spotlightHeight = '975px'
 
 export const AnimatedPillarsSection: React.FC<AnimatedPillarsSectionProps> = ({
   icons
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const { scrollY } = useScroll();
+  const { scrollY } = useScroll()
 
-  const offset = 2000; // Increased from 950 to account for Header + ExhibitSection height
+  const offset = 2000 // Increased from 950 to account for Header + ExhibitSection height
 
   const shadowOpacity = useTransform(
     scrollY,
     [-350 + offset, -60 + offset, 350 + offset, 650 + offset],
     [0, 0.35, 0.35, 0]
-  );
+  )
 
   const heightDiff = useTransform(
     scrollY,
     [-250 + offset, 700 + offset],
     [200, -750]
-  );
+  )
 
-  const translateY = useTransform(heightDiff, (h) => `translateY(${h}px)`);
+  const translateY = useTransform(heightDiff, (h) => `translateY(${h}px)`)
 
   return (
     <Box
       pos="relative"
       zIndex={100}
-      display={{ base: "none", md: "block" }}
+      display={{ base: 'none', md: 'block' }}
       ref={containerRef}
     >
       {/* portal */}
@@ -55,7 +55,7 @@ export const AnimatedPillarsSection: React.FC<AnimatedPillarsSectionProps> = ({
         >
           <MotionBox
             style={{
-              willChange: "opacity",
+              willChange: 'opacity',
               opacity: shadowOpacity
             }}
             bg="black"
@@ -72,9 +72,9 @@ export const AnimatedPillarsSection: React.FC<AnimatedPillarsSectionProps> = ({
               mx="auto"
               style={{
                 transform: translateY,
-                willChange: "transform",
+                willChange: 'transform',
                 maskImage:
-                  "linear-gradient(transparent 1%, black 25%, black 70%, transparent 100%)"
+                  'linear-gradient(transparent 1%, black 25%, black 70%, transparent 100%)'
               }}
             >
               <Flex // spotlights
@@ -112,17 +112,17 @@ export const AnimatedPillarsSection: React.FC<AnimatedPillarsSectionProps> = ({
         direction="row"
         justify="space-between"
         top="-15px"
-        display={{ base: "none", md: "flex" }}
+        display={{ base: 'none', md: 'flex' }}
         pos="relative"
         zIndex={3}
         paddingTop="100px"
         height="500px"
         sx={{
-          maskImage: "linear-gradient(black 30%, transparent 100%)"
+          maskImage: 'linear-gradient(black 30%, transparent 100%)'
         }}
       >
         {icons.map((icon, index) => {
-          const baseHeights = [-55, 25, -5, 45, -35];
+          const baseHeights = [-55, 25, -5, 45, -35]
           return (
             <VStack key={index} spacing={1} width="20%">
               <AnimatedPillar
@@ -138,9 +138,9 @@ export const AnimatedPillarsSection: React.FC<AnimatedPillarsSectionProps> = ({
                 />
               </AnimatedPillar>
             </VStack>
-          );
+          )
         })}
       </Flex>
     </Box>
-  );
-};
+  )
+}

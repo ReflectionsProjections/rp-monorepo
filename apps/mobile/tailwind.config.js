@@ -9,9 +9,9 @@ module.exports = {
         proRacing: ['ProRacing', 'System'],
         proRacingSlant: ['ProRacingSlant', 'System'],
         magistral: ['Magistral', 'System'],
-        magistralMedium: ['MagistralMedium', 'System'],
-      },
-    },
+        magistralMedium: ['MagistralMedium', 'System']
+      }
+    }
   },
-  plugins: [],
-};
+  plugins: []
+}

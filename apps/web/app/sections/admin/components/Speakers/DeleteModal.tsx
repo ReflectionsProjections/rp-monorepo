@@ -1,5 +1,5 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import { DeleteIcon } from '@chakra-ui/icons'
 import {
   IconButton,
   useDisclosure,
@@ -14,40 +14,40 @@ import {
   Button,
   Text,
   useColorModeValue
-} from "@chakra-ui/react";
-import type { Speaker } from "@app";
-import { api, path } from "@app";
+} from '@chakra-ui/react'
+import type { Speaker } from '@app'
+import { api, path } from '@app'
 
 type DeleteModalProps = {
-  speaker: Speaker;
-  updateSpeakers: () => void;
-};
+  speaker: Speaker
+  updateSpeakers: () => void
+}
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
   speaker,
   updateSpeakers
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const mirrorStyles = useMirrorStyles();
-  const toast = useToast();
-  const modalBg = useColorModeValue("white", "gray.800");
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const mirrorStyles = useMirrorStyles()
+  const toast = useToast()
+  const modalBg = useColorModeValue('white', 'gray.800')
 
   const deleteSpeaker = () => {
     const request = api
-      .delete(path("/speakers/:speakerId", { speakerId: speaker.speakerId }))
+      .delete(path('/speakers/:speakerId', { speakerId: speaker.speakerId }))
       .then(() => {
-        updateSpeakers();
-        onClose();
-      });
+        updateSpeakers()
+        onClose()
+      })
 
     toast.promise(request, {
-      success: { title: "Speaker deleted successfully" },
-      error: { title: "Error deleting speaker" },
-      loading: { title: "Deleting speaker..." }
-    });
+      success: { title: 'Speaker deleted successfully' },
+      error: { title: 'Error deleting speaker' },
+      loading: { title: 'Deleting speaker...' }
+    })
 
-    return request;
-  };
+    return request
+  }
 
   return (
     <>
@@ -81,7 +81,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         sx={mirrorStyles}
       />
     </>
-  );
-};
+  )
+}
 
-export default DeleteModal;
+export default DeleteModal

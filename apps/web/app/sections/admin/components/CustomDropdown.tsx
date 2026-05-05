@@ -1,10 +1,10 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
-import { useState } from "react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Box, Flex, Text } from '@chakra-ui/react'
+import { useState } from 'react'
+import { ChevronDownIcon } from '@chakra-ui/icons'
 
 function CustomDropdown({ dropdownOptions }: { dropdownOptions: string[] }) {
-  const [selected, setSelected] = useState(dropdownOptions[0]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState(dropdownOptions[0])
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <Box position="relative">
@@ -19,7 +19,7 @@ function CustomDropdown({ dropdownOptions }: { dropdownOptions: string[] }) {
         width="180px"
         justifyContent="space-between"
         cursor="pointer"
-        _hover={{ bg: "#E0E0E0" }}
+        _hover={{ bg: '#E0E0E0' }}
       >
         <Flex align="center">
           <Text fontWeight="bold" fontSize="md" ml={2}>
@@ -46,10 +46,10 @@ function CustomDropdown({ dropdownOptions }: { dropdownOptions: string[] }) {
               px={4}
               py={2}
               cursor="pointer"
-              _hover={{ bg: "#F5F5F5" }}
+              _hover={{ bg: '#F5F5F5' }}
               onClick={() => {
-                setSelected(currOption);
-                setIsOpen(false);
+                setSelected(currOption)
+                setIsOpen(false)
               }}
             >
               <Text>{currOption}</Text>
@@ -58,7 +58,7 @@ function CustomDropdown({ dropdownOptions }: { dropdownOptions: string[] }) {
         </Box>
       )}
     </Box>
-  );
+  )
 }
 
-export default CustomDropdown;
+export default CustomDropdown

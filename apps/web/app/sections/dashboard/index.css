@@ -14,32 +14,32 @@
 }
 
 @font-face {
-  font-family: "Magistral";
-  src: url("/site/magistral-wide.ttf") format("truetype");
+  font-family: 'Magistral';
+  src: url('/site/magistral-wide.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "ProRacingSlant";
-  src: url("/site/pro-racing-slant-narrow.ttf") format("opentype");
+  font-family: 'ProRacingSlant';
+  src: url('/site/pro-racing-slant-narrow.ttf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "ProRacing";
-  src: url("/site/pro-racing-narrow.ttf") format("opentype");
+  font-family: 'ProRacing';
+  src: url('/site/pro-racing-narrow.ttf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "SevenSegment";
-  src: url("/dashboard/seven-segment.ttf") format("truetype");
+  font-family: 'SevenSegment';
+  src: url('/dashboard/seven-segment.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

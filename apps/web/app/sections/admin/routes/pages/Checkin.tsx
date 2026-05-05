@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react'
 import {
   Box,
   Button,
@@ -15,157 +15,157 @@ import {
   useDisclosure,
   Select,
   HStack
-} from "@chakra-ui/react";
-import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
-import { Scanner } from "@yudiel/react-qr-scanner";
-import type { Event } from "@app";
-import { api, usePolling } from "@app";
-import { useOutletContext } from "react-router-dom";
-import type { MainContext } from "../Main.tsx";
-import type { ApiError } from "@api/type-wrapper";
-import MerchModal from "@app/sections/admin/components/Checkin/MerchModal.tsx";
+} from '@chakra-ui/react'
+import type { IDetectedBarcode } from '@yudiel/react-qr-scanner'
+import { Scanner } from '@yudiel/react-qr-scanner'
+import type { Event } from '@app'
+import { api, usePolling } from '@app'
+import { useOutletContext } from 'react-router-dom'
+import type { MainContext } from '../Main.tsx'
+import type { ApiError } from '@api/type-wrapper'
+import MerchModal from '@app/sections/admin/components/Checkin/MerchModal.tsx'
 
 export type BasicAttendee = {
-  email: string;
-  userId: string;
-  name: string;
-};
+  email: string
+  userId: string
+  name: string
+}
 
 const Checkin = () => {
-  const { authorized } = useOutletContext<MainContext>();
-  const { data: attendeeEmails } = usePolling("/attendee/emails", authorized);
-  const { data: events } = usePolling("/events", authorized);
-  const [showWebcam, setShowWebcam] = useState(false);
-  const toast = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
+  const { authorized } = useOutletContext<MainContext>()
+  const { data: attendeeEmails } = usePolling('/attendee/emails', authorized)
+  const { data: events } = usePolling('/events', authorized)
+  const [showWebcam, setShowWebcam] = useState(false)
+  const toast = useToast()
+  const [searchTerm, setSearchTerm] = useState('')
   const [filteredAttendees, setFilteredAttendees] = useState<BasicAttendee[]>(
     []
-  );
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  )
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [selectedAttendee, setSelectedAttendee] =
-    useState<BasicAttendee | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+    useState<BasicAttendee | null>(null)
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   // Handle QR scan
   const handleScan = (detectedCodes: IDetectedBarcode[]) => {
-    const qrData = detectedCodes[0];
+    const qrData = detectedCodes[0]
 
     if (!selectedEvent) {
       toast({
-        title: "Please select an event first!",
-        status: "error"
-      });
-      return;
+        title: 'Please select an event first!',
+        status: 'error'
+      })
+      return
     }
 
     toast.promise(
       api
-        .post("/checkin/scan/staff", {
+        .post('/checkin/scan/staff', {
           eventId: selectedEvent.eventId,
           qrCode: qrData.rawValue
         })
         .finally(() => {
-          if (selectedEvent.eventType === "CHECKIN") {
-            onOpen();
+          if (selectedEvent.eventType === 'CHECKIN') {
+            onOpen()
           }
         }),
       {
-        success: { title: "Successfully checked into event!" },
+        success: { title: 'Successfully checked into event!' },
         error: (error: ApiError) => {
           switch (error?.response?.data?.error) {
-            case "QR code has expired":
-              return { title: "Event QR code has expired", status: "error" };
-            case "IsDuplicate":
+            case 'QR code has expired':
+              return { title: 'Event QR code has expired', status: 'error' }
+            case 'IsDuplicate':
               return {
-                title: "Attendee has already checked in",
-                status: "info"
-              };
+                title: 'Attendee has already checked in',
+                status: 'info'
+              }
             default:
               return {
-                title: "Something went wrong! Please contact dev team.",
-                status: "error"
-              };
+                title: 'Something went wrong! Please contact dev team.',
+                status: 'error'
+              }
           }
         },
-        loading: { title: "Checking in attendee..." }
+        loading: { title: 'Checking in attendee...' }
       }
-    );
-  };
+    )
+  }
 
   // Main check-in logic
   const handleCheckIn = () => {
     if (!selectedEvent) {
       toast({
-        title: "Please select an event first!",
-        status: "error"
-      });
-      return;
+        title: 'Please select an event first!',
+        status: 'error'
+      })
+      return
     }
 
     if (!selectedAttendee) {
       toast({
-        title: "Please select an attendee first!",
-        status: "error"
-      });
-      return;
+        title: 'Please select an attendee first!',
+        status: 'error'
+      })
+      return
     }
 
     toast.promise(
       api
-        .post("/checkin/event", {
+        .post('/checkin/event', {
           eventId: selectedEvent.eventId,
           userId: selectedAttendee.userId
         })
         .finally(() => {
-          if (selectedEvent.eventType === "CHECKIN") {
-            onOpen();
+          if (selectedEvent.eventType === 'CHECKIN') {
+            onOpen()
           }
         }),
       {
-        success: { title: "Successfully checked into event!" },
+        success: { title: 'Successfully checked into event!' },
         error: (error: ApiError) => {
           switch (error?.response?.data?.error) {
-            case "IsDuplicate":
+            case 'IsDuplicate':
               return {
-                title: "Attendee has already checked in",
-                status: "info"
-              };
+                title: 'Attendee has already checked in',
+                status: 'info'
+              }
             default:
               return {
-                title: "Could not check in attendee. Please try again.",
-                status: "error"
-              };
+                title: 'Could not check in attendee. Please try again.',
+                status: 'error'
+              }
           }
         },
-        loading: { title: "Checking in attendee..." }
+        loading: { title: 'Checking in attendee...' }
       }
-    );
-  };
+    )
+  }
 
   // Handle search input changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
-    setSearchTerm(term);
+    const term = e.target.value
+    setSearchTerm(term)
 
     if (term && attendeeEmails) {
       const matches = attendeeEmails.filter(
         (attendee) =>
           attendee.email.toLowerCase().includes(term.toLowerCase()) ||
           attendee.name.toLowerCase().includes(term.toLowerCase())
-      );
+      )
 
-      setFilteredAttendees(matches);
+      setFilteredAttendees(matches)
     } else {
-      setFilteredAttendees([]);
+      setFilteredAttendees([])
     }
-  };
+  }
 
   // Handle selecting an attendee from dropdown
   const handleSelectAttendee = (attendee: BasicAttendee) => {
-    setSearchTerm(`${attendee.name} (${attendee.email})`);
-    setSelectedAttendee(attendee);
-    setFilteredAttendees([]);
-  };
+    setSearchTerm(`${attendee.name} (${attendee.email})`)
+    setSelectedAttendee(attendee)
+    setFilteredAttendees([])
+  }
 
   return (
     <>
@@ -219,9 +219,9 @@ const Checkin = () => {
                     size="sm"
                     variant="ghost"
                     onClick={() => {
-                      setSearchTerm("");
-                      setSelectedAttendee(null);
-                      setFilteredAttendees([]);
+                      setSearchTerm('')
+                      setSelectedAttendee(null)
+                      setFilteredAttendees([])
                     }}
                   >
                     ✕
@@ -246,7 +246,7 @@ const Checkin = () => {
                       <ListItem
                         key={attendee.userId}
                         p={2}
-                        _hover={{ bg: "gray.100", cursor: "pointer" }}
+                        _hover={{ bg: 'gray.100', cursor: 'pointer' }}
                         onClick={() => void handleSelectAttendee(attendee)}
                         color="black"
                       >
@@ -276,12 +276,12 @@ const Checkin = () => {
 
             <Select
               placeholder="Choose an event..."
-              value={selectedEvent?.eventId || ""}
+              value={selectedEvent?.eventId || ''}
               onChange={(e) => {
-                const eventId = e.target.value;
+                const eventId = e.target.value
                 const event =
-                  events?.find((ev) => ev.eventId === eventId) || null;
-                setSelectedEvent(event);
+                  events?.find((ev) => ev.eventId === eventId) || null
+                setSelectedEvent(event)
               }}
               size="lg"
               mb={4}
@@ -319,7 +319,7 @@ const Checkin = () => {
         selectedAttendee={selectedAttendee}
       />
     </>
-  );
-};
+  )
+}
 
-export default Checkin;
+export default Checkin

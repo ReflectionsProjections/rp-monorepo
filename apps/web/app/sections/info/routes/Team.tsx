@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react'
 import {
   Box,
   Container,
@@ -13,22 +13,22 @@ import {
   Wrap,
   WrapItem,
   Stack
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
 const TeamSidebar = ({ teamName }: { teamName: string }) => {
   const sidebarWidth = useBreakpointValue({
-    base: "0px",
-    md: "70px",
-    lg: "80px"
-  });
+    base: '0px',
+    md: '70px',
+    lg: '80px'
+  })
   const sidebarLeft = useBreakpointValue({
-    base: "0px",
-    md: "20px",
-    lg: "50px"
-  });
-  const showSidebar = useBreakpointValue({ base: false, md: true });
+    base: '0px',
+    md: '20px',
+    lg: '50px'
+  })
+  const showSidebar = useBreakpointValue({ base: false, md: true })
 
-  if (!showSidebar) return null;
+  if (!showSidebar) return null
 
   return (
     <Box
@@ -46,7 +46,7 @@ const TeamSidebar = ({ teamName }: { teamName: string }) => {
     >
       <Text
         transform="rotate(-90deg)"
-        fontSize={{ base: "xs", md: "sm", lg: "md" }}
+        fontSize={{ base: 'xs', md: 'sm', lg: 'md' }}
         fontWeight="semibold"
         textAlign="center"
         whiteSpace="nowrap"
@@ -54,13 +54,13 @@ const TeamSidebar = ({ teamName }: { teamName: string }) => {
         {teamName}
       </Text>
     </Box>
-  );
-};
+  )
+}
 
 const TeamHeader = ({ teamName }: { teamName: string }) => {
-  const showHeader = useBreakpointValue({ base: true, md: false });
+  const showHeader = useBreakpointValue({ base: true, md: false })
 
-  if (!showHeader) return null;
+  if (!showHeader) return null
 
   return (
     <Box bg="black" color="white" py={2} mb={4} textAlign="center">
@@ -68,48 +68,48 @@ const TeamHeader = ({ teamName }: { teamName: string }) => {
         {teamName}
       </Text>
     </Box>
-  );
-};
+  )
+}
 
 const ProfileBox = ({
   name,
   imagePath,
   isLead = false
 }: {
-  name: string;
-  imagePath: string;
-  isLead?: boolean;
+  name: string
+  imagePath: string
+  isLead?: boolean
 }) => {
   const boxSize = useBreakpointValue({
-    base: "120px",
-    md: "140px",
-    lg: "160px"
-  });
+    base: '120px',
+    md: '140px',
+    lg: '160px'
+  })
 
   const imageSize = useBreakpointValue({
-    base: isLead ? "100px" : "80px",
-    md: isLead ? "120px" : "90px",
-    lg: isLead ? "140px" : "100px"
-  });
+    base: isLead ? '100px' : '80px',
+    md: isLead ? '120px' : '90px',
+    lg: isLead ? '140px' : '100px'
+  })
 
   const leadBoxSize = useBreakpointValue({
-    base: "140px",
-    md: "160px",
-    lg: "180px"
-  });
+    base: '140px',
+    md: '160px',
+    lg: '180px'
+  })
 
   const fontSize = useBreakpointValue({
-    base: "xs",
-    md: isLead ? "sm" : "xs",
-    lg: isLead ? "md" : "sm"
-  });
+    base: 'xs',
+    md: isLead ? 'sm' : 'xs',
+    lg: isLead ? 'md' : 'sm'
+  })
 
   return (
     <Box
       w={isLead ? leadBoxSize : boxSize}
       h={isLead ? leadBoxSize : boxSize}
       bg="white"
-      border={isLead ? "8px double black" : "3px solid black"}
+      border={isLead ? '8px double black' : '3px solid black'}
       borderRadius="lg"
       display="flex"
       flexDirection="column"
@@ -117,7 +117,7 @@ const ProfileBox = ({
       justifyContent="space-between"
       p={2}
       zIndex={2}
-      boxShadow={isLead ? "xl" : "lg"}
+      boxShadow={isLead ? 'xl' : 'lg'}
       m={2}
     >
       <Image
@@ -130,42 +130,42 @@ const ProfileBox = ({
       />
       <Text
         fontSize={fontSize}
-        fontWeight={isLead ? "bold" : "medium"}
+        fontWeight={isLead ? 'bold' : 'medium'}
         textAlign="center"
         lineHeight="1.2"
       >
         {name}
       </Text>
     </Box>
-  );
-};
+  )
+}
 
 const TeamPage = () => {
   const sidebarOffset = useBreakpointValue({
-    base: "0px",
-    md: "100px",
-    lg: "140px"
-  });
+    base: '0px',
+    md: '100px',
+    lg: '140px'
+  })
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <Box w="100vw" pt={8}>
       <VStack spacing={8} align="stretch" maxW="none">
-        <Box as="section" w="100%" pt={{ base: "80px", md: "100px" }}>
+        <Box as="section" w="100%" pt={{ base: '80px', md: '100px' }}>
           <Container maxW="container.xl">
             <Stack
-              direction={{ base: "column", lg: "row" }}
-              align={{ base: "center", lg: "center" }}
+              direction={{ base: 'column', lg: 'row' }}
+              align={{ base: 'center', lg: 'center' }}
               justify="center"
               spacing={{ base: 10, md: 16 }}
-              textAlign={{ base: "center", lg: "left" }}
+              textAlign={{ base: 'center', lg: 'left' }}
             >
               <VStack
                 spacing={3}
-                align={{ base: "center", lg: "flex-start" }}
+                align={{ base: 'center', lg: 'flex-start' }}
                 flexShrink={0}
               >
                 <Heading size="3xl" fontWeight="bold">
@@ -176,20 +176,20 @@ const TeamPage = () => {
                 </Heading>
               </VStack>
 
-              <Box position="relative" w="full" maxW={{ base: "sm", md: "lg" }}>
+              <Box position="relative" w="full" maxW={{ base: 'sm', md: 'lg' }}>
                 <Box
                   position="absolute"
-                  top={{ base: "-12px" }}
+                  top={{ base: '-12px' }}
                   left="50%"
                   transform="translateX(-50%)"
                   bg="black"
                   color="white"
                   px={{ base: 4, md: 6 }}
                   py={{ base: 1.5, md: 2 }}
-                  textAlign={"center"}
+                  textAlign={'center'}
                 >
                   <Text
-                    fontSize={{ base: "md", md: "lg" }}
+                    fontSize={{ base: 'md', md: 'lg' }}
                     fontWeight="semibold"
                   >
                     Co-Directors
@@ -211,8 +211,8 @@ const TeamPage = () => {
                     <Image
                       src="/info/Directors/Shreenija.JPG"
                       alt="Shreenija"
-                      w={{ base: "160px", md: "180px" }}
-                      h={{ base: "160px", md: "180px" }}
+                      w={{ base: '160px', md: '180px' }}
+                      h={{ base: '160px', md: '180px' }}
                       border="3px solid"
                       borderColor="black"
                       objectFit="cover"
@@ -224,8 +224,8 @@ const TeamPage = () => {
                     <Image
                       src="/info/Directors/Cole.JPG"
                       alt="Cole"
-                      w={{ base: "160px", md: "180px" }}
-                      h={{ base: "160px", md: "180px" }}
+                      w={{ base: '160px', md: '180px' }}
+                      h={{ base: '160px', md: '180px' }}
                       border="3px solid"
                       borderColor="black"
                       objectFit="cover"
@@ -635,7 +635,7 @@ const TeamPage = () => {
         </Box>
       </VStack>
     </Box>
-  );
-};
+  )
+}
 
-export default TeamPage;
+export default TeamPage

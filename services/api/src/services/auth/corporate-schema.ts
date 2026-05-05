@@ -1,27 +1,27 @@
-import { InferSchemaType, Schema } from "mongoose";
-import { z } from "zod";
+import { InferSchemaType, Schema } from 'mongoose'
+import { z } from 'zod'
 
 // Zod schema
 export const CorporateValidator = z.object({
-    name: z.string(),
-    email: z.string(),
-});
+  name: z.string(),
+  email: z.string()
+})
 
 // Zod schema
 export const CorporateDeleteRequest = z.object({
-    email: z.string(),
-});
+  email: z.string()
+})
 
 // Mongoose schema
 export const CorporateSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-});
-export type Corporate = InferSchemaType<typeof CorporateSchema>;
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  }
+})
+export type Corporate = InferSchemaType<typeof CorporateSchema>

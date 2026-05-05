@@ -1,75 +1,75 @@
-import { Config } from "@app/sections/sponsor/config";
-import type { Resume } from "@app/sections/sponsor/routes/ResumeBook/ResumeBook";
-import { downloadResumes } from "@app/sections/sponsor/util/download-functions";
-import { saveAs } from "file-saver";
-import { useState } from "react";
+import { Config } from '@app/sections/sponsor/config'
+import type { Resume } from '@app/sections/sponsor/routes/ResumeBook/ResumeBook'
+import { downloadResumes } from '@app/sections/sponsor/util/download-functions'
+import { saveAs } from 'file-saver'
+import { useState } from 'react'
 
 export function useResumeSelectionAndDownloadHook({
   allFilteredResumes,
   filteredResumes
 }: {
-  allFilteredResumes: Resume[];
-  filteredResumes: Resume[];
+  allFilteredResumes: Resume[]
+  filteredResumes: Resume[]
 }) {
-  const [selectedResumes, setSelectedResumes] = useState<string[]>([]);
+  const [selectedResumes, setSelectedResumes] = useState<string[]>([])
 
   const resetSelectedResumes = () => {
-    setSelectedResumes([]);
-  };
+    setSelectedResumes([])
+  }
 
   const toggleResume = (id: string) => {
     setSelectedResumes((prev) =>
       prev.includes(id)
         ? prev.filter((resumeId) => resumeId !== id)
         : [...prev, id]
-    );
-  };
+    )
+  }
 
   const selectAllResumes = () => {
     if (selectedResumes.length === filteredResumes.length) {
-      setSelectedResumes([]);
+      setSelectedResumes([])
     } else {
-      setSelectedResumes(filteredResumes.map((resume) => resume.id));
+      setSelectedResumes(filteredResumes.map((resume) => resume.id))
     }
-  };
+  }
 
   const handleDownloadResumes = async () => {
-    await downloadResumes(filteredResumes, selectedResumes);
-  };
+    await downloadResumes(filteredResumes, selectedResumes)
+  }
 
   const downloadResumesCSV = (selected: boolean = false) => {
     const csvContent = [
-      "Name,Major,Minor,Degree,Graduation Year,Job Interest,Portfolios,Resume Link"
+      'Name,Major,Minor,Degree,Graduation Year,Job Interest,Portfolios,Resume Link'
     ]
       .concat(
         allFilteredResumes
           .filter((resume) => {
             if (selected) {
-              return selectedResumes.includes(resume.id);
+              return selectedResumes.includes(resume.id)
             }
-            return true;
+            return true
           })
           .map((resume) => {
             const portfolios = resume.portfolios
-              ? resume.portfolios.join("; ")
-              : "";
+              ? resume.portfolios.join('; ')
+              : ''
             return [
               resume.name,
-              resume.majors.join("; ") || "",
-              resume.minors.join("; ") || "",
-              resume.degree || "",
-              resume.graduationYear || "",
-              resume.jobInterest.join("; "),
+              resume.majors.join('; ') || '',
+              resume.minors.join('; ') || '',
+              resume.degree || '',
+              resume.graduationYear || '',
+              resume.jobInterest.join('; '),
               portfolios,
               `${Config.RESUME_BOOK_URL}/resume-book/${resume.id}/download`
-            ].join(",");
+            ].join(',')
           })
       )
-      .join("\n");
+      .join('\n')
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, "resumes.csv");
-  };
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    saveAs(blob, 'resumes.csv')
+  }
   return {
     selectedResumes,
     toggleResume,
@@ -77,5 +77,5 @@ export function useResumeSelectionAndDownloadHook({
     handleDownloadResumes,
     downloadResumesCSV,
     resetSelectedResumes
-  };
+  }
 }

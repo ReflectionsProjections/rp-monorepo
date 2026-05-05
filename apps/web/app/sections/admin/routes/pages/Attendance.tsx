@@ -1,5 +1,5 @@
-import { Heading } from "@chakra-ui/react";
-import AttendanceBox from "../../components/AttendanceTable";
+import { Heading } from '@chakra-ui/react'
+import AttendanceBox from '../../components/AttendanceTable'
 
 const Attendance = () => {
   return (
@@ -8,7 +8,7 @@ const Attendance = () => {
       <br />
       <AttendanceBox />
     </>
-  );
-};
+  )
+}
 
-export default Attendance;
+export default Attendance

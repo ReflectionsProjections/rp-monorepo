@@ -1,11 +1,11 @@
-import { ArrowLeftIcon } from "@chakra-ui/icons";
-import { Box, Text } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import QRCode from "react-qr-code";
+import { ArrowLeftIcon } from '@chakra-ui/icons'
+import { Box, Text } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import QRCode from 'react-qr-code'
 
-const REGISTER_URL = "https://reflectionsprojections.org/register";
+const REGISTER_URL = 'https://reflectionsprojections.org/register'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 export const RegisterNow = () => {
   return (
@@ -30,21 +30,21 @@ export const RegisterNow = () => {
         <Box
           p="1vh"
           borderRadius="1vh"
-          bgColor={"rgba(0,0,0,0.2)"}
+          bgColor={'rgba(0,0,0,0.2)'}
           display="flex"
           justifyContent="center"
           alignItems="center"
           sx={{
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)"
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)'
           }}
-          marginRight={"1.5vh"}
+          marginRight={'1.5vh'}
         >
           <QRCode
             style={{
-              width: "18vh",
-              height: "18vh",
-              background: "transparent"
+              width: '18vh',
+              height: '18vh',
+              background: 'transparent'
             }}
             value={REGISTER_URL}
             fgColor="white"
@@ -56,8 +56,8 @@ export const RegisterNow = () => {
         <MotionBox
           ml="2.5vh"
           initial={{ y: 0 }}
-          animate={{ x: [0, "-1vh", 0] }}
-          transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+          animate={{ x: [0, '-1vh', 0] }}
+          transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -68,5 +68,5 @@ export const RegisterNow = () => {
         </MotionBox>
       </Box>
     </Box>
-  );
-};
+  )
+}

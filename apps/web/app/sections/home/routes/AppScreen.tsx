@@ -8,10 +8,10 @@ import {
   VStack,
   HStack,
   useBreakpointValue
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
 export default function AppScreen() {
-  const titleSize = useBreakpointValue({ base: "2xl", md: "4xl", lg: "5xl" });
+  const titleSize = useBreakpointValue({ base: '2xl', md: '4xl', lg: '5xl' })
 
   return (
     <Box minH="100vh" w="100%" pos="relative" overflow="hidden" bg="black">
@@ -59,7 +59,7 @@ export default function AppScreen() {
 
             {/* Subtitle */}
             <Text
-              fontSize={{ base: "lg", md: "xl" }}
+              fontSize={{ base: 'lg', md: 'xl' }}
               fontFamily="Magistral"
               maxW="600px"
               textShadow="1px 1px 2px rgba(0,0,0,0.8)"
@@ -72,24 +72,24 @@ export default function AppScreen() {
 
             <HStack
               spacing={6}
-              flexDir={{ base: "column", sm: "row" }}
+              flexDir={{ base: 'column', sm: 'row' }}
               align="center"
               justify="center"
             >
               <Link
                 href="https://apps.apple.com/us/app/r-p-2025/id6744465190"
                 isExternal
-                _hover={{ transform: "scale(1.05)" }}
+                _hover={{ transform: 'scale(1.05)' }}
                 transition="all 0.3s ease"
               >
                 <Image
                   src="/site/appscreen/app_store.png"
                   alt="Download on the App Store"
-                  h={{ base: "50px", md: "60px" }}
+                  h={{ base: '50px', md: '60px' }}
                   w="auto"
                   filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
                   _hover={{
-                    filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"
+                    filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))'
                   }}
                 />
               </Link>
@@ -97,17 +97,17 @@ export default function AppScreen() {
               <Link
                 href="https://play.google.com/store/apps/details?id=com.reflectionsprojections&utm_source=na_Med"
                 isExternal
-                _hover={{ transform: "scale(1.05)" }}
+                _hover={{ transform: 'scale(1.05)' }}
                 transition="all 0.3s ease"
               >
                 <Image
                   src="/site/appscreen/google_play.png"
                   alt="Get it on Google Play"
-                  h={{ base: "50px", md: "60px" }}
+                  h={{ base: '50px', md: '60px' }}
                   w="auto"
                   filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
                   _hover={{
-                    filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"
+                    filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))'
                   }}
                 />
               </Link>
@@ -116,5 +116,5 @@ export default function AppScreen() {
         </Container>
       </Box>
     </Box>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import Config from "../config";
+import Config from '../config'
 
 const templates = {
-    REGISTRATION_CONFIRMATION: `<!DOCTYPE html>
+  REGISTRATION_CONFIRMATION: `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -992,7 +992,7 @@ const templates = {
        </table>
    </body>
 </html>`,
-    REGISTRATION_UPDATE_CONFIRMATION: `<!DOCTYPE html>
+  REGISTRATION_UPDATE_CONFIRMATION: `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -1981,7 +1981,7 @@ const templates = {
        </table>
    </body>
 </html>`,
-    REGISTRATION_CONFIRMATION_OLD: `<!DOCTYPE html>
+  REGISTRATION_CONFIRMATION_OLD: `<!DOCTYPE html>
         <html>
             <body>
                 <div class="container">
@@ -2036,7 +2036,7 @@ const templates = {
         </html>
     `,
 
-    SPONSOR_VERIFICATION: `
+  SPONSOR_VERIFICATION: `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -2084,7 +2084,7 @@ const templates = {
             <p> Note that this verification code will expire approximately 10 minutes from now. </p>
         </div>
     </body>
-    </html>`,
-};
+    </html>`
+}
 
-export default templates;
+export default templates

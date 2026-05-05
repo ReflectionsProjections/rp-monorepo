@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   Box,
   Text,
@@ -24,142 +24,142 @@ import {
   TagLabel,
   Wrap,
   WrapItem
-} from "@chakra-ui/react";
-import type { Event } from "@app";
-import moment from "moment-timezone";
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import EditModal from "./EditModal";
-import DeleteModal from "./DeleteModal";
+} from '@chakra-ui/react'
+import type { Event } from '@app'
+import moment from 'moment-timezone'
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import EditModal from './EditModal'
+import DeleteModal from './DeleteModal'
 
 // Set timezone to Chicago (Central Time)
-moment.tz.setDefault("America/Chicago");
+moment.tz.setDefault('America/Chicago')
 
 type EventCalendarProps = {
-  events: Event[];
-  updateEvents: () => void;
-};
+  events: Event[]
+  updateEvents: () => void
+}
 
 type CalendarEvent = Event & {
-  startSlot: number;
-  endSlot: number;
-  rowSpan: number;
-  column: number;
-};
+  startSlot: number
+  endSlot: number
+  rowSpan: number
+  column: number
+}
 
 const EventCalendar: React.FC<EventCalendarProps> = ({
   events,
   updateEvents
 }) => {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   // Update selectedEvent when events data changes
   useEffect(() => {
     if (selectedEvent) {
       const updatedEvent = events.find(
         (event) => event.eventId === selectedEvent.eventId
-      );
+      )
       if (updatedEvent) {
-        setSelectedEvent(updatedEvent);
+        setSelectedEvent(updatedEvent)
       }
     }
-  }, [events, selectedEvent]);
-  const mirrorStyles = useMirrorStyles();
-  const borderColor = useColorModeValue("gray.200", "gray.600");
-  const hoverBg = useColorModeValue("gray.50", "gray.700");
-  const timeSlotColor = useColorModeValue("gray.600", "gray.300");
-  const TIME_SLOT_HEIGHT = 40;
-  const ROW_SPACING = 4;
+  }, [events, selectedEvent])
+  const mirrorStyles = useMirrorStyles()
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
+  const timeSlotColor = useColorModeValue('gray.600', 'gray.300')
+  const TIME_SLOT_HEIGHT = 40
+  const ROW_SPACING = 4
 
   // Pre-calculate event colors for different event types
   const eventColors = {
     SPEAKER: {
-      bg: useColorModeValue("blue.50", "blue.900"),
-      border: useColorModeValue("blue.200", "blue.700")
+      bg: useColorModeValue('blue.50', 'blue.900'),
+      border: useColorModeValue('blue.200', 'blue.700')
     },
     CORPORATE: {
-      bg: useColorModeValue("green.50", "green.900"),
-      border: useColorModeValue("green.200", "green.700")
+      bg: useColorModeValue('green.50', 'green.900'),
+      border: useColorModeValue('green.200', 'green.700')
     },
     SPECIAL: {
-      bg: useColorModeValue("purple.50", "purple.900"),
-      border: useColorModeValue("purple.200", "purple.700")
+      bg: useColorModeValue('purple.50', 'purple.900'),
+      border: useColorModeValue('purple.200', 'purple.700')
     },
     PARTNERS: {
-      bg: useColorModeValue("orange.50", "orange.900"),
-      border: useColorModeValue("orange.200", "orange.700")
+      bg: useColorModeValue('orange.50', 'orange.900'),
+      border: useColorModeValue('orange.200', 'orange.700')
     },
     MEALS: {
-      bg: useColorModeValue("yellow.50", "yellow.900"),
-      border: useColorModeValue("yellow.200", "yellow.700")
+      bg: useColorModeValue('yellow.50', 'yellow.900'),
+      border: useColorModeValue('yellow.200', 'yellow.700')
     },
     CHECKIN: {
-      bg: useColorModeValue("teal.50", "teal.900"),
-      border: useColorModeValue("teal.200", "teal.700")
+      bg: useColorModeValue('teal.50', 'teal.900'),
+      border: useColorModeValue('teal.200', 'teal.700')
     }
-  };
+  }
 
   // Generate time slots from 8 AM to 10 PM (half-hour intervals)
   const timeSlots = useMemo(() => {
-    const slots = [];
+    const slots = []
     for (let hour = 8; hour <= 22; hour++) {
       // Add full hour slot
-      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      slots.push(`${hour.toString().padStart(2, '0')}:00`)
       // Add half-hour slot (except for the last hour)
       if (hour < 22) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
+        slots.push(`${hour.toString().padStart(2, '0')}:30`)
       }
     }
-    return slots;
-  }, []);
+    return slots
+  }, [])
 
   // Get unique dates from events
   const dates = useMemo(() => {
     const uniqueDates = [
       ...new Set(
         events.map((event) =>
-          moment.tz(event.startTime, "America/Chicago").format("YYYY-MM-DD")
+          moment.tz(event.startTime, 'America/Chicago').format('YYYY-MM-DD')
         )
       )
-    ].sort();
+    ].sort()
 
     return uniqueDates.map((date) => ({
       key: date,
-      moment: moment.tz(date, "America/Chicago"),
-      display: moment.tz(date, "America/Chicago").format("ddd, MMM D")
-    }));
-  }, [events]);
+      moment: moment.tz(date, 'America/Chicago'),
+      display: moment.tz(date, 'America/Chicago').format('ddd, MMM D')
+    }))
+  }, [events])
 
   // Process events to calculate time slots and handle overlaps
   const processedEvents = useMemo(() => {
-    const processed: { [dateKey: string]: CalendarEvent[] } = {};
+    const processed: { [dateKey: string]: CalendarEvent[] } = {}
 
     dates.forEach((date) => {
       const dateEvents = events.filter(
         (event) =>
-          moment.tz(event.startTime, "America/Chicago").format("YYYY-MM-DD") ===
+          moment.tz(event.startTime, 'America/Chicago').format('YYYY-MM-DD') ===
           date.key
-      );
+      )
 
       // Calculate time slots for each event
       const calendarEvents: CalendarEvent[] = dateEvents.map((event) => {
-        const startMoment = moment.tz(event.startTime, "America/Chicago");
-        const endMoment = moment.tz(event.endTime, "America/Chicago");
+        const startMoment = moment.tz(event.startTime, 'America/Chicago')
+        const endMoment = moment.tz(event.endTime, 'America/Chicago')
 
         // Calculate time slots with half-hour precision
         // Each hour has 2 slots (00 and 30 minutes)
         // 8:00 = slot 0, 8:30 = slot 1, 9:00 = slot 2, etc.
         let startSlot =
-          (startMoment.hour() - 8) * 2 + Math.floor(startMoment.minute() / 30);
+          (startMoment.hour() - 8) * 2 + Math.floor(startMoment.minute() / 30)
         let endSlot =
-          (endMoment.hour() - 8) * 2 + Math.floor(endMoment.minute() / 30);
+          (endMoment.hour() - 8) * 2 + Math.floor(endMoment.minute() / 30)
 
         // Handle events that start before 8 AM or end after 10 PM
-        if (startSlot < 0) startSlot = 0;
-        if (endSlot > 28) endSlot = 28; // 14 hours * 2 slots per hour = 28 slots
+        if (startSlot < 0) startSlot = 0
+        if (endSlot > 28) endSlot = 28 // 14 hours * 2 slots per hour = 28 slots
 
         // Calculate row span based on actual duration
-        const rowSpan = Math.max(1, endSlot - startSlot);
+        const rowSpan = Math.max(1, endSlot - startSlot)
 
         return {
           ...event,
@@ -167,21 +167,21 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
           endSlot,
           rowSpan,
           column: 0 // Will be calculated for overlap handling
-        };
-      });
+        }
+      })
 
       // Sort events by start time
-      calendarEvents.sort((a, b) => a.startSlot - b.startSlot);
+      calendarEvents.sort((a, b) => a.startSlot - b.startSlot)
 
       // Handle overlapping events by assigning columns
-      const columns: CalendarEvent[][] = [];
+      const columns: CalendarEvent[][] = []
 
       calendarEvents.forEach((event) => {
-        let columnIndex = 0;
+        let columnIndex = 0
 
         // Find the first column where this event doesn't overlap
         while (columnIndex < columns.length) {
-          const column = columns[columnIndex];
+          const column = columns[columnIndex]
           const hasOverlap = column.some(
             (existingEvent) =>
               // Events overlap if they share any time period
@@ -190,27 +190,27 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                 event.endSlot <= existingEvent.startSlot ||
                 event.startSlot >= existingEvent.endSlot
               )
-          );
+          )
 
-          if (!hasOverlap) break;
-          columnIndex++;
+          if (!hasOverlap) break
+          columnIndex++
         }
 
         // Add to existing column or create new one
         if (columnIndex < columns.length) {
-          columns[columnIndex].push(event);
+          columns[columnIndex].push(event)
         } else {
-          columns.push([event]);
+          columns.push([event])
         }
 
-        event.column = columnIndex;
-      });
+        event.column = columnIndex
+      })
 
-      processed[date.key] = calendarEvents;
-    });
+      processed[date.key] = calendarEvents
+    })
 
-    return processed;
-  }, [events, dates]);
+    return processed
+  }, [events, dates])
 
   const handleEventClick = (event: CalendarEvent) => {
     // Extract only the original Event properties, excluding calendar-specific ones
@@ -228,34 +228,34 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
       isVisible: event.isVisible,
       attendanceCount: event.attendanceCount,
       tags: event.tags
-    };
+    }
 
-    setSelectedEvent(originalEvent);
-    onOpen();
-  };
+    setSelectedEvent(originalEvent)
+    onOpen()
+  }
 
   const getEventColor = (eventType: string) => {
     switch (eventType) {
-      case "SPEAKER":
-        return "blue";
-      case "CORPORATE":
-        return "green";
-      case "SPECIAL":
-        return "purple";
-      case "PARTNERS":
-        return "orange";
-      case "MEALS":
-        return "yellow";
-      case "CHECKIN":
-        return "teal";
+      case 'SPEAKER':
+        return 'blue'
+      case 'CORPORATE':
+        return 'green'
+      case 'SPECIAL':
+        return 'purple'
+      case 'PARTNERS':
+        return 'orange'
+      case 'MEALS':
+        return 'yellow'
+      case 'CHECKIN':
+        return 'teal'
       default:
-        return "gray";
+        return 'gray'
     }
-  };
+  }
 
   const formatTime = (time: string) => {
-    return moment.tz(time, "America/Chicago").format("h:mm A");
-  };
+    return moment.tz(time, 'America/Chicago').format('h:mm A')
+  }
 
   if (events.length === 0) {
     return (
@@ -264,7 +264,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
           No events found
         </Text>
       </Box>
-    );
+    )
   }
 
   return (
@@ -283,7 +283,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                       {date.display}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      {date.moment.format("MMM D")}
+                      {date.moment.format('MMM D')}
                     </Text>
                   </VStack>
                 </Th>
@@ -305,17 +305,17 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                   position="relative"
                 >
                   <Box>
-                    {moment(timeSlot, "HH:mm").format("h:mm")}
+                    {moment(timeSlot, 'HH:mm').format('h:mm')}
                     <Text as="span" fontSize="xs" color="gray.500" ml="1px">
-                      {moment(timeSlot, "HH:mm").format("A")}
+                      {moment(timeSlot, 'HH:mm').format('A')}
                     </Text>
                   </Box>
                 </Td>
                 {dates.map((date) => {
-                  const dateEvents = processedEvents[date.key] || [];
+                  const dateEvents = processedEvents[date.key] || []
                   const eventsInThisSlot = dateEvents.filter(
                     (event) => event.startSlot === slotIndex
-                  );
+                  )
 
                   return (
                     <Td
@@ -352,8 +352,8 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                           }
                           _hover={{
                             bg: hoverBg,
-                            transform: "scale(1.02)",
-                            boxShadow: "md",
+                            transform: 'scale(1.02)',
+                            boxShadow: 'md',
                             zIndex: 10
                           }}
                           onClick={() => handleEventClick(event)}
@@ -415,14 +415,14 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                               noOfLines={1}
                               lineHeight="1.2"
                             >
-                              {formatTime(event.startTime)} -{" "}
+                              {formatTime(event.startTime)} -{' '}
                               {formatTime(event.endTime)}
                             </Text>
                           </VStack>
                         </Box>
                       ))}
                     </Td>
-                  );
+                  )
                 })}
               </Tr>
             ))}
@@ -443,12 +443,12 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                   <Text fontWeight="bold">Time:</Text>
                   <Text>
                     {moment
-                      .tz(selectedEvent.startTime, "America/Chicago")
-                      .format("MMMM Do YYYY, h:mm A")}{" "}
+                      .tz(selectedEvent.startTime, 'America/Chicago')
+                      .format('MMMM Do YYYY, h:mm A')}{' '}
                     -
                     {moment
-                      .tz(selectedEvent.endTime, "America/Chicago")
-                      .format("h:mm A")}
+                      .tz(selectedEvent.endTime, 'America/Chicago')
+                      .format('h:mm A')}
                   </Text>
                 </Box>
 
@@ -500,7 +500,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default EventCalendar;
+export default EventCalendar

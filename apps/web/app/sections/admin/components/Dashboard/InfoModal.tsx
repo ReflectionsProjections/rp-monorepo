@@ -1,5 +1,5 @@
-import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";
-import type { UseDisclosureReturn } from "@chakra-ui/react";
+import { useMirrorStyles } from '@app/sections/admin/styles/Mirror'
+import type { UseDisclosureReturn } from '@chakra-ui/react'
 import {
   Button,
   Modal,
@@ -11,8 +11,8 @@ import {
   Stack,
   Text,
   useDisclosure
-} from "@chakra-ui/react";
-import type { Display } from "@app";
+} from '@chakra-ui/react'
+import type { Display } from '@app'
 
 export default function InfoModal({
   display: { id, metadata, lastUpdate },
@@ -21,14 +21,14 @@ export default function InfoModal({
   reload,
   messageModalDisclosure
 }: {
-  display: Display;
-  time: number;
-  identify: () => void;
-  reload: () => void;
-  messageModalDisclosure: UseDisclosureReturn;
+  display: Display
+  time: number
+  identify: () => void
+  reload: () => void
+  messageModalDisclosure: UseDisclosureReturn
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const mirrorStyle = useMirrorStyles();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const mirrorStyle = useMirrorStyles()
 
   return (
     <>
@@ -58,8 +58,8 @@ export default function InfoModal({
               <Text>Display metadata is unavailable</Text>
             )}
           </ModalBody>
-          <ModalFooter justifyContent={"center"}>
-            <Stack flexDirection={"row"} spacing={2}>
+          <ModalFooter justifyContent={'center'}>
+            <Stack flexDirection={'row'} spacing={2}>
               <Button variant="outline" colorScheme="blue" onClick={identify}>
                 Identify
               </Button>
@@ -70,15 +70,15 @@ export default function InfoModal({
                 variant="outline"
                 colorScheme="orange"
                 onClick={() => {
-                  onClose();
-                  messageModalDisclosure.onOpen();
+                  onClose()
+                  messageModalDisclosure.onOpen()
                 }}
               >
                 Message
               </Button>
               <Button
-                textAlign={"center"}
-                variant={"outline"}
+                textAlign={'center'}
+                variant={'outline'}
                 colorScheme="red"
                 onClick={onClose}
               >
@@ -89,5 +89,5 @@ export default function InfoModal({
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }

@@ -1,16 +1,16 @@
-import { Box } from "@chakra-ui/react";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { Box } from '@chakra-ui/react'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box)
 
 type AnimatedCounterProps = {
   // icon?: string;
-  baseHeight: number;
-  heightDelta: number;
-  time: number;
-  children: React.ReactNode;
-};
+  baseHeight: number
+  heightDelta: number
+  time: number
+  children: React.ReactNode
+}
 
 const AnimatedPillar: React.FC<AnimatedCounterProps> = ({
   baseHeight,
@@ -18,15 +18,15 @@ const AnimatedPillar: React.FC<AnimatedCounterProps> = ({
   time,
   children
 }) => {
-  const viewMarkerRef = useRef(null);
-  const isInView = useInView(viewMarkerRef);
+  const viewMarkerRef = useRef(null)
+  const isInView = useInView(viewMarkerRef)
 
   return (
     <Box ref={viewMarkerRef}>
       <MotionBox
         initial={{ opacity: 0, y: heightDelta }}
         animate={isInView ? { opacity: 1, y: baseHeight } : {}}
-        transition={{ duration: time, ease: "easeOut" }}
+        transition={{ duration: time, ease: 'easeOut' }}
         zIndex={3}
         w="120px"
         h="350px"
@@ -45,7 +45,7 @@ const AnimatedPillar: React.FC<AnimatedCounterProps> = ({
           {children}
         </Box>
         <Box
-          sx={{ transform: "rotateX(60deg)" }}
+          sx={{ transform: 'rotateX(60deg)' }}
           pos="relative"
           bottom="15px"
           zIndex={4}
@@ -59,7 +59,7 @@ const AnimatedPillar: React.FC<AnimatedCounterProps> = ({
             h="84.9px"
             bg="rgba(234, 234, 234, 1)"
             pos="absolute"
-            sx={{ transform: "rotateZ(45deg)" }}
+            sx={{ transform: 'rotateZ(45deg)' }}
           />
         </Box>
         <Box
@@ -69,7 +69,7 @@ const AnimatedPillar: React.FC<AnimatedCounterProps> = ({
           pos="absolute"
           zIndex={3}
           mr="60px"
-          sx={{ transform: "skewY(25deg)" }}
+          sx={{ transform: 'skewY(25deg)' }}
         />
         <Box
           w="60px"
@@ -78,11 +78,11 @@ const AnimatedPillar: React.FC<AnimatedCounterProps> = ({
           pos="absolute"
           zIndex={2}
           ml="60px"
-          sx={{ transform: "skewY(-25deg)" }}
+          sx={{ transform: 'skewY(-25deg)' }}
         />
       </MotionBox>
     </Box>
-  );
-};
+  )
+}
 
-export default AnimatedPillar;
+export default AnimatedPillar

@@ -13,26 +13,26 @@ import {
   Tag,
   TagCloseButton,
   TagLabel
-} from "@chakra-ui/react";
-import Fuse from "fuse.js";
-import { useEffect, useState } from "react";
-import { Config } from "../config";
+} from '@chakra-ui/react'
+import Fuse from 'fuse.js'
+import { useEffect, useState } from 'react'
+import { Config } from '../config'
 
 interface MultiSelectDropdownProps {
-  id: string;
-  width: string;
-  options: string[];
-  displayedOptions?: Record<string, string>;
-  selectedOptions: string[];
-  onSelectionChange: (selected: string[]) => void;
-  placeholderText?: string | null;
-  hideOptionIfNoDisplayedOptionAvailable?: boolean;
+  id: string
+  width: string
+  options: string[]
+  displayedOptions?: Record<string, string>
+  selectedOptions: string[]
+  onSelectionChange: (selected: string[]) => void
+  placeholderText?: string | null
+  hideOptionIfNoDisplayedOptionAvailable?: boolean
 }
 
 type TagListProps = {
-  selectedOptions: string[];
-  handleRemove: (option: string) => void;
-};
+  selectedOptions: string[]
+  handleRemove: (option: string) => void
+}
 
 function TagList({ selectedOptions, handleRemove }: TagListProps) {
   return (
@@ -44,7 +44,7 @@ function TagList({ selectedOptions, handleRemove }: TagListProps) {
         </Tag>
       ))}
     </Flex>
-  );
+  )
 }
 
 function MultiSelectDropdown({
@@ -54,68 +54,68 @@ function MultiSelectDropdown({
   selectedOptions,
   displayedOptions,
   onSelectionChange,
-  placeholderText = "Select",
+  placeholderText = 'Select',
   hideOptionIfNoDisplayedOptionAvailable = false
 }: MultiSelectDropdownProps) {
-  const [query, setQuery] = useState<string>("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState<string>('')
+  const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState<string[]>(
     options.slice(0, Config.MAX_DROPDOWN_OPTIONS)
-  );
+  )
 
   const fuse = new Fuse(options, {
-    keys: [""],
+    keys: [''],
     threshold: 0.3 // Lower threshold means more results
-  });
+  })
 
   const resetFilter = () => {
-    let newOptions;
+    let newOptions
 
-    if (query.trim() === "") {
+    if (query.trim() === '') {
       newOptions = options
         .filter(
           (option) =>
             option.toLowerCase().includes(query.toLowerCase()) &&
             !selectedOptions.includes(option) // Omit already selected options
         )
-        .slice(0, Config.MAX_DROPDOWN_OPTIONS);
+        .slice(0, Config.MAX_DROPDOWN_OPTIONS)
     } else {
       // Apply fuzzy search if the user has started typing
-      const fuzzyResults = fuse.search(query).map((result) => result.item);
+      const fuzzyResults = fuse.search(query).map((result) => result.item)
       newOptions = fuzzyResults
         .filter((option) => !selectedOptions.includes(option)) // Omit already selected options
-        .slice(0, Config.MAX_DROPDOWN_OPTIONS);
+        .slice(0, Config.MAX_DROPDOWN_OPTIONS)
     }
 
-    setFilteredOptions(newOptions);
-  };
+    setFilteredOptions(newOptions)
+  }
 
   const handleSelect = (option: string) => {
     if (!selectedOptions.includes(option)) {
-      const newSelectedOptions = [...selectedOptions, option];
-      onSelectionChange(newSelectedOptions);
-      setQuery("");
-      resetFilter();
-      setIsOpen(false);
+      const newSelectedOptions = [...selectedOptions, option]
+      onSelectionChange(newSelectedOptions)
+      setQuery('')
+      resetFilter()
+      setIsOpen(false)
     }
-  };
+  }
 
   const handleRemove = (option: string) => {
     const newSelectedOptions = selectedOptions.filter(
       (selected) => selected !== option
-    );
-    resetFilter();
-    onSelectionChange(newSelectedOptions);
-  };
+    )
+    resetFilter()
+    onSelectionChange(newSelectedOptions)
+  }
 
   useEffect(() => {
-    resetFilter();
-  }, [query, selectedOptions, options]); // Dependencies include query, selectedOptions, and options
+    resetFilter()
+  }, [query, selectedOptions, options]) // Dependencies include query, selectedOptions, and options
 
   return (
     <FormControl
       width={{
-        base: "100%",
+        base: '100%',
         lg: width
       }}
     >
@@ -134,7 +134,7 @@ function MultiSelectDropdown({
               wrap="wrap"
               spacing={1}
               minHeight="40px"
-              bgColor={"gray.200"}
+              bgColor={'gray.200'}
             >
               <TagList
                 selectedOptions={selectedOptions}
@@ -147,13 +147,13 @@ function MultiSelectDropdown({
                 variant="unstyled"
                 flex="1"
                 placeholder={
-                  selectedOptions.length === 0 ? `${placeholderText}` : ""
+                  selectedOptions.length === 0 ? `${placeholderText}` : ''
                 }
-                _placeholder={{ color: "gray.600" }}
+                _placeholder={{ color: 'gray.600' }}
                 onChange={(e) => {
-                  setQuery(e.target.value);
-                  resetFilter();
-                  setIsOpen(true);
+                  setQuery(e.target.value)
+                  resetFilter()
+                  setIsOpen(true)
                 }}
                 onClick={() => setIsOpen(!isOpen)}
                 onBlur={() => setIsOpen(false)}
@@ -162,19 +162,19 @@ function MultiSelectDropdown({
           </Box>
         </PopoverTrigger>
         <PopoverContent
-          bgColor={"gray.100"}
+          bgColor={'gray.100'}
           minWidth="200px"
           width={width}
           maxWidth="90vw"
           zIndex="999"
           maxH="xl"
           overflowY="auto"
-          boxShadow={"md"}
+          boxShadow={'md'}
         >
           <PopoverBody>
             <List
               onMouseDown={(event) => {
-                event.preventDefault();
+                event.preventDefault()
               }}
             >
               {filteredOptions
@@ -201,7 +201,7 @@ function MultiSelectDropdown({
         </PopoverContent>
       </Popover>
     </FormControl>
-  );
+  )
 }
 
-export default MultiSelectDropdown;
+export default MultiSelectDropdown

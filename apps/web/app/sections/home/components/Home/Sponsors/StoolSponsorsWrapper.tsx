@@ -1,18 +1,18 @@
-import { Box, Image, Link, SimpleGrid } from "@chakra-ui/react";
-import StoolsSponsors from "./StoolSponsors";
+import { Box, Image, Link, SimpleGrid } from '@chakra-ui/react'
+import StoolsSponsors from './StoolSponsors'
 
 type Sponsor = {
-  filename: string;
-  url: string;
+  filename: string
+  url: string
   heights?: {
-    base?: string;
-    sm?: string;
-    md?: string;
-    lg?: string;
-    xl?: string;
-  };
-  glowColor: string;
-};
+    base?: string
+    sm?: string
+    md?: string
+    lg?: string
+    xl?: string
+  }
+  glowColor: string
+}
 
 const StoolsSceneWrapper: React.FC = () => {
   // const getSubtleGlowFilter = (color: string) => {
@@ -21,48 +21,48 @@ const StoolsSceneWrapper: React.FC = () => {
 
   const STOOL_SPONSOR_IMAGES: Sponsor[] = [
     {
-      filename: "janestreet.png",
-      url: "https://www.janestreet.com/",
-      heights: { base: "60px", md: "95px", lg: "95px" },
-      glowColor: "#ffffff"
+      filename: 'janestreet.png',
+      url: 'https://www.janestreet.com/',
+      heights: { base: '60px', md: '95px', lg: '95px' },
+      glowColor: '#ffffff'
     }, // row 1
     {
-      filename: "openai.svg",
-      url: "https://www.openai.com/",
-      heights: { base: "40px", md: "50px", lg: "65px" },
-      glowColor: "#ffffff"
+      filename: 'openai.svg',
+      url: 'https://www.openai.com/',
+      heights: { base: '40px', md: '50px', lg: '65px' },
+      glowColor: '#ffffff'
     }, // row 4
     {
-      filename: "cloudflare.png",
-      url: "https://www.cloudflare.com/",
-      heights: { base: "70px", md: "100px", lg: "110px" },
-      glowColor: "#F78D2A"
+      filename: 'cloudflare.png',
+      url: 'https://www.cloudflare.com/',
+      heights: { base: '70px', md: '100px', lg: '110px' },
+      glowColor: '#F78D2A'
     }, // row 2
     {
-      filename: "everfox.svg",
-      url: "https://www.everfox.com/",
-      heights: { base: "60px", md: "80px", lg: "90px" },
-      glowColor: "#0066cc"
+      filename: 'everfox.svg',
+      url: 'https://www.everfox.com/',
+      heights: { base: '60px', md: '80px', lg: '90px' },
+      glowColor: '#0066cc'
     }, // row 2
     {
-      filename: "statefarm.png",
-      url: "https://www.statefarm.com/",
-      heights: { base: "30px", md: "40px", lg: "45px" },
-      glowColor: "#EC0C21"
+      filename: 'statefarm.png',
+      url: 'https://www.statefarm.com/',
+      heights: { base: '30px', md: '40px', lg: '45px' },
+      glowColor: '#EC0C21'
     }, // row 3
     {
-      filename: "capitalone.png",
-      url: "https://www.capitalone.com/",
-      heights: { base: "80px", md: "120px", lg: "95px" },
-      glowColor: "#3B8927"
+      filename: 'capitalone.png',
+      url: 'https://www.capitalone.com/',
+      heights: { base: '80px', md: '120px', lg: '95px' },
+      glowColor: '#3B8927'
     }, // row 3, last
     {
-      filename: "magna.svg",
-      url: "https://www.magna.com/",
-      heights: { base: "40px", md: "50px", lg: "65px" },
-      glowColor: "#E4D00A"
+      filename: 'magna.svg',
+      url: 'https://www.magna.com/',
+      heights: { base: '40px', md: '50px', lg: '65px' },
+      glowColor: '#E4D00A'
     } // row 4, last
-  ];
+  ]
 
   return (
     <Box as="section" w="100%" bgColor="#191919ff" pos="relative" mx="auto">
@@ -87,9 +87,9 @@ const StoolsSceneWrapper: React.FC = () => {
             isExternal
             opacity={0.9}
             _hover={{
-              transform: "scale(1.05)",
+              transform: 'scale(1.05)',
               opacity: 1,
-              transition: "all 0.2s ease-in-out"
+              transition: 'all 0.2s ease-in-out'
             }}
           >
             <Image
@@ -117,14 +117,14 @@ const StoolsSceneWrapper: React.FC = () => {
               isExternal
               opacity={0.9}
               _hover={{
-                transform: "scale(1.05)",
+                transform: 'scale(1.05)',
                 opacity: 1,
-                transition: "all 0.2s ease-in-out"
+                transition: 'all 0.2s ease-in-out'
               }}
             >
               <Image
                 src={`/site/sponsors/car_images/${img.filename}`}
-                alt={img.filename.replace(/\.(png|svg)$/, "")}
+                alt={img.filename.replace(/\.(png|svg)$/, '')}
                 h={img.heights}
                 maxW="500px"
                 objectFit="contain"
@@ -148,14 +148,14 @@ const StoolsSceneWrapper: React.FC = () => {
               isExternal
               opacity={0.9}
               _hover={{
-                transform: "scale(1.05)",
+                transform: 'scale(1.05)',
                 opacity: 1,
-                transition: "all 0.2s ease-in-out"
+                transition: 'all 0.2s ease-in-out'
               }}
             >
               <Image
                 src={`/site/sponsors/car_images/${img.filename}`}
-                alt={img.filename.replace(/\.(png|svg)$/, "")}
+                alt={img.filename.replace(/\.(png|svg)$/, '')}
                 h={img.heights}
                 maxW="500px"
                 objectFit="contain"
@@ -171,14 +171,14 @@ const StoolsSceneWrapper: React.FC = () => {
         top={0}
         left={0}
         zIndex={2}
-        overflow={"hidden"}
+        overflow={'hidden'}
         w="100%"
         h="100%"
       >
         <StoolsSponsors />
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default StoolsSceneWrapper;
+export default StoolsSceneWrapper

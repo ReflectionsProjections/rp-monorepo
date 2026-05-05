@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   VStack,
   HStack,
@@ -9,73 +9,73 @@ import {
   Input,
   Select,
   useToast
-} from "@chakra-ui/react";
-import type { FieldProps, FormikHelpers } from "formik";
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
-import moment from "moment-timezone";
-import type { Shift, ShiftRoleType, Event } from "@app";
-import { api } from "@app";
+} from '@chakra-ui/react'
+import type { FieldProps, FormikHelpers } from 'formik'
+import { Formik, Form, Field } from 'formik'
+import * as Yup from 'yup'
+import moment from 'moment-timezone'
+import type { Shift, ShiftRoleType, Event } from '@app'
+import { api } from '@app'
 
 // Set timezone to Chicago (Central Time)
-moment.tz.setDefault("America/Chicago");
+moment.tz.setDefault('America/Chicago')
 
 type ShiftFormProps = {
-  shift?: Shift | null;
-  events?: Event[];
-  onSuccess: () => void;
-  onCancel: () => void;
-};
+  shift?: Shift | null
+  events?: Event[]
+  onSuccess: () => void
+  onCancel: () => void
+}
 
 type ShiftFormValues = {
-  name: string;
-  role: ShiftRoleType;
-  startTime: string;
-  endTime: string;
-  location: string;
-  selectedEventId: string;
-};
+  name: string
+  role: ShiftRoleType
+  startTime: string
+  endTime: string
+  location: string
+  selectedEventId: string
+}
 
 const shiftRoleOptions: { value: ShiftRoleType; label: string }[] = [
-  { value: "CLEAN_UP", label: "Clean Up" },
-  { value: "DINNER", label: "Dinner" },
-  { value: "CHECK_IN", label: "Check In" },
-  { value: "SPEAKER_BUDDY", label: "Speaker Buddy" },
-  { value: "SPONSOR_BUDDY", label: "Sponsor Buddy" },
-  { value: "DEV_ON_CALL", label: "Dev On Call" },
-  { value: "CHAIR_ON_CALL", label: "Chair On Call" }
-];
+  { value: 'CLEAN_UP', label: 'Clean Up' },
+  { value: 'DINNER', label: 'Dinner' },
+  { value: 'CHECK_IN', label: 'Check In' },
+  { value: 'SPEAKER_BUDDY', label: 'Speaker Buddy' },
+  { value: 'SPONSOR_BUDDY', label: 'Sponsor Buddy' },
+  { value: 'DEV_ON_CALL', label: 'Dev On Call' },
+  { value: 'CHAIR_ON_CALL', label: 'Chair On Call' }
+]
 
 const validationSchema = Yup.object({
   name: Yup.string()
-    .required("Shift name is required")
-    .min(2, "Shift name must be at least 2 characters"),
+    .required('Shift name is required')
+    .min(2, 'Shift name must be at least 2 characters'),
   role: Yup.string()
     .oneOf(
       shiftRoleOptions.map((opt) => opt.value),
-      "Invalid role"
+      'Invalid role'
     )
-    .required("Role is required"),
-  startTime: Yup.string().required("Start time is required"),
+    .required('Role is required'),
+  startTime: Yup.string().required('Start time is required'),
   endTime: Yup.string()
-    .required("End time is required")
+    .required('End time is required')
     .test(
-      "is-after-start",
-      "End time must be after start time",
+      'is-after-start',
+      'End time must be after start time',
       function (endTime: string) {
-        const { startTime } = this.parent as { startTime: string };
-        if (!startTime || !endTime) return true;
+        const { startTime } = this.parent as { startTime: string }
+        if (!startTime || !endTime) return true
 
-        const start = moment.tz(startTime, "America/Chicago");
-        const end = moment.tz(endTime, "America/Chicago");
+        const start = moment.tz(startTime, 'America/Chicago')
+        const end = moment.tz(endTime, 'America/Chicago')
 
-        return end.isAfter(start);
+        return end.isAfter(start)
       }
     ),
   location: Yup.string()
-    .required("Location is required")
-    .min(2, "Location must be at least 2 characters")
-});
+    .required('Location is required')
+    .min(2, 'Location must be at least 2 characters')
+})
 
 const ShiftForm: React.FC<ShiftFormProps> = ({
   shift,
@@ -83,20 +83,20 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   onSuccess,
   onCancel
 }) => {
-  const toast = useToast();
+  const toast = useToast()
 
   const initialValues: ShiftFormValues = {
-    name: shift?.name || "",
-    role: shift?.role || "CHECK_IN",
+    name: shift?.name || '',
+    role: shift?.role || 'CHECK_IN',
     startTime: shift?.startTime
-      ? moment.tz(shift.startTime, "America/Chicago").format("YYYY-MM-DDTHH:mm")
-      : moment().format("YYYY-MM-DDTHH:mm"),
+      ? moment.tz(shift.startTime, 'America/Chicago').format('YYYY-MM-DDTHH:mm')
+      : moment().format('YYYY-MM-DDTHH:mm'),
     endTime: shift?.endTime
-      ? moment.tz(shift.endTime, "America/Chicago").format("YYYY-MM-DDTHH:mm")
-      : moment().add(1, "hour").format("YYYY-MM-DDTHH:mm"),
-    location: shift?.location || "",
-    selectedEventId: ""
-  };
+      ? moment.tz(shift.endTime, 'America/Chicago').format('YYYY-MM-DDTHH:mm')
+      : moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
+    location: shift?.location || '',
+    selectedEventId: ''
+  }
 
   const handleSubmit = async (
     values: ShiftFormValues,
@@ -105,11 +105,9 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     try {
       // Convert local datetime to ISO string for API
       const startTime = moment
-        .tz(values.startTime, "America/Chicago")
-        .toISOString();
-      const endTime = moment
-        .tz(values.endTime, "America/Chicago")
-        .toISOString();
+        .tz(values.startTime, 'America/Chicago')
+        .toISOString()
+      const endTime = moment.tz(values.endTime, 'America/Chicago').toISOString()
 
       const shiftData = {
         name: values.name,
@@ -117,45 +115,45 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
         startTime,
         endTime,
         location: values.location
-      };
+      }
 
       if (shift) {
         // Update existing shift
         await api.patch(
-          `/shifts/${shift.shiftId}` as "/shifts/:shiftId",
+          `/shifts/${shift.shiftId}` as '/shifts/:shiftId',
           shiftData
-        );
+        )
         toast({
-          title: "Shift updated successfully",
-          status: "success",
+          title: 'Shift updated successfully',
+          status: 'success',
           duration: 3000,
           isClosable: true
-        });
+        })
       } else {
         // Create new shift
-        await api.post("/shifts", shiftData);
+        await api.post('/shifts', shiftData)
         toast({
-          title: "Shift created successfully",
-          status: "success",
+          title: 'Shift created successfully',
+          status: 'success',
           duration: 3000,
           isClosable: true
-        });
+        })
       }
 
-      onSuccess();
+      onSuccess()
     } catch (error) {
-      console.error("Error saving shift:", error);
+      console.error('Error saving shift:', error)
       toast({
-        title: "Error saving shift",
-        description: "Please try again",
-        status: "error",
+        title: 'Error saving shift',
+        description: 'Please try again',
+        status: 'error',
         duration: 5000,
         isClosable: true
-      });
+      })
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   return (
     <Formik
@@ -200,36 +198,36 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
                     {...field}
                     placeholder="Select an event to auto-populate times"
                     onChange={(e) => {
-                      const eventId = e.target.value;
-                      field.onChange(e);
+                      const eventId = e.target.value
+                      field.onChange(e)
 
                       if (eventId) {
                         const selectedEvent = events.find(
                           (event) => event.eventId === eventId
-                        );
+                        )
                         if (selectedEvent) {
                           // Auto-populate start and end times
                           const startTime = moment
-                            .tz(selectedEvent.startTime, "America/Chicago")
-                            .format("YYYY-MM-DDTHH:mm");
+                            .tz(selectedEvent.startTime, 'America/Chicago')
+                            .format('YYYY-MM-DDTHH:mm')
                           const endTime = moment
-                            .tz(selectedEvent.endTime, "America/Chicago")
-                            .format("YYYY-MM-DDTHH:mm");
+                            .tz(selectedEvent.endTime, 'America/Chicago')
+                            .format('YYYY-MM-DDTHH:mm')
 
-                          void form.setFieldValue("startTime", startTime);
-                          void form.setFieldValue("endTime", endTime);
+                          void form.setFieldValue('startTime', startTime)
+                          void form.setFieldValue('endTime', endTime)
 
                           // Also auto-populate name if it's empty
-                          const formValues = form.values as ShiftFormValues;
+                          const formValues = form.values as ShiftFormValues
                           if (!formValues.name) {
                             const roleLabel =
                               shiftRoleOptions.find(
                                 (opt) => opt.value === formValues.role
-                              )?.label || "Shift";
+                              )?.label || 'Shift'
                             void form.setFieldValue(
-                              "name",
+                              'name',
                               `${selectedEvent.name} - ${roleLabel}`
-                            );
+                            )
                           }
                         }
                       }
@@ -237,10 +235,10 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
                   >
                     {events.map((event) => (
                       <option key={event.eventId} value={event.eventId}>
-                        {event.name} -{" "}
+                        {event.name} -{' '}
                         {moment
-                          .tz(event.startTime, "America/Chicago")
-                          .format("MMM D, h:mm A")}
+                          .tz(event.startTime, 'America/Chicago')
+                          .format('MMM D, h:mm A')}
                       </option>
                     ))}
                   </Select>
@@ -290,16 +288,16 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
                 type="submit"
                 colorScheme="blue"
                 isLoading={isSubmitting}
-                loadingText={shift ? "Updating..." : "Creating..."}
+                loadingText={shift ? 'Updating...' : 'Creating...'}
               >
-                {shift ? "Update Shift" : "Create Shift"}
+                {shift ? 'Update Shift' : 'Create Shift'}
               </Button>
             </HStack>
           </VStack>
         </Form>
       )}
     </Formik>
-  );
-};
+  )
+}
 
-export default ShiftForm;
+export default ShiftForm

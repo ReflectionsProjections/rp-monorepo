@@ -1,5 +1,5 @@
-import { SupabaseDB } from "../../database";
-import { Config } from "../../config";
+import { SupabaseDB } from '../../database'
+import { Config } from '../../config'
 
 /**
  * Event start date: September 16, 2025 in Central Time
@@ -7,8 +7,8 @@ import { Config } from "../../config";
  * Can be overridden via EVENT_START_DATE_OVERRIDE environment variable for testing
  */
 const EVENT_START_DATE = new Date(
-    Config.EVENT_START_DATE_OVERRIDE || "2025-09-16T00:00:00-05:00"
-);
+  Config.EVENT_START_DATE_OVERRIDE || '2025-09-16T00:00:00-05:00'
+)
 
 /**
  * Convert any date to Central Time at midnight (for day boundary calculations)
@@ -16,11 +16,11 @@ const EVENT_START_DATE = new Date(
  * @returns Date object representing the date at midnight in Central Time
  */
 function getCentralDateAtMidnight(date: Date = new Date()): Date {
-    const centralTimeString = date.toLocaleDateString("en-CA", {
-        timeZone: "America/Chicago",
-    });
+  const centralTimeString = date.toLocaleDateString('en-CA', {
+    timeZone: 'America/Chicago'
+  })
 
-    return new Date(centralTimeString + "T00:00:00-05:00");
+  return new Date(centralTimeString + 'T00:00:00-05:00')
 }
 
 /**
@@ -29,17 +29,17 @@ function getCentralDateAtMidnight(date: Date = new Date()): Date {
  * @returns Event day number (1-5) or null if outside event range
  */
 function mapDateToEventDay(date: Date): number | null {
-    const centralDate = getCentralDateAtMidnight(date);
+  const centralDate = getCentralDateAtMidnight(date)
 
-    const diffTime = centralDate.getTime() - EVENT_START_DATE.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = centralDate.getTime() - EVENT_START_DATE.getTime()
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-    // Event runs for 5 days (0-4 maps to days 1-5)
-    if (diffDays >= 0 && diffDays < 5) {
-        return diffDays + 1;
-    }
+  // Event runs for 5 days (0-4 maps to days 1-5)
+  if (diffDays >= 0 && diffDays < 5) {
+    return diffDays + 1
+  }
 
-    return null; // Outside event range
+  return null // Outside event range
 }
 
 /**
@@ -50,33 +50,33 @@ function mapDateToEventDay(date: Date): number | null {
  * @returns Promise<void>
  */
 export async function addPoints(
-    userId: string,
-    points: number,
-    date?: Date
+  userId: string,
+  points: number,
+  date?: Date
 ): Promise<void> {
-    const targetDate = date || getCentralDateAtMidnight();
-    const eventDay = mapDateToEventDay(targetDate);
+  const targetDate = date || getCentralDateAtMidnight()
+  const eventDay = mapDateToEventDay(targetDate)
 
-    const { data: attendee } = await SupabaseDB.ATTENDEES.select(
-        "points, pointsDay1, pointsDay2, pointsDay3, pointsDay4, pointsDay5"
-    )
-        .eq("userId", userId)
-        .single()
-        .throwOnError();
+  const { data: attendee } = await SupabaseDB.ATTENDEES.select(
+    'points, pointsDay1, pointsDay2, pointsDay3, pointsDay4, pointsDay5'
+  )
+    .eq('userId', userId)
+    .single()
+    .throwOnError()
 
-    const updateData: Record<string, number> = {
-        points: (attendee.points || 0) + points,
-    };
+  const updateData: Record<string, number> = {
+    points: (attendee.points || 0) + points
+  }
 
-    if (eventDay !== null) {
-        const dailyColumn = `pointsDay${eventDay}` as keyof typeof attendee;
-        const currentDailyPoints = attendee[dailyColumn] || 0;
-        updateData[dailyColumn] = currentDailyPoints + points;
-    }
+  if (eventDay !== null) {
+    const dailyColumn = `pointsDay${eventDay}` as keyof typeof attendee
+    const currentDailyPoints = attendee[dailyColumn] || 0
+    updateData[dailyColumn] = currentDailyPoints + points
+  }
 
-    await SupabaseDB.ATTENDEES.update(updateData)
-        .eq("userId", userId)
-        .throwOnError();
+  await SupabaseDB.ATTENDEES.update(updateData)
+    .eq('userId', userId)
+    .throwOnError()
 }
 
 /**
@@ -84,4 +84,4 @@ export async function addPoints(
  * @param date - Date to check
  * @returns Event day number (1-5) or null if outside event range
  */
-export { mapDateToEventDay as getEventDayForDate };
+export { mapDateToEventDay as getEventDayForDate }
