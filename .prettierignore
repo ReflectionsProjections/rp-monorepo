@@ -9,7 +9,7 @@ android
 ios
 
 # Yarn
-**/.yarn
+**/.yarn/**
 **/*.lock
 
 # Generated / vendored
