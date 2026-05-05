@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { sendHTMLEmail } from "../../ses/ses-utils";
+import { sendTemplateEmail } from "../../ses/ses-utils";
+import { Templates } from "../../../config";
 import jsonwebtoken from "jsonwebtoken";
 import { Config } from "../../../config";
 import { Role } from "../../auth/auth-models";
@@ -67,11 +68,10 @@ authSponsorRouter.post("/login", async (req, res) => {
         }
     ).throwOnError();
 
-    const emailBody = mustache.render(templates.SPONSOR_VERIFICATION, {
-        code: sixDigitCode,
+    await sendTemplateEmail(email, Templates.RP_EMAILS, {
+        subject: "R|P Resume Book Email Verification",
+        body: mustache.render(templates.SPONSOR_VERIFICATION, { code: sixDigitCode }),
     });
-
-    await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
     return res.sendStatus(StatusCodes.CREATED);
 });
 

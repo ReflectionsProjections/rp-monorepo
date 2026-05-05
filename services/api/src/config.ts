@@ -3,9 +3,17 @@ import path from "path";
 
 import { z } from "zod";
 
-import { SES } from "@aws-sdk/client-ses";
+import { SESv2Client } from "@aws-sdk/client-sesv2";
 
 dotenv.config({ quiet: true });
+
+export enum Templates {
+    REGISTRATION_CONFIRMATION = "rp_registration_confirmation",
+    REGISTRATION_UPDATE_CONFIRMATION = "rp_registration_update_confirmation",
+    SPONSOR_VERIFICATION = "rp_sponsor_verification",
+    RP_EMAILS = "rp_emails",
+}
+
 dotenv.config({
     path: path.resolve(__dirname, "../../../.env"),
     quiet: true,
@@ -21,7 +29,7 @@ export enum EnvironmentEnum {
 
 export const Environment = z.nativeEnum(EnvironmentEnum);
 
-export const MailingListName = z.enum(["rp_interest"]);
+export const MailingListName = z.enum(["rp_interest", "rp_staff"]);
 const env = Environment.parse(getEnv("ENV"));
 
 function getEnv(key: string): string {
@@ -124,11 +132,18 @@ export const Config = {
     WEB_RESUME_ROUTE: `${WEB_BASE}/resume`,
     EMAIL_HEADER_HREF: `${WEB_BASE}/email_header.png`,
     OUTGOING_EMAIL_ADDRESSES: z.enum(["no-reply@reflectionsprojections.org"]),
+
+    // SES retry/backoff
+    MAX_MAIL_SEND_RETRIES: 10,
+    MIN_MAIL_BACKOFF_MS: 10,
+    MAX_MAIL_BACKOFF_MS: 5000,
+    SES_BULK_BATCH_SIZE: 50,
+
     LOG_DIR:
         env === EnvironmentEnum.PRODUCTION ? "/home/ubuntu/logs" : "./logs",
 };
 
-export const ses = new SES({
+export const ses = new SESv2Client({
     region: Config.S3_REGION,
 
     credentials: {

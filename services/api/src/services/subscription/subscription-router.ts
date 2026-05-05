@@ -5,53 +5,12 @@ import { SupabaseDB } from "../../database";
 import cors from "cors";
 import RoleChecker from "../../middleware/role-checker";
 import { Role } from "../auth/auth-models";
-import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
-import Config from "../../config";
+import { sendHTMLEmail, sendBulkTemplateEmail } from "../ses/ses-utils";
+import { Templates } from "../../config";
 
 const subscriptionRouter = Router();
 
-const sesClient = new SESv2Client({
-    region: Config.S3_REGION!,
-    credentials: {
-        accessKeyId: Config.S3_ACCESS_KEY!,
-        secretAccessKey: Config.S3_SECRET_KEY!,
-    },
-});
 
-/**
- * @swagger
- * /subscription/:
- *   post:
- *     summary: Subscribe to a mailing list
- *     description: |
- *       Creates a subscription for the given user and mailing list.
- *       Idempotent — if the subscription already exists it is not duplicated.
- *
- *       **Required roles: none**
- *     tags: [Subscription]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/SubscriptionValidator'
- *     responses:
- *       201:
- *         description: Subscription created (or already existed)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SubscriptionValidator'
- *       400:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error: "User not found."
- *     security: []
- */
 // Create a new subscription
 subscriptionRouter.post("/", cors(), async (req, res) => {
     // Validate the incoming user subscription
@@ -234,26 +193,31 @@ subscriptionRouter.post(
             emailAddresses.push(...batchEmails);
         }
 
-        const sendEmailCommand = new SendEmailCommand({
-            FromEmailAddress: Config.FROM_EMAIL_ADDRESS ?? "",
-            Destination: {
-                // SES can send to multiple addresses at once
-                // ToAddresses: emailAddresses,
-                // Let's send to ourselves for now, and bcc everyone else, probably the most pro way to go about it.
-                ToAddresses: [Config.FROM_EMAIL_ADDRESS ?? ""],
-                BccAddresses: emailAddresses,
-            },
-            Content: {
-                Simple: {
-                    Subject: { Data: subject },
-                    Body: { Html: { Data: htmlBody } },
-                },
-            },
-        });
+        const result = await sendBulkTemplateEmail(
+            Templates.RP_EMAILS,
+            emailAddresses.map((email) => ({ email })),
+            { subject, body: htmlBody }
+        );
 
-        await sesClient.send(sendEmailCommand);
+        return res.status(StatusCodes.OK).send(result);
+    }
+);
 
-        return res.status(StatusCodes.OK).send({ status: "success" });
+// Send an email to a list of arbitrary emails (testing only, no accounts required)
+// API body: {String[]} emails, {String} subject, {String} htmlBody
+subscriptionRouter.post(
+    "/send-email/bulk",
+    RoleChecker([Role.Enum.SUPER_ADMIN]),
+    async (req, res) => {
+        const { emails, subject, htmlBody } = req.body;
+
+        const result = await sendBulkTemplateEmail(
+            Templates.RP_EMAILS,
+            emails.map((email: string) => ({ email, data: { subject, body: htmlBody } })),
+            { subject, body: htmlBody }
+        );
+
+        return res.status(StatusCodes.OK).send(result);
     }
 );
 
@@ -291,20 +255,7 @@ subscriptionRouter.post(
     async (req, res) => {
         const { email, subject, htmlBody } = req.body;
 
-        const sendEmailCommand = new SendEmailCommand({
-            FromEmailAddress: process.env.FROM_EMAIL_ADDRESS ?? "",
-            Destination: {
-                ToAddresses: [email],
-            },
-            Content: {
-                Simple: {
-                    Subject: { Data: subject },
-                    Body: { Html: { Data: htmlBody } },
-                },
-            },
-        });
-
-        await sesClient.send(sendEmailCommand);
+        await sendHTMLEmail(email, subject, htmlBody);
 
         return res.status(StatusCodes.OK).send({ status: "success" });
     }
