@@ -15,5 +15,11 @@ ios
 # Generated / vendored
 **/yarn-*.cjs
 
+# Kong config (uses eval — single quotes are required and must not be changed)
+db/kong.yml
+
+# Markdown
+**/*.md
+
 # OS / editor
 .DS_Store

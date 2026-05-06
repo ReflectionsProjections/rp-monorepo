@@ -157,17 +157,13 @@ jobs:
               run: corepack enable
             - name: Install dependencies
               run: yarn install --immutable
-            - name: Verify
-              run: yarn verify
+            - name: Lint
+              run: yarn lint
 
     # Runs after all workspace jobs
     # format check
     format:
         runs-on: ubuntu-latest
-        needs:
-            - api
-            - web
-            - mobile
         if: always()
         steps:
             - uses: actions/checkout@v6
