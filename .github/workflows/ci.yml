@@ -106,10 +106,19 @@ jobs:
         run: yarn lint:check
       # These containers provide the local Postgres + Kong + PostgREST stack
       # that Jest uses during API tests.
-      - name: Start local database stack
-        run: docker compose -f ../../docker-compose.yml up -d db kong rest
-      - name: Wait for local database stack
+      - name: Start and wait for local database stack
         run: |
+          dump_stack_logs() {
+            docker compose -f ../../docker-compose.yml ps || true
+            docker compose -f ../../docker-compose.yml logs --no-color db kong rest || true
+          }
+
+          if ! docker compose -f ../../docker-compose.yml up -d db kong rest; then
+            echo "Local database stack failed to start."
+            dump_stack_logs
+            exit 1
+          fi
+
           timeout=90
           deadline=$((SECONDS + timeout))
           until curl --fail --silent --show-error --max-time 5 \
@@ -119,8 +128,7 @@ jobs:
             > /dev/null; do
             if (( SECONDS >= deadline )); then
               echo "Local database stack did not become ready within ${timeout}s."
-              docker compose -f ../../docker-compose.yml ps
-              docker compose -f ../../docker-compose.yml logs --no-color db kong rest
+              dump_stack_logs
               exit 1
             fi
             sleep 2
