@@ -41,6 +41,7 @@ jobs:
               - 'services/api/**'
               - '.github/workflows/**'
               - 'docker-compose.yml'
+              - 'db/**'
             web:
               - 'apps/web/**'
               - '.github/workflows/**'
