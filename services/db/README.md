@@ -9,8 +9,9 @@ This service owns the local database bootstrap files and Docker orchestration us
 - `docker-compose.yml`: development database, Kong, PostgREST, Meta, and Studio stack
 - `docker-compose.test.yml`: isolated API test database, Kong, and PostgREST stack
 - `db-tools.mjs`: portable helper used by this package's `yarn` scripts
+- `generate-supabase-test-env.mjs`: creates ephemeral API test JWT material in `services/api/testing/.supabase-test.env`
 
-This package owns DB-only commands. Cross-service workflows, such as generating API test env, starting the isolated DB stack, running Jest, and cleanup, are coordinated by the root package.
+This package owns DB-only commands and the ephemeral env file required by the isolated API test database. Cross-service workflows, such as starting the isolated DB stack, running Jest, and cleanup, are coordinated by the root package.
 
 For schema changes, update `init-scripts/01-schema.sql` and run the full API verification path from the repo root:
 

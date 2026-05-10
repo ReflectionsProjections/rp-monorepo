@@ -41,7 +41,6 @@ jobs:
               - 'scripts/**'
             db:
               - 'services/db/**'
-              - 'services/api/testing/generate-supabase-test-env.mjs'
               - '.github/workflows/**'
             api:
               - 'services/api/**'
@@ -88,11 +87,7 @@ jobs:
           node-version: '24.x'
           cache: 'yarn'
           cache-dependency-path: |
-            services/api/yarn.lock
             services/db/yarn.lock
-      - name: Install API dependencies
-        working-directory: services/api
-        run: yarn install --immutable
       - name: Install DB tooling dependencies
         working-directory: services/db
         run: yarn install --immutable

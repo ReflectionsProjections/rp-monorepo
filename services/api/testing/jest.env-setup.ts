@@ -12,6 +12,6 @@ process.env.SUPABASE_URL = process.env.SUPABASE_URL ?? "http://localhost:8100";
 
 if (!process.env.SUPABASE_SERVICE_KEY) {
     throw new Error(
-        "SUPABASE_SERVICE_KEY is required for API tests. Run `node testing/generate-supabase-test-env.mjs` from services/api before starting the test stack."
+        "SUPABASE_SERVICE_KEY is required for API tests. Run `cd services/db && yarn api:test:env` before starting the test stack."
     );
 }

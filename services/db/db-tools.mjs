@@ -94,7 +94,7 @@ function testCompose(args, options = {}) {
 }
 
 async function generateApiTestEnv() {
-    await run("node", ["testing/generate-supabase-test-env.mjs"], { cwd: apiDir });
+    await run("node", ["generate-supabase-test-env.mjs"], { cwd: dbDir });
 }
 
 async function generateApiTestEnvIfMissing() {

@@ -11,6 +11,7 @@ Work here for:
 - database bootstrap files mounted by `docker-compose.yml`
 - database bootstrap files mounted by `docker-compose.test.yml`
 - DB package scripts in `package.json` and `db-tools.mjs`
+- ephemeral API test DB env generation in `generate-supabase-test-env.mjs`
 
 Do not put API route logic or application data-access helpers here; those belong in `services/api`.
 
@@ -24,6 +25,7 @@ Do not put API route logic or application data-access helpers here; those belong
 - `docker-compose.yml`: development database, Kong, PostgREST, Meta, and Studio stack
 - `docker-compose.test.yml`: isolated API test database, Kong, and PostgREST stack
 - `db-tools.mjs`: portable helper used by this package's `yarn` scripts
+- `generate-supabase-test-env.mjs`: creates `services/api/testing/.supabase-test.env` for the isolated API test stack
 
 Root package scripts may call this package when a workflow spans packages. Keep DB-only commands here; do not expose raw infrastructure lifecycle commands from the root package.
 
