@@ -1,13 +1,35 @@
 import * as yup from "yup";
 
+function isValidUrl(value: string | undefined, protocols: string[]) {
+  if (value === undefined) {
+    return true;
+  }
+
+  try {
+    return protocols.includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
 const envSchema = yup.object({
   VITE_ENV: yup
     .string()
     .oneOf(["PRODUCTION", "DEVELOPMENT", "TESTING", "GITHUB_CI"])
     .optional(),
   VITE_GOOGLE_OAUTH_CLIENT_ID: yup.string().required(),
-  VITE_API_BASE_URL: yup.string().url().optional(),
-  VITE_WS_BASE_URL: yup.string().optional()
+  VITE_API_BASE_URL: yup
+    .string()
+    .test("http-url", "VITE_API_BASE_URL must be a valid URL", (value) =>
+      isValidUrl(value, ["http:", "https:"])
+    )
+    .optional(),
+  VITE_WS_BASE_URL: yup
+    .string()
+    .test("ws-url", "VITE_WS_BASE_URL must be a valid URL", (value) =>
+      isValidUrl(value, ["ws:", "wss:"])
+    )
+    .optional()
 });
 
 const viteEnv = import.meta.env as Record<string, string | undefined>;
