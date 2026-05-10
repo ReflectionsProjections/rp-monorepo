@@ -12,10 +12,27 @@ export default defineConfig(({ mode }) => {
     }
   }
 
+  const publicEnv = {
+    "import.meta.env.VITE_ENV": JSON.stringify(
+      process.env.ENV ?? process.env.VITE_ENV
+    ),
+    "import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID": JSON.stringify(
+      process.env.OAUTH_GOOGLE_CLIENT_ID ??
+        process.env.VITE_GOOGLE_OAUTH_CLIENT_ID
+    ),
+    "import.meta.env.VITE_API_BASE_URL": JSON.stringify(
+      process.env.VITE_API_BASE_URL
+    ),
+    "import.meta.env.VITE_WS_BASE_URL": JSON.stringify(
+      process.env.VITE_WS_BASE_URL
+    )
+  };
+
   return {
     server: {
       port: 3001
     },
+    define: publicEnv,
     plugins: [react(), svgr()],
     resolve: {
       alias: {

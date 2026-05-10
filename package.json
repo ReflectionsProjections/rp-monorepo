@@ -1,0 +1,14 @@
+{
+    "name": "rp-monorepo",
+    "private": true,
+    "version": "0.0.0",
+    "scripts": {
+        "api:test": "node scripts/orchestrate.mjs api:test",
+        "dev:web": "node scripts/orchestrate.mjs dev:web",
+        "dev:api": "node scripts/orchestrate.mjs dev:api",
+        "dev:api:web": "node scripts/orchestrate.mjs dev:api:web",
+        "dev:api:mobile": "node scripts/orchestrate.mjs dev:api:mobile",
+        "dev:all": "node scripts/orchestrate.mjs dev:all"
+    },
+    "packageManager": "yarn@4.9.1"
+}
