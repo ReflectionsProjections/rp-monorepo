@@ -11,6 +11,8 @@ yarn
 yarn start
 ```
 
+From the repo root, use `yarn dev:api:mobile` when you want the local API and database tooling started before Expo.
+
 Make sure the shared root `.env` is in place before starting the app. Mobile configuration lives in `apps/mobile`, but local API-related values come from the repo-root environment.
 
 ## Useful Scripts

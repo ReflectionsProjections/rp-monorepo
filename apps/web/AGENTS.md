@@ -71,6 +71,11 @@ Run commands from `apps/web`:
 - `yarn format:check`
 - `yarn verify`
 
+Use root wrappers when the API target matters:
+
+- `yarn dev:web` from the repo root runs web against the deployed API.
+- `yarn dev:api:web` from the repo root starts the local API/database tooling and runs web against `http://localhost:3000`.
+
 ## Editing Guidance
 
 - Keep changes scoped to `apps/web` unless the task explicitly requires cross-repo edits.

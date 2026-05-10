@@ -11,6 +11,14 @@ yarn
 yarn dev
 ```
 
+From the repo root, prefer the mode-specific wrapper when you want the expected API target injected for you:
+
+```bash
+yarn dev:web
+```
+
+`yarn dev:web` starts only the web app and points it at the deployed API. Use `yarn dev:api:web` from the repo root when you want the web app connected to the local API at `http://localhost:3000`.
+
 ## Common Scripts
 
 These commands assume you are in `apps/web`.
@@ -45,13 +53,12 @@ Placement rules:
 
 ## Environment Variables
 
-The workspace loads environment variables from the monorepo root `.env`.
+The workspace loads environment variables from the monorepo root `.env`. The root dev wrappers also inject web-only Vite values:
 
-Example:
+- `yarn dev:web`: `ENV=PRODUCTION`, `VITE_API_BASE_URL=https://api.reflectionsprojections.org`, `VITE_WS_BASE_URL=wss://api.reflectionsprojections.org`
+- `yarn dev:api:web`: `ENV=DEVELOPMENT`, `VITE_API_BASE_URL=http://localhost:3000`, `VITE_WS_BASE_URL=ws://localhost:3000`
 
-```bash
-VITE_DEV_JWT=<your-jwt>
-```
+When running `yarn dev` directly in `apps/web`, the web app falls back to `ENV` from the root `.env`.
 
 ## API Route Types
 
