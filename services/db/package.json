@@ -1,0 +1,23 @@
+{
+    "name": "rp-db",
+    "private": true,
+    "version": "0.0.0",
+    "scripts": {
+        "verify": "node db-tools.mjs verify",
+        "infra:start": "node db-tools.mjs infra:start",
+        "infra:start:verbose": "node db-tools.mjs infra:start:verbose",
+        "infra:start:detached": "node db-tools.mjs infra:start:detached",
+        "infra:status": "node db-tools.mjs infra:status",
+        "infra:stop": "node db-tools.mjs infra:stop",
+        "infra:clean": "node db-tools.mjs infra:clean",
+        "infra:logs": "node db-tools.mjs infra:logs",
+        "infra:logs:infra": "node db-tools.mjs infra:logs:infra",
+        "infra:dashboard": "node db-tools.mjs infra:dashboard",
+        "infra:db": "node db-tools.mjs infra:db",
+        "api:test:env": "node db-tools.mjs api:test:env",
+        "api:test:db:start": "node db-tools.mjs api:test:db:start",
+        "api:test:db:wait": "node db-tools.mjs api:test:db:wait",
+        "api:test:db:stop": "node db-tools.mjs api:test:db:stop"
+    },
+    "packageManager": "yarn@4.9.1"
+}

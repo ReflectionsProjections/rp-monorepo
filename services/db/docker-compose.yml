@@ -4,7 +4,7 @@ services:
     image: supabase/postgres:15.8.1.060
     restart: unless-stopped
     volumes:
-      - ./db/init-scripts:/docker-entrypoint-initdb.d
+      - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
       interval: 5s
@@ -54,8 +54,8 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       SUPABASE_URL: http://kong:8000
       SUPABASE_PUBLIC_URL: http://localhost:8000
-      SUPABASE_ANON_KEY: ${ANON_KEY}
-      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
       AUTH_JWT_SECRET: ${JWT_SECRET}
 
   kong:
@@ -66,7 +66,7 @@ services:
       - "${KONG_HTTP_PORT:-8000}:8000/tcp"
       - "${KONG_HTTPS_PORT:-8443}:8443/tcp"
     volumes:
-      - ./db/kong.yml:/home/kong/temp.yml:ro,z
+      - ./kong.yml:/home/kong/temp.yml:ro,z
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
@@ -74,8 +74,8 @@ services:
       KONG_PLUGINS: cors,key-auth,acl,basic-auth
       KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
       KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
-      SUPABASE_ANON_KEY: ${ANON_KEY}
-      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
       DASHBOARD_USERNAME: ${DASHBOARD_USERNAME}
       DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
     entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
