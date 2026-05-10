@@ -1,6 +1,9 @@
 .env
+.env.temp
+services/api/testing/.supabase-test.env
 
 # Yarn workspace files
+**/node_modules/
 **/.yarn/*
 !**/.yarn/releases
 !**/.yarn/releases/**

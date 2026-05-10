@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it } from "@jest/globals";
-import { post, del, get, patch } from "../../../testing/testingTools";
+import {
+    post,
+    del,
+    get,
+    patch,
+    clearSupabaseTables,
+} from "../../../testing/testingTools";
 import { TESTER } from "../../../testing/testingTools";
 import { Role } from "../auth/auth-models";
 import { StatusCodes } from "http-status-codes";
@@ -129,18 +135,12 @@ const BASE_TEST_ATTENDEE = {
 };
 
 beforeEach(async () => {
-    try {
-        await SupabaseDB.EVENT_ATTENDANCES.delete().throwOnError();
-        await SupabaseDB.ATTENDEE_ATTENDANCES.delete().throwOnError();
-        await SupabaseDB.EVENTS.delete().throwOnError();
-        await SupabaseDB.ATTENDEES.delete().throwOnError();
-        await SupabaseDB.REGISTRATIONS.delete().throwOnError();
-        await SupabaseDB.AUTH_ROLES.delete().throwOnError();
-        await SupabaseDB.AUTH_INFO.delete().throwOnError();
-    } catch (error) {
-        console.log("Cleanup in beforeEach (expected):", error);
-    }
-
+    const supabase = (
+        globalThis as typeof globalThis & {
+            supabase: Parameters<typeof clearSupabaseTables>[0];
+        }
+    ).supabase;
+    await clearSupabaseTables(supabase);
     await new Promise((resolve) => setTimeout(resolve, 50));
 });
 

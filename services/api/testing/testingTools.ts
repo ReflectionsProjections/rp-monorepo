@@ -171,31 +171,70 @@ export function delAsCorporate(url: string): request.Test {
 }
 
 export async function clearSupabaseTables(supabase: SupabaseClient) {
-    const tables: string[] = [
-        "eventAttendances",
-        "attendeeAttendances",
-        "leaderboardSubmissions",
-        "redemptions",
-        "attendees",
-        "notifications",
-        "draftRegistrations",
-        "registrations",
-        "authRoles",
-        "shiftAssignments",
-        "authCodes",
-        "events",
-        "corporate",
-        "meetings",
-        "staff",
-        "shifts",
-        "subscriptions",
-        "customTopics",
-        "authInfo",
-        "speakers",
-    ]; // TODO: Get this from the database
+    const tables: Array<{
+        table: string;
+        column: string;
+        sentinel: string;
+    }> = [
+        {
+            table: "eventAttendances",
+            column: "eventId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "attendeeAttendances", column: "userId", sentinel: "" },
+        {
+            table: "leaderboardSubmissions",
+            column: "submissionId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "redemptions", column: "userId", sentinel: "" },
+        { table: "attendees", column: "userId", sentinel: "" },
+        { table: "notifications", column: "userId", sentinel: "" },
+        { table: "draftRegistrations", column: "userId", sentinel: "" },
+        { table: "registrations", column: "userId", sentinel: "" },
+        { table: "authRoles", column: "userId", sentinel: "" },
+        {
+            table: "shiftAssignments",
+            column: "shiftId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "authCodes", column: "email", sentinel: "" },
+        {
+            table: "events",
+            column: "eventId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "corporate", column: "email", sentinel: "" },
+        {
+            table: "meetings",
+            column: "meetingId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "staff", column: "email", sentinel: "" },
+        {
+            table: "shifts",
+            column: "shiftId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "subscriptions", column: "userId", sentinel: "" },
+        {
+            table: "customTopics",
+            column: "topicId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+        { table: "authInfo", column: "userId", sentinel: "" },
+        {
+            table: "speakers",
+            column: "speakerId",
+            sentinel: "00000000-0000-0000-0000-000000000000",
+        },
+    ];
 
-    for (const table of tables) {
-        const { error } = await supabase.from(table).delete();
+    for (const { table, column, sentinel } of tables) {
+        const { error } = await supabase
+            .from(table)
+            .delete()
+            .neq(column, sentinel);
         if (error) {
             console.warn(`⚠️ Could not clear ${table}:`, error.message);
         }

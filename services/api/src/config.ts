@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import dotenv from "dotenv";
 import path from "path";
 
@@ -22,11 +23,47 @@ export enum EnvironmentEnum {
 export const Environment = z.nativeEnum(EnvironmentEnum);
 
 export const MailingListName = z.enum(["rp_interest"]);
-const env = Environment.parse(getEnv("ENV"));
+const env = Environment.parse(process.env.ENV);
+
+function randomSecret() {
+    return crypto.randomBytes(32).toString("hex");
+}
+
+function getTestingDefault(key: string): string | undefined {
+    const testingDefaults: Record<string, string> = {
+        DATABASE_USERNAME: "postgres",
+        DATABASE_PASSWORD: "postgres",
+        DATABASE_HOST: "db",
+        OAUTH_GOOGLE_CLIENT_ID:
+            "test-web-google-client-id.apps.googleusercontent.com",
+        OAUTH_GOOGLE_CLIENT_SECRET: randomSecret(),
+        IOS_OAUTH_GOOGLE_CLIENT_ID:
+            "test-ios-google-client-id.apps.googleusercontent.com",
+        ANDROID_OAUTH_GOOGLE_CLIENT_ID:
+            "test-android-google-client-id.apps.googleusercontent.com",
+        FIREBASE_ADMIN_CERT_PATH: "testing.json",
+        PUZZLEBANG_API_KEY: randomSecret(),
+        JWT_SIGNING_SECRET: randomSecret(),
+        S3_ACCESS_KEY: randomSecret(),
+        S3_SECRET_KEY: randomSecret(),
+        S3_BUCKET_NAME: "test-resume-bucket",
+        S3_REGION: "us-east-1",
+        QR_HASH_SECRET: randomSecret(),
+    };
+
+    return testingDefaults[key];
+}
 
 function getEnv(key: string): string {
     const val = process.env[key];
     if (val === undefined) {
+        if (env == EnvironmentEnum.TESTING) {
+            const testingDefault = getTestingDefault(key);
+            if (testingDefault !== undefined) {
+                return testingDefault;
+            }
+        }
+
         if (env == EnvironmentEnum.PRODUCTION) {
             console.warn(
                 `env value ${key} not found, defaulting to empty string`
@@ -90,7 +127,11 @@ export const Config = {
     ]),
 
     // For sending emails
-    FROM_EMAIL_ADDRESS: process.env.FROM_EMAIL_ADDRESS,
+    FROM_EMAIL_ADDRESS:
+        process.env.FROM_EMAIL_ADDRESS ??
+        (env === EnvironmentEnum.TESTING
+            ? "fake@reflectionsprojections.org"
+            : undefined),
 
     // Development admin email - allows developer email to be admin in development
     DEV_ADMIN_EMAIL: process.env.DEV_ADMIN_EMAIL,
