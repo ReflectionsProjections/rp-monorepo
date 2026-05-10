@@ -151,7 +151,7 @@ subscriptionRouter.post(
         const { email, subject, htmlBody } = req.body;
 
         const sendEmailCommand = new SendEmailCommand({
-            FromEmailAddress: process.env.FROM_EMAIL_ADDRESS ?? "",
+            FromEmailAddress: Config.FROM_EMAIL_ADDRESS ?? "",
             Destination: {
                 ToAddresses: [email],
             },

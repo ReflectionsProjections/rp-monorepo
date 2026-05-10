@@ -128,7 +128,7 @@ export const Config = {
 
     // For sending emails
     FROM_EMAIL_ADDRESS:
-        process.env.FROM_EMAIL_ADDRESS ??
+        process.env.FROM_EMAIL_ADDRESS ||
         (env === EnvironmentEnum.TESTING
             ? "fake@reflectionsprojections.org"
             : undefined),
