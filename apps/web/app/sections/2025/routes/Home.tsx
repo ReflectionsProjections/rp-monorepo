@@ -1,12 +1,12 @@
-import { FAQ } from "@app/sections/home/components/Home/FAQ/FAQ";
-import Footer from "@app/sections/home/components/Home/Footer/Footer";
-import Schedule from "@app/sections/home/components/Home/Schedule/Schedule";
-import SponsorSection from "@app/sections/home/components/Home/Sponsors/SponsorSection";
 import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Description from "../components/Home/Description/Description";
+import { FAQ } from "../components/Home/FAQ/FAQ";
+import Footer from "../components/Home/Footer/Footer";
 import Landing from "../components/Home/Landing/Landing";
+import Schedule from "../components/Home/Schedule/Schedule";
+import SponsorSection from "../components/Home/Sponsors/SponsorSection";
 
 const Home = () => {
   const { hash } = useLocation();

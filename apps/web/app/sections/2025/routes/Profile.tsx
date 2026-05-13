@@ -35,7 +35,7 @@ const tierToLeftMargin: Record<TierTypes, string> = {
 type FoodWave = "standard" | "priority" | "not-yet" | null;
 
 const mockRoleObject: RoleObject = {
-  userId: "user-1234-5678-abcd", 
+  userId: "user-1234-5678-abcd",
   displayName: "John Doe",
   email: "johndoe@example.com",
   roles: ["USER"]
@@ -43,12 +43,12 @@ const mockRoleObject: RoleObject = {
 
 const mockAttendee: Attendee = {
   userId: "user-1234-5678-abcd",
-  currentTier: "TIER4", 
+  currentTier: "TIER4",
   name: "John Doe",
   email: "johndoe@example.com",
   events: [
-    "174a84db-412d-4e24-b0ad-15baa3815151", 
-    "8852aff5-015a-40b2-a32b-f1f738db34c8"  
+    "174a84db-412d-4e24-b0ad-15baa3815151",
+    "8852aff5-015a-40b2-a32b-f1f738db34c8"
   ],
   dietaryRestrictions: ["Vegetarian"],
   allergies: [],
@@ -73,9 +73,9 @@ const mockAttendee: Attendee = {
     Tshirt: true,
     Button: true,
     Tote: true,
-    Cap: true 
+    Cap: true
   },
-  favorites: ["72c1c5fc-cd7a-4339-a893-cfd52827dd0d"], 
+  favorites: ["72c1c5fc-cd7a-4339-a893-cfd52827dd0d"],
   puzzlesCompleted: ["puzzle-1", "puzzle-2"]
 };
 

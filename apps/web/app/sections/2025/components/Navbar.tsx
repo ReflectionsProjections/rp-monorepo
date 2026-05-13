@@ -14,10 +14,10 @@ import { NavLink, useLocation } from "react-router-dom";
 import rpLogo from "/rp_logo.svg";
 
 const LINKS = [
-  { name: "Schedule", href: "/#schedule", hash: "schedule" },
-  { name: "FAQ", href: "/#faq", hash: "faq" },
-  { name: "Sponsors", href: "/#sponsors", hash: "sponsors" },
-  { name: "Speakers", href: "/speakers" },
+  { name: "Schedule", href: "/2025/#schedule", hash: "schedule" },
+  { name: "FAQ", href: "/2025/#faq", hash: "faq" },
+  { name: "Sponsors", href: "/2025/#sponsors", hash: "sponsors" },
+  { name: "Speakers", href: "/2025/speakers" },
   { name: "Mechmania", href: "https://mechmania.org/", newTab: true },
   { name: "PuzzleBang", href: "https://puzzlebang.com/", newTab: true }
 ];
@@ -181,7 +181,7 @@ const Navbar: React.FC<NavbarProps> = ({ isFlush }) => {
           >
             <Link
               as={NavLink}
-              to="/"
+              to="/2025"
               h="100%"
               aspectRatio={1}
               // you don’t need the transition here if you put it on the Image

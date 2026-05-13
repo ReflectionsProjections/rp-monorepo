@@ -135,11 +135,11 @@ const Register = () => {
   };
 
   useEffect(() => {
-    setValues({ 
-      ...initialValues(), 
-      name: displayName, 
+    setValues({
+      ...initialValues(),
+      name: displayName,
       email: email,
-      over18: false 
+      over18: false
     });
     setIsLoading(false);
   }, [displayName, email]);
