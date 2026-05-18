@@ -2,7 +2,6 @@ import animationData from "@app/sections/home/assets/Landing/homeScreen1.json";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
   HStack,
   Spacer,
   Image,
@@ -149,44 +148,6 @@ export const Landing = () => {
             September 16–20, 2025
           </MotionText> */}
         </Box>
-
-        {/* register button */}
-        <MotionBox
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3, duration: 0.6, ease: "easeOut" }}
-        >
-          <Button
-            as="a"
-            href="https://docs.google.com/forms/d/e/1FAIpQLSdRfU2T4qJDBKvHDWvMLKufP8iJ6zSfq6hhypPxVHPvr2S8xA/viewform"
-            target="_blank"
-            rel="noopener noreferrer"
-            size={{
-              base: "md",
-              md: "lg"
-            }}
-            p={{
-              base: 6,
-              md: 10
-            }}
-            bg="#f5bc43ff"
-            color="black"
-            rounded="lg"
-            _hover={{ bg: "gray.800", color: "white" }}
-            _active={{ bg: "#EAA001" }}
-            boxShadow="lg"
-            fontFamily="ProRacing"
-          >
-            <Text
-              fontSize={{ base: "2xl", md: "3xl" }}
-              fontWeight="800"
-              fontStyle="italic"
-              letterSpacing="0.01em"
-            >
-              REGISTER FOR STAFF
-            </Text>
-          </Button>
-        </MotionBox>
 
         <MotionHStack
           spacing={6}
