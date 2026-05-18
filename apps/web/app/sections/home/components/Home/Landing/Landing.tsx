@@ -2,7 +2,6 @@ import animationData from "@app/sections/home/assets/Landing/homeScreen1.json";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
   HStack,
   Spacer,
   Image,

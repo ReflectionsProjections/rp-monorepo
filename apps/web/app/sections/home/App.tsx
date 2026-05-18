@@ -1,5 +1,5 @@
 import "./index.css";
-import { Box, ChakraProvider, Link, VStack } from "@chakra-ui/react";
+import { Box, ChakraProvider, VStack } from "@chakra-ui/react";
 import { customTheme } from "@app/theme";
 import { RequireAuth } from "@app";
 import { useMemo } from "react";
