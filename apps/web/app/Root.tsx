@@ -11,6 +11,7 @@ const DashboardApp = lazy(() => import("./sections/dashboard/App"));
 const HypeApp = lazy(() => import("./sections/hype/App"));
 const InfoApp = lazy(() => import("./sections/info/App"));
 const SponsorApp = lazy(() => import("./sections/sponsor/App"));
+const ArchivedApp = lazy(() => import("./sections/2025/App"));
 
 function LazySection({ children }: { children: ReactNode }) {
   return <Suspense fallback={<Fallback />}>{children}</Suspense>;
@@ -60,6 +61,14 @@ export default function Root() {
           element={
             <LazySection>
               <HypeApp />
+            </LazySection>
+          }
+        />
+        <Route
+          path="/2025/*"
+          element={
+            <LazySection>
+              <ArchivedApp />
             </LazySection>
           }
         />
