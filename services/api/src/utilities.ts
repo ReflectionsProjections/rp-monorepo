@@ -51,7 +51,7 @@ export function isGithubCI() {
 // solution is to add them in post-processing here because it ensures they exist (endpoints that can
 // return multiple schemas will only show the first unless examples are manually defined using this or
 // another method such as registering them to swaggerOptions and referencing #/components/examples in docs)
-// tbh it would probably be nicer to do that and check that none are missing in tests/CI
+// (tbh it would probably be nicer to do that and check that none are missing in tests/CI using this method)
 export function injectOneOfExamples(spec: OpenAPIObject): void {
     const schemas = spec.components?.schemas ?? {};
 

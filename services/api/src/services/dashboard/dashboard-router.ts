@@ -99,6 +99,9 @@ dashboardRouter.get("/", RoleChecker([Role.Enum.ADMIN]), (req, res) => {
     return res.status(StatusCodes.OK).send(displaysWithoutSpaces);
 });
 
+// constructs the send function used in endpoints --
+// takes either a message object or a function that creates them from ids
+// and returns a request handler
 function send(message: object | ((id: number) => object)) {
     return (req: Request, res: Response) => {
         const target =

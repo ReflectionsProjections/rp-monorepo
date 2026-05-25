@@ -50,9 +50,9 @@ if (
 ) {
     // TESTING NOTE: currently, tests are not run on docs generation. if tests are ever written for
     // the docs endpoint, you (may) have to lazy initialize the openapi generation -- wrap the creation
-    // of swaggerSpec in a function and call it before swaggerUi.setup() in the app.use("/docs") statement
-    // swaggerSpec doesn't exist yet. This is because tests allegedly can load modules out of order, which
-    // means the schemas might not have been initialized in the registry by the time this file runs.
+    // of swaggerSpec in a function and call it before swaggerUi.setup() IN the app.use("/docs") statement.
+    // This is because tests allegedly can load modules out of order, which means the schemas might not
+    // have been initialized in the registry by the time this file runs.
 
     // generate openapi schemas from zod
     const generator = new OpenApiGeneratorV3(registry.definitions);
@@ -102,15 +102,6 @@ if (
         swaggerUi.serve as unknown as RequestHandler,
         swaggerUi.setup(swaggerSpec) as unknown as RequestHandler
     );
-
-    // do we only want to serve docs in development (in that case wrap the whole thing to avoid generating schemas etc)
-    // if (Config.ENV !== EnvironmentEnum.PRODUCTION) {
-    //     app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    //     app.get("/docs.json", (req, res) => {
-    //         res.setHeader("Content-Type", "application/json");
-    //         res.send(swaggerSpec);
-    //     });
-    // }
 }
 
 const server = createServer(app);

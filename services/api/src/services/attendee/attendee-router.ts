@@ -681,13 +681,12 @@ attendeeRouter.get(
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *             examples:
- *               oneOf:
- *                  TierAlreadyRedeemed:
- *                    value:
- *                      error: "TierAlreadyRedeemed"
- *                  UserTierTooLow:
- *                    value:
- *                      error: "UserTierTooLow"
+ *               TierAlreadyRedeemed:
+ *                 value:
+ *                   error: "TierAlreadyRedeemed"
+ *               UserTierTooLow:
+ *                 value:
+ *                   error: "UserTierTooLow"
  *       404:
  *         description: Attendee not found
  *         content:

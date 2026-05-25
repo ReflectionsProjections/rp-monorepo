@@ -63,7 +63,9 @@ speakersRouter.get("/", RoleChecker([], true), async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/DoesNotExistError'
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "DoesNotExist"
  *     security: []
  */
 speakersRouter.get("/:SPEAKERID", RoleChecker([], true), async (req, res) => {
@@ -161,7 +163,9 @@ speakersRouter.post(
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/DoesNotExistError'
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "DoesNotExist"
  *     security:
  *       - bearerAuth: []
  */
@@ -215,7 +219,9 @@ speakersRouter.put(
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/DoesNotExistError'
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "DoesNotExist"
  *     security:
  *       - bearerAuth: []
  */
