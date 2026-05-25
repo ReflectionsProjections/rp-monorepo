@@ -1,7 +1,6 @@
 import "./index.css";
-import { Box, ChakraProvider, VStack } from "@chakra-ui/react";
+import { Box, ChakraProvider, Link, VStack } from "@chakra-ui/react";
 import { customTheme } from "@app/theme";
-import { RequireAuth } from "@app";
 import { useMemo } from "react";
 import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -23,14 +22,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/speakers" element={<Speakers />} />
           <Route path="/app" element={<AppScreen />} />
-          <Route element={<RequireAuth />}>
-            <Route key="/register" path="/register" element={<Register />} />
-          </Route>
+          <Route key="/register" path="/register" element={<Register />} />
         </Route>
-        <Route element={<RequireAuth />}>
-          <Route key="/resume" path="/resume" element={<Resume />} />
-          <Route key="/profile" path="/profile" element={<Profile />} />
-        </Route>
+        <Route key="/resume" path="/resume" element={<Resume />} />
+        <Route key="/profile" path="/profile" element={<Profile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ChakraProvider>
@@ -72,6 +67,29 @@ function Main() {
         }
       }}
     >
+      <Box
+        w="100%"
+        bg="yellow.400"
+        py="8px"
+        px={4}
+        textAlign="center"
+        fontFamily="magistral"
+        fontWeight="bold"
+        fontSize={{ base: "sm", xl: "md" }}
+        color="gray.900"
+        letterSpacing="wide"
+        zIndex={16}
+        position="relative"
+      >
+        <Link
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdRfU2T4qJDBKvHDWvMLKufP8iJ6zSfq6hhypPxVHPvr2S8xA/viewform"
+          isExternal
+          color="gray.900"
+          _hover={{ textDecoration: "underline", color: "gray.700" }}
+        >
+          R|P 2026 staff applications are now open! Click here to apply! 🎉
+        </Link>
+      </Box>
       <Navbar isFlush={isFlush} />
       <Box
         w="100%"
