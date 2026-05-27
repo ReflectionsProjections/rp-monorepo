@@ -1,7 +1,7 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Config, EnvironmentEnum } from "./config";
-import { isTest } from "./utilities";
+import { injectOneOfExamples, isTest } from "./utilities";
 import "./firebase";
 import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 
@@ -32,10 +32,78 @@ import leaderboardRouter from "./services/leaderboard/leaderboard-router";
 
 import cors from "cors";
 import { JwtPayloadValidator } from "./services/auth/auth-models";
+import swaggerJsdoc from "swagger-jsdoc";
+import { registry } from "./middleware/openapi-registry";
+import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
+import type { OpenAPIObject } from "openapi3-ts/oas30";
+import swaggerUi from "swagger-ui-express";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
+import path from "path";
 
 const app = express();
+
+// only if we aren't running in a testing environment, generate api docs at /docs
+if (
+    Config.ENV !== EnvironmentEnum.TESTING &&
+    Config.ENV !== EnvironmentEnum.GITHUB_CI
+) {
+    // TESTING NOTE: currently, tests are not run on docs generation. if tests are ever written for
+    // the docs endpoint, you (may) have to lazy initialize the openapi generation -- wrap the creation
+    // of swaggerSpec in a function and call it before swaggerUi.setup() IN the app.use("/docs") statement.
+    // This is because tests allegedly can load modules out of order, which means the schemas might not
+    // have been initialized in the registry by the time this file runs.
+
+    // generate openapi schemas from zod
+    const generator = new OpenApiGeneratorV3(registry.definitions);
+    const openApiComponents = generator.generateComponents();
+
+    // set up swagger-ui docs
+    const swaggerOptions: swaggerJsdoc.Options = {
+        definition: {
+            openapi: "3.0.0",
+            info: {
+                title: "R|P API",
+                version: "1.0.0",
+                description:
+                    "Documentation for the Reflections|Projections API",
+            },
+            // configures the "Authorize" button for JWTs
+            components: {
+                ...openApiComponents.components,
+                securitySchemes: {
+                    // defines available auth mechanisms
+                    bearerAuth: {
+                        type: "http",
+                        scheme: "bearer",
+                        bearerFormat: "JWT",
+                    },
+                },
+            },
+            // sets default needed authorization for endpoints (in docs)
+            security: [
+                {
+                    bearerAuth: [],
+                },
+            ],
+        },
+        // tells Swagger to look for JSDoc comments in all TypeScript files inside the services folder
+        apis: [path.join(__dirname, "./services/**/*-router.ts")],
+    };
+
+    const swaggerSpec = swaggerJsdoc(swaggerOptions) as OpenAPIObject;
+
+    // could also be used to inject proper examples into all endpoint docs,
+    // but that doesn't add any functionality at the moment
+    injectOneOfExamples(swaggerSpec);
+
+    app.use(
+        "/docs",
+        swaggerUi.serve as unknown as RequestHandler,
+        swaggerUi.setup(swaggerSpec) as unknown as RequestHandler
+    );
+}
+
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
