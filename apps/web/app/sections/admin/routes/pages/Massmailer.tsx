@@ -116,6 +116,7 @@ function EmailMaker() {
   const mirrorStyle = useMirrorStyles();
 
   const [emailGroups, setEmailGroups] = useState<string[]>([]);
+  const [externalEmailGroups, setExternalEmailGroups] = useState<string[]>([]);
   const [notifGroups, setNotifGroups] = useState<string[]>([]);
   const [showExtendedNotifPreview, setShowExtendedEmailPreview] =
     useState<boolean>(false);
@@ -127,6 +128,18 @@ function EmailMaker() {
       .catch(() => {
         toast({
           title: "Failed to load mailing lists!",
+          description: "Try reloading, signing in again, or checking the api",
+          status: "error",
+          duration: 4000,
+          isClosable: true
+        });
+      });
+    api
+      .get("/subscription/external-lists")
+      .then((response) => setExternalEmailGroups(response.data))
+      .catch(() => {
+        toast({
+          title: "Failed to load external mailing lists!",
           description: "Try reloading, signing in again, or checking the api",
           status: "error",
           duration: 4000,
@@ -315,11 +328,24 @@ function EmailMaker() {
                             onChange={handleChange}
                             flex={1}
                           >
-                            {emailGroups?.map((mailingList) => (
-                              <option key={mailingList} value={mailingList}>
-                                {mailingList}
-                              </option>
-                            ))}
+                            {emailGroups?.length > 0 && (
+                              <optgroup label="Subscription Lists">
+                                {emailGroups.map((mailingList) => (
+                                  <option key={mailingList} value={mailingList}>
+                                    {mailingList}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )}
+                            {externalEmailGroups?.length > 0 && (
+                              <optgroup label="Mailing Lists">
+                                {externalEmailGroups.map((listName) => (
+                                  <option key={listName} value={listName}>
+                                    {listName}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )}
                           </Select>
                         )}
                         {!values.isMobileNotification && (

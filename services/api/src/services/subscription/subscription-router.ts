@@ -169,6 +169,45 @@ subscriptionRouter.get(
 
 /**
  * @swagger
+ * /subscription/external-lists:
+ *   get:
+ *     summary: Get all external mailing list names
+ *     description: |
+ *       Returns the names of all mailing lists created via the external
+ *       mailing list endpoint (not tied to user accounts).
+ *
+ *       **Required roles: ADMIN**
+ *     tags: [Subscription]
+ *     responses:
+ *       200:
+ *         description: List of external mailing list names
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["2026_Staff", "sponsors_2025"]
+ *     security:
+ *       - bearerAuth: []
+ */
+subscriptionRouter.get(
+    "/external-lists",
+    RoleChecker([Role.Enum.ADMIN]),
+    async (req, res) => {
+        const { data: lists } =
+            await SupabaseDB.MAILING_LISTS.select("listName").throwOnError();
+
+        const uniqueListNames = [
+            ...new Set(lists?.map((row) => row.listName) || []),
+        ];
+
+        return res.status(StatusCodes.OK).json(uniqueListNames);
+    }
+);
+
+/**
+ * @swagger
  * /subscription/send-email:
  *   post:
  *     summary: Send an email to a mailing list
@@ -210,7 +249,24 @@ subscriptionRouter.post(
     async (req, res) => {
         const { mailingList, subject, htmlBody } = req.body;
 
-        // Get all users subscribed to this mailing list
+        // Check external mailing lists first
+        const { data: externalEntries } = await SupabaseDB.MAILING_LISTS.select(
+            "email"
+        )
+            .eq("listName", mailingList)
+            .throwOnError();
+
+        if (externalEntries && externalEntries.length > 0) {
+            const emailAddresses = externalEntries.map((row) => row.email);
+            const result = await sendBulkTemplateEmail(
+                Templates.RP_EMAILS,
+                emailAddresses.map((email) => ({ email })),
+                { subject, body: htmlBody }
+            );
+            return res.status(StatusCodes.OK).send(result);
+        }
+
+        // Fall back to subscriptions table
         const { data: subscriptions } = await SupabaseDB.SUBSCRIPTIONS.select(
             "userId"
         )
