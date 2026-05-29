@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { SubscriptionValidator } from "./subscription-schema";
+import { SubscriptionValidator, CreateMailingListValidator } from "./subscription-schema";
 import { SupabaseDB } from "../../database";
 import cors from "cors";
 import RoleChecker from "../../middleware/role-checker";
@@ -48,6 +48,51 @@ subscriptionRouter.post("/", cors(), async (req, res) => {
 
     return res.status(StatusCodes.CREATED).json(subscriptionData);
 });
+
+/**
+ * @swagger
+ * /subscription/lists:
+ *   post:
+ *     summary: Create a mailing list from a list of emails
+ *     description: |
+ *       Creates a named mailing list and adds the provided email addresses to it.
+ *       Emails do not need to correspond to registered user accounts.
+ *       Duplicate entries are skipped (upsert behaviour).
+ *
+ *       **Required roles: SUPER_ADMIN**
+ *     tags: [Subscription]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateMailingListValidator'
+ *     responses:
+ *       201:
+ *         description: Mailing list created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SubscriptionSuccessResponse'
+ *     security:
+ *       - bearerAuth: []
+ */
+subscriptionRouter.post(
+    "/lists",
+    RoleChecker([Role.Enum.SUPER_ADMIN]),
+    async (req, res) => {
+        const { listName, emails } = CreateMailingListValidator.parse(req.body);
+
+        const rows = emails.map((email) => ({ listName, email }));
+
+        await SupabaseDB.MAILING_LISTS.upsert(rows, {
+            onConflict: "listName,email",
+            ignoreDuplicates: true,
+        }).throwOnError();
+
+        return res.status(StatusCodes.CREATED).json({ status: "success" });
+    }
+);
 
 /**
  * @swagger

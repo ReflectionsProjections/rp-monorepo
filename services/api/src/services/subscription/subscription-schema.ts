@@ -70,6 +70,21 @@ export const UnsubscribeValidator = registry.register(
         })
 );
 
+export const CreateMailingListValidator = registry.register(
+    "CreateMailingListValidator",
+    z
+        .object({
+            listName: z.string().min(1),
+            emails: z.array(z.string().email()).min(1),
+        })
+        .openapi("CreateMailingListValidator", {
+            example: {
+                listName: "sponsors_2025",
+                emails: ["sponsor@company.com", "another@corp.io"],
+            },
+        })
+);
+
 export const SubscriptionSuccessResponse = registry.register(
     "SubscriptionSuccessResponse",
     z
