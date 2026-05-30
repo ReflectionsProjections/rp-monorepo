@@ -637,6 +637,11 @@ export interface APIRoutes {
       response: string[];
     };
   };
+  "/subscription/external-lists": {
+    GET: {
+      response: string[];
+    };
+  };
   "/subscription/send-email": {
     POST: {
       request: { mailingList: string; subject: string; htmlBody: string };

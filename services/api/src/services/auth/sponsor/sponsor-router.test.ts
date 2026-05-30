@@ -1,4 +1,3 @@
-import { SendEmailCommandOutput } from "@aws-sdk/client-ses";
 import * as sesUtils from "../../ses/ses-utils";
 import * as sponsorUtils from "./sponsor-utils";
 import { post } from "../../../../testing/testingTools";
@@ -29,7 +28,7 @@ describe("POST /auth/sponsor/login", () => {
     const mockSendHTMLEmail = jest
         .spyOn(sesUtils, "sendHTMLEmail")
         .mockImplementation((_emailId, _subject, _emailHTML) =>
-            Promise.resolve({} as unknown as SendEmailCommandOutput)
+            Promise.resolve()
         );
     const mockCreateSixDigitCode = jest.spyOn(
         sponsorUtils,
