@@ -245,12 +245,18 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
     if (!existing) {
         await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
             subject: "Reflections | Projections 2025 Registration Confirmation",
-            body: Mustache.render(templates.REGISTRATION_CONFIRMATION, substitution),
+            body: Mustache.render(
+                templates.REGISTRATION_CONFIRMATION,
+                substitution
+            ),
         });
     } else {
         await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
             subject: "Reflections | Projections 2025 Registration Updated",
-            body: Mustache.render(templates.REGISTRATION_UPDATE_CONFIRMATION, substitution),
+            body: Mustache.render(
+                templates.REGISTRATION_UPDATE_CONFIRMATION,
+                substitution
+            ),
         });
     }
 

@@ -1,34 +1,38 @@
-import { ses, Config } from "../../config"
-import { SendEmailCommand, SendBulkEmailCommand, TooManyRequestsException } from "@aws-sdk/client-sesv2"
-import { Templates } from "../../config"
-import { setTimeout } from "timers/promises"
+import { ses, Config } from "../../config";
+import {
+    SendEmailCommand,
+    SendBulkEmailCommand,
+    TooManyRequestsException,
+} from "@aws-sdk/client-sesv2";
+import { Templates } from "../../config";
+import { setTimeout } from "timers/promises";
 
 export interface BulkSendResult {
-    success: boolean
-    successCount: number
-    failedCount: number
-    errors: string[]
+    success: boolean;
+    successCount: number;
+    failedCount: number;
+    errors: string[];
 }
 
 function getBackoffDuration(attempt: number): number {
-    const duration = Config.MIN_MAIL_BACKOFF_MS * Math.pow(2, attempt)
-    return Math.min(duration, Config.MAX_MAIL_BACKOFF_MS)
+    const duration = Config.MIN_MAIL_BACKOFF_MS * Math.pow(2, attempt);
+    return Math.min(duration, Config.MAX_MAIL_BACKOFF_MS);
 }
 
 function isThrottlingError(error: unknown): boolean {
     if (error instanceof TooManyRequestsException) {
-        return true
+        return true;
     }
     if (error instanceof Error && error.name === "Throttling") {
-        return true
+        return true;
     }
-    return false
+    return false;
 }
 
 export async function sendHTMLEmail(
     emailId: string,
     subject: string,
-    emailHtml: string,
+    emailHtml: string
 ): Promise<void> {
     const command = new SendEmailCommand({
         FromEmailAddress:
@@ -44,20 +48,20 @@ export async function sendHTMLEmail(
                 Body: { Html: { Data: emailHtml, Charset: "utf-8" } },
             },
         },
-    })
+    });
 
     for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
         try {
-            await ses.send(command)
-            return
+            await ses.send(command);
+            return;
         } catch (error) {
             if (
                 isThrottlingError(error) &&
                 attempt < Config.MAX_MAIL_SEND_RETRIES - 1
             ) {
-                await setTimeout(getBackoffDuration(attempt))
+                await setTimeout(getBackoffDuration(attempt));
             } else {
-                throw error
+                throw error;
             }
         }
     }
@@ -66,7 +70,7 @@ export async function sendHTMLEmail(
 export async function sendEmail(
     emailId: string,
     subject: string,
-    emailBody: string,
+    emailBody: string
 ): Promise<void> {
     const command = new SendEmailCommand({
         FromEmailAddress:
@@ -82,20 +86,20 @@ export async function sendEmail(
                 Body: { Text: { Data: emailBody } },
             },
         },
-    })
+    });
 
     for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
         try {
-            await ses.send(command)
-            return
+            await ses.send(command);
+            return;
         } catch (error) {
             if (
                 isThrottlingError(error) &&
                 attempt < Config.MAX_MAIL_SEND_RETRIES - 1
             ) {
-                await setTimeout(getBackoffDuration(attempt))
+                await setTimeout(getBackoffDuration(attempt));
             } else {
-                throw error
+                throw error;
             }
         }
     }
@@ -104,7 +108,7 @@ export async function sendEmail(
 export async function sendTemplateEmail(
     emailId: string,
     templateId: Templates,
-    templateData: Record<string, unknown>,
+    templateData: Record<string, unknown>
 ): Promise<void> {
     const command = new SendEmailCommand({
         FromEmailAddress:
@@ -120,20 +124,20 @@ export async function sendTemplateEmail(
                 TemplateData: JSON.stringify(templateData),
             },
         },
-    })
+    });
 
     for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
         try {
-            await ses.send(command)
-            return
+            await ses.send(command);
+            return;
         } catch (error) {
             if (
                 isThrottlingError(error) &&
                 attempt < Config.MAX_MAIL_SEND_RETRIES - 1
             ) {
-                await setTimeout(getBackoffDuration(attempt))
+                await setTimeout(getBackoffDuration(attempt));
             } else {
-                throw error
+                throw error;
             }
         }
     }
@@ -142,13 +146,13 @@ export async function sendTemplateEmail(
 export async function sendBulkTemplateEmail(
     templateId: Templates,
     recipients: Array<{ email: string; data?: Record<string, unknown> }>,
-    defaultTemplateData?: Record<string, unknown>,
+    defaultTemplateData?: Record<string, unknown>
 ): Promise<BulkSendResult> {
-    const errors: string[] = []
-    let successCount = 0
+    const errors: string[] = [];
+    let successCount = 0;
 
     for (let i = 0; i < recipients.length; i += Config.SES_BULK_BATCH_SIZE) {
-        const batch = recipients.slice(i, i + Config.SES_BULK_BATCH_SIZE)
+        const batch = recipients.slice(i, i + Config.SES_BULK_BATCH_SIZE);
 
         const command = new SendBulkEmailCommand({
             FromEmailAddress:
@@ -172,7 +176,7 @@ export async function sendBulkTemplateEmail(
                     },
                 },
             })),
-        })
+        });
 
         for (
             let attempt = 0;
@@ -180,35 +184,35 @@ export async function sendBulkTemplateEmail(
             attempt++
         ) {
             try {
-                const response = await ses.send(command)
+                const response = await ses.send(command);
 
                 response.BulkEmailEntryResults?.forEach((result, index) => {
                     if (result.Status === "SUCCESS") {
-                        successCount++
+                        successCount++;
                     } else {
-                        const email = batch[index]!.email
+                        const email = batch[index]!.email;
                         errors.push(
-                            `${email}: ${result.Error ?? "Unknown error"}`,
-                        )
+                            `${email}: ${result.Error ?? "Unknown error"}`
+                        );
                     }
-                })
+                });
 
-                break
+                break;
             } catch (error) {
                 if (
                     isThrottlingError(error) &&
                     attempt < Config.MAX_MAIL_SEND_RETRIES - 1
                 ) {
-                    await setTimeout(getBackoffDuration(attempt))
+                    await setTimeout(getBackoffDuration(attempt));
                 } else {
                     for (const { email } of batch) {
                         const message =
                             error instanceof Error
                                 ? error.message
-                                : String(error)
-                        errors.push(`${email}: ${message}`)
+                                : String(error);
+                        errors.push(`${email}: ${message}`);
                     }
-                    break
+                    break;
                 }
             }
         }
@@ -219,5 +223,5 @@ export async function sendBulkTemplateEmail(
         successCount,
         failedCount: errors.length,
         errors,
-    }
+    };
 }
