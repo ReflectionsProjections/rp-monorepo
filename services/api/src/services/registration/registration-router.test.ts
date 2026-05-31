@@ -2,13 +2,22 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { StatusCodes } from "http-status-codes";
 import { get, post, postAsUser, TESTER } from "../../../testing/testingTools";
 import { Role } from "../auth/auth-models";
-import { sendHTMLEmail } from "../ses/ses-utils";
+import { sendTemplateEmail } from "../ses/ses-utils";
 import { SupabaseDB } from "../../database";
 import { render } from "mustache";
 import templates from "../../templates/templates";
 
 jest.mock("../ses/ses-utils", () => ({
     sendHTMLEmail: jest.fn(),
+    sendTemplateEmail: jest.fn(),
+    sendBulkTemplateEmail: jest.fn(() =>
+        Promise.resolve({
+            success: true,
+            successCount: 1,
+            failedCount: 0,
+            errors: [] as string[],
+        })
+    ),
 }));
 
 const MUSTACHE_RENDER_RESULT = "<html>cool</html>";
@@ -290,10 +299,12 @@ describe("POST /registration/submit", () => {
             expectedSubs
         );
 
-        expect(sendHTMLEmail).toHaveBeenCalledWith(
+        expect(sendTemplateEmail).toHaveBeenCalledWith(
             TESTER.email,
-            expect.stringMatching(/confirmation/i),
-            MUSTACHE_RENDER_RESULT
+            expect.anything(),
+            expect.objectContaining({
+                subject: expect.stringMatching(/confirmation/i),
+            })
         );
     });
 
@@ -351,10 +362,12 @@ describe("POST /registration/submit", () => {
             expectedSubs
         );
 
-        expect(sendHTMLEmail).toHaveBeenCalledWith(
+        expect(sendTemplateEmail).toHaveBeenCalledWith(
             TESTER.email,
-            expect.stringMatching(/updated/i),
-            MUSTACHE_RENDER_RESULT
+            expect.anything(),
+            expect.objectContaining({
+                subject: expect.stringMatching(/updated/i),
+            })
         );
     });
 

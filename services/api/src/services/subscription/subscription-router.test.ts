@@ -9,16 +9,18 @@ import {
 import { StatusCodes } from "http-status-codes";
 import { SupabaseDB } from "../../database";
 import { IncomingSubscription } from "./subscription-schema";
-import Config from "../../config";
 
-// Mock the AWS SDK
-const mockSESV2Send = jest.fn();
-const mockSendEmailCommand = jest.fn((input) => input);
-jest.mock("@aws-sdk/client-sesv2", () => ({
-    SESv2Client: jest.fn(() => ({
-        send: mockSESV2Send,
-    })),
-    SendEmailCommand: mockSendEmailCommand,
+const mockSendBulkTemplateEmail = jest.fn().mockResolvedValue({
+    success: true,
+    successCount: 2,
+    failedCount: 0,
+    errors: [],
+});
+const mockSendHTMLEmail = jest.fn().mockResolvedValue(undefined);
+jest.mock("../ses/ses-utils", () => ({
+    sendBulkTemplateEmail: mockSendBulkTemplateEmail,
+    sendHTMLEmail: mockSendHTMLEmail,
+    sendTemplateEmail: jest.fn().mockResolvedValue(undefined),
 }));
 
 const USER_ID_1 = "test-er-user-id";
@@ -205,28 +207,17 @@ describe("POST /subscription/send-email", () => {
     });
 
     it("should send an email to all subscribers of a list", async () => {
-        const res = await postAsSuperAdmin("/subscription/send-email")
+        await postAsSuperAdmin("/subscription/send-email")
             .send(emailPayload)
             .expect(StatusCodes.OK);
 
-        expect(mockSendEmailCommand).toHaveBeenCalledWith({
-            FromEmailAddress: Config.FROM_EMAIL_ADDRESS,
-            Destination: {
-                ToAddresses: [Config.FROM_EMAIL_ADDRESS],
-                BccAddresses: emails,
-            },
-            Content: {
-                Simple: {
-                    Subject: { Data: "Test Subject" },
-                    Body: { Html: { Data: "<p>Hello World</p>" } },
-                },
-            },
-        });
-
-        // Verify that the send method was actually invoked
-        expect(mockSESV2Send).toHaveBeenCalledTimes(1);
-
-        expect(res.body).toEqual({ status: "success" });
+        expect(mockSendBulkTemplateEmail).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.arrayContaining(
+                emails.map((email) => expect.objectContaining({ email }))
+            ),
+            expect.objectContaining({ subject: "Test Subject" })
+        );
     });
 
     it("fails to send an email for non super-admins", async () => {
@@ -234,11 +225,7 @@ describe("POST /subscription/send-email", () => {
             .send(emailPayload)
             .expect(StatusCodes.FORBIDDEN);
 
-        expect(mockSendEmailCommand).not.toHaveBeenCalled();
-
-        // Verify that the send method was actually invoked
-        expect(mockSESV2Send).not.toHaveBeenCalled();
-
+        expect(mockSendBulkTemplateEmail).not.toHaveBeenCalled();
         expect(res.body).toMatchObject({ error: "Forbidden" });
     });
 });
@@ -254,22 +241,11 @@ describe("POST /subscription/send-email/single", () => {
             .send(emailPayload)
             .expect(StatusCodes.OK);
 
-        expect(mockSendEmailCommand).toHaveBeenCalledWith({
-            FromEmailAddress: Config.FROM_EMAIL_ADDRESS,
-            Destination: {
-                ToAddresses: [emailPayload.email],
-            },
-            Content: {
-                Simple: {
-                    Subject: { Data: "Single Email Test" },
-                    Body: { Html: { Data: "<p>Single Email Body</p>" } },
-                },
-            },
-        });
-
-        // Verify that the send method was actually invoked
-        expect(mockSESV2Send).toHaveBeenCalledTimes(1);
-
+        expect(mockSendHTMLEmail).toHaveBeenCalledWith(
+            emailPayload.email,
+            emailPayload.subject,
+            emailPayload.htmlBody
+        );
         expect(res.body).toEqual({ status: "success" });
     });
 
@@ -278,9 +254,7 @@ describe("POST /subscription/send-email/single", () => {
             .send(emailPayload)
             .expect(StatusCodes.FORBIDDEN);
 
-        expect(mockSendEmailCommand).not.toHaveBeenCalled();
-        expect(mockSESV2Send).not.toHaveBeenCalled();
-
+        expect(mockSendHTMLEmail).not.toHaveBeenCalled();
         expect(res.body).toMatchObject({ error: "Forbidden" });
     });
 });

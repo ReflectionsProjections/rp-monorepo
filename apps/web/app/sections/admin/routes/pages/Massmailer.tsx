@@ -146,7 +146,7 @@ function EmailMaker() {
           isClosable: true
         });
       });
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     api
@@ -161,7 +161,7 @@ function EmailMaker() {
           isClosable: true
         });
       });
-  }, []);
+  }, [toast]);
 
   const sendMassmail = (
     values: EmailFormValues,
