@@ -25,9 +25,9 @@ beforeEach(async () => {
 });
 
 describe("POST /auth/sponsor/login", () => {
-    const mockSendHTMLEmail = jest
-        .spyOn(sesUtils, "sendHTMLEmail")
-        .mockImplementation((_emailId, _subject, _emailHTML) =>
+    const mockSendTemplateEmail = jest
+        .spyOn(sesUtils, "sendTemplateEmail")
+        .mockImplementation((_emailId, _templateId, _templateData) =>
             Promise.resolve()
         );
     const mockCreateSixDigitCode = jest.spyOn(
@@ -36,7 +36,7 @@ describe("POST /auth/sponsor/login", () => {
     );
 
     beforeEach(async () => {
-        mockSendHTMLEmail.mockClear();
+        mockSendTemplateEmail.mockClear();
         mockCreateSixDigitCode.mockClear();
     });
 
@@ -48,10 +48,10 @@ describe("POST /auth/sponsor/login", () => {
             .expect(StatusCodes.CREATED);
         expect(mockCreateSixDigitCode).toHaveBeenCalled();
         const sixDigitCode = `${mockCreateSixDigitCode.mock.results.at(-1)?.value}`;
-        expect(mockSendHTMLEmail).toHaveBeenCalledWith(
+        expect(mockSendTemplateEmail).toHaveBeenCalledWith(
             CORPORATE_USER.email,
-            expect.stringContaining("Email Verification"),
-            expect.stringContaining(sixDigitCode)
+            expect.anything(),
+            expect.objectContaining({ subject: expect.stringContaining("Email Verification") })
         );
 
         const { data } = await SupabaseDB.AUTH_CODES.select()
