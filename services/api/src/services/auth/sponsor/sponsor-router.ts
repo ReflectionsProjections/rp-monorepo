@@ -70,7 +70,9 @@ authSponsorRouter.post("/login", async (req, res) => {
 
     await sendTemplateEmail(email, Templates.RP_EMAILS, {
         subject: "R|P Resume Book Email Verification",
-        body: mustache.render(templates.SPONSOR_VERIFICATION, { code: sixDigitCode }),
+        body: mustache.render(templates.SPONSOR_VERIFICATION, {
+            code: sixDigitCode,
+        }),
     });
     return res.sendStatus(StatusCodes.CREATED);
 });

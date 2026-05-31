@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { SubscriptionValidator, CreateMailingListValidator } from "./subscription-schema";
+import {
+    SubscriptionValidator,
+    CreateMailingListValidator,
+} from "./subscription-schema";
 import { SupabaseDB } from "../../database";
 import cors from "cors";
 import RoleChecker from "../../middleware/role-checker";
@@ -9,7 +12,6 @@ import { sendHTMLEmail, sendBulkTemplateEmail } from "../ses/ses-utils";
 import { Templates } from "../../config";
 
 const subscriptionRouter = Router();
-
 
 // Create a new subscription
 subscriptionRouter.post("/", cors(), async (req, res) => {
@@ -314,7 +316,10 @@ subscriptionRouter.post(
 
         const result = await sendBulkTemplateEmail(
             Templates.RP_EMAILS,
-            emails.map((email: string) => ({ email, data: { subject, body: htmlBody } })),
+            emails.map((email: string) => ({
+                email,
+                data: { subject, body: htmlBody },
+            })),
             { subject, body: htmlBody }
         );
 
