@@ -18,18 +18,18 @@ export default function Events() {
 
   useEffect(() => {
     const fetchData = async () => {
-    try {
-      const events = await api.get("/events");
-      setEvents(events.data);
-    } catch (err: unknown) {
-      console.error(err);
-      toast({
-        title: `Error fetching events`,
-        status: "error",
-        duration: 9000,
-        isClosable: true
-      });
-    }
+      try {
+        const events = await api.get("/events");
+        setEvents(events.data);
+      } catch (err: unknown) {
+        console.error(err);
+        toast({
+          title: `Error fetching events`,
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        });
+      }
     };
     void fetchData();
   }, [toast]);

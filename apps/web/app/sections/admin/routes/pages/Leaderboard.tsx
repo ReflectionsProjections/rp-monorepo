@@ -325,8 +325,8 @@ const Leaderboard: React.FC = () => {
                   {submissionStatus.submission?.count} prizes on{" "}
                   {submissionStatus.submission?.submittedAt
                     ? new Date(
-                        submissionStatus.submission.submittedAt
-                      ).toLocaleString()
+                      submissionStatus.submission.submittedAt
+                    ).toLocaleString()
                     : "unknown date"}
                   .
                 </Text>
