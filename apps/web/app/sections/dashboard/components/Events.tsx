@@ -15,7 +15,9 @@ export default function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [displayedEvents, setDisplayedEvents] = useState<EventSelected[]>([]);
 
-  const fetchData = async () => {
+
+  useEffect(() => {
+    const fetchData = async () => {
     try {
       const events = await api.get("/events");
       setEvents(events.data);
@@ -28,9 +30,11 @@ export default function Events() {
         isClosable: true
       });
     }
-  };
+    };
+    void fetchData();
+  }, [toast]);
 
-  const handleUpdateData = () => {
+  useEffect(() => {
     if (!date) return;
     const grouped: { [key: string]: Event[] } = {};
     events.forEach((evt) => {
@@ -77,16 +81,6 @@ export default function Events() {
     });
 
     setDisplayedEvents(newDisplayedEvents);
-  };
-
-  useEffect(() => {
-    void fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast]);
-
-  useEffect(() => {
-    void handleUpdateData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, date]);
 
   return (

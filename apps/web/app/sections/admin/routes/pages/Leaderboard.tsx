@@ -236,7 +236,6 @@ const Leaderboard: React.FC = () => {
     if (!isLoading && leaderboardUsers.length > 0) {
       handleSetEffectiveNumberAwards(defaultNumberAwards);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, leaderboardUsers.length]);
 
   const previewNumberIsInvalid = useMemo(
@@ -256,7 +255,7 @@ const Leaderboard: React.FC = () => {
     handleSetEffectiveNumberAwards(newValueInt);
   };
 
-  const handleSetEffectiveNumberAwards = (inputPreviewValue: number) => {
+  const handleSetEffectiveNumberAwards = useCallback((inputPreviewValue: number) => {
     if (
       !inputPreviewValue ||
       !leaderboardUsers ||
@@ -285,7 +284,7 @@ const Leaderboard: React.FC = () => {
     setEffectiveNumberAwards(usersGeqBreakpoint.length);
 
     // No scrolling needed - the visual highlighting will show which users qualify
-  };
+  }, [leaderboardUsers]);
 
   return (
     <>
