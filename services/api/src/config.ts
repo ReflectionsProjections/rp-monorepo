@@ -29,6 +29,14 @@ export enum EnvironmentEnum {
 
 export const Environment = z.nativeEnum(EnvironmentEnum);
 
+export const MailingLists = {
+    RP_INTEREST: "rp_interest",
+    RP_STAFF: "rp_staff",
+    ATTENDEES_2025: "2025_Attendees",
+    ATTENDEES_2026: "2026_Attendees",
+    STAFF_2026: "2026_Staff",
+} as const;
+
 export const MailingListName = z.enum(["rp_interest", "rp_staff"]);
 const env = Environment.parse(getEnv("ENV"));
 

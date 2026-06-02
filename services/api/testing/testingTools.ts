@@ -200,4 +200,13 @@ export async function clearSupabaseTables(supabase: SupabaseClient) {
             console.warn(`⚠️ Could not clear ${table}:`, error.message);
         }
     }
+
+    // mailingLists requires a WHERE clause (PostgREST v12 + RLS)
+    const { error: mlError } = await supabase
+        .from("mailingLists")
+        .delete()
+        .neq("email", "");
+    if (mlError) {
+        console.warn(`⚠️ Could not clear mailingLists:`, mlError.message);
+    }
 }

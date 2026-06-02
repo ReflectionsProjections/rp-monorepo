@@ -10,7 +10,7 @@ import { AttendeeCreateValidator } from "../attendee/attendee-validators";
 import cors from "cors";
 import Mustache from "mustache";
 import { sendTemplateEmail } from "../ses/ses-utils";
-import { Templates } from "../../config";
+import { Templates, MailingLists } from "../../config";
 import templates from "../../templates/templates";
 import { Role } from "../auth/auth-models";
 
@@ -193,7 +193,7 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
             onConflict: "userId",
         }).throwOnError(),
         SupabaseDB.MAILING_LISTS.upsert(
-            { listName: "2026_Attendees", email: payload.email },
+            { listName: MailingLists.ATTENDEES_2026, email: payload.email },
             { onConflict: "listName,email", ignoreDuplicates: true }
         ).throwOnError(),
     ]);
