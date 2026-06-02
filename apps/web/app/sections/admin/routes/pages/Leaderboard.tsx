@@ -255,36 +255,39 @@ const Leaderboard: React.FC = () => {
     handleSetEffectiveNumberAwards(newValueInt);
   };
 
-  const handleSetEffectiveNumberAwards = useCallback((inputPreviewValue: number) => {
-    if (
-      !inputPreviewValue ||
-      !leaderboardUsers ||
-      leaderboardUsers.length === 0
-    ) {
-      setEffectiveNumberAwards(0);
-      setMinimumPointsThreshold(0);
-      return;
-    }
+  const handleSetEffectiveNumberAwards = useCallback(
+    (inputPreviewValue: number) => {
+      if (
+        !inputPreviewValue ||
+        !leaderboardUsers ||
+        leaderboardUsers.length === 0
+      ) {
+        setEffectiveNumberAwards(0);
+        setMinimumPointsThreshold(0);
+        return;
+      }
 
-    // Find the breakpoint user (the user at the target position)
-    const breakpointUser = leaderboardUsers[inputPreviewValue - 1];
-    if (!breakpointUser) {
-      setEffectiveNumberAwards(0);
-      setMinimumPointsThreshold(0);
-      return;
-    }
+      // Find the breakpoint user (the user at the target position)
+      const breakpointUser = leaderboardUsers[inputPreviewValue - 1];
+      if (!breakpointUser) {
+        setEffectiveNumberAwards(0);
+        setMinimumPointsThreshold(0);
+        return;
+      }
 
-    const breakpoint = breakpointUser.points;
-    setMinimumPointsThreshold(breakpoint);
+      const breakpoint = breakpointUser.points;
+      setMinimumPointsThreshold(breakpoint);
 
-    // Find all users with points >= breakpoint (including ties)
-    const usersGeqBreakpoint = leaderboardUsers.filter(
-      (user) => user.points >= breakpoint
-    );
-    setEffectiveNumberAwards(usersGeqBreakpoint.length);
+      // Find all users with points >= breakpoint (including ties)
+      const usersGeqBreakpoint = leaderboardUsers.filter(
+        (user) => user.points >= breakpoint
+      );
+      setEffectiveNumberAwards(usersGeqBreakpoint.length);
 
-    // No scrolling needed - the visual highlighting will show which users qualify
-  }, [leaderboardUsers]);
+      // No scrolling needed - the visual highlighting will show which users qualify
+    },
+    [leaderboardUsers]
+  );
 
   return (
     <>
@@ -325,8 +328,8 @@ const Leaderboard: React.FC = () => {
                   {submissionStatus.submission?.count} prizes on{" "}
                   {submissionStatus.submission?.submittedAt
                     ? new Date(
-                      submissionStatus.submission.submittedAt
-                    ).toLocaleString()
+                        submissionStatus.submission.submittedAt
+                      ).toLocaleString()
                     : "unknown date"}
                   .
                 </Text>

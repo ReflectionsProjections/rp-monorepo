@@ -15,7 +15,6 @@ export default function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [displayedEvents, setDisplayedEvents] = useState<EventSelected[]>([]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
