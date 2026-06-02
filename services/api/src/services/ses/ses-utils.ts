@@ -29,6 +29,24 @@ function isThrottlingError(error: unknown): boolean {
     return false;
 }
 
+async function sendWithRetry(command: SendEmailCommand): Promise<void> {
+    for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
+        try {
+            await ses.send(command);
+            return;
+        } catch (error) {
+            if (
+                isThrottlingError(error) &&
+                attempt < Config.MAX_MAIL_SEND_RETRIES - 1
+            ) {
+                await setTimeout(getBackoffDuration(attempt));
+            } else {
+                throw error;
+            }
+        }
+    }
+}
+
 export async function sendHTMLEmail(
     emailId: string,
     subject: string,
@@ -50,21 +68,7 @@ export async function sendHTMLEmail(
         },
     });
 
-    for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
-        try {
-            await ses.send(command);
-            return;
-        } catch (error) {
-            if (
-                isThrottlingError(error) &&
-                attempt < Config.MAX_MAIL_SEND_RETRIES - 1
-            ) {
-                await setTimeout(getBackoffDuration(attempt));
-            } else {
-                throw error;
-            }
-        }
-    }
+    await sendWithRetry(command);
 }
 
 export async function sendEmail(
@@ -88,21 +92,7 @@ export async function sendEmail(
         },
     });
 
-    for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
-        try {
-            await ses.send(command);
-            return;
-        } catch (error) {
-            if (
-                isThrottlingError(error) &&
-                attempt < Config.MAX_MAIL_SEND_RETRIES - 1
-            ) {
-                await setTimeout(getBackoffDuration(attempt));
-            } else {
-                throw error;
-            }
-        }
-    }
+    await sendWithRetry(command);
 }
 
 export async function sendTemplateEmail(
@@ -126,21 +116,7 @@ export async function sendTemplateEmail(
         },
     });
 
-    for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
-        try {
-            await ses.send(command);
-            return;
-        } catch (error) {
-            if (
-                isThrottlingError(error) &&
-                attempt < Config.MAX_MAIL_SEND_RETRIES - 1
-            ) {
-                await setTimeout(getBackoffDuration(attempt));
-            } else {
-                throw error;
-            }
-        }
-    }
+    await sendWithRetry(command);
 }
 
 export async function sendBulkTemplateEmail(

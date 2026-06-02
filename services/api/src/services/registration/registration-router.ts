@@ -192,10 +192,10 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
         SupabaseDB.ATTENDEES.upsert(attendee, {
             onConflict: "userId",
         }).throwOnError(),
-        SupabaseDB.SUBSCRIPTIONS.upsert({
-            userId: payload.userId,
-            mailingList: "attendees",
-        }).throwOnError(),
+        SupabaseDB.MAILING_LISTS.upsert(
+            { listName: "2026_Attendees", email: payload.email },
+            { onConflict: "listName,email", ignoreDuplicates: true }
+        ).throwOnError(),
     ]);
 
     const substitution = {
