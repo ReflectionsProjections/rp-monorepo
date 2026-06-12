@@ -214,7 +214,7 @@ export interface APIRoutes {
   '/auth/sponsor/verify': {
     POST: {
       request: {
-        randomHexCode: string;
+        sixDigitCode: string;
         email: string;
       };
       response: { token: string };

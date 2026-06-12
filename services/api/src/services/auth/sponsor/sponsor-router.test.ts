@@ -3,6 +3,7 @@ import * as sesUtils from "../../ses/ses-utils";
 import * as sponsorUtils from "./sponsor-utils";
 import { post } from "../../../../testing/testingTools";
 import { StatusCodes } from "http-status-codes";
+import { Corporate } from "../corporate-schema";
 import { compareSync } from "bcrypt";
 import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
 import Config from "../../../config";
@@ -11,25 +12,20 @@ import { SupabaseDB } from "../../../database";
 
 const CORPORATE_USER = {
     email: "sponsor@big-man.corp",
-    displayName: "Big Corporate Man",
-};
-const CORPORATE_AUTH_USER = {
-    userId: CORPORATE_USER.email,
-    email: CORPORATE_USER.email,
-    displayName: CORPORATE_USER.displayName,
-    role: Role.Enum.CORPORATE,
-};
-const VALID_CODE = "AAABBB";
+    name: "Big Corporate Man",
+} satisfies Corporate;
+const VALID_UNHASHED_RANDOM = "AAABBB123456";
+const VALID_TOKEN = Buffer.from(
+    `${CORPORATE_USER.email}|${VALID_UNHASHED_RANDOM}`
+).toString("base64url");
 
 beforeEach(async () => {
-    await SupabaseDB.AUTH_INFO.insert(CORPORATE_AUTH_USER as never);
+    await SupabaseDB.CORPORATE.insert(CORPORATE_USER);
     await SupabaseDB.AUTH_TOKENS.insert({
-        userId: CORPORATE_USER.email,
-        tokenHash: sponsorUtils.encryptRandomHexCode(VALID_CODE),
-        expiresAt: new Date(Date.now() + 60 * 1000).toISOString(),
-        path: "sponsor-login",
-        usedAt: null,
-    } as never);
+        hashedToken: sponsorUtils.hashMagicLinkToken(VALID_UNHASHED_RANDOM),
+        expTime: new Date(Date.now() + 60 * 1000).toISOString(),
+        email: CORPORATE_USER.email,
+    });
 });
 
 describe("POST /auth/sponsor/login", () => {
@@ -38,14 +34,14 @@ describe("POST /auth/sponsor/login", () => {
         .mockImplementation((_emailId, _subject, _emailHTML) =>
             Promise.resolve({} as unknown as SendEmailCommandOutput)
         );
-    const mockCreateRandomHexCode = jest.spyOn(
+    const mockCreateMagicLinkToken = jest.spyOn(
         sponsorUtils,
-        "createRandomHexCode"
+        "createMagicLinkToken"
     );
 
     beforeEach(async () => {
         mockSendHTMLEmail.mockClear();
-        mockCreateRandomHexCode.mockClear();
+        mockCreateMagicLinkToken.mockClear();
     });
 
     it("should send a login code", async () => {
@@ -54,23 +50,25 @@ describe("POST /auth/sponsor/login", () => {
                 email: CORPORATE_USER.email,
             })
             .expect(StatusCodes.CREATED);
-        expect(mockCreateRandomHexCode).toHaveBeenCalled();
-        const randomHexCode = `${mockCreateRandomHexCode.mock.results.at(-1)?.value}`;
+        expect(mockCreateMagicLinkToken).toHaveBeenCalled();
+        const results = mockCreateMagicLinkToken.mock.results.at(-1)?.value as {
+            magicLinkToken: string;
+            unhashedRandom: string;
+        };
         expect(mockSendHTMLEmail).toHaveBeenCalledWith(
             CORPORATE_USER.email,
             expect.stringContaining("Email Verification"),
-            expect.stringContaining(randomHexCode)
+            expect.stringContaining(results.magicLinkToken)
         );
 
         const { data } = await SupabaseDB.AUTH_TOKENS.select()
-            .eq("userId", CORPORATE_USER.email)
-            .eq("path", "sponsor-login")
+            .eq("email", CORPORATE_USER.email)
             .single()
             .throwOnError();
-        expect(data).toHaveProperty("tokenHash");
-        expect(
-            compareSync(randomHexCode, `${data.tokenHash}`)
-        ).toBe(true);
+        expect(data).toHaveProperty("hashedToken");
+        expect(compareSync(results.unhashedRandom, `${data.hashedToken}`)).toBe(
+            true
+        );
     });
 
     it("fails to send a code for invalid emails", async () => {
@@ -80,12 +78,11 @@ describe("POST /auth/sponsor/login", () => {
                 email,
             })
             .expect(StatusCodes.UNAUTHORIZED);
-        expect(mockCreateRandomHexCode).not.toHaveBeenCalled();
+        expect(mockCreateMagicLinkToken).not.toHaveBeenCalled();
         expect(mockSendHTMLEmail).not.toHaveBeenCalled();
 
         const { data } = await SupabaseDB.AUTH_TOKENS.select()
-            .eq("userId", email)
-            .eq("path", "sponsor-login")
+            .eq("email", email)
             .throwOnError();
         expect(data.length).toBe(0);
     });
@@ -96,8 +93,7 @@ describe("POST /auth/sponsor/verify", () => {
         const start = Math.floor(Date.now() / 1000);
         const response = await post("/auth/sponsor/verify")
             .send({
-                email: CORPORATE_USER.email,
-                randomHexCode: VALID_CODE,
+                token: VALID_TOKEN,
             })
             .expect(StatusCodes.OK);
 
@@ -108,7 +104,7 @@ describe("POST /auth/sponsor/verify", () => {
         ) as JwtPayload;
         expect(payload).toMatchObject({
             userId: CORPORATE_USER.email,
-            displayName: CORPORATE_USER.displayName,
+            displayName: CORPORATE_USER.name,
             email: CORPORATE_USER.email,
             roles: [Role.Enum.CORPORATE],
         });
@@ -118,16 +114,14 @@ describe("POST /auth/sponsor/verify", () => {
     it("fails for valid code after invalid code used", async () => {
         const badResponse = await post("/auth/sponsor/verify")
             .send({
-                email: CORPORATE_USER.email,
-                randomHexCode: "BADCOD",
+                token: "BAD_TOKEN",
             })
             .expect(StatusCodes.UNAUTHORIZED);
         expect(badResponse.body).toHaveProperty("error", "InvalidCode");
 
         const validResponse = await post("/auth/sponsor/verify")
             .send({
-                email: CORPORATE_USER.email,
-                randomHexCode: VALID_CODE,
+                token: VALID_TOKEN,
             })
             .expect(StatusCodes.UNAUTHORIZED);
         expect(validResponse.body).toHaveProperty("error", "InvalidCode");
@@ -135,15 +129,14 @@ describe("POST /auth/sponsor/verify", () => {
 
     it("fails for expired codes", async () => {
         await SupabaseDB.AUTH_TOKENS.update({
-            expiresAt: new Date(Date.now() - 30 * 1000).toISOString(),
+            email: CORPORATE_USER.email,
+            expTime: new Date(Date.now() - 30 * 1000).toISOString(),
         })
-            .eq("userId", CORPORATE_USER.email)
-            .eq("path", "sponsor-login")
+            .eq("email", CORPORATE_USER.email)
             .throwOnError();
         const response = await post("/auth/sponsor/verify")
             .send({
-                email: CORPORATE_USER.email,
-                randomHexCode: VALID_CODE,
+                token: VALID_TOKEN,
             })
             .expect(StatusCodes.UNAUTHORIZED);
 
@@ -153,8 +146,7 @@ describe("POST /auth/sponsor/verify", () => {
     it("fails for invalid codes", async () => {
         const response = await post("/auth/sponsor/verify")
             .send({
-                email: CORPORATE_USER.email,
-                randomHexCode: "BADCOD",
+                token: "BAD_TOKEN",
             })
             .expect(StatusCodes.UNAUTHORIZED);
 
@@ -164,8 +156,7 @@ describe("POST /auth/sponsor/verify", () => {
     it("fails for invalid emails", async () => {
         const response = await post("/auth/sponsor/verify")
             .send({
-                email: "invalid@nonexistent.com",
-                randomHexCode: VALID_CODE,
+                token: VALID_TOKEN,
             })
             .expect(StatusCodes.UNAUTHORIZED);
 

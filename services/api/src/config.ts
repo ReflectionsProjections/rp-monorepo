@@ -50,6 +50,7 @@ const WEB_BASE =
 
 export const Config = {
     ENV: env,
+    WEB_BASE: WEB_BASE,
     DEFAULT_APP_PORT: 3000,
     ALLOWED_CORS_ORIGIN_PATTERNS: [
         new RegExp("(.*).reflectionsprojections.org(.*)"),

@@ -2042,7 +2042,7 @@ const templates = {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Verification Code</title>
+        <title>Sponsor Login</title>
         <style>
             body {
                 display: flex;
@@ -2066,72 +2066,26 @@ const templates = {
                 margin-bottom: 10px;
             }
             .code {
-                font-size: 32px;
+                font-size: 24px;
                 font-weight: bold;
-                color: #e74c3c;
-                letter-spacing: 2px;
-                background-color: #f2f2f2;
-                padding: 10px 20px;
+                color: #ffffff;
+                text-decoration: none;
+                background-color: #e74c3c;
+                padding: 15px 30px;
                 border-radius: 5px;
                 display: inline-block;
+                margin: 20px 0;
+            }
+            .code:hover {
+                background-color: #c0392b;
             }
         </style>
     </head>
     <body>
         <div class="container">
-            <h2>Here is your <a href="https://sponsor.reflectionsprojections.org/login/">SponsorRP</a> verification code:</h2>
-            <div class="code">{{code}}</div>
-            <p> Note that this verification code will expire approximately 10 minutes from now. </p>
-        </div>
-    </body>
-    </html>`,
-
-    SPONSOR_VERIFICATION_LINK: `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Verification Code</title>
-        <style>
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 50vh;
-                margin: 0;
-                font-family: Arial, sans-serif;
-                background-color: #f7f7f7;
-            }
-            .container {
-                background-color: #ffffff;
-                padding: 20px 40px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                border-radius: 10px;
-                text-align: center;
-            }
-            h1 {
-                font-size: 24px;
-                color: #333333;
-                margin-bottom: 10px;
-            }
-            .link {
-                font-size: 24px;
-                text-decoration: underline;
-                color: #0000FF;
-                letter-spacing: 2px;
-                background-color: #f2f2f2;
-                padding: 10px 20px;
-                border-radius: 5px;
-                display: inline-block;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h2>Here is your link to login:</h2>
-                <a class="link" href="https://{{link}}">Click Here to Login</a>
-            <p> Note that this verification link will expire approximately 10 minutes from now. </p>
+            <h2>Click the button below to login to <a href="https://sponsor.reflectionsprojections.org/">SponsorRP</a>:</h2>
+            <a href="{{link}}" class="code">Login to SponsorRP</a>
+            <p> Note that this magic link will expire approximately 10 minutes from now. </p>
         </div>
     </body>
     </html>`,

@@ -139,7 +139,7 @@ function LoginForm() {
       api
         .post("/auth/sponsor/verify", {
           email: email!,
-          randomHexCode: twoFactor
+          sixDigitCode: twoFactor
         })
         .then((response) => {
           localStorage.setItem("jwt", response.data.token);

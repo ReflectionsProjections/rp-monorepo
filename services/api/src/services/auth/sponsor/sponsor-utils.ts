@@ -1,12 +1,19 @@
 import * as bcrypt from "bcrypt";
-import { Config } from "../../../config";
 import crypto from "crypto";
+import { Config } from "../../../config";
 
-export function encryptRandomHexCode(randomHexCode: string): string {
-    const hash = bcrypt.hashSync(randomHexCode, Config.HASH_SALT_ROUNDS);
-    return hash;
+export function createMagicLinkToken(email: string): {
+    magicLinkToken: string;
+    unhashedRandom: string;
+} {
+    const unhashedRandom = crypto.randomBytes(32).toString("hex");
+    const magicLinkToken = Buffer.from(`${email}|${unhashedRandom}`).toString(
+        "base64url"
+    );
+    return { magicLinkToken, unhashedRandom };
 }
 
-export function createRandomHexCode() {
-    return crypto.randomBytes(32).toString("base64url");
+export function hashMagicLinkToken(unhashedRandom: string): string {
+    const hash = bcrypt.hashSync(unhashedRandom, Config.HASH_SALT_ROUNDS);
+    return hash;
 }
