@@ -106,6 +106,12 @@ CREATE TABLE public."attendees" (
     CONSTRAINT "attendees_pkey" PRIMARY KEY ("userId")
 );
 
+CREATE TABLE public."corporate" (
+    "email" text NOT NULL,
+    "name" text NOT NULL,
+    CONSTRAINT "corporate_pkey" PRIMARY KEY ("email")
+);
+
 CREATE TABLE public."eventAttendances" (
     "eventId" uuid NOT NULL,
     "attendee" character varying NOT NULL,
@@ -157,6 +163,7 @@ CREATE TABLE public."notifications" (
     "deviceId" text NOT NULL,
     CONSTRAINT "notifications_pkey" PRIMARY KEY ("userId")
 );
+
 CREATE TABLE public."draftRegistrations" (
     "allergies" text[] DEFAULT '{}'::text[] NOT NULL,
     "allergiesOther" text NOT NULL,
@@ -210,29 +217,31 @@ CREATE TABLE public."registrations" (
 );
 
 CREATE TABLE public."authInfo" (
-    "id" uuid DEFAULT gen_random_uuid() NOT NULL,
-    "userId" text NOT NULL,
+    "userId" character varying NOT NULL,
+    "authId" text NOT NULL,
     "email" text NOT NULL,
     "displayName" text NOT NULL,
+    CONSTRAINT "authInfo_pkey" PRIMARY KEY ("userId"),
+    CONSTRAINT "authInfo_authId_key" UNIQUE ("authId")
+);
+
+CREATE TABLE public."authRoles" (
+    "userId" character varying NOT NULL,
     "role" public."roleType" NOT NULL,
-    CONSTRAINT "authInfo_pkey" PRIMARY KEY ("id"),
-    CONSTRAINT "authInfo_userId_key" UNIQUE ("userId")
+    CONSTRAINT "authRoles_pkey" PRIMARY KEY ("userId", "role")
 );
 
 CREATE TABLE public."authTokens" (
-    "id" uuid DEFAULT gen_random_uuid() NOT NULL,
-    "userId" character varying NOT NULL,
-    "tokenHash" text NOT NULL,
-    "expiresAt" timestamp with time zone NOT NULL,
-    "createdAt" timestamp with time zone DEFAULT now() NOT NULL,
-    "usedAt" timestamp with time zone,
-    "path" text NOT NULL,
-    CONSTRAINT "authTokens_pkey" PRIMARY KEY ("id")
+    "email" character varying NOT NULL,
+    "hashedToken" text NOT NULL,
+    "expTime" timestamp with time zone NOT NULL,
+    CONSTRAINT "authTokens_pkey" PRIMARY KEY ("email")
 );
 
 -- Indexes for auth tables
-CREATE INDEX "authInfo_userId_idx" ON public."authInfo" ("userId");
-CREATE INDEX "authInfo_role_idx" ON public."authInfo" ("role");
+CREATE INDEX "authRoles_userId_idx" ON public."authRoles" ("userId");
+CREATE INDEX "authRoles_role_idx"   ON public."authRoles" ("role");
+CREATE INDEX "authInfo_authId_idx"  ON public."authInfo"  ("authId");
 
 CREATE TABLE public."speakers" (
     "speakerId" uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -313,9 +322,6 @@ ALTER TABLE ONLY public."redemptions"
 
 ALTER TABLE ONLY public."subscriptions"
     ADD CONSTRAINT "subscriptions_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;
-
-ALTER TABLE ONLY public."authTokens"
-    ADD CONSTRAINT unique_user_path UNIQUE ("userId", "path");
 
 -- PostgreSQL function for atomic tier promotions
 CREATE OR REPLACE FUNCTION public.promote_users_batch(user_ids text[])

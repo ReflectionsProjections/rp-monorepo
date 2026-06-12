@@ -6,6 +6,7 @@ GRANT USAGE ON SCHEMA public TO service_role;
 
 GRANT ALL ON TABLE public."attendeeAttendances" TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."attendees"           TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public."corporate"           TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."eventAttendances"    TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."events"              TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."leaderboardSubmissions" TO anon, authenticated, service_role;
@@ -14,6 +15,7 @@ GRANT ALL ON TABLE public."notifications"       TO anon, authenticated, service_
 GRANT ALL ON TABLE public."draftRegistrations"  TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."registrations"       TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."authInfo"            TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public."authRoles"           TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."speakers"            TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."staff"               TO anon, authenticated, service_role;
 GRANT ALL ON TABLE public."shifts"              TO anon, authenticated, service_role;
