@@ -104,9 +104,9 @@ export const CreateMailingListValidator = registry.register(
 export const SubscriptionSuccessResponse = registry.register(
     "SubscriptionSuccessResponse",
     z
-        .object({ status: z.literal("success") })
+        .object({ status: z.string(), message: z.string() })
         .openapi("SubscriptionSuccessResponse", {
-            example: { status: "success" },
+            example: { status: "success", message: "Operation completed successfully" },
         })
 );
 

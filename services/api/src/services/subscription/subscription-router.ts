@@ -18,27 +18,42 @@ import { Templates } from "../../config";
 const subscriptionRouter = Router();
 
 // Subscribe a user to a mailing list
-subscriptionRouter.post("/", cors(), async (req, res) => {
-    const { userId, mailingList } = SubscriptionValidator.parse(req.body);
+subscriptionRouter.post(
+    "/",
+    cors(),
+    RoleChecker([Role.Enum.USER, Role.Enum.ADMIN]),
+    async (req, res) => {
+        const { userId, mailingList } = SubscriptionValidator.parse(req.body);
 
-    const { data: user } = await SupabaseDB.AUTH_INFO.select("email")
-        .eq("userId", userId)
-        .maybeSingle()
-        .throwOnError();
+        const payload = res.locals.payload;
+        if (
+            !payload.roles.includes(Role.Enum.ADMIN) &&
+            payload.userId !== userId
+        ) {
+            return res
+                .status(StatusCodes.FORBIDDEN)
+                .json({ error: "Access denied." });
+        }
 
-    if (!user) {
-        return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ error: "User not found." });
+        const { data: user } = await SupabaseDB.AUTH_INFO.select("email")
+            .eq("userId", userId)
+            .maybeSingle()
+            .throwOnError();
+
+        if (!user) {
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ error: "User not found." });
+        }
+
+        await SupabaseDB.MAILING_LISTS.upsert(
+            { listName: mailingList, email: user.email },
+            { onConflict: "listName,email", ignoreDuplicates: true }
+        ).throwOnError();
+
+        return res.status(StatusCodes.CREATED).json({ userId, mailingList });
     }
-
-    await SupabaseDB.MAILING_LISTS.upsert(
-        { listName: mailingList, email: user.email },
-        { onConflict: "listName,email", ignoreDuplicates: true }
-    ).throwOnError();
-
-    return res.status(StatusCodes.CREATED).json({ userId, mailingList });
-});
+);
 
 /**
  * @swagger
@@ -81,7 +96,7 @@ subscriptionRouter.post(
             ignoreDuplicates: true,
         }).throwOnError();
 
-        return res.status(StatusCodes.CREATED).json({ status: "success" });
+        return res.status(StatusCodes.CREATED).json({ status: "success", message: "Mailing list created successfully" });
     }
 );
 
@@ -267,7 +282,7 @@ subscriptionRouter.post(
 
         await sendHTMLEmail(email, subject, htmlBody);
 
-        return res.status(StatusCodes.OK).send({ status: "success" });
+        return res.status(StatusCodes.OK).json({ status: "success", message: "Email sent successfully" });
     }
 );
 
