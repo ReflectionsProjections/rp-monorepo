@@ -96,7 +96,10 @@ subscriptionRouter.post(
             ignoreDuplicates: true,
         }).throwOnError();
 
-        return res.status(StatusCodes.CREATED).json({ status: "success", message: "Mailing list created successfully" });
+        return res.status(StatusCodes.CREATED).json({
+            status: "success",
+            message: "Mailing list created successfully",
+        });
     }
 );
 
@@ -282,7 +285,9 @@ subscriptionRouter.post(
 
         await sendHTMLEmail(email, subject, htmlBody);
 
-        return res.status(StatusCodes.OK).json({ status: "success", message: "Email sent successfully" });
+        return res
+            .status(StatusCodes.OK)
+            .json({ status: "success", message: "Email sent successfully" });
     }
 );
 

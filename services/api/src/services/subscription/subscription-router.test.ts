@@ -1,8 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
 import {
-    post,
     getAsAdmin,
     postAsAdmin,
+    postAsUser,
     delAsAdmin,
     postAsSuperAdmin,
 } from "../../../testing/testingTools";
@@ -68,7 +68,7 @@ beforeEach(async () => {
 
 describe("POST /subscription/", () => {
     it("should create a new subscription for a new user", async () => {
-        const response = await post("/subscription/")
+        const response = await postAsUser("/subscription/")
             .send(SUBSCRIPTION_1)
             .expect(StatusCodes.CREATED);
         expect(response.body).toEqual(SUBSCRIPTION_1);
@@ -85,7 +85,7 @@ describe("POST /subscription/", () => {
     }, 50000);
 
     it("should create a subscription for a different user", async () => {
-        const response = await post("/subscription/")
+        const response = await postAsAdmin("/subscription/")
             .send(SUBSCRIPTION_2)
             .expect(StatusCodes.CREATED);
         expect(response.body).toEqual(SUBSCRIPTION_2);
@@ -107,7 +107,7 @@ describe("POST /subscription/", () => {
             email: EMAIL_1,
         }).throwOnError();
 
-        await post("/subscription/")
+        await postAsUser("/subscription/")
             .send(SUBSCRIPTION_1)
             .expect(StatusCodes.CREATED);
 
@@ -122,23 +122,29 @@ describe("POST /subscription/", () => {
         {
             description: "missing userId",
             payload: { mailingList: VALID_mailingList },
+            helper: postAsUser,
         },
         {
             description: "missing mailingList",
             payload: { userId: USER_ID_1 },
+            helper: postAsUser,
         },
         {
             description: "invalid userId",
             payload: SUBSCRIPTION_INVALID_USER_ID,
+            helper: postAsAdmin,
         },
-    ])("should return BAD_REQUEST when $description", async ({ payload }) => {
-        await post("/subscription/")
-            .send(payload)
-            .expect(StatusCodes.BAD_REQUEST);
-    });
+    ])(
+        "should return BAD_REQUEST when $description",
+        async ({ payload, helper }) => {
+            await helper("/subscription/")
+                .send(payload)
+                .expect(StatusCodes.BAD_REQUEST);
+        }
+    );
 
     it("should ignore extra fields in the payload", async () => {
-        const response = await post("/subscription/")
+        const response = await postAsUser("/subscription/")
             .send({ ...SUBSCRIPTION_1, extraField: "should be ignored" })
             .expect(StatusCodes.CREATED);
         expect(response.body).toEqual(SUBSCRIPTION_1);
@@ -230,7 +236,10 @@ describe("POST /subscription/send-email/single", () => {
             emailPayload.subject,
             emailPayload.htmlBody
         );
-        expect(res.body).toEqual({ status: "success" });
+        expect(res.body).toEqual({
+            status: "success",
+            message: "Email sent successfully",
+        });
     });
 
     it("fails to send for non super-admin", async () => {

@@ -222,7 +222,11 @@ function EmailMaker() {
     api
       .post("/subscription/send-email", emailData)
       .then(async (response) => {
-        const { successCount, failedCount, errors } = response.data;
+        const { successCount, failedCount, errors } = response.data as {
+          successCount: number;
+          failedCount: number;
+          errors: string[];
+        };
         toast.close(loadingToastId);
         if (failedCount === 0) {
           toast({

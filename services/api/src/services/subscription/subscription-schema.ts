@@ -106,7 +106,10 @@ export const SubscriptionSuccessResponse = registry.register(
     z
         .object({ status: z.string(), message: z.string() })
         .openapi("SubscriptionSuccessResponse", {
-            example: { status: "success", message: "Operation completed successfully" },
+            example: {
+                status: "success",
+                message: "Operation completed successfully",
+            },
         })
 );
 
