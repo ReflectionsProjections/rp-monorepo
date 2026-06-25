@@ -13,7 +13,6 @@ import {
 import type { Event } from "@app";
 import moment from "moment-timezone";
 import { FaAward, FaClock, FaMapPin, FaTag } from "react-icons/fa";
-import { AudioVisualizer } from "./AudioVisualizer";
 import FoodMenu from "./FoodMenu";
 import LinkButtons from "./LinkButtons";
 
@@ -24,17 +23,16 @@ export default function EventModal({
   event: Event | null;
   onClose: () => void;
 }) {
+  // Schedule pink accent used throughout the modal.
+  const accentColor = "#F52DBC";
   const hasFoodMenu = event?.description?.includes(":food:") || false;
   const hasLinks = event?.description?.includes(":link:") || false;
 
-  // Extract the main description by removing both food and link sections
   let displayDescription = event?.description;
   if (displayDescription) {
-    // Remove food section if present
     if (hasFoodMenu) {
       displayDescription = displayDescription.split(":food:")[0].trim();
     }
-    // Remove link section if present
     if (hasLinks) {
       displayDescription = displayDescription.split(":link:")[0].trim();
     }
@@ -42,205 +40,155 @@ export default function EventModal({
 
   return (
     <Modal isOpen={event !== null} onClose={onClose} size="xl" isCentered>
-      <ModalOverlay />
+      <ModalOverlay backdropFilter="blur(6px)" bg="blackAlpha.700" />
       {event && (
         <ModalContent
-          mt={{
-            base: 14,
-            md: "auto"
-          }}
-          mx={{
-            base: 4,
-            md: "auto"
-          }}
-          p={4}
-          px={7}
-          bg="rgba(66, 66, 66, 0.9)" // Translucent content background
-          boxShadow="xl"
+          position="relative"
+          overflow="hidden"
+          mt={{ base: 14, md: "auto" }}
+          mx={{ base: 4, md: "auto" }}
+          p={{ base: 5, md: 7 }}
+          pb={{ base: 8, md: 10 }}
+          bgGradient="linear(to-b, #161616, #0a0a0a)"
+          border="1px solid"
+          borderColor="whiteAlpha.200"
+          boxShadow={`0 20px 60px -12px rgba(0,0,0,0.85), 0 0 0 1px ${accentColor}33`}
           color="white"
-          borderRadius="xl"
-          pb={20}
-          backdropFilter="blur(12px)" // Further softening to achieve the frosted glass effect
+          borderRadius="2xl"
         >
-          <ModalHeader p={0} w="100%">
-            <Flex align="flex-start" justify="space-between" w="100%">
+          <ModalHeader p={0} w="100%" zIndex={1}>
+            <Flex align="flex-start" justify="space-between" w="100%" gap={3}>
               <Text
-                fontFamily="ProRacing"
-                fontSize="3xl"
+                fontFamily="Ethnocentric"
+                fontSize={{ base: "xl", md: "2xl" }}
+                textTransform="uppercase"
+                letterSpacing="0.5px"
                 as="h2"
-                transformOrigin={"top left"}
+                my={0}
               >
                 {event.name}
               </Text>
-              <CloseButton onClick={onClose} />
+              <CloseButton onClick={onClose} mt={1} />
             </Flex>
           </ModalHeader>
 
-          <Box h="12">
-            <AudioVisualizer />
+          <Box
+            h="4px"
+            w="100%"
+            mt={4}
+            borderRadius="full"
+            bg={accentColor}
+            boxShadow={`0 0 14px 0 ${accentColor}`}
+          />
+
+          <Box mt={5} zIndex={1} position="relative">
+            <EventCard event={event} accentColor={accentColor} />
           </Box>
 
-          <Box h={1} w="100%" bgColor={"gray.400"} mt={4}></Box>
-          <br />
-
-          <EventCard event={event} />
-
           {displayDescription && (
-            <>
-              <Text
-                fontSize="xl"
-                fontWeight="bold"
-                lineHeight="1.5"
-                whiteSpace="pre-wrap"
-                fontFamily="Magistral"
-                letterSpacing="0.5px"
-                mt={4}
-                transformOrigin={"top left"}
-              >
-                {displayDescription}
-              </Text>
-              <br />
-            </>
+            <Text
+              fontSize={{ base: "sm", md: "md" }}
+              lineHeight="1.6"
+              whiteSpace="pre-wrap"
+              fontFamily="inter"
+              letterSpacing="0.3px"
+              color="gray.100"
+              mt={5}
+            >
+              {displayDescription}
+            </Text>
           )}
 
-          <FoodMenu description={event.description} />
+          <Box mt={5}>
+            <FoodMenu description={event.description} />
+            <LinkButtons description={event.description} />
+          </Box>
 
-          <LinkButtons description={event.description} />
-
-          <CheckerBoardPattern />
+          <Box
+            position="absolute"
+            bottom={0}
+            left={0}
+            w="100%"
+            h="6px"
+            bg={accentColor}
+            boxShadow={`0 0 16px 0 ${accentColor}`}
+          />
         </ModalContent>
       )}
     </Modal>
   );
 }
 
-function EventCard({ event }: { event: Event }) {
+function EventCard({
+  event,
+  accentColor
+}: {
+  event: Event;
+  accentColor: string;
+}) {
   return (
     <Box
-      borderRadius="md"
-      p={4}
+      borderRadius="lg"
+      p={{ base: 4, md: 5 }}
       w="100%"
-      boxShadow={"lg"}
-      bgColor={"whiteAlpha.200"}
+      bg="whiteAlpha.100"
+      border="1px solid"
+      borderColor="whiteAlpha.200"
     >
       <Flex
         direction={{ base: "column", md: "row" }}
-        alignItems={{
-          base: "flex-start",
-          md: "center"
-        }}
-        mb={{
-          base: 2,
-          md: 4
-        }}
+        rowGap={3}
+        columnGap={4}
+        flexWrap="wrap"
       >
-        <Flex flex="1 1 0%" alignItems="center" mb={{ base: 2, md: 0 }}>
-          <Icon as={FaClock} boxSize={5} mr={2} />
-          <Text
-            fontSize="xl"
-            mb={0.5}
-            whiteSpace="normal"
-            wordBreak="break-all"
-            fontFamily="Magistral"
-            fontWeight="bold"
-            letterSpacing="0.5px"
-          >
-            {moment(event.startTime).tz("America/Chicago").format("h:mma")} –{" "}
-            {moment(event.endTime).tz("America/Chicago").format("h:mma")} CT
-          </Text>
-        </Flex>
-        <Flex flex="1 1 0%" alignItems="center">
-          <Icon as={FaMapPin} boxSize={5} mr={2} />
-          <Text
-            fontSize="xl"
-            mb={0.5}
-            whiteSpace="normal"
-            wordBreak="break-all"
-            fontFamily="Magistral"
-            letterSpacing="0.5px"
-            fontWeight="bold"
-          >
-            {event.location || "Siebel CS"}
-          </Text>
-        </Flex>
-      </Flex>
-
-      <Flex
-        direction={{ base: "column", md: "row" }}
-        alignItems={{
-          base: "flex-start",
-          md: "center"
-        }}
-      >
-        <Flex flex="1 1 0%" alignItems="center" mb={{ base: 2, md: 0 }}>
-          <Icon as={EVENT_ICONS[event.eventType] ?? FaTag} boxSize={5} mr={2} />
-          <Text
-            fontSize="xl"
-            mb={0.5}
-            whiteSpace="normal"
-            wordBreak="break-all"
-            fontFamily="Magistral"
-            fontWeight="bold"
-            letterSpacing="0.5px"
-          >
-            {capitalCase(event.eventType)}
-          </Text>
-        </Flex>
-        <Flex flex="1 1 0%" alignItems="center">
-          <Icon as={FaAward} boxSize={5} mr={2} />
-          <Text
-            fontSize="xl"
-            mb={0.5}
-            whiteSpace="normal"
-            wordBreak="break-all"
-            fontFamily="Magistral"
-            fontWeight="bold"
-            letterSpacing="0.5px"
-          >
-            {event.points} points
-          </Text>
-        </Flex>
+        <DetailItem icon={FaClock} accentColor={accentColor}>
+          {moment(event.startTime).tz("America/Chicago").format("h:mma")} –{" "}
+          {moment(event.endTime).tz("America/Chicago").format("h:mma")} CT
+        </DetailItem>
+        <DetailItem icon={FaMapPin} accentColor={accentColor}>
+          {event.location || "Siebel CS"}
+        </DetailItem>
+        <DetailItem
+          icon={EVENT_ICONS[event.eventType] ?? FaTag}
+          accentColor={accentColor}
+        >
+          {capitalCase(event.eventType)}
+        </DetailItem>
+        <DetailItem icon={FaAward} accentColor={accentColor}>
+          {event.points} points
+        </DetailItem>
       </Flex>
     </Box>
   );
 }
 
-function CheckerBoardPattern() {
+function DetailItem({
+  icon,
+  accentColor,
+  children
+}: {
+  icon: React.ComponentType;
+  accentColor: string;
+  children: React.ReactNode;
+}) {
   return (
-    <Box
-      position="absolute"
-      bottom={8}
-      left={0}
-      width="100%"
-      height="40px"
-      bg="white"
-      backgroundImage={`
-                  linear-gradient(
-                      45deg,
-                      black 25%,
-                      transparent 25%,
-                      transparent 75%,
-                      black 75%,
-                      black
-                  ),
-                  linear-gradient(
-                      45deg,
-                      black 25%,
-                      transparent 25%,
-                      transparent 75%,
-                      black 75%,
-                      black
-                  )
-                  `}
-      backgroundPosition="0 0, 10px 10px"
-      backgroundSize="20px 20px"
-    />
+    <Flex flex={{ base: "1 1 100%", md: "1 1 45%" }} align="center" minW={0}>
+      <Icon as={icon} boxSize={5} mr={2} color={accentColor} flexShrink={0} />
+      <Text
+        fontSize={{ base: "sm", md: "md" }}
+        fontFamily="inter"
+        fontWeight="bold"
+        letterSpacing="0.3px"
+        my={0}
+        noOfLines={1}
+      >
+        {children}
+      </Text>
+    </Flex>
   );
 }
 
 function capitalCase(text: string) {
-  if (text.length === 0) {
-    return "";
-  }
+  if (text.length === 0) return "";
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }

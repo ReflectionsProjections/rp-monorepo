@@ -1,152 +1,198 @@
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
-import type { Event } from "@app";
-import { dayColors } from "@app";
-import { useMemo } from "react";
-
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { splitDayKey } from "./schedule-utils";
 
-const MotionFlex = motion(Flex);
+const MotionBox = motion(Box);
+const MotionImage = motion(Image);
 
 export default function ScheduleDaySelector({
+  days,
   selectedDay,
-  eventsByDay,
   onSelectDay
 }: {
+  days: string[];
   selectedDay: string | null;
-  eventsByDay: { [key: string]: Event[] };
   onSelectDay: (date: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  const FIRST_ROW_WIDTH = "90%";
+  const SECOND_ROW_WIDTH = "100%";
+
+  const FIRST_ROW_HEIGHT = 3;
+  const SECOND_ROW_HEIGHT = 2;
+
+  const BULB_TILT_RANGE = 120;
+  const BULB_TILT_RANDOM_SCALE = 2;
+  const BULB_TILT_RANDOM_SHIFT = 1.25;
+  const [bulbRotation, setBulbRotation] = useState(0);
+  const handleSelectDay = (date: string) => {
+    setBulbRotation(
+      Math.round(
+        (Math.random() * BULB_TILT_RANDOM_SCALE - BULB_TILT_RANDOM_SHIFT) *
+          BULB_TILT_RANGE
+      )
+    );
+    onSelectDay(date);
+  };
 
   return (
-    <Flex
-      ref={ref}
-      gap={{ base: 2, md: 5 }}
-      maxWidth={{ md: "700px", lg: "1000px" }}
-      mx="auto"
-      px={{ base: 3, md: undefined }}
-      pb={{ base: 4, lg: 0 }}
-      justifyContent={{ base: "flex-start", sm: "center" }}
-      overflowX="auto"
-      zIndex={10}
-    >
-      {Object.keys(eventsByDay).map((date, index) => (
-        <MotionFlex
-          key={date}
-          // start slightly up & invisible
-          initial={{ opacity: 0, y: -10 }}
-          // animate into place when inView
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{
-            duration: 0.5,
-            delay: 0.2 * index, // stagger by index
-            ease: "easeOut"
-          }}
-        >
-          <ScheduleDayButton
-            color={dayColors[index % dayColors.length]}
-            date={date}
-            selected={selectedDay === date}
-            onSelectDay={onSelectDay}
-          />
-        </MotionFlex>
-      ))}
+    <Flex ref={ref} direction="column" h="100%">
+      <Flex
+        w={FIRST_ROW_WIDTH}
+        mx="auto"
+        flex={`${FIRST_ROW_HEIGHT} 1 0`}
+        minH={0}
+        align="stretch"
+        flexWrap="nowrap"
+      >
+        {days.map((day, index) => (
+          <MotionBox
+            key={day}
+            flex="1 1 0"
+            minW={0}
+            initial={{ opacity: 0, y: -12 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, delay: 0.08 * index, ease: "easeOut" }}
+          >
+            <DayCushion
+              day={day}
+              selected={selectedDay === day}
+              onSelectDay={handleSelectDay}
+            />
+          </MotionBox>
+        ))}
+      </Flex>
+
+      <Flex
+        w={SECOND_ROW_WIDTH}
+        mx="auto"
+        flex={`${SECOND_ROW_HEIGHT} 1 0`}
+        minH={0}
+        align="stretch"
+        flexWrap="nowrap"
+      >
+        {days.map((day, index) => (
+          <MotionBox
+            key={day}
+            flex="1 1 0"
+            minW={0}
+            initial={{ opacity: 0, y: -12 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, delay: 0.08 * index, ease: "easeOut" }}
+          >
+            <PinCushion
+              day={day}
+              selected={selectedDay === day}
+              rotation={bulbRotation}
+              onSelectDay={handleSelectDay}
+            />
+          </MotionBox>
+        ))}
+      </Flex>
     </Flex>
   );
 }
 
-function ScheduleDayButton({
-  color,
-  date,
+function DayCushion({
+  day,
   selected,
   onSelectDay
 }: {
-  color: string;
-  date: string;
-  selected?: boolean;
+  day: string;
+  selected: boolean;
   onSelectDay: (date: string) => void;
 }) {
-  const { displayedDay, displayedDate } = useMemo(() => {
-    const splitDate = date.split(" ");
-    if (splitDate.length < 2) {
-      return { displayedDay: date, displayedDate: "" };
-    }
-    return {
-      displayedDay: splitDate[0],
-      displayedDate: splitDate[1]
-    };
-  }, [date]);
+  const { day: label, date } = splitDayKey(day);
+
   return (
-    <Box
-      flex={{
-        base: 1,
-        md: "unset"
-      }}
-      role="group"
-      bgColor={selected ? "white" : "black"}
-      borderRightRadius="lg"
-      border="1px solid"
-      borderColor={selected ? "orange.300" : "gray.600"}
-      borderLeftWidth={"8px"}
-      borderLeftColor={color}
-      px={{ base: 2, md: 3 }}
-      py={{ base: 2, md: 1 }}
-      pr={{ base: 4, sm: 6 }}
-      onClick={() => onSelectDay(date)}
-      transition="all 0.2s"
-      _hover={{
-        cursor: "pointer"
-      }}
-      boxShadow="md"
-    >
-      <Text
-        display={{
-          base: "none",
-          md: "block"
-        }}
-        fontFamily="ProRacing"
-        fontSize={"xl"}
-        textColor={selected ? "black" : "white"}
-        transition="all 0.2s, transform 0.2s"
-        transformOrigin="center left"
-      >
-        {`${displayedDay.toUpperCase()} ${displayedDate.toUpperCase()}`}
-      </Text>
-      <VStack
-        display={{
-          base: "flex",
-          md: "none"
-        }}
-        alignItems="flex-start"
-        gap={0}
+    <Box position="relative" h="100%">
+      <Flex
+        role="group"
+        onClick={() => onSelectDay(day)}
+        cursor="pointer"
+        h="100%"
+        direction="column"
+        align="center"
+        justify="center"
+        px={{ base: 1, md: 3 }}
+        textAlign="center"
+        transition="transform 0.15s ease, filter 0.2s ease"
+        _hover={{ transform: "translateY(-2px)" }}
+        filter={!selected ? "brightness(0.95)" : undefined}
       >
         <Text
-          display={{
-            base: "block",
-            md: "none"
-          }}
-          fontFamily="ProRacing"
-          fontSize={"lg"}
-          textColor={selected ? "black" : "white"}
-          transition="all 0.2s, transform 0.2s"
+          fontFamily="Ethnocentric"
+          fontStyle="italic"
+          fontSize={{ base: "md", sm: "lg", md: "2xl" }}
+          lineHeight="1"
+          letterSpacing="0.5px"
+          noOfLines={1}
+          my={0}
+          w="100%"
+          color={selected ? "#F52DBC" : "white"}
+          sx={
+            !selected ? { textShadow: "0 2px 4px rgba(0,0,0,0.6)" } : undefined
+          }
         >
-          {displayedDay.toUpperCase()}
+          {label.toUpperCase()}
         </Text>
         <Text
-          display={{
-            base: "block",
-            md: "none"
-          }}
-          fontFamily="ProRacing"
-          fontSize={"md"}
-          textColor={selected ? "gray.600" : "gray.400"}
-          transition="all 0.2s, transform 0.2s"
+          fontFamily="Magistral"
+          fontSize="xs"
+          fontWeight="bold"
+          color="whiteAlpha.800"
+          mt={1}
+          my={0}
         >
-          {displayedDate.toUpperCase()}
+          {date}
         </Text>
-      </VStack>
+      </Flex>
+    </Box>
+  );
+}
+
+function PinCushion({
+  day,
+  selected,
+  rotation,
+  onSelectDay
+}: {
+  day: string;
+  selected: boolean;
+  rotation: number;
+  onSelectDay: (date: string) => void;
+}) {
+  return (
+    <Box position="relative" h="100%">
+      <Flex
+        role="group"
+        onClick={() => onSelectDay(day)}
+        cursor="pointer"
+        w="100%"
+        h="100%"
+        align="center"
+        justify="center"
+      >
+        {selected && (
+          <MotionImage
+            key={day}
+            src="/site/schedule/bulb.png"
+            alt="Light Bulb"
+            maxW="100%"
+            maxH="100%"
+            w="auto"
+            h="auto"
+            objectFit="cover"
+            initial={{ y: "-60%", opacity: 0, rotate: 0 }}
+            animate={{ y: 0, opacity: 1, rotate: rotation }}
+            transition={{ type: "spring", stiffness: 520, damping: 24 }}
+            whileHover={{ y: -8, rotate: rotation }}
+          />
+        )}
+      </Flex>
     </Box>
   );
 }
