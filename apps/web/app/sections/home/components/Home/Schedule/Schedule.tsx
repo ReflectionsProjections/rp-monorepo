@@ -31,10 +31,7 @@ export default function Schedule() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
-  const events = useMemo(
-    () => data ?? [],
-    [data]
-  );
+  const events = useMemo(() => data ?? [], [data]);
   const eventsByDay = useMemo(() => groupEventsByDay(events), [events]);
   const orderedDays = useMemo(() => orderDays(eventsByDay), [eventsByDay]);
   const defaultDay = useMemo(
@@ -44,7 +41,7 @@ export default function Schedule() {
 
   const activeDay =
     selectedDay && orderedDays.includes(selectedDay) ? selectedDay : defaultDay;
-  const dayEvents = activeDay ? eventsByDay[activeDay] ?? [] : [];
+  const dayEvents = activeDay ? (eventsByDay[activeDay] ?? []) : [];
 
   return (
     <>

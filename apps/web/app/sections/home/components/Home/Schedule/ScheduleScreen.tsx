@@ -43,7 +43,11 @@ export default function ScheduleScreen({
             scrollbarWidth: "thin",
             scrollbarColor: "#F52DBC transparent",
             "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-button": { display: "none", height: 0, width: 0 },
+            "&::-webkit-scrollbar-button": {
+              display: "none",
+              height: 0,
+              width: 0
+            },
             "&::-webkit-scrollbar-thumb": {
               background: "#F52DBC",
               borderRadius: "3px"
@@ -52,7 +56,12 @@ export default function ScheduleScreen({
           }}
         >
           {events.length === 0 ? (
-            <Box flex="1" display="flex" alignItems="center" justifyContent="center">
+            <Box
+              flex="1"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
               <Text
                 fontFamily="ProRacing"
                 color="gray.500"
