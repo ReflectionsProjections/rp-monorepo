@@ -82,7 +82,7 @@ export default function EventModal({
           />
 
           <Box mt={5} zIndex={1} position="relative">
-            <EventCard event={event} accentColor={accentColor} />
+            <EventDetails event={event} accentColor={accentColor} />
           </Box>
 
           {displayDescription && (
@@ -119,7 +119,7 @@ export default function EventModal({
   );
 }
 
-function EventCard({
+function EventDetails({
   event,
   accentColor
 }: {

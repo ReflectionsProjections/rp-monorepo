@@ -11,10 +11,14 @@ export default function EventCard({
 }) {
   return (
     <Flex
+      as="button"
+      type="button"
       position="relative"
-      role="group"
       onClick={() => onClick(event)}
+      aria-label={`${event.name} – view details`}
       cursor="pointer"
+      textAlign="left"
+      w="100%"
       align="stretch"
       overflow="hidden"
       borderRadius="lg"
@@ -26,6 +30,10 @@ export default function EventCard({
       _hover={{
         transform: "translateX(4px)",
         borderColor: "#F52DBC"
+      }}
+      _focusVisible={{
+        outline: "2px solid #F52DBC",
+        outlineOffset: "2px"
       }}
     >
       <Box

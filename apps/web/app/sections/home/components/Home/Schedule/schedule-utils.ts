@@ -3,38 +3,6 @@ import moment from "moment-timezone";
 
 const TIMEZONE = "America/Chicago";
 
-export function formatEventTime(iso: string): string {
-  const m = moment(iso).tz(TIMEZONE);
-  const now = moment().tz(TIMEZONE);
-
-  if (m.isSame(now, "day")) {
-    return m.format("h:mma");
-  }
-  if (Math.abs(m.diff(now, "days")) <= 7) {
-    return m.calendar(null, {
-      sameDay: "[Today] h:mma",
-      nextDay: "[Tomorrow] h:mma",
-      nextWeek: "dddd h:mma",
-      lastDay: "[Yesterday] h:mma",
-      lastWeek: "[Last] dddd h:mma",
-      sameElse: "MMM D, h:mma"
-    });
-  }
-  return m.format("MMM D, h:mma");
-}
-
-export function formatEventRange(startIso: string, endIso: string): string {
-  const start = moment(startIso).tz(TIMEZONE);
-  const end = moment(endIso).tz(TIMEZONE);
-
-  const startLabel = formatEventTime(startIso);
-  const endLabel = start.isSame(end, "day")
-    ? end.format("h:mma")
-    : formatEventTime(endIso);
-
-  return `${startLabel} – ${endLabel} CT`;
-}
-
 export function formatCardTime(startIso: string, endIso: string): string {
   const start = moment(startIso).tz(TIMEZONE);
   const end = moment(endIso).tz(TIMEZONE);
@@ -42,11 +10,12 @@ export function formatCardTime(startIso: string, endIso: string): string {
 }
 
 export function dayKey(iso: string): string {
-  return moment(iso).format("ddd M/D");
+  return moment(iso).tz(TIMEZONE).format("ddd M/D");
 }
 
 function parseDayKey(key: string): moment.Moment {
-  return moment(`${key} ${moment().year()}`, "ddd M/D YYYY").startOf("day");
+  const year = moment().tz(TIMEZONE).year();
+  return moment.tz(`${key} ${year}`, "ddd M/D YYYY", TIMEZONE).startOf("day");
 }
 
 export function groupEventsByDay(events: Event[]): Record<string, Event[]> {
@@ -70,7 +39,7 @@ export function orderDays(eventsByDay: Record<string, Event[]>): string[] {
 export function defaultActiveDay(orderedDays: string[]): string | null {
   if (orderedDays.length === 0) return null;
 
-  const today = moment();
+  const today = moment().tz(TIMEZONE);
   if (today.isBefore(parseDayKey(orderedDays[0]))) {
     return orderedDays[0];
   }

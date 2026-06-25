@@ -66,7 +66,7 @@ export default function Schedule() {
           <Box
             position="relative"
             flexShrink={0}
-            w={{ base: `${MOBILE_SCENE_WIDTH_VW}%`, md: "100%" }}
+            w={{ base: `${MOBILE_SCENE_WIDTH_VW}vw`, md: "100%" }}
             overflow={{ base: "visible", md: "hidden" }}
             sx={{ aspectRatio: "1512 / 982" }}
             transform={{ base: "translateX(0.3%)", md: "none" }}

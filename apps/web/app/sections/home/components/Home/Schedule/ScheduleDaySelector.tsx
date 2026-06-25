@@ -118,9 +118,13 @@ function DayCushion({
   return (
     <Box position="relative" h="100%">
       <Flex
-        role="group"
+        as="button"
+        type="button"
         onClick={() => onSelectDay(day)}
+        aria-pressed={selected}
+        aria-label={`${label} ${date}`}
         cursor="pointer"
+        w="100%"
         h="100%"
         direction="column"
         align="center"
@@ -129,6 +133,7 @@ function DayCushion({
         textAlign="center"
         transition="transform 0.15s ease, filter 0.2s ease"
         _hover={{ transform: "translateY(-2px)" }}
+        _focusVisible={{ outline: "2px solid #F52DBC", outlineOffset: "2px" }}
         filter={!selected ? "brightness(0.95)" : undefined}
       >
         <Text
@@ -173,10 +178,12 @@ function PinCushion({
   rotation: number;
   onSelectDay: (date: string) => void;
 }) {
+  // The bulb row mirrors the day button above it; it's a redundant pointer
+  // target, so it's hidden from assistive tech (keyboard/SR users use the
+  // DayCushion button) while still being clickable with the mouse.
   return (
-    <Box position="relative" h="100%">
+    <Box position="relative" h="100%" aria-hidden>
       <Flex
-        role="group"
         onClick={() => onSelectDay(day)}
         cursor="pointer"
         w="100%"
@@ -188,7 +195,7 @@ function PinCushion({
           <MotionImage
             key={day}
             src="/site/schedule/bulb.png"
-            alt="Light Bulb"
+            alt=""
             maxW="100%"
             maxH="100%"
             w="auto"
