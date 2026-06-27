@@ -63,10 +63,15 @@ const WEB_BASE =
     env === EnvironmentEnum.PRODUCTION
         ? "https://reflectionsprojections.org"
         : "http://localhost:3001";
+const SPONSOR_BASE =
+    env === EnvironmentEnum.PRODUCTION
+        ? "https://sponsor.reflectionsprojections.org"
+        : "http://localhost:3005";
 
 export const Config = {
     ENV: env,
     WEB_BASE: WEB_BASE,
+    SPONSOR_BASE: SPONSOR_BASE,
     DEFAULT_APP_PORT: 3000,
     ALLOWED_CORS_ORIGIN_PATTERNS: [
         new RegExp("(.*).reflectionsprojections.org(.*)"),

@@ -6,6 +6,7 @@ import {
   Text,
   Input,
   Center,
+  VStack,
   useMediaQuery,
   useToast
 } from "@chakra-ui/react";
@@ -14,7 +15,6 @@ import { api } from "@app";
 import type { FormikHelpers } from "formik";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
 
 type EmailSubmitHandler = (
   values: {
@@ -22,15 +22,6 @@ type EmailSubmitHandler = (
   },
   formikHelpers: FormikHelpers<{
     email: string;
-  }>
-) => void | Promise<void>;
-
-type TwoFactorSubmitHandler = (
-  values: {
-    twoFactor: string;
-  },
-  formikHelpers: FormikHelpers<{
-    twoFactor: string;
   }>
 ) => void | Promise<void>;
 
@@ -115,48 +106,24 @@ export function Login() {
 
 function LoginForm() {
   const toast = useToast();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
 
   const submitEmail: EmailSubmitHandler = ({ email }, { setSubmitting }) => {
     toast.promise(
       api
         .post("/auth/sponsor/login", { email })
-        .then(() => setEmail(email))
+        .then(() => setEmailSent(true))
         .finally(() => setSubmitting(false)),
       {
-        success: { title: "Please check your email for the code" },
+        success: { title: "Please check your email for the login link" },
         error: { title: "Something went wrong. Please try again." },
         loading: { title: "Loading..." }
       }
     );
   };
 
-  const submitTwoFactor: TwoFactorSubmitHandler = (
-    { twoFactor },
-    { setSubmitting }
-  ) => {
-    toast.promise(
-      api
-        .post("/auth/sponsor/verify", {
-          email: email!,
-          sixDigitCode: twoFactor
-        })
-        .then((response) => {
-          localStorage.setItem("jwt", response.data.token);
-          void navigate("/resume-book");
-        })
-        .finally(() => setSubmitting(false)),
-      {
-        success: { title: "Success" },
-        error: { title: "Invalid Code. Please try again." },
-        loading: { title: "Loading..." }
-      }
-    );
-  };
-
-  return email ? (
-    <TwoFactorPage onSubmit={submitTwoFactor} />
+  return emailSent ? (
+    <MagicLinkSentPage onBack={() => setEmailSent(false)} />
   ) : (
     <EmailPage onSubmit={submitEmail} />
   );
@@ -231,180 +198,28 @@ function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
   );
 }
 
-const MAX_DIGITS = 6;
-
-function TwoFactorPage({ onSubmit }: { onSubmit: TwoFactorSubmitHandler }) {
+function MagicLinkSentPage({ onBack }: { onBack: () => void }) {
   return (
-    <Formik
-      initialValues={{ twoFactor: "" }}
-      validationSchema={yup.object({
-        twoFactor: yup
-          .string()
-          .min(6, "Please enter a longer code")
-          .required("Please enter a code")
-      })}
-      onSubmit={onSubmit}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        setFieldValue,
-        handleSubmit,
-        isSubmitting
-      }) => (
-        <Form onSubmit={handleSubmit}>
-          <Text fontSize="24" fontFamily={"Nunito"} fontWeight={"400"}>
-            Enter Code:
-          </Text>
-
-          <Box mt="20px" w="fit-content">
-            <CodeBoxes
-              name="twoFactor"
-              value={values.twoFactor}
-              setValue={(v) => void setFieldValue("twoFactor", v)}
-              onComplete={() => handleSubmit()}
-              isInvalid={!!errors["twoFactor"] && !!touched["twoFactor"]}
-            />
-          </Box>
-
-          <Button
-            bg="blue.500"
-            color="white"
-            borderRadius="5px"
-            zIndex="3"
-            m={4}
-            mb={5}
-            _hover={{ bg: "blue.600" }}
-            type="submit"
-            isLoading={isSubmitting}
-          >
-            Submit
-          </Button>
-          {errors.twoFactor && touched.twoFactor && (
-            <Box
-              mt={2}
-              p={2}
-              bg="red.500"
-              color="white"
-              borderRadius="md"
-              maxWidth="250px"
-              mx="auto"
-            >
-              {errors.twoFactor}
-            </Box>
-          )}
-        </Form>
-      )}
-    </Formik>
-  );
-}
-
-function CodeBoxes({
-  value,
-  name,
-  setValue,
-  onComplete,
-  isInvalid
-}: {
-  value: string;
-  name: string;
-  setValue: (v: string) => void;
-  onComplete: () => void;
-  isInvalid: boolean;
-}) {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.slice(0, MAX_DIGITS);
-    setValue(digits);
-
-    if (digits.length === MAX_DIGITS) {
-      setTimeout(onComplete, 100);
-    }
-  };
-
-  const focusInput = (id: string) => {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    el?.focus();
-  };
-
-  const inputId = `${name}-hidden`;
-
-  return (
-    <Box position="relative" width="fit-content">
-      <HStack
-        spacing="10px"
-        w="fit-content"
-        onClick={() => focusInput(inputId)}
-        cursor="text"
-        userSelect="none"
+    <VStack spacing={6} maxW="400px" px={4}>
+      <Text fontSize="24" fontFamily="Nunito" fontWeight="400">
+        Check your email
+      </Text>
+      <Text fontSize="16" fontFamily="Nunito" fontWeight="300" opacity={0.8}>
+        We sent a magic link to your email address. Click the link in the email
+        to log in to the Resume Book.
+      </Text>
+      <Text fontSize="14" fontFamily="Nunito" fontWeight="300" opacity={0.6}>
+        The link will expire in approximately 10 minutes.
+      </Text>
+      <Button
+        variant="ghost"
+        color="white"
+        fontFamily="Nunito"
+        _hover={{ bg: "whiteAlpha.200" }}
+        onClick={onBack}
       >
-        {Array.from({ length: MAX_DIGITS }).map((_, i) => {
-          const char = value[i] ?? "";
-          const isCursorHere =
-            isFocused && i === value.length && value.length < MAX_DIGITS;
-          return (
-            <Box
-              key={i}
-              w="44px"
-              h="56px"
-              borderRadius="md"
-              borderWidth={isCursorHere ? "3px" : "1.5px"}
-              borderColor={
-                isInvalid
-                  ? "red.400"
-                  : isCursorHere
-                    ? "blue.500"
-                    : "whiteAlpha.400"
-              }
-              bg="blackAlpha.300"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontSize="2xl"
-              color="white"
-              position="relative"
-              transition="all 0.2s ease-in-out"
-              boxShadow={
-                isCursorHere ? "0 0 0 2px rgba(66, 153, 225, 0.3)" : "none"
-              }
-            >
-              <Box
-                as="span"
-                lineHeight="1"
-                mt="2px"
-                letterSpacing="0"
-                animation={isCursorHere ? "blink 1.5s infinite" : "none"}
-                sx={{
-                  "@keyframes blink": {
-                    "0%, 50%": { opacity: 1 },
-                    "51%, 100%": { opacity: 0 }
-                  }
-                }}
-              >
-                {char || (isCursorHere ? "|" : "")}
-              </Box>
-            </Box>
-          );
-        })}
-      </HStack>
-
-      <Input
-        id={inputId}
-        name={name}
-        value={value}
-        onChange={handleChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        position="absolute"
-        inset="0"
-        opacity={0}
-        _focusVisible={{ outline: "none", boxShadow: "none" }}
-        autoComplete="one-time-code"
-        maxLength={MAX_DIGITS}
-        aria-label="6-digit verification code"
-      />
-    </Box>
+        ← Use a different email
+      </Button>
+    </VStack>
   );
 }
