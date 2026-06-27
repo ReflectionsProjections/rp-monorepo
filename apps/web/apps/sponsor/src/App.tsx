@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Page } from "./components/Page";
 import { Home } from "./routes/Home";
 import { Login } from "./routes/Login";
+import { MagicLinkCallback } from "./routes/MagicLinkCallback";
 import { ResumeAllPDF } from "./routes/ResumeBook/ResumeAllPDF";
 import { ResumeBook } from "./routes/ResumeBook/ResumeBook";
 import { DownloadPage } from "./routes/DownloadPage";
@@ -28,6 +29,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/auth/refresh" element={<RefreshHandler />} />
+        <Route path="/auth/magic-link" element={<MagicLinkCallback />} />
         <Route
           path="*"
           element={<Page showNav={true} pageContent={<Home />} />}

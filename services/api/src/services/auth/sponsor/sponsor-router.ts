@@ -43,7 +43,7 @@ authSponsorRouter.post("/login", async (req, res) => {
         }
     ).throwOnError();
 
-    const magicLink = `${Config.WEB_BASE}/auth?token=${magicLinkToken}`;
+    const magicLink = `${Config.SPONSOR_BASE}/auth/magic-link?token=${magicLinkToken}`;
     const emailBody = mustache.render(templates.SPONSOR_VERIFICATION, {
         link: magicLink,
     });
