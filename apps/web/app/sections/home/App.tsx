@@ -13,7 +13,7 @@ import Speakers from "./routes/Speakers/Speakers";
 import AppScreen from "./routes/AppScreen";
 import NotFound from "./routes/NotFound";
 
-document.title = "R|P 2025";
+document.title = "R|P 2026";
 
 function App() {
   return (
