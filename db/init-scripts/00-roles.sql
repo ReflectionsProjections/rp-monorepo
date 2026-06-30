@@ -86,3 +86,6 @@ BEGIN
     GRANT service_role TO authenticator;
 END
 $$;
+
+-- service_role must bypass RLS (matches hosted Supabase behaviour)
+ALTER ROLE service_role BYPASSRLS;

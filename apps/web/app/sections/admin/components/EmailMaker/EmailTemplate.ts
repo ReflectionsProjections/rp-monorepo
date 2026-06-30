@@ -586,7 +586,7 @@ export function rpMainTemplate(htmlContent: string) {
                                                 <tr>
                                                     <td style="vertical-align: middle; text-align: center; padding: 40px 20px;">
                                                         <div class="year-badge" style="font-size: 12px; font-weight: bold; color: #cccccc; letter-spacing: 2px; margin: 0 0 15px 0; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                                            2025 PRESENTS
+                                                            2026 PRESENTS
                                                         </div>
                                                         <div class="header-title" style="margin: 0; font-size: 28px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.1;">
                                                             REFLECTIONS<span style="color: #ff0000; margin: 0 10px;">|</span>PROJECTIONS
@@ -614,7 +614,7 @@ export function rpMainTemplate(htmlContent: string) {
                                     <!-- Enhanced fallback for failed image loads -->
                                     <div class="header-fallback">
                                         <div class="header-fallback-inner">
-                                            <div class="year-badge">2025 PRESENTS</div>
+                                            <div class="year-badge">2026 PRESENTS</div>
                                             <div class="header-title">
                                                 REFLECTIONS<span class="title-separator">|</span>PROJECTIONS
                                             </div>
@@ -688,7 +688,7 @@ export function rpMainTemplate(htmlContent: string) {
                                >
                                    <tr>
                                        <td class="footer-area">
-                                           R|P 2025 • Reflections | Projections
+                                           R|P 2026 • Reflections | Projections
                                        </td>
                                    </tr>
                                </table>
@@ -1298,7 +1298,7 @@ export function rpEmptyTemplate(htmlContent: string) {
                                >
                                    <tr>
                                        <td class="footer-area">
-                                           R|P 2025 • Reflections | Projections
+                                           R|P 2026 • Reflections | Projections
                                        </td>
                                    </tr>
                                </table>

@@ -2,13 +2,23 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { StatusCodes } from "http-status-codes";
 import { get, post, postAsUser, TESTER } from "../../../testing/testingTools";
 import { Role } from "../auth/auth-models";
-import { sendHTMLEmail } from "../ses/ses-utils";
+import { sendTemplateEmail } from "../ses/ses-utils";
 import { SupabaseDB } from "../../database";
 import { render } from "mustache";
 import templates from "../../templates/templates";
+import { MailingLists } from "../../config";
 
 jest.mock("../ses/ses-utils", () => ({
     sendHTMLEmail: jest.fn(),
+    sendTemplateEmail: jest.fn(),
+    sendBulkTemplateEmail: jest.fn(() =>
+        Promise.resolve({
+            success: true,
+            successCount: 1,
+            failedCount: 0,
+            errors: [] as string[],
+        })
+    ),
 }));
 
 const MUSTACHE_RENDER_RESULT = "<html>cool</html>";
@@ -290,10 +300,12 @@ describe("POST /registration/submit", () => {
             expectedSubs
         );
 
-        expect(sendHTMLEmail).toHaveBeenCalledWith(
+        expect(sendTemplateEmail).toHaveBeenCalledWith(
             TESTER.email,
-            expect.stringMatching(/confirmation/i),
-            MUSTACHE_RENDER_RESULT
+            expect.anything(),
+            expect.objectContaining({
+                subject: expect.stringMatching(/confirmation/i),
+            })
         );
     });
 
@@ -302,17 +314,15 @@ describe("POST /registration/submit", () => {
             .send(VALID_REGISTRATION)
             .expect(StatusCodes.OK);
 
-        const { data: subscription } = await SupabaseDB.SUBSCRIPTIONS.select(
-            "*"
-        )
-            .eq("userId", TESTER.userId)
-            .eq("mailingList", "attendees")
+        const { data: entry } = await SupabaseDB.MAILING_LISTS.select("*")
+            .eq("listName", MailingLists.ATTENDEES_2026)
+            .eq("email", TESTER.email)
             .single()
             .throwOnError();
 
-        expect(subscription).toBeDefined();
-        expect(subscription.userId).toBe(TESTER.userId);
-        expect(subscription.mailingList).toBe("attendees");
+        expect(entry).toBeDefined();
+        expect(entry.listName).toBe(MailingLists.ATTENDEES_2026);
+        expect(entry.email).toBe(TESTER.email);
     });
 
     it("updates existing registration", async () => {
@@ -351,10 +361,12 @@ describe("POST /registration/submit", () => {
             expectedSubs
         );
 
-        expect(sendHTMLEmail).toHaveBeenCalledWith(
+        expect(sendTemplateEmail).toHaveBeenCalledWith(
             TESTER.email,
-            expect.stringMatching(/updated/i),
-            MUSTACHE_RENDER_RESULT
+            expect.anything(),
+            expect.objectContaining({
+                subject: expect.stringMatching(/updated/i),
+            })
         );
     });
 
