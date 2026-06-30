@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Expletus+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Expletus+Sans&display=swap");
 
 :root {
   color: #213547;
@@ -7,7 +7,7 @@
 
 @font-face {
   font-family: "Ethnocentric";
-  src: url('/site/ethnocentric.otf') format('opentype');
+  src: url("/site/ethnocentric.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

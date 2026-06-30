@@ -1,4 +1,14 @@
-import { Box, Flex, HStack, Image, Link, Text, VStack, useBreakpointValue, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Image,
+  Link,
+  Text,
+  VStack,
+  useBreakpointValue,
+  useDisclosure
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
@@ -10,13 +20,15 @@ type NavbarProps = { isFlush: boolean };
 
 const NAV_LINKS = [
   { label: "Schedule", to: "/#schedule", id: "schedule" },
-  { label: "FAQ",      to: "/#faq",      id: "faq"      },
+  { label: "FAQ", to: "/#faq", id: "faq" },
   { label: "Sponsors", to: "/#sponsors", id: "sponsors" },
-  { label: "Speakers", to: "/speakers",  id: null       },
+  { label: "Speakers", to: "/speakers", id: null }
 ];
 
 const scrollTo = (id: string) =>
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 const navLinkStyles = {
   color: "#FCF2F6",
@@ -29,10 +41,11 @@ const navLinkStyles = {
   border: "1px solid transparent",
   transition: "all 0.2s ease",
   _hover: {
-    textShadow: "0 0 10px rgba(252,200,240,0.9), 0 0 24px rgba(220,100,200,0.6)",
+    textShadow:
+      "0 0 10px rgba(252,200,240,0.9), 0 0 24px rgba(220,100,200,0.6)",
     borderColor: "rgba(252,242,246,0.2)",
-    bg: "rgba(252,242,246,0.05)",
-  },
+    bg: "rgba(252,242,246,0.05)"
+  }
 };
 
 const pillStyles = {
@@ -41,7 +54,7 @@ const pillStyles = {
   borderColor: "rgba(252,242,246,0.15)",
   bg: "rgba(125,28,86,0.25)",
   backdropFilter: "blur(24px)",
-  boxShadow: "xl",
+  boxShadow: "xl"
 };
 
 const scrollToHero = (callback?: () => void) => {
@@ -89,11 +102,15 @@ const Navbar = ({ isFlush }: NavbarProps) => {
   const { pathname } = useLocation();
   const compactHeight = useBreakpointValue({ base: 76, lg: 80 }) ?? 76;
 
-  useEffect(() => { onClose(); }, [pathname, onClose]);
+  useEffect(() => {
+    onClose();
+  }, [pathname, onClose]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const handleToggle = () => (isOpen ? onClose() : onOpen());
@@ -146,7 +163,9 @@ const Navbar = ({ isFlush }: NavbarProps) => {
         overflow="hidden"
         maxH="100%"
         initial={false}
-        animate={{ height: isOpen ? "calc(100dvh - 16px)" : `${compactHeight}px` }}
+        animate={{
+          height: isOpen ? "calc(100dvh - 16px)" : `${compactHeight}px`
+        }}
         transition={{ height: { duration: 0.4, ease: "easeOut" } }}
       >
         <Flex
@@ -180,15 +199,19 @@ const Navbar = ({ isFlush }: NavbarProps) => {
                   borderRadius="9px"
                   transformOrigin="left center"
                   transition="all 0.25s ease-in-out"
-                  top={isOpen ? (i === 1 ? `${topVal}px` : "18px") : `${topVal}px`}
+                  top={
+                    isOpen ? (i === 1 ? `${topVal}px` : "18px") : `${topVal}px`
+                  }
                   left={isOpen && i === 1 ? "50%" : "0"}
                   style={{
                     width: isOpen && i === 1 ? "0%" : "100%",
                     transform: isOpen
-                      ? i === 0 ? "translateX(5px) translateY(-21px) rotate(45deg)"
-                        : i === 2 ? "translateX(5px) translateY(0px) rotate(-45deg)"
-                        : "none"
-                      : "none",
+                      ? i === 0
+                        ? "translateX(5px) translateY(-21px) rotate(45deg)"
+                        : i === 2
+                          ? "translateX(5px) translateY(0px) rotate(-45deg)"
+                          : "none"
+                      : "none"
                   }}
                 />
               ))}
@@ -202,7 +225,10 @@ const Navbar = ({ isFlush }: NavbarProps) => {
                   key={label}
                   as={NavLink}
                   to={to}
-                  onClick={() => { onClose(); if (id) scrollTo(id); }}
+                  onClick={() => {
+                    onClose();
+                    if (id) scrollTo(id);
+                  }}
                   w="100%"
                   py="9px"
                   px="33px"

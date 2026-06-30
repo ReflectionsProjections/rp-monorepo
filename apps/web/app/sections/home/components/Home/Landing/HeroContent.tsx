@@ -1,22 +1,30 @@
-import { Box, HStack, Image, Link, VStack, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Image,
+  Link,
+  VStack,
+  useBreakpointValue
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import registerBtnSrc from "@app/sections/home/assets/Landing/RegisterButton.svg";
 
 const MotionBox = motion(Box);
 
-const GLOW = "drop-shadow(0 0 14px rgba(192,38,211,0.75)) drop-shadow(0 0 32px rgba(120,40,200,0.45))";
+const GLOW =
+  "drop-shadow(0 0 14px rgba(192,38,211,0.75)) drop-shadow(0 0 32px rgba(120,40,200,0.45))";
 
-const PIPE_DELAY    = 0.2;
-const WORDS_DELAY   = 0.85;
-const GLOW_DELAY    = WORDS_DELAY + 0.75;
-const BADGES_DELAY  = 1.6;
+const PIPE_DELAY = 0.2;
+const WORDS_DELAY = 0.85;
+const GLOW_DELAY = WORDS_DELAY + 0.75;
+const BADGES_DELAY = 1.6;
 const REGISTER_DELAY = 1.9;
 
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
-  transition: { delay, duration: 0.7, ease: "easeOut" },
+  transition: { delay, duration: 0.7, ease: "easeOut" }
 });
 
 const titleFont = {
@@ -24,13 +32,19 @@ const titleFont = {
   fontWeight: "400" as const,
   color: "#FFFFFF",
   lineHeight: "1" as const,
-  textTransform: "uppercase" as const,
+  textTransform: "uppercase" as const
 };
 
 export const HeroContent = () => {
-  const xOffset     = useBreakpointValue({ base: 20, sm: 40, md: 60 }) ?? 60;
+  const xOffset = useBreakpointValue({ base: 20, sm: 40, md: 60 }) ?? 60;
   const wordSpacing = useBreakpointValue({ base: 1, sm: 2, md: 3 });
-  const fontSize    = useBreakpointValue({ base: "lg", sm: "2xl", md: "3xl", lg: "4xl", xl: "5xl" });
+  const fontSize = useBreakpointValue({
+    base: "lg",
+    sm: "2xl",
+    md: "3xl",
+    lg: "4xl",
+    xl: "5xl"
+  });
 
   return (
     <VStack
@@ -48,45 +62,64 @@ export const HeroContent = () => {
       <HStack spacing={wordSpacing} justify="center" align="center">
         {/* REFLECTIONS — slides from left */}
         <MotionBox
-          initial={{ opacity: 0, x: -xOffset, filter: "drop-shadow(0 0 0px transparent)" }}
+          initial={{
+            opacity: 0,
+            x: -xOffset,
+            filter: "drop-shadow(0 0 0px transparent)"
+          }}
           animate={{ opacity: 1, x: 0, filter: GLOW }}
           transition={{
             delay: WORDS_DELAY,
             duration: 0.7,
             ease: "easeOut",
-            filter: { delay: GLOW_DELAY, duration: 0.8, ease: "easeOut" },
+            filter: { delay: GLOW_DELAY, duration: 0.8, ease: "easeOut" }
           }}
         >
-          <Box {...titleFont} fontSize={fontSize} as="span">Reflections</Box>
+          <Box {...titleFont} fontSize={fontSize} as="span">
+            Reflections
+          </Box>
         </MotionBox>
 
         {/* Pipe — grows first */}
         <MotionBox
-          initial={{ opacity: 0, y: 20, scaleY: 0, filter: "drop-shadow(0 0 0px transparent)" }}
+          initial={{
+            opacity: 0,
+            y: 20,
+            scaleY: 0,
+            filter: "drop-shadow(0 0 0px transparent)"
+          }}
           animate={{ opacity: 1, y: 0, scaleY: 1, filter: GLOW }}
           transition={{
             delay: PIPE_DELAY,
             duration: 0.5,
             ease: "easeOut",
-            filter: { delay: GLOW_DELAY, duration: 0.8, ease: "easeOut" },
+            filter: { delay: GLOW_DELAY, duration: 0.8, ease: "easeOut" }
           }}
           style={{ transformOrigin: "center" }}
         >
-          <Box {...titleFont} fontSize={fontSize} as="span">|</Box>
+          <Box {...titleFont} fontSize={fontSize} as="span">
+            |
+          </Box>
         </MotionBox>
 
         {/* PROJECTIONS — slides from right */}
         <MotionBox
-          initial={{ opacity: 0, x: xOffset, filter: "drop-shadow(0 0 0px transparent)" }}
+          initial={{
+            opacity: 0,
+            x: xOffset,
+            filter: "drop-shadow(0 0 0px transparent)"
+          }}
           animate={{ opacity: 1, x: 0, filter: GLOW }}
           transition={{
             delay: WORDS_DELAY,
             duration: 0.7,
             ease: "easeOut",
-            filter: { delay: GLOW_DELAY, duration: 0.8, ease: "easeOut" },
+            filter: { delay: GLOW_DELAY, duration: 0.8, ease: "easeOut" }
           }}
         >
-          <Box {...titleFont} fontSize={fontSize} as="span">Projections</Box>
+          <Box {...titleFont} fontSize={fontSize} as="span">
+            Projections
+          </Box>
         </MotionBox>
       </HStack>
 
