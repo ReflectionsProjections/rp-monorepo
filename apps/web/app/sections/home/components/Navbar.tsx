@@ -44,6 +44,46 @@ const pillStyles = {
   boxShadow: "xl",
 };
 
+const scrollToHero = (callback?: () => void) => {
+  callback?.();
+  const hero = document.getElementById("hero");
+  if (hero) hero.scrollIntoView({ behavior: "smooth", block: "start" });
+  else window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
+  <Link
+    as={NavLink}
+    to="/"
+    display="flex"
+    alignItems="center"
+    gap={3}
+    _hover={{ textDecoration: "none" }}
+    onClick={() => scrollToHero(onClick)}
+  >
+    <Image
+      src={rpLogo}
+      alt="R|P 2026"
+      h="50px"
+      w="auto"
+      transition="transform 0.6s ease-in-out"
+      transformOrigin="center"
+      _hover={{ transform: "rotate(360deg)" }}
+    />
+    <Text
+      fontFamily="Ethnocentric, ProRacing, sans-serif"
+      fontWeight="400"
+      fontSize="lg"
+      color="#FCF2F6"
+      lineHeight="1"
+      letterSpacing="0.02em"
+      mt="6px"
+    >
+      R|P 2026
+    </Text>
+  </Link>
+);
+
 const Navbar = ({ isFlush }: NavbarProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { pathname } = useLocation();
@@ -57,44 +97,6 @@ const Navbar = ({ isFlush }: NavbarProps) => {
   }, [isOpen]);
 
   const handleToggle = () => (isOpen ? onClose() : onOpen());
-
-  const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
-    <Link
-      as={NavLink}
-      to="/"
-      display="flex"
-      alignItems="center"
-      gap={3}
-      _hover={{ textDecoration: "none" }}
-      onClick={() => {
-        onClick?.();
-        const hero = document.getElementById("hero");
-        if (hero) hero.scrollIntoView({ behavior: "smooth", block: "start" });
-        else window.scrollTo({ top: 0, behavior: "smooth" });
-      }}
-    >
-      <Image
-        src={rpLogo}
-        alt="R|P 2026"
-        h="50px"
-        w="auto"
-        transition="transform 0.6s ease-in-out"
-        transformOrigin="center"
-        _hover={{ transform: "rotate(360deg)" }}
-      />
-      <Text
-        fontFamily="Ethnocentric, ProRacing, sans-serif"
-        fontWeight="400"
-        fontSize="lg"
-        color="#FCF2F6"
-        lineHeight="1"
-        letterSpacing="0.02em"
-        mt="6px"
-      >
-        R|P 2026
-      </Text>
-    </Link>
-  );
 
   return (
     <Flex
