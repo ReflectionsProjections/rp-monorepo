@@ -12,7 +12,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import * as AuthSession from 'expo-auth-session';
 import LottieView from 'lottie-react-native';
 import { api } from '@/api/api';
 import { path } from '@/api/types';
@@ -32,21 +31,17 @@ export default function SignInScreen() {
     try {
       setIsLoading(true);
 
-      const redirectUri = AuthSession.makeRedirectUri({
-        scheme: 'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
-        path: '/(auth)/callback',
-      });
-
       const authResult = await googleAuth();
       if (!authResult || authResult.result.type !== 'success') {
         throw new Error('Authentication was cancelled or failed');
       }
-      const { result, codeVerifier } = authResult;
+      const { result, codeVerifier, redirectUri } = authResult;
 
-      const response = await api.post(path('/auth/login/:platform', { platform: 'ios' }), {
+      const platform = Platform.OS === 'android' ? 'android' : 'ios';
+      const response = await api.post(path('/auth/login/:platform', { platform }), {
         code: result.params.code,
-        redirectUri: redirectUri,
-        codeVerifier: codeVerifier,
+        redirectUri,
+        codeVerifier,
       });
 
       await SecureStore.setItemAsync('jwt', response.data.token);

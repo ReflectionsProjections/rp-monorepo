@@ -267,7 +267,7 @@ authRouter.post("/login/:PLATFORM", async (req, res) => {
         const userId = await updateDatabaseWithAuthPayload(authPayload);
 
         // Generate the JWT
-        const jwtToken = await generateJWT(userId);
+        const jwtToken = await generateJWT(userId, platform);
 
         return res.status(StatusCodes.OK).send({ token: jwtToken });
     } catch (error) {

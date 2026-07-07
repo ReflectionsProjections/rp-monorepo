@@ -7,7 +7,9 @@ const fallbackApiUrl =
 
 export const OAUTH_CONFIG = {
   IOS_GOOGLE_CLIENT_ID:
-    appConfig.googleClientId || process.env.OAUTH_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
+    appConfig.iosGoogleClientId || process.env.IOS_OAUTH_GOOGLE_CLIENT_ID || 'YOUR_IOS_GOOGLE_CLIENT_ID',
+  ANDROID_GOOGLE_CLIENT_ID:
+    appConfig.androidGoogleClientId || process.env.ANDROID_OAUTH_GOOGLE_CLIENT_ID || 'YOUR_ANDROID_GOOGLE_CLIENT_ID',
   REDIRECT_SCHEME: 'com.googleusercontent.apps.693438449476-tmppq76n7cauru3l0gvk32mufrd7eoq0',
   REDIRECT_PATH: '/(auth)/callback',
 };
@@ -18,12 +20,17 @@ export const API_CONFIG = {
 };
 
 export function validateEnvironment() {
-  const requiredVars = ['OAUTH_GOOGLE_CLIENT_ID'];
+  const requiredVars = [
+    { key: 'IOS_OAUTH_GOOGLE_CLIENT_ID', configKey: 'iosGoogleClientId' },
+    { key: 'ANDROID_OAUTH_GOOGLE_CLIENT_ID', configKey: 'androidGoogleClientId' },
+  ];
 
-  const missing = requiredVars.filter((varName) => {
-    const value = appConfig[varName.toLowerCase()] || process.env[varName];
-    return !value || value === `YOUR_${varName}`;
-  });
+  const missing = requiredVars
+    .filter(({ key, configKey }) => {
+      const value = appConfig[configKey] || process.env[key];
+      return !value || value.startsWith('YOUR_');
+    })
+    .map(({ key }) => key);
 
   if (missing.length > 0) {
     console.warn(`⚠️  Missing environment variables: ${missing.join(', ')}`);

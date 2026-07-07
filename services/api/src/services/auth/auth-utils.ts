@@ -2,7 +2,7 @@
 import { TokenPayload } from "google-auth-library";
 import { Config, EnvironmentEnum } from "../../config";
 import { SupabaseDB } from "../../database";
-import { JwtPayloadType, Role } from "./auth-models";
+import { JwtPayloadType, Platform, Role } from "./auth-models";
 import jsonwebtoken from "jsonwebtoken";
 import { randomUUID } from "crypto";
 
@@ -116,11 +116,13 @@ export async function getJwtPayloadFromDatabase(
     };
 }
 
-export async function generateJWT(userId: string) {
+export async function generateJWT(userId: string, platform: Platform = Platform.WEB) {
     const jwtPayload = await getJwtPayloadFromDatabase(userId);
-    return jsonwebtoken.sign(jwtPayload, Config.JWT_SIGNING_SECRET, {
-        expiresIn: Config.JWT_EXPIRATION_TIME,
-    });
+    const expiresIn =
+        platform === Platform.WEB
+            ? Config.JWT_EXPIRATION_TIME
+            : Config.MOBILE_JWT_EXPIRATION_TIME;
+    return jsonwebtoken.sign(jwtPayload, Config.JWT_SIGNING_SECRET, { expiresIn });
 }
 
 export function isUser(payload?: JwtPayloadType) {

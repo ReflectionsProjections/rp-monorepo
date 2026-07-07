@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
 import { API_CONFIG, OAUTH_CONFIG } from './config';
 
 // Complete the auth session
@@ -34,6 +35,7 @@ export async function clearAuth(): Promise<void> {
 export async function googleAuth(): Promise<{
   result: AuthSession.AuthSessionResult;
   codeVerifier: string;
+  redirectUri: string;
 } | null> {
   try {
     const discovery = {
@@ -47,8 +49,13 @@ export async function googleAuth(): Promise<{
       path: OAUTH_CONFIG.REDIRECT_PATH,
     });
 
+    const clientId =
+      Platform.OS === 'android'
+        ? OAUTH_CONFIG.ANDROID_GOOGLE_CLIENT_ID
+        : OAUTH_CONFIG.IOS_GOOGLE_CLIENT_ID;
+
     const request = new AuthSession.AuthRequest({
-      clientId: OAUTH_CONFIG.IOS_GOOGLE_CLIENT_ID,
+      clientId,
       scopes: ['openid', 'email', 'profile'],
       redirectUri,
       responseType: AuthSession.ResponseType.Code,
@@ -59,7 +66,7 @@ export async function googleAuth(): Promise<{
 
     const result = await request.promptAsync(discovery);
 
-    return { result, codeVerifier: request.codeVerifier! };
+    return { result, codeVerifier: request.codeVerifier!, redirectUri };
   } catch (error) {
     console.error('Google OAuth error:', error);
     return null;
