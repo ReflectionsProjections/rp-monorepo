@@ -660,6 +660,21 @@ export type Database = {
                 };
                 Relationships: [];
             };
+            mailingLists: {
+                Row: {
+                    listName: string;
+                    email: string;
+                };
+                Insert: {
+                    listName: string;
+                    email: string;
+                };
+                Update: {
+                    listName?: string;
+                    email?: string;
+                };
+                Relationships: [];
+            };
             subscriptions: {
                 Row: {
                     userId: string;

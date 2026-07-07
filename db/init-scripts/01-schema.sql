@@ -287,6 +287,14 @@ CREATE TABLE public."subscriptions" (
     CONSTRAINT "subscriptions_pkey" PRIMARY KEY ("userId", "mailingList")
 );
 
+CREATE TABLE public."mailingLists" (
+    "listName" text NOT NULL,
+    "email" character varying NOT NULL,
+    CONSTRAINT "mailingLists_pkey" PRIMARY KEY ("listName", "email")
+);
+
+ALTER TABLE public."mailingLists" ENABLE ROW LEVEL SECURITY;
+
 -- Add foreign key constraints
 ALTER TABLE ONLY public."attendeeAttendances"
     ADD CONSTRAINT "attendee_attendance_user_id_fkey" FOREIGN KEY ("userId") REFERENCES public."authInfo"("userId") ON DELETE CASCADE;

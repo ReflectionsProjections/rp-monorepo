@@ -2,6 +2,7 @@ services:
   db:
     container_name: rp-db
     image: supabase/postgres:15.8.1.060
+    platform: linux/amd64
     restart: unless-stopped
     volumes:
       - ./db/init-scripts:/docker-entrypoint-initdb.d

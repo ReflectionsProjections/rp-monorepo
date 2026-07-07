@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { z } from "zod";
-import { MailingListName } from "../../config";
 import { registry } from "../../middleware/openapi-registry";
 
 export type IncomingSubscription = z.infer<typeof SubscriptionValidator>;
@@ -11,7 +10,7 @@ const SubscriptionValidator = registry.register(
     z
         .object({
             userId: z.string(),
-            mailingList: MailingListName,
+            mailingList: z.string().min(1),
         })
         .openapi("SubscriptionValidator", {
             example: { userId: "user_abc123", mailingList: "rp_interest" },
@@ -21,7 +20,7 @@ const SubscriptionValidator = registry.register(
 // Zod schema for validating subscription lists
 const SubscriptionSchemaValidator = z.object({
     userId: z.string(),
-    mailingList: MailingListName,
+    mailingList: z.string().min(1),
 });
 
 export const SendEmailValidator = registry.register(
@@ -70,12 +69,66 @@ export const UnsubscribeValidator = registry.register(
         })
 );
 
+export const SendEmailBulkValidator = registry.register(
+    "SendEmailBulkValidator",
+    z
+        .object({
+            emails: z.array(z.string().email()).min(1),
+            subject: z.string(),
+            htmlBody: z.string(),
+        })
+        .openapi("SendEmailBulkValidator", {
+            example: {
+                emails: ["a@example.com", "b@example.com"],
+                subject: "R|P Update",
+                htmlBody: "<p>Hello!</p>",
+            },
+        })
+);
+
+export const CreateMailingListValidator = registry.register(
+    "CreateMailingListValidator",
+    z
+        .object({
+            listName: z.string().min(1),
+            emails: z.array(z.string().email()).min(1),
+        })
+        .openapi("CreateMailingListValidator", {
+            example: {
+                listName: "sponsors_2025",
+                emails: ["sponsor@company.com", "another@corp.io"],
+            },
+        })
+);
+
 export const SubscriptionSuccessResponse = registry.register(
     "SubscriptionSuccessResponse",
     z
-        .object({ status: z.literal("success") })
+        .object({ status: z.string(), message: z.string() })
         .openapi("SubscriptionSuccessResponse", {
-            example: { status: "success" },
+            example: {
+                status: "success",
+                message: "Operation completed successfully",
+            },
+        })
+);
+
+export const BulkSendResultResponse = registry.register(
+    "BulkSendResultResponse",
+    z
+        .object({
+            success: z.boolean(),
+            successCount: z.number(),
+            failedCount: z.number(),
+            errors: z.array(z.string()),
+        })
+        .openapi("BulkSendResultResponse", {
+            example: {
+                success: true,
+                successCount: 42,
+                failedCount: 0,
+                errors: [],
+            },
         })
 );
 
