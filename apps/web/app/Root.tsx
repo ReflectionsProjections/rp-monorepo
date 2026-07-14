@@ -5,6 +5,7 @@ import AuthCallback from "./routes/auth/AuthCallback";
 import AuthRefresh from "./routes/auth/AuthRefresh";
 import SiteApp from "./sections/home/App";
 import Unauthorized from "@components/auth/Unauthorized";
+import { MagicLinkCallback } from "./routes/auth/MagicLinkCallback";
 
 const AdminApp = lazy(() => import("./sections/admin/App"));
 const DashboardApp = lazy(() => import("./sections/dashboard/App"));
@@ -23,6 +24,7 @@ export default function Root() {
       <Routes>
         <Route path="/auth/refresh" element={<AuthRefresh />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/auth/magic-link" element={<MagicLinkCallback />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route
           path="/admin/*"

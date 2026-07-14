@@ -11,23 +11,41 @@ import Resume from "./routes/Resume";
 import Speakers from "./routes/Speakers/Speakers";
 import AppScreen from "./routes/AppScreen";
 import NotFound from "./routes/NotFound";
+import { MagicLinkCallback } from "./routes/MagicLinkCallback";
 
-document.title = "R|P 2025";
+function RefreshHandler() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect");
+    googleAuth(false, redirect ?? undefined);
+  }, []);
+
+  return <p>Redirecting to login...</p>;
+}
 
 function App() {
   return (
-    <ChakraProvider theme={customTheme}>
-      <Routes>
-        <Route element={<Main />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/speakers" element={<Speakers />} />
-          <Route path="/app" element={<AppScreen />} />
-          <Route key="/register" path="/register" element={<Register />} />
-        </Route>
-        <Route key="/resume" path="/resume" element={<Resume />} />
-        <Route key="/profile" path="/profile" element={<Profile />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Main />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/speakers" element={<Speakers />} />
+            <Route path="/app" element={<AppScreen />} />
+            <Route element={<RequireAuth />}>
+              <Route key="/register" path="/register" element={<Register />} />
+            </Route>
+          </Route>
+          <Route element={<RequireAuth />}>
+            <Route key="/resume" path="/resume" element={<Resume />} />
+            <Route key="/profile" path="/profile" element={<Profile />} />
+          </Route>
+          <Route path="/auth" element={<MagicLinkCallback />} />
+          <Route path="/auth/refresh" element={<RefreshHandler />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </ChakraProvider>
   );
 }
