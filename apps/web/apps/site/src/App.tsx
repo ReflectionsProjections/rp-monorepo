@@ -17,6 +17,7 @@ import Speakers from "./routes/Speakers/Speakers";
 import theme from "./theme";
 import AppScreen from "./routes/AppScreen";
 import NotFound from "./routes/NotFound";
+import { MagicLinkCallback } from "./routes/MagicLinkCallback";
 
 function RefreshHandler() {
   useEffect(() => {
@@ -45,6 +46,7 @@ function App() {
             <Route key="/resume" path="/resume" element={<Resume />} />
             <Route key="/profile" path="/profile" element={<Profile />} />
           </Route>
+          <Route path="/auth" element={<MagicLinkCallback />} />
           <Route path="/auth/refresh" element={<RefreshHandler />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="*" element={<NotFound />} />

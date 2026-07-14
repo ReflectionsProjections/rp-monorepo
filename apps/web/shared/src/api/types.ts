@@ -371,6 +371,20 @@ export interface APIRoutes {
       response: { token: string };
     };
   };
+  "/auth/login": {
+    POST: {
+      request: { email: string };
+      response: never;
+    };
+  };
+  "/auth/verify": {
+    POST: {
+      request: {
+        token: string;
+      };
+      response: { token: string };
+    };
+  };
   "/checkin/event": {
     POST: {
       request: { eventId: string; userId: string };
