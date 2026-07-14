@@ -2,73 +2,128 @@ import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import Config from "../../config";
 import RoleChecker from "../../middleware/role-checker";
-import { Platform, Role } from "../auth/auth-models";
+import { Role } from "../auth/auth-models";
 import {
     AuthInfo,
-    AuthLoginValidator,
+    AuthMagicLinkLoginValidator,
+    AuthMagicLinkVerifyValidator,
     AuthRoleChangeRequest,
 } from "./auth-schema";
 import authSponsorRouter from "./sponsor/sponsor-router";
 import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema";
-import {
-    generateJWT,
-    payloadHasProperScopes,
-    updateDatabaseWithAuthPayload,
-} from "./auth-utils";
-import { OAuth2Client } from "google-auth-library";
+import { generateJWT } from "./auth-utils";
 import { SupabaseDB } from "../../database";
+import { sendHTMLEmail } from "../ses/ses-utils";
+import mustache from "mustache";
+import templates from "../../templates/templates";
+import {
+    createMagicLinkToken,
+    hashMagicLinkToken,
+} from "./sponsor/sponsor-utils";
+import * as bcrypt from "bcrypt";
 
 const authRouter = Router();
 
-const oauthClients = {
-    [Platform.WEB]: new OAuth2Client({
-        clientId: Config.CLIENT_ID,
-        clientSecret: Config.CLIENT_SECRET,
-    }),
-    [Platform.IOS]: new OAuth2Client({
-        clientId: Config.IOS_CLIENT_ID,
-    }),
-    [Platform.ANDROID]: new OAuth2Client({
-        clientId: Config.ANDROID_CLIENT_ID,
-    }),
-};
-
 authRouter.use("/sponsor", authSponsorRouter);
 
-/**
- * @swagger
- * /auth/:
- *   delete:
- *     summary: Remove a role from a user
- *     description: |
- *       Removes a specific role from the specified user.
- *
- *       **Required roles: SUPER_ADMIN**
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/AuthRoleChangeRequest'
- *     responses:
- *       200:
- *         description: The deleted role record
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthRoleView'
- *       404:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error: "UserNotFound"
- *     security:
- *       - bearerAuth: []
- */
+authRouter.post("/login", async (req, res) => {
+    const { email } = AuthMagicLinkLoginValidator.parse(req.body);
+
+    const { data: existing } = await SupabaseDB.AUTH_INFO.select("userId")
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+
+    if (!existing) {
+        return res.sendStatus(StatusCodes.UNAUTHORIZED);
+    }
+
+    const { magicLinkToken, unhashedRandom } = createMagicLinkToken(email);
+    const expTime = new Date(
+        Date.now() + Config.VERIFY_EXP_TIME_MS
+    ).toISOString();
+    const hashedToken = hashMagicLinkToken(unhashedRandom);
+
+    await SupabaseDB.AUTH_TOKENS.upsert(
+        {
+            email,
+            hashedToken,
+            expTime,
+        },
+        {
+            onConflict: "email",
+        }
+    ).throwOnError();
+
+    const magicLink = `${Config.WEB_BASE}/auth?token=${magicLinkToken}`;
+    const emailBody = mustache.render(templates.AUTH_VERIFICATION, {
+        link: magicLink,
+    });
+
+    await sendHTMLEmail(email, "R|P Resume Book Email Verification", emailBody);
+    return res.sendStatus(StatusCodes.CREATED);
+});
+
+authRouter.post("/verify", async (req, res) => {
+    const { token: magicLinkToken } = AuthMagicLinkVerifyValidator.parse(
+        req.body
+    );
+
+    let email = "";
+    let unhashedRandom = "";
+    try {
+        const decoded = Buffer.from(magicLinkToken, "base64url").toString(
+            "utf8"
+        );
+        const parts = decoded.split("|");
+        if (parts.length !== 2) {
+            throw new Error();
+        }
+        email = parts[0];
+        unhashedRandom = parts[1];
+    } catch {
+        return res.status(StatusCodes.UNAUTHORIZED).send({
+            error: "InvalidCode",
+        });
+    }
+
+    const { data: authToken } = await SupabaseDB.AUTH_TOKENS.delete()
+        .eq("email", email)
+        .select()
+        .maybeSingle()
+        .throwOnError();
+
+    const { data: authInfo } = await SupabaseDB.AUTH_INFO.select(
+        "userId, displayName, email"
+    )
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+
+    if (!authToken || !authInfo) {
+        return res.status(StatusCodes.UNAUTHORIZED).send({
+            error: "InvalidCode",
+        });
+    }
+
+    const match = bcrypt.compareSync(unhashedRandom, authToken.hashedToken);
+    if (!match) {
+        return res.status(StatusCodes.UNAUTHORIZED).send({
+            error: "InvalidCode",
+        });
+    }
+
+    const expTimeDate = new Date(authToken.expTime);
+    if (Date.now() > expTimeDate.getTime()) {
+        return res.status(StatusCodes.UNAUTHORIZED).send({
+            error: "ExpiredCode",
+        });
+    }
+
+    const token = await generateJWT(authInfo.userId);
+    return res.status(StatusCodes.OK).json({ token });
+});
+
 // Remove role from userId (super admin only endpoint)
 authRouter.delete(
     "/",

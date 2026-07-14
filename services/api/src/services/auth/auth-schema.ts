@@ -23,77 +23,37 @@ export const RoleValidator = registry.register(
         })
 );
 
-export const AuthLoginValidator = registry.register(
-    "AuthLoginValidator",
-    z
-        .union([
-            // Web platform - no codeVerifier needed
-            z.object({
-                code: z.string(),
-                redirectUri: z.string(),
-                platform: z.literal(Platform.WEB),
-            }),
-            // iOS/Android - codeVerifier is required
-            z.object({
-                code: z.string(),
-                redirectUri: z.string(),
-                codeVerifier: z.string(),
-                platform: z.union([
-                    z.literal(Platform.IOS),
-                    z.literal(Platform.ANDROID),
-                ]),
-            }),
-        ])
-        .openapi("AuthLoginValidator", {
-            description:
-                "Login request body. Web omits codeVerifier; iOS/Android require it.",
-            example: {
-                code: "4/0AfJohXk...",
-                redirectUri: "https://app.example.com/auth/callback",
-                platform: Platform.WEB,
-            },
-        })
-);
+export const AuthLoginValidator = z.union([
+    // Web platform - no codeVerifier needed
+    z.object({
+        code: z.string(),
+        redirectUri: z.string(),
+        platform: z.literal(Platform.WEB),
+    }),
+    // iOS/Android - codeVerifier is required
+    z.object({
+        code: z.string(),
+        redirectUri: z.string(),
+        codeVerifier: z.string(),
+        platform: z.union([
+            z.literal(Platform.IOS),
+            z.literal(Platform.ANDROID),
+        ]),
+    }),
+]);
 
-export const AuthRoleChangeRequest = registry.register(
-    "AuthRoleChangeRequest",
-    z
-        .object({
-            userId: z.string(),
-            role: Role,
-        })
-        .openapi("AuthRoleChangeRequest", {
-            example: { userId: "abc123", role: "STAFF" },
-        })
-);
+export const AuthMagicLinkLoginValidator = z.object({
+    email: z.string().email(),
+});
 
-// Response schemas
-export const AuthJwtResponse = registry.register(
-    "AuthJwtResponse",
-    z.object({ token: z.string() }).openapi("AuthJwtResponse", {
-        example: { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
-    })
-);
+export const AuthMagicLinkVerifyValidator = z.object({
+    token: z.string(),
+});
 
-export const AuthRoleView = registry.register(
-    "AuthRoleView",
-    z
-        .object({
-            userId: z.string(),
-            role: Role,
-        })
-        .openapi("AuthRoleView", {
-            example: { userId: "abc123", role: "STAFF" },
-        })
-);
-
-export const UserIdsResponse = registry.register(
-    "UserIdsResponse",
-    z.array(z.string()).openapi("UserIdsResponse", {
-        description: "List of user IDs",
-        example: ["abc123", "def456"],
-    })
-);
+export const AuthRoleChangeRequest = z.object({
+    userId: z.string(),
+    role: Role,
+});
 
 export const RoleSchema = new Schema(
     {
