@@ -29,6 +29,14 @@ export const AuthLoginValidator = z.union([
     }),
 ]);
 
+export const AuthMagicLinkLoginValidator = z.object({
+    email: z.string().email(),
+});
+
+export const AuthMagicLinkVerifyValidator = z.object({
+    token: z.string(),
+});
+
 export const AuthRoleChangeRequest = z.object({
     userId: z.string(),
     role: Role,

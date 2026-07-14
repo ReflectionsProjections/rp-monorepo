@@ -1,6 +1,6 @@
 import Config from "../config";
 
-const templates = {
+const templates: Record<string, string> = {
     REGISTRATION_CONFIRMATION: `<!DOCTYPE html>
 <html>
     <head>
@@ -2086,6 +2086,60 @@ const templates = {
             <h2>Click the button below to login to <a href="https://sponsor.reflectionsprojections.org/">SponsorRP</a>:</h2>
             <a href="{{link}}" class="code">Login to SponsorRP</a>
             <p> Note that this magic link will expire approximately 10 minutes from now. </p>
+        </div>
+    </body>
+    </html>`,
+
+    AUTH_VERIFICATION: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 50vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+            }
+            .container {
+                background-color: #ffffff;
+                padding: 20px 40px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                text-align: center;
+            }
+            h1 {
+                font-size: 24px;
+                color: #333333;
+                margin-bottom: 10px;
+            }
+            .code {
+                font-size: 24px;
+                font-weight: bold;
+                color: #ffffff;
+                text-decoration: none;
+                background-color: #111827;
+                padding: 15px 30px;
+                border-radius: 5px;
+                display: inline-block;
+                margin: 20px 0;
+            }
+            .code:hover {
+                background-color: #1f2937;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Click the button below to log in to Reflections | Projections:</h2>
+            <a href="{{link}}" class="code">Log in</a>
+            <p>Note that this magic link will expire approximately 10 minutes from now.</p>
         </div>
     </body>
     </html>`,
