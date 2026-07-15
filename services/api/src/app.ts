@@ -55,7 +55,7 @@ if (Config.ENV != EnvironmentEnum.TESTING) {
     morgan.token("userid", (req, _res) => {
         const jwt = req.headers.authorization;
         if (!jwt) {
-            return "unauthorized";
+            return "-";
         }
 
         try {
