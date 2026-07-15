@@ -13,7 +13,6 @@ export default function Events() {
   const date = useMemo(() => new Date(time), [time]);
   const toast = useToast();
   const [events, setEvents] = useState<Event[]>([]);
-  const [displayedEvents, setDisplayedEvents] = useState<EventSelected[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,8 +32,9 @@ export default function Events() {
     void fetchData();
   }, [toast]);
 
-  useEffect(() => {
-    if (!date) return;
+  const displayedEvents = useMemo<EventSelected[]>(() => {
+    if (!date) return [];
+
     const grouped: { [key: string]: Event[] } = {};
     events.forEach((evt) => {
       const eventDate = moment(evt.startTime).format("M/D");
@@ -70,16 +70,12 @@ export default function Events() {
       }
     }
 
-    newDisplayedEvents = (newDisplayedEvents || []).map((evt) => {
-      return {
-        ...evt,
-        selected:
-          moment(evt.startTime).isSameOrBefore(moment(date)) &&
-          moment(evt.endTime).isAfter(moment(date))
-      };
-    });
-
-    setDisplayedEvents(newDisplayedEvents);
+    return (newDisplayedEvents || []).map((evt) => ({
+      ...evt,
+      selected:
+        moment(evt.startTime).isSameOrBefore(moment(date)) &&
+        moment(evt.endTime).isAfter(moment(date))
+    }));
   }, [events, date]);
 
   return (

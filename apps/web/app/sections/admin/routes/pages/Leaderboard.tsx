@@ -212,13 +212,6 @@ const Leaderboard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (authorized) {
-      void fetchDailyLeaderboard(selectedDate, undefined);
-      void checkSubmissionStatus(selectedDate);
-    }
-  }, [authorized, selectedDate, fetchDailyLeaderboard, checkSubmissionStatus]);
-
   const leaderboardUsers: LeaderboardUser[] = useMemo(
     () => {
       if (!leaderboardData || leaderboardData.length === 0) {
@@ -230,30 +223,6 @@ const Leaderboard: React.FC = () => {
     }, // don't show users who already have all prizes
     [leaderboardData]
   );
-
-  useEffect(() => {
-    // automatically set the initial effective preview number only when data is loaded
-    if (!isLoading && leaderboardUsers.length > 0) {
-      handleSetEffectiveNumberAwards(defaultNumberAwards);
-    }
-  }, [isLoading, leaderboardUsers.length]);
-
-  const previewNumberIsInvalid = useMemo(
-    () =>
-      !previewNumberAwards ||
-      !parseInt(previewNumberAwards) ||
-      parseInt(previewNumberAwards) < 1,
-    [previewNumberAwards]
-  );
-
-  const handleChangePreviewNumber = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newValue = event.target.value;
-    setPreviewNumberAwards(newValue);
-    const newValueInt = parseInt(newValue);
-    handleSetEffectiveNumberAwards(newValueInt);
-  };
 
   const handleSetEffectiveNumberAwards = useCallback(
     (inputPreviewValue: number) => {
@@ -288,6 +257,37 @@ const Leaderboard: React.FC = () => {
     },
     [leaderboardUsers]
   );
+
+  useEffect(() => {
+    if (authorized) {
+      void fetchDailyLeaderboard(selectedDate, undefined);
+      void checkSubmissionStatus(selectedDate);
+    }
+  }, [authorized, selectedDate, fetchDailyLeaderboard, checkSubmissionStatus]);
+
+  useEffect(() => {
+    // automatically set the initial effective preview number only when data is loaded
+    if (!isLoading && leaderboardUsers.length > 0) {
+      handleSetEffectiveNumberAwards(defaultNumberAwards);
+    }
+  }, [isLoading, leaderboardUsers.length, handleSetEffectiveNumberAwards]);
+
+  const previewNumberIsInvalid = useMemo(
+    () =>
+      !previewNumberAwards ||
+      !parseInt(previewNumberAwards) ||
+      parseInt(previewNumberAwards) < 1,
+    [previewNumberAwards]
+  );
+
+  const handleChangePreviewNumber = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newValue = event.target.value;
+    setPreviewNumberAwards(newValue);
+    const newValueInt = parseInt(newValue);
+    handleSetEffectiveNumberAwards(newValueInt);
+  };
 
   return (
     <>
