@@ -212,13 +212,6 @@ const Leaderboard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (authorized) {
-      void fetchDailyLeaderboard(selectedDate, undefined);
-      void checkSubmissionStatus(selectedDate);
-    }
-  }, [authorized, selectedDate, fetchDailyLeaderboard, checkSubmissionStatus]);
-
   const leaderboardUsers: LeaderboardUser[] = useMemo(
     () => {
       if (!leaderboardData || leaderboardData.length === 0) {
@@ -231,13 +224,53 @@ const Leaderboard: React.FC = () => {
     [leaderboardData]
   );
 
+  const handleSetEffectiveNumberAwards = useCallback(
+    (inputPreviewValue: number) => {
+      if (
+        !inputPreviewValue ||
+        !leaderboardUsers ||
+        leaderboardUsers.length === 0
+      ) {
+        setEffectiveNumberAwards(0);
+        setMinimumPointsThreshold(0);
+        return;
+      }
+
+      // Find the breakpoint user (the user at the target position)
+      const breakpointUser = leaderboardUsers[inputPreviewValue - 1];
+      if (!breakpointUser) {
+        setEffectiveNumberAwards(0);
+        setMinimumPointsThreshold(0);
+        return;
+      }
+
+      const breakpoint = breakpointUser.points;
+      setMinimumPointsThreshold(breakpoint);
+
+      // Find all users with points >= breakpoint (including ties)
+      const usersGeqBreakpoint = leaderboardUsers.filter(
+        (user) => user.points >= breakpoint
+      );
+      setEffectiveNumberAwards(usersGeqBreakpoint.length);
+
+      // No scrolling needed - the visual highlighting will show which users qualify
+    },
+    [leaderboardUsers]
+  );
+
+  useEffect(() => {
+    if (authorized) {
+      void fetchDailyLeaderboard(selectedDate, undefined);
+      void checkSubmissionStatus(selectedDate);
+    }
+  }, [authorized, selectedDate, fetchDailyLeaderboard, checkSubmissionStatus]);
+
   useEffect(() => {
     // automatically set the initial effective preview number only when data is loaded
     if (!isLoading && leaderboardUsers.length > 0) {
       handleSetEffectiveNumberAwards(defaultNumberAwards);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, leaderboardUsers.length]);
+  }, [isLoading, leaderboardUsers.length, handleSetEffectiveNumberAwards]);
 
   const previewNumberIsInvalid = useMemo(
     () =>
@@ -254,37 +287,6 @@ const Leaderboard: React.FC = () => {
     setPreviewNumberAwards(newValue);
     const newValueInt = parseInt(newValue);
     handleSetEffectiveNumberAwards(newValueInt);
-  };
-
-  const handleSetEffectiveNumberAwards = (inputPreviewValue: number) => {
-    if (
-      !inputPreviewValue ||
-      !leaderboardUsers ||
-      leaderboardUsers.length === 0
-    ) {
-      setEffectiveNumberAwards(0);
-      setMinimumPointsThreshold(0);
-      return;
-    }
-
-    // Find the breakpoint user (the user at the target position)
-    const breakpointUser = leaderboardUsers[inputPreviewValue - 1];
-    if (!breakpointUser) {
-      setEffectiveNumberAwards(0);
-      setMinimumPointsThreshold(0);
-      return;
-    }
-
-    const breakpoint = breakpointUser.points;
-    setMinimumPointsThreshold(breakpoint);
-
-    // Find all users with points >= breakpoint (including ties)
-    const usersGeqBreakpoint = leaderboardUsers.filter(
-      (user) => user.points >= breakpoint
-    );
-    setEffectiveNumberAwards(usersGeqBreakpoint.length);
-
-    // No scrolling needed - the visual highlighting will show which users qualify
   };
 
   return (
