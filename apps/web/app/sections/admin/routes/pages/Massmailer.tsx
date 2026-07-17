@@ -133,7 +133,7 @@ function EmailMaker() {
           isClosable: true
         });
       });
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     api
@@ -148,7 +148,7 @@ function EmailMaker() {
           isClosable: true
         });
       });
-  }, []);
+  }, [toast]);
 
   const sendMassmail = (
     values: EmailFormValues,
@@ -212,19 +212,51 @@ function EmailMaker() {
       htmlBody: generateHtmlEmail(values.body, values.template)
     };
 
-    const request = api
+    const loadingToastId = toast({
+      title: "Sending emails...",
+      status: "loading",
+      duration: null,
+      isClosable: false
+    });
+
+    api
       .post("/subscription/send-email", emailData)
-      .then(async () => {
+      .then(async (response) => {
+        const { successCount, failedCount, errors } = response.data as {
+          successCount: number;
+          failedCount: number;
+          errors: string[];
+        };
+        toast.close(loadingToastId);
+        if (failedCount === 0) {
+          toast({
+            title: `Email sent to ${successCount} recipient${successCount !== 1 ? "s" : ""}!`,
+            status: "success",
+            duration: 4000,
+            isClosable: true
+          });
+        } else {
+          toast({
+            title: `Partial success: ${successCount} sent, ${failedCount} failed`,
+            description: errors.length > 0 ? errors.join(", ") : undefined,
+            status: "warning",
+            duration: 6000,
+            isClosable: true
+          });
+        }
         helpers.resetForm();
         await helpers.setFieldValue("isMobileNotification", false);
       })
+      .catch(() => {
+        toast.close(loadingToastId);
+        toast({
+          title: "Failed to send email. Try again soon!",
+          status: "error",
+          duration: 4000,
+          isClosable: true
+        });
+      })
       .finally(() => helpers.setSubmitting(false));
-
-    toast.promise(request, {
-      success: { title: `Email sent to ${values.recipient}!` },
-      error: { title: "Failed to send email. Try again soon!" },
-      loading: { title: "Requesting email..." }
-    });
     return;
   };
   // note -- the markdown rendering for the preview takes place inside

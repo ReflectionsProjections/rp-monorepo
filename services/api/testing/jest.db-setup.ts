@@ -59,6 +59,9 @@ function mockSupabase(supabaseUrl: string, supabaseServiceKey: string) {
                 get SUBSCRIPTIONS() {
                     return supabase.from("subscriptions");
                 },
+                get MAILING_LISTS() {
+                    return supabase.from("mailingLists");
+                },
                 get SHIFTS() {
                     return supabase.from("shifts");
                 },

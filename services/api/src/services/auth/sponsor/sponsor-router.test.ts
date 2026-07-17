@@ -1,4 +1,3 @@
-import { SendEmailCommandOutput } from "@aws-sdk/client-ses";
 import * as sesUtils from "../../ses/ses-utils";
 import * as sponsorUtils from "./sponsor-utils";
 import { post } from "../../../../testing/testingTools";
@@ -26,10 +25,10 @@ beforeEach(async () => {
 });
 
 describe("POST /auth/sponsor/login", () => {
-    const mockSendHTMLEmail = jest
-        .spyOn(sesUtils, "sendHTMLEmail")
-        .mockImplementation((_emailId, _subject, _emailHTML) =>
-            Promise.resolve({} as unknown as SendEmailCommandOutput)
+    const mockSendTemplateEmail = jest
+        .spyOn(sesUtils, "sendTemplateEmail")
+        .mockImplementation((_emailId, _templateId, _templateData) =>
+            Promise.resolve()
         );
     const mockCreateSixDigitCode = jest.spyOn(
         sponsorUtils,
@@ -37,7 +36,7 @@ describe("POST /auth/sponsor/login", () => {
     );
 
     beforeEach(async () => {
-        mockSendHTMLEmail.mockClear();
+        mockSendTemplateEmail.mockClear();
         mockCreateSixDigitCode.mockClear();
     });
 
@@ -49,10 +48,12 @@ describe("POST /auth/sponsor/login", () => {
             .expect(StatusCodes.CREATED);
         expect(mockCreateSixDigitCode).toHaveBeenCalled();
         const sixDigitCode = `${mockCreateSixDigitCode.mock.results.at(-1)?.value}`;
-        expect(mockSendHTMLEmail).toHaveBeenCalledWith(
+        expect(mockSendTemplateEmail).toHaveBeenCalledWith(
             CORPORATE_USER.email,
-            expect.stringContaining("Email Verification"),
-            expect.stringContaining(sixDigitCode)
+            expect.anything(),
+            expect.objectContaining({
+                subject: expect.stringContaining("Email Verification"),
+            })
         );
 
         const { data } = await SupabaseDB.AUTH_CODES.select()
@@ -73,7 +74,7 @@ describe("POST /auth/sponsor/login", () => {
             })
             .expect(StatusCodes.UNAUTHORIZED);
         expect(mockCreateSixDigitCode).not.toHaveBeenCalled();
-        expect(mockSendHTMLEmail).not.toHaveBeenCalled();
+        expect(mockSendTemplateEmail).not.toHaveBeenCalled();
 
         const { data } = await SupabaseDB.AUTH_CODES.select()
             .eq("email", email)
