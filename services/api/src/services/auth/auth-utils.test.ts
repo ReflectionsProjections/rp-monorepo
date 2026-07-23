@@ -315,6 +315,7 @@ describe("getJwtPayloadFromDatabase", () => {
             userId: AUTH_USER.userId,
             email: AUTH_USER.email,
             roles: AUTH_USER_ROLES.map((entry) => entry.role),
+            tokenType: "access",
         });
     });
 

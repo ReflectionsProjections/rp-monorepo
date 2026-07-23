@@ -13,6 +13,9 @@ import { sendTemplateEmail } from "../ses/ses-utils";
 import { Templates, MailingLists } from "../../config";
 import templates from "../../templates/templates";
 import { Role } from "../auth/auth-models";
+import RegistrationAuthChecker from "../../middleware/registration-auth-checker";
+import { generateJWT, normalizeEmail } from "../auth/auth-utils";
+import { supabase } from "../../database";
 
 const registrationRouter = Router();
 registrationRouter.use(cors());
@@ -52,7 +55,7 @@ registrationRouter.use(cors());
  *     security:
  *       - bearerAuth: []
  */
-registrationRouter.post("/draft", RoleChecker([]), async (req, res) => {
+registrationRouter.post("/draft", RegistrationAuthChecker, async (req, res) => {
     const payload = res.locals.payload;
 
     const validatorResult = RegistrationDraftValidator.safeParse(req.body);
@@ -62,8 +65,18 @@ registrationRouter.post("/draft", RoleChecker([]), async (req, res) => {
             .json({ error: validatorResult.error.format() });
     }
 
+    if (
+        normalizeEmail(validatorResult.data.email) !==
+        normalizeEmail(payload.email)
+    ) {
+        return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json({ error: "EmailMismatch" });
+    }
+
     const registrationDraft = {
         ...validatorResult.data,
+        email: normalizeEmail(payload.email),
         userId: payload.userId,
     };
 
@@ -102,7 +115,7 @@ registrationRouter.post("/draft", RoleChecker([]), async (req, res) => {
  *     security:
  *       - bearerAuth: []
  */
-registrationRouter.get("/draft", RoleChecker([]), async (req, res) => {
+registrationRouter.get("/draft", RegistrationAuthChecker, async (req, res) => {
     const { data: draftRegistration } =
         await SupabaseDB.DRAFT_REGISTRATIONS.select("*")
             .eq("userId", res.locals.payload.userId)
@@ -116,6 +129,107 @@ registrationRouter.get("/draft", RoleChecker([]), async (req, res) => {
 
     return res.status(StatusCodes.OK).json(draftRegistration);
 });
+
+/**
+ * @swagger
+ * /registration/complete:
+ *   post:
+ *     summary: Complete registration for a verified account
+ *     tags: [Registration]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegistrationValidator'
+ *     responses:
+ *       200:
+ *         description: The registration and a new access token
+ *       400:
+ *         description: The registration or email is invalid
+ *     security:
+ *       - bearerAuth: []
+ */
+registrationRouter.post(
+    "/complete",
+    RegistrationAuthChecker,
+    async (req, res) => {
+        const payload = res.locals.payload;
+        const registrationResult = RegistrationValidator.safeParse(req.body);
+        if (!registrationResult.success) {
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ error: registrationResult.error.format() });
+        }
+
+        if (
+            normalizeEmail(registrationResult.data.email) !==
+            normalizeEmail(payload.email)
+        ) {
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ error: "EmailMismatch" });
+        }
+
+        const registrationData = {
+            ...registrationResult.data,
+            email: normalizeEmail(payload.email),
+        };
+        const { error } = await supabase.rpc(
+            "complete_magic_link_registration",
+            {
+                p_user_id: payload.userId,
+                p_email: registrationData.email,
+                p_registration: registrationData,
+                p_mailing_list: MailingLists.ATTENDEES_2026,
+            }
+        );
+        if (error) {
+            throw error;
+        }
+
+        const registration = {
+            ...registrationData,
+            userId: payload.userId,
+        };
+        try {
+            await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
+                subject: "Reflections | Projections Registration Confirmation",
+                body: Mustache.render(templates.REGISTRATION_CONFIRMATION, {
+                    ...registrationData,
+                    allergies:
+                        registrationData.allergies.length > 0
+                            ? registrationData.allergies.join(", ")
+                            : "N/A",
+                    dietaryRestrictions:
+                        registrationData.dietaryRestrictions.length > 0
+                            ? registrationData.dietaryRestrictions.join(", ")
+                            : "N/A",
+                    majors:
+                        registrationData.majors.length > 0
+                            ? registrationData.majors.join(", ")
+                            : "N/A",
+                    minors:
+                        registrationData.minors.length > 0
+                            ? registrationData.minors.join(", ")
+                            : "N/A",
+                    tags:
+                        registrationData.tags.length > 0
+                            ? registrationData.tags.join(", ")
+                            : "N/A",
+                }),
+            });
+        } catch (error) {
+            console.error(
+                "Failed to send registration confirmation email",
+                error
+            );
+        }
+
+        const token = await generateJWT(payload.userId);
+        return res.status(StatusCodes.OK).json({ registration, token });
+    }
+);
 
 /**
  * @swagger
@@ -163,7 +277,20 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
             .json({ error: registrationResult.error.format() });
     }
 
-    const registration = { ...registrationResult.data, userId: payload.userId };
+    if (
+        normalizeEmail(registrationResult.data.email) !==
+        normalizeEmail(payload.email)
+    ) {
+        return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json({ error: "EmailMismatch" });
+    }
+
+    const registration = {
+        ...registrationResult.data,
+        email: normalizeEmail(payload.email),
+        userId: payload.userId,
+    };
 
     const attendeeResult = AttendeeCreateValidator.safeParse(registration);
     if (!attendeeResult.success) {

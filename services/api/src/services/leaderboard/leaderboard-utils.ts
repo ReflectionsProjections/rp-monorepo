@@ -73,7 +73,7 @@ export async function getDailyLeaderboard(
         (attendee) => ({
             rank: 0, // Will be set after sorting
             userId: attendee.userId,
-            displayName: attendee.authInfo.displayName,
+            displayName: attendee.authInfo.displayName ?? "",
             points: getDailyPointsForEventDay(attendee, eventDay),
             currentTier: attendee.currentTier as TierType,
             icon: attendee.icon as IconColorType,
@@ -149,9 +149,9 @@ export async function getGlobalLeaderboard(
         if (b.points !== a.points) {
             return b.points - a.points;
         }
-        return a.authInfo.displayName
+        return (a.authInfo.displayName ?? "")
             .toLowerCase()
-            .localeCompare(b.authInfo.displayName.toLowerCase());
+            .localeCompare((b.authInfo.displayName ?? "").toLowerCase());
     });
 
     // Create leaderboard entries with rankings
@@ -168,7 +168,7 @@ export async function getGlobalLeaderboard(
         return {
             rank: currentRank,
             userId: attendee.userId,
-            displayName: attendee.authInfo.displayName,
+            displayName: attendee.authInfo.displayName ?? "",
             points: attendee.points,
             currentTier: attendee.currentTier as TierType,
             icon: attendee.icon as IconColorType,

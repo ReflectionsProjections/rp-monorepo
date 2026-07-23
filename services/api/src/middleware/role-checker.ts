@@ -36,7 +36,13 @@ export default function RoleChecker(
                 .json({ error: "InvalidJWT" });
         }
 
-        const payload = JwtPayloadValidator.parse(payloadData);
+        const payloadResult = JwtPayloadValidator.safeParse(payloadData);
+        if (!payloadResult.success) {
+            return res
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ error: "InvalidJWT" });
+        }
+        const payload = payloadResult.data;
         res.locals.payload = payload;
 
         const userRoles = payload.roles;

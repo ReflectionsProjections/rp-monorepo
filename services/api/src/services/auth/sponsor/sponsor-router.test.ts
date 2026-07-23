@@ -13,10 +13,21 @@ const CORPORATE_USER = {
     email: "sponsor@big-man.corp",
     name: "Big Corporate Man",
 } satisfies Corporate;
+const SPONSOR_ACCOUNT = {
+    authId: null,
+    userId: "sponsor-user-id",
+    displayName: CORPORATE_USER.name,
+    email: CORPORATE_USER.email,
+};
 const VALID_CODE = "AAABBB";
 
 beforeEach(async () => {
     await SupabaseDB.CORPORATE.insert(CORPORATE_USER);
+    await SupabaseDB.AUTH_INFO.insert(SPONSOR_ACCOUNT);
+    await SupabaseDB.AUTH_ROLES.insert({
+        userId: SPONSOR_ACCOUNT.userId,
+        role: Role.Enum.CORPORATE,
+    });
     await SupabaseDB.AUTH_CODES.insert({
         hashedVerificationCode: sponsorUtils.encryptSixDigitCode(VALID_CODE),
         expTime: new Date(Date.now() + 60 * 1000).toISOString(),
@@ -45,7 +56,7 @@ describe("POST /auth/sponsor/login", () => {
             .send({
                 email: CORPORATE_USER.email,
             })
-            .expect(StatusCodes.CREATED);
+            .expect(StatusCodes.ACCEPTED);
         expect(mockCreateSixDigitCode).toHaveBeenCalled();
         const sixDigitCode = `${mockCreateSixDigitCode.mock.results.at(-1)?.value}`;
         expect(mockSendTemplateEmail).toHaveBeenCalledWith(
@@ -66,13 +77,13 @@ describe("POST /auth/sponsor/login", () => {
         ).toBe(true);
     });
 
-    it("fails to send a code for invalid emails", async () => {
+    it("returns the generic response without sending for invalid emails", async () => {
         const email = "badGuy@evil.com";
         await post("/auth/sponsor/login")
             .send({
                 email,
             })
-            .expect(StatusCodes.UNAUTHORIZED);
+            .expect(StatusCodes.ACCEPTED);
         expect(mockCreateSixDigitCode).not.toHaveBeenCalled();
         expect(mockSendTemplateEmail).not.toHaveBeenCalled();
 
@@ -99,7 +110,7 @@ describe("POST /auth/sponsor/verify", () => {
             Config.JWT_SIGNING_SECRET
         ) as JwtPayload;
         expect(payload).toMatchObject({
-            userId: CORPORATE_USER.email,
+            userId: SPONSOR_ACCOUNT.userId,
             displayName: CORPORATE_USER.name,
             email: CORPORATE_USER.email,
             roles: [Role.Enum.CORPORATE],
@@ -107,7 +118,7 @@ describe("POST /auth/sponsor/verify", () => {
         expect(payload.iat).toBeGreaterThanOrEqual(start);
     });
 
-    it("fails for valid code after invalid code used", async () => {
+    it("keeps the valid code after an invalid attempt", async () => {
         const badResponse = await post("/auth/sponsor/verify")
             .send({
                 email: CORPORATE_USER.email,
@@ -121,8 +132,8 @@ describe("POST /auth/sponsor/verify", () => {
                 email: CORPORATE_USER.email,
                 sixDigitCode: VALID_CODE,
             })
-            .expect(StatusCodes.UNAUTHORIZED);
-        expect(validResponse.body).toHaveProperty("error", "InvalidCode");
+            .expect(StatusCodes.OK);
+        expect(validResponse.body).toHaveProperty("token");
     });
 
     it("fails for expired codes", async () => {
@@ -139,7 +150,7 @@ describe("POST /auth/sponsor/verify", () => {
             })
             .expect(StatusCodes.UNAUTHORIZED);
 
-        expect(response.body).toHaveProperty("error", "ExpiredCode");
+        expect(response.body).toHaveProperty("error", "InvalidCode");
     });
 
     it("fails for invalid codes", async () => {
