@@ -185,6 +185,14 @@ registrationRouter.post(
             }
         );
         if (error) {
+            // Raised by the database function when the token's userId and
+            // email no longer match the account (for example, a stale token
+            // after an email change).
+            if (error.message?.includes("InvalidRegistrationIdentity")) {
+                return res
+                    .status(StatusCodes.UNAUTHORIZED)
+                    .json({ error: "InvalidRegistrationIdentity" });
+            }
             throw error;
         }
 

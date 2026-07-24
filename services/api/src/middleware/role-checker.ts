@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { JwtPayloadValidator, Role } from "../services/auth/auth-models";
-import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
-import { Config } from "../config";
 import { StatusCodes } from "http-status-codes";
+import { verifyJwtPayload } from "./jwt-verifier";
 
 export default function RoleChecker(
     requiredRoles: Role[],
@@ -21,28 +20,11 @@ export default function RoleChecker(
                 .json({ error: "NoJWT" });
         }
 
-        let payloadData;
-        try {
-            payloadData = jsonwebtoken.verify(jwt, Config.JWT_SIGNING_SECRET);
-        } catch (error) {
-            if (error instanceof TokenExpiredError) {
-                return res
-                    .status(StatusCodes.FORBIDDEN)
-                    .json({ error: "ExpiredJWT" });
-            }
-
-            return res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({ error: "InvalidJWT" });
+        const result = verifyJwtPayload(jwt, JwtPayloadValidator);
+        if (!result.success) {
+            return res.status(result.status).json({ error: result.error });
         }
-
-        const payloadResult = JwtPayloadValidator.safeParse(payloadData);
-        if (!payloadResult.success) {
-            return res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({ error: "InvalidJWT" });
-        }
-        const payload = payloadResult.data;
+        const payload = result.payload;
         res.locals.payload = payload;
 
         const userRoles = payload.roles;

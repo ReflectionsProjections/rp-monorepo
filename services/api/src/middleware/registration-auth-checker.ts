@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import { Config } from "../config";
 import { RegistrationJwtPayloadValidator } from "../services/auth/auth-models";
+import { verifyJwtPayload } from "./jwt-verifier";
 
+// Accepts a setup token or an access token, so a verified roleless account
+// can save a draft and complete registration.
 export default function RegistrationAuthChecker(
     req: Request,
     res: Response,
@@ -14,28 +15,11 @@ export default function RegistrationAuthChecker(
         return res.status(StatusCodes.UNAUTHORIZED).json({ error: "NoJWT" });
     }
 
-    let payloadData: unknown;
-    try {
-        payloadData = jsonwebtoken.verify(jwt, Config.JWT_SIGNING_SECRET);
-    } catch (error) {
-        if (error instanceof TokenExpiredError) {
-            return res
-                .status(StatusCodes.FORBIDDEN)
-                .json({ error: "ExpiredJWT" });
-        }
-        return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json({ error: "InvalidJWT" });
+    const result = verifyJwtPayload(jwt, RegistrationJwtPayloadValidator);
+    if (!result.success) {
+        return res.status(result.status).json({ error: result.error });
     }
 
-    const payloadResult =
-        RegistrationJwtPayloadValidator.safeParse(payloadData);
-    if (!payloadResult.success) {
-        return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json({ error: "InvalidJWT" });
-    }
-
-    res.locals.payload = payloadResult.data;
+    res.locals.payload = result.payload;
     return next();
 }

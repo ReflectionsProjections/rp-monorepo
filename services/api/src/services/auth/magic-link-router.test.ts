@@ -7,10 +7,14 @@ import * as sesUtils from "../ses/ses-utils";
 import { Role } from "./auth-models";
 import { magicLinkTokenDigestForTest } from "./magic-link-service";
 
-const sendHtmlEmail = jest.spyOn(sesUtils, "sendHTMLEmail").mockResolvedValue();
+const sendTemplateEmail = jest
+    .spyOn(sesUtils, "sendTemplateEmail")
+    .mockResolvedValue();
 
 function lastMagicLinkToken(): string {
-    const html = sendHtmlEmail.mock.calls.at(-1)?.[2];
+    const templateData = sendTemplateEmail.mock.calls.at(-1)?.[2];
+    const html =
+        typeof templateData?.body === "string" ? templateData.body : undefined;
     const match = html?.match(/[?&]token=([^"]+)/);
     if (!match?.[1]) {
         throw new Error("Magic-link token was not found in the email");
@@ -19,7 +23,7 @@ function lastMagicLinkToken(): string {
 }
 
 beforeEach(() => {
-    sendHtmlEmail.mockClear();
+    sendTemplateEmail.mockClear();
 });
 
 describe("POST /auth/magic-links", () => {
@@ -31,7 +35,7 @@ describe("POST /auth/magic-links", () => {
                 intent: "login",
             })
             .expect(StatusCodes.ACCEPTED);
-        expect(sendHtmlEmail).toHaveBeenCalledTimes(1);
+        expect(sendTemplateEmail).toHaveBeenCalledTimes(1);
 
         await post("/auth/magic-links")
             .send({
@@ -40,7 +44,7 @@ describe("POST /auth/magic-links", () => {
                 intent: "login",
             })
             .expect(StatusCodes.ACCEPTED);
-        expect(sendHtmlEmail).toHaveBeenCalledTimes(1);
+        expect(sendTemplateEmail).toHaveBeenCalledTimes(1);
     });
 
     it("rejects unsupported client and intent combinations", async () => {
@@ -142,7 +146,7 @@ describe("POST /auth/magic-links/verify", () => {
                 intent: "login",
             })
             .expect(StatusCodes.ACCEPTED);
-        expect(sendHtmlEmail).not.toHaveBeenCalled();
+        expect(sendTemplateEmail).not.toHaveBeenCalled();
 
         await SupabaseDB.AUTH_ROLES.insert({
             userId: "mobile-user",
@@ -193,5 +197,32 @@ describe("POST /auth/magic-links/verify", () => {
         await post("/auth/magic-links/verify")
             .send({ token: resumeToken, client: "web" })
             .expect(StatusCodes.UNAUTHORIZED);
+    });
+
+    it("always stores emails normalized and never duplicates an account", async () => {
+        const firstToken = await issueWebLink("  Casing@Example.COM ");
+        await post("/auth/magic-links/verify")
+            .send({ token: firstToken, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const secondToken = await issueWebLink("CASING@example.com");
+        await post("/auth/magic-links/verify")
+            .send({ token: secondToken, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const { data: tokenRows } =
+            await SupabaseDB.MAGIC_LINK_TOKENS.select(
+                "subjectEmail"
+            ).throwOnError();
+        expect(tokenRows).toHaveLength(2);
+        for (const row of tokenRows) {
+            expect(row.subjectEmail).toBe("casing@example.com");
+        }
+
+        const { data: accounts } = await SupabaseDB.AUTH_INFO.select("email")
+            .ilike("email", "casing@example.com")
+            .throwOnError();
+        expect(accounts).toHaveLength(1);
+        expect(accounts[0].email).toBe("casing@example.com");
     });
 });

@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "crypto";
-import { Config } from "../../config";
+import { Config, Templates } from "../../config";
 import { SupabaseDB, supabase } from "../../database";
-import { sendHTMLEmail } from "../ses/ses-utils";
+import { sendTemplateEmail } from "../ses/ses-utils";
 import { Role } from "./auth-models";
 import { generateJWT, generateSetupJWT, normalizeEmail } from "./auth-utils";
 import { renderMagicLinkEmail } from "./magic-link-email";
@@ -17,20 +17,54 @@ type Account = {
     displayName: string | null;
 };
 
-function digestToken(token: string): string {
-    return createHash("sha256").update(token).digest("hex");
+type FlowKey = `${MagicLinkClient}:${MagicLinkIntent}`;
+
+type FlowRule = {
+    callback: string;
+    // Whether verification may create a roleless base account for the email.
+    createsAccount: boolean;
+    // A role the account must already have, checked at issue and again after
+    // the token is consumed. Authentication never grants this role.
+    requiredRole: Role | null;
+};
+
+// Every client and intent combination must be listed here; unsupported flows
+// are null. The Record key is exhaustive, so adding a new client or intent is
+// a compile error until every combination has an explicit rule.
+const FLOW_RULES: Record<FlowKey, FlowRule | null> = {
+    "web:registration": {
+        callback: Config.MAGIC_LINK_REGISTRATION_CALLBACK,
+        createsAccount: true,
+        requiredRole: null,
+    },
+    "web:login": {
+        callback: Config.MAGIC_LINK_WEB_LOGIN_CALLBACK,
+        createsAccount: true,
+        requiredRole: null,
+    },
+    "mobile:login": {
+        callback: Config.MAGIC_LINK_MOBILE_LOGIN_CALLBACK,
+        createsAccount: false,
+        requiredRole: Role.Enum.USER,
+    },
+    "web:resume-book": {
+        callback: Config.MAGIC_LINK_RESUME_BOOK_CALLBACK,
+        createsAccount: false,
+        requiredRole: Role.Enum.CORPORATE,
+    },
+    "mobile:registration": null,
+    "mobile:resume-book": null,
+};
+
+function flowRuleFor(
+    client: MagicLinkClient,
+    intent: MagicLinkIntent
+): FlowRule | null {
+    return FLOW_RULES[`${client}:${intent}`];
 }
 
-function callbackFor(client: MagicLinkClient, intent: MagicLinkIntent): string {
-    if (intent === "registration") {
-        return Config.MAGIC_LINK_REGISTRATION_CALLBACK;
-    }
-    if (intent === "resume-book") {
-        return Config.MAGIC_LINK_RESUME_BOOK_CALLBACK;
-    }
-    return client === "mobile"
-        ? Config.MAGIC_LINK_MOBILE_LOGIN_CALLBACK
-        : Config.MAGIC_LINK_WEB_LOGIN_CALLBACK;
+function digestToken(token: string): string {
+    return createHash("sha256").update(token).digest("hex");
 }
 
 async function findAccount(email: string): Promise<Account | null> {
@@ -50,27 +84,19 @@ async function rolesFor(userId: string): Promise<Role[]> {
     return data.map((row) => row.role);
 }
 
-async function isEligible(request: MagicLinkIssueRequest): Promise<boolean> {
-    if (
-        request.client === "web" &&
-        (request.intent === "registration" || request.intent === "login")
-    ) {
+async function hasRequiredRole(
+    email: string,
+    rule: FlowRule
+): Promise<boolean> {
+    if (rule.requiredRole === null) {
         return true;
     }
-
-    const account = await findAccount(request.email);
+    const account = await findAccount(email);
     if (!account) {
         return false;
     }
     const roles = await rolesFor(account.userId);
-    if (request.client === "mobile" && request.intent === "login") {
-        return roles.includes(Role.Enum.USER);
-    }
-    return (
-        request.client === "web" &&
-        request.intent === "resume-book" &&
-        roles.includes(Role.Enum.CORPORATE)
-    );
+    return roles.includes(rule.requiredRole);
 }
 
 export async function issueMagicLink(
@@ -80,7 +106,11 @@ export async function issueMagicLink(
         ...request,
         email: normalizeEmail(request.email),
     };
-    if (!(await isEligible(normalizedRequest))) {
+    const rule = flowRuleFor(
+        normalizedRequest.client,
+        normalizedRequest.intent
+    );
+    if (!rule || !(await hasRequiredRole(normalizedRequest.email, rule))) {
         return;
     }
 
@@ -96,17 +126,12 @@ export async function issueMagicLink(
         ).toISOString(),
     }).throwOnError();
 
-    const callback = callbackFor(
-        normalizedRequest.client,
-        normalizedRequest.intent
-    );
-    const link = `${callback}?token=${encodeURIComponent(token)}`;
+    const link = `${rule.callback}?token=${encodeURIComponent(token)}`;
     try {
-        await sendHTMLEmail(
-            normalizedRequest.email,
-            "Your Reflections | Projections sign-in link",
-            renderMagicLinkEmail(link, normalizedRequest.intent)
-        );
+        await sendTemplateEmail(normalizedRequest.email, Templates.RP_EMAILS, {
+            subject: "Your Reflections | Projections sign-in link",
+            body: renderMagicLinkEmail(link, normalizedRequest.intent),
+        });
     } catch (error) {
         await SupabaseDB.MAGIC_LINK_TOKENS.delete()
             .eq("tokenDigest", tokenDigest)
@@ -150,32 +175,22 @@ export async function verifyMagicLink(
         return null;
     }
 
-    const email = normalizeEmail(consumed.subjectEmail);
-    let account: Account | null;
-    if (
-        consumed.intent === "registration" ||
-        (consumed.intent === "login" && client === "web")
-    ) {
-        account = await getOrCreateAccount(email);
-    } else {
-        account = await findAccount(email);
+    const intent = MagicLinkIntent.parse(consumed.intent);
+    const rule = flowRuleFor(client, intent);
+    if (!rule) {
+        return null;
     }
+
+    const email = normalizeEmail(consumed.subjectEmail);
+    const account = rule.createsAccount
+        ? await getOrCreateAccount(email)
+        : await findAccount(email);
     if (!account) {
         return null;
     }
 
     const roles = await rolesFor(account.userId);
-    if (
-        consumed.intent === "login" &&
-        client === "mobile" &&
-        !roles.includes(Role.Enum.USER)
-    ) {
-        return null;
-    }
-    if (
-        consumed.intent === "resume-book" &&
-        !roles.includes(Role.Enum.CORPORATE)
-    ) {
+    if (rule.requiredRole !== null && !roles.includes(rule.requiredRole)) {
         return null;
     }
 

@@ -178,17 +178,6 @@ authSponsorRouter.post("/verify", async (req, res) => {
         });
     }
 
-    const { data: currentRole } = await SupabaseDB.AUTH_ROLES.select("role")
-        .eq("userId", account.userId)
-        .eq("role", Role.Enum.CORPORATE)
-        .maybeSingle()
-        .throwOnError();
-    if (!currentRole) {
-        return res.status(StatusCodes.UNAUTHORIZED).send({
-            error: "InvalidCode",
-        });
-    }
-
     const token = await generateJWT(account.userId);
     return res.status(StatusCodes.OK).json({ token });
 });
