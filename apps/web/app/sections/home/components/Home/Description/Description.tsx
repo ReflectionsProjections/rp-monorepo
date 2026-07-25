@@ -14,7 +14,7 @@ export const Description = () => {
       position="relative"
       w="100%"
       minH={{ base: "900px", sm: "980px", md: "auto" }}
-      mt={{ md: "-14.88vw" }}
+      mt={{ md: "calc(-14.88vw + 10vh)" }}
       aspectRatio={{ md: "1512 / 1250" }}
       overflow="hidden"
       color="white"
