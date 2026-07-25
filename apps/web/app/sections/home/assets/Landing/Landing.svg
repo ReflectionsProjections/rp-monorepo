@@ -257,13 +257,6 @@
 <rect x="1482.28" y="802.637" width="10.9085" height="14.546" fill="url(#pattern1_1241_36449)"/>
 <rect x="992.816" y="951.836" width="41.2098" height="43.6381" fill="url(#pattern2_1241_36449)"/>
 <rect x="742.104" y="799.295" width="52.1182" height="49.6989" fill="url(#pattern3_1241_36449)"/>
-<rect x="867.873" y="929.668" width="58.1785" height="255.768" fill="url(#pattern4_1241_36449)"/>
-<mask id="mask0_1241_36449" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="-287" y="799" width="2597" height="1555">
-<rect x="-286.002" y="799" width="2595.14" height="1554.08" fill="url(#pattern5_1241_36449)"/>
-</mask>
-<g mask="url(#mask0_1241_36449)">
-<path d="M876.397 930.467H920.34V1184.5H876.397V930.467Z" fill="url(#paint2_linear_1241_36449)"/>
-</g>
 <mask id="mask1_1241_36449" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="-42" y="903" width="215" height="894">
 <path d="M172.623 903.511H-41.9805V1796.37H172.623V903.511Z" fill="white"/>
 </mask>
