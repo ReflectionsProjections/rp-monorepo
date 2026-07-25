@@ -14,7 +14,8 @@ export const Description = () => {
       position="relative"
       w="100%"
       minH={{ base: "900px", sm: "980px", md: "auto" }}
-      aspectRatio={{ md: "1512 / 1025" }}
+      mt={{ md: "-14.88vw" }}
+      aspectRatio={{ md: "1512 / 1250" }}
       overflow="hidden"
       color="white"
       bg={{ base: "#100b1f", md: "transparent" }}
@@ -23,10 +24,10 @@ export const Description = () => {
       <Box
         position="absolute"
         insetX={0}
-        top={{ base: 0, md: "-65.9%" }}
+        top={{ base: 0, md: "-36%" }}
         zIndex={0}
         w="100%"
-        h={{ base: "36%", md: "87.8%" }}
+        h={{ base: "36%", md: "72%" }}
         overflow="hidden"
       >
         <Image
@@ -48,10 +49,10 @@ export const Description = () => {
         display={{ base: "none", md: "block" }}
         position="absolute"
         left={0}
-        top="22%"
+        top="36%"
         zIndex={1}
         w="15.55%"
-        h="26%"
+        h="21.3%"
       />
 
       <Image
@@ -61,20 +62,20 @@ export const Description = () => {
         display={{ base: "none", md: "block" }}
         position="absolute"
         right={0}
-        top="22%"
+        top="36%"
         zIndex={1}
         w="12.1%"
-        h="26%"
+        h="21.3%"
       />
 
       <Box
         aria-hidden
         position="absolute"
         left={{ base: "4%", md: "15.55%" }}
-        top={{ base: "30%", md: "22%" }}
+        top={{ base: "30%", md: "36%" }}
         zIndex={2}
         w={{ base: "92%", md: "72.35%" }}
-        h={{ base: "53%", md: "56.1%" }}
+        h={{ base: "53%", md: "46%" }}
         bg="linear-gradient(105deg, #3c237c 0%, #310f78 45%, #34107c 100%)"
         borderLeft="clamp(4px, 0.5vw, 8px) solid #373792"
         borderRight="clamp(4px, 0.5vw, 8px) solid #f325c2"
@@ -108,7 +109,7 @@ export const Description = () => {
         bottom={0}
         zIndex={3}
         w="100%"
-        h={{ base: "39%", md: "63.3%" }}
+        h={{ base: "39%", md: "51.9%" }}
         objectFit="cover"
         objectPosition="center top"
         clipPath="inset(45% 0 0)"
@@ -118,10 +119,10 @@ export const Description = () => {
       <Box
         position="absolute"
         left={{ base: "4%", md: "15.55%" }}
-        top={{ base: "30%", md: "22%" }}
+        top={{ base: "30%", md: "36%" }}
         zIndex={4}
         w={{ base: "92%", md: "72.35%" }}
-        h={{ base: "53%", md: "56.1%" }}
+        h={{ base: "53%", md: "46%" }}
         px={{ base: 6, sm: 10, md: "5.5%" }}
         pt={{ base: 8, md: "2.8%" }}
         pb={{ base: 12, md: "4%" }}
