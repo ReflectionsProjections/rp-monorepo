@@ -17,7 +17,7 @@ export const FAQS: FAQItem[] = [
   {
     question: "When and where is R|P?",
     answer:
-      "R|P 2025 will be held from **September 16th - September 20th** at the **Thomas M. Siebel Center for Computer Science** ([201 N Goodwin Ave, Urbana, IL 61801](https://maps.app.goo.gl/2mphY68Pwd6qTuBz5)). See our schedule for the specific room number for each event.",
+      "R|P 2026 will be held from **September 16th - September 19th** at the **Thomas M. Siebel Center for Computer Science** ([201 N Goodwin Ave, Urbana, IL 61801](https://maps.app.goo.gl/2mphY68Pwd6qTuBz5)). See our schedule for the specific room number for each event.",
     colors: { light: "#322BB7", dark: "#221D88" }
   },
   {
