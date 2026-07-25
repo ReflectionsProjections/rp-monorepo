@@ -35,7 +35,7 @@ const Home = () => {
           inset={0}
           zIndex={0}
           w="100%"
-          h="100%"
+          h="auto"
           pointerEvents="none"
         />
         <Landing />
