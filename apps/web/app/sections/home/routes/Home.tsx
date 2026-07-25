@@ -38,26 +38,6 @@ const Home = () => {
           h="100%"
           pointerEvents="none"
         />
-        <Box
-          as="img"
-          src="/site/about/about-skyline.jpg"
-          alt=""
-          aria-hidden="true"
-          display={{ base: "none", md: "block" }}
-          position="absolute"
-          top="20%"
-          left={0}
-          zIndex={1}
-          w="100%"
-          h="auto"
-          pointerEvents="none"
-          sx={{
-            WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%)",
-            maskImage:
-              "linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%)"
-          }}
-        />
         <Landing />
         <Description />
       </Box>

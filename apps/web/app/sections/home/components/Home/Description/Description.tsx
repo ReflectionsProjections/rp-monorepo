@@ -1,8 +1,4 @@
 import { Box, Heading, Image, Text } from "@chakra-ui/react";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-
-const MotionBox = motion(Box);
 
 const ABOUT_COPY = [
   "Reflections | Projections is the Midwest's largest student-run technology conference. Every fall, we bring students, creators, researchers, and industry leaders together at the University of Illinois Urbana-Champaign.",
@@ -10,14 +6,10 @@ const ABOUT_COPY = [
 ];
 
 export const Description = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.25 });
-
   return (
     <Box
       as="section"
       id="description"
-      ref={sectionRef}
       aria-labelledby="about-heading"
       position="relative"
       w="100%"
@@ -28,26 +20,32 @@ export const Description = () => {
       bg={{ base: "#100b1f", md: "transparent" }}
       zIndex={2}
     >
-      <Image
-        src="/site/about/about-skyline.jpg"
-        alt=""
-        aria-hidden
-        display={{ base: "block", md: "none" }}
+      <Box
         position="absolute"
         insetX={0}
         top={0}
         zIndex={0}
         w="100%"
-        h="36%"
-        objectFit="cover"
-        objectPosition="center top"
-      />
+        h={{ base: "36%", md: "46.8%" }}
+        overflow="hidden"
+      >
+        <Image
+          src="/site/about/about-skyline-transparent.png"
+          alt=""
+          aria-hidden
+          display="block"
+          w="100%"
+          h="100%"
+          objectFit="cover"
+          objectPosition="center top"
+        />
+      </Box>
 
       <Image
         src="/site/about/about-left-tower.jpg"
         alt=""
         aria-hidden
-        display="none"
+        display={{ base: "none", md: "block" }}
         position="absolute"
         left={0}
         top="46.7%"
@@ -60,7 +58,7 @@ export const Description = () => {
         src="/site/about/about-right-tower.jpg"
         alt=""
         aria-hidden
-        display="none"
+        display={{ base: "none", md: "block" }}
         position="absolute"
         right={0}
         top="46.7%"
@@ -73,10 +71,10 @@ export const Description = () => {
         aria-hidden
         position="absolute"
         left={{ base: "4%", md: "15.55%" }}
-        top={{ base: "30%", md: "8%" }}
+        top={{ base: "30%", md: "46.7%" }}
         zIndex={2}
         w={{ base: "92%", md: "72.35%" }}
-        h={{ base: "53%", md: "52%" }}
+        h={{ base: "53%", md: "31.4%" }}
         bg="linear-gradient(105deg, #3c237c 0%, #310f78 45%, #34107c 100%)"
         borderLeft="clamp(4px, 0.5vw, 8px) solid #373792"
         borderRight="clamp(4px, 0.5vw, 8px) solid #f325c2"
@@ -117,19 +115,16 @@ export const Description = () => {
         pointerEvents="none"
       />
 
-      <MotionBox
+      <Box
         position="absolute"
         left={{ base: "4%", md: "15.55%" }}
-        top={{ base: "30%", md: "8%" }}
+        top={{ base: "30%", md: "46.7%" }}
         zIndex={4}
         w={{ base: "92%", md: "72.35%" }}
-        h={{ base: "53%", md: "52%" }}
+        h={{ base: "53%", md: "31.4%" }}
         px={{ base: 6, sm: 10, md: "5.5%" }}
         pt={{ base: 8, md: "2.8%" }}
         pb={{ base: 12, md: "4%" }}
-        initial={{ opacity: 0, y: 36 }}
-        animate={isInView ? { opacity: 1, y: 0 } : undefined}
-        transition={{ duration: 0.7, ease: "easeOut" }}
       >
         <Heading
           id="about-heading"
@@ -160,7 +155,7 @@ export const Description = () => {
             {paragraph}
           </Text>
         ))}
-      </MotionBox>
+      </Box>
     </Box>
   );
 };
