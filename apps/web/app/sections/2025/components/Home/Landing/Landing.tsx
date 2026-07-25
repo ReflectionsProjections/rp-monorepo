@@ -1,4 +1,4 @@
-import animationData from "@app/sections/home/assets/Landing/homeScreen1.json";
+import animationData from "@app/sections/2025/assets/Landing/homeScreen1.json";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Box,
