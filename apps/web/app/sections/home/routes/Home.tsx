@@ -5,6 +5,7 @@ import SponsorSection from "@app/sections/home/components/Home/Sponsors/SponsorS
 import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import landingAboutBg from "../assets/Landing/LandingAbout.svg";
 import Description from "../components/Home/Description/Description";
 import Landing from "../components/Home/Landing/Landing";
 
@@ -23,8 +24,43 @@ const Home = () => {
 
   return (
     <Box bg="#100E0E">
-      <Landing />
-      <Description />
+      <Box position="relative" overflow="hidden" bg="#0d0b1a">
+        <Box
+          as="img"
+          src={landingAboutBg}
+          alt=""
+          aria-hidden="true"
+          display={{ base: "none", md: "block" }}
+          position="absolute"
+          inset={0}
+          zIndex={0}
+          w="100%"
+          h="100%"
+          pointerEvents="none"
+        />
+        <Box
+          as="img"
+          src="/site/about/about-skyline.jpg"
+          alt=""
+          aria-hidden="true"
+          display={{ base: "none", md: "block" }}
+          position="absolute"
+          top="20%"
+          left={0}
+          zIndex={1}
+          w="100%"
+          h="auto"
+          pointerEvents="none"
+          sx={{
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%)",
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, #000 16%, #000 100%)"
+          }}
+        />
+        <Landing />
+        <Description />
+      </Box>
       <Schedule />
       <FAQ />
       <SponsorSection />

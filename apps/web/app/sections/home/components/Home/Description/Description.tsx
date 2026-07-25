@@ -1,256 +1,166 @@
-import { Box, Heading, Text, useMediaQuery } from "@chakra-ui/react";
-import { useRef } from "react";
+import { Box, Heading, Image, Text } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const MotionBox = motion(Box);
-const MotionHeading = motion(Heading);
-const MotionText = motion(Text);
 
-const CARS = [
-  {
-    car: "/site/description/cars/blue.svg",
-    from: {
-      desktop: { left: "33%", top: "-10%", opacity: 0 },
-      mobile: { left: "20%", top: "-10%", opacity: 0 }
-    },
-    to: {
-      desktop: { left: "18%", top: "30%", opacity: 1 },
-      mobile: { left: "5%", top: "25%", opacity: 1 }
-    },
-    delay: 0,
-    width: "150px",
-    trailGradient: "linear(to top, #3B82F6 0%, transparent 25%)",
-    trailColor: "#3B82F6"
-  },
-  {
-    car: "/site/description/cars/red.svg",
-    from: {
-      desktop: { left: "57%", top: "-10%", opacity: 0 },
-      mobile: { left: "60%", top: "-10%", opacity: 0 }
-    },
-    to: {
-      desktop: { left: "41%", top: "28%", opacity: 1 },
-      mobile: { left: "25%", top: "50%", opacity: 1 }
-    },
-    delay: 0.12,
-    width: "150px",
-    trailGradient: "linear(to top, #EF4444 0%, transparent 25%)",
-    trailColor: "#EF4444"
-  },
-  {
-    car: "/site/description/cars/green.svg",
-    from: {
-      desktop: { left: "80%", top: "-10%", opacity: 0 },
-      mobile: { left: "95%", top: "-10%", opacity: 0 }
-    },
-    to: {
-      desktop: { left: "55%", top: "50%", opacity: 1 },
-      mobile: { left: "65%", top: "50%", opacity: 1 }
-    },
-    delay: 0.24,
-    width: "150px",
-    trailGradient: "linear(to top, #10B981 0%, transparent 40%)",
-    trailColor: "#10B981"
-  }
+const ABOUT_COPY = [
+  "Reflections | Projections is the Midwest's largest student-run technology conference. Every fall, we bring students, creators, researchers, and industry leaders together at the University of Illinois Urbana-Champaign.",
+  "Join us September 16–19 for four days of inspiring speakers, technical talks, a career fair, workshops, free food, merch, and the ideas shaping what comes next."
 ];
 
 export const Description = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  const [isMobile] = useMediaQuery("(max-width: 1000px)");
-
-  const textRef = useRef(null);
-  const textInView = useInView(textRef, { once: true, margin: "-100px" });
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.25 });
 
   return (
     <Box
+      as="section"
       id="description"
-      display="flex"
-      maxW="1500px"
-      mx="auto"
-      flexDirection={{ base: "column", lg: "row" }}
-      alignItems="center"
-      justifyContent="space-between"
+      ref={sectionRef}
+      aria-labelledby="about-heading"
       position="relative"
-      bg="#100E0E"
-      overflowX="hidden"
-      overflowY="visible"
+      w="100%"
+      minH={{ base: "900px", sm: "980px", md: "auto" }}
+      aspectRatio={{ md: "1512 / 1926" }}
+      overflow="hidden"
       color="white"
-      p={{ base: 4, md: 8 }}
+      bg={{ base: "#100b1f", md: "transparent" }}
+      zIndex={2}
     >
-      {/* Cars wrapper */}
-      <Box
-        ref={ref}
-        flexBasis={{ lg: "50%" }}
-        w={{ base: "100%", md: "75%", lg: "100%" }}
-        maxW="700px"
-        h={{ base: isMobile ? "50vh" : "70vh", md: "40vh", lg: "70vh" }}
-        transform={{ base: "scale(0.7)", md: "scale(1)" }}
-        position="relative"
-        zIndex={0}
-      >
-        {CARS.map((c, i) => (
-          <MotionBox
-            key={i}
-            position="absolute"
-            left={isMobile ? c.from.mobile.left : c.from.desktop.left}
-            top={isMobile ? c.from.mobile.top : c.from.desktop.top}
-            w={c.width}
-            pointerEvents="none"
-            initial={{
-              opacity: isMobile ? c.from.mobile.opacity : c.from.desktop.opacity
-            }}
-            animate={
-              inView
-                ? {
-                    left: isMobile ? c.to.mobile.left : c.to.desktop.left,
-                    top: isMobile ? c.to.mobile.top : c.to.desktop.top,
-                    opacity: isMobile
-                      ? c.to.mobile.opacity
-                      : c.to.desktop.opacity
-                  }
-                : {}
-            }
-            transition={{
-              type: "tween",
-              duration: 0.8,
-              ease: "linear",
-              delay: c.delay
-            }}
-          >
-            {/* glowing, pulsing trail */}
-            <MotionBox
-              position="absolute"
-              bottom="140px"
-              left="45%"
-              zIndex={0}
-              w="68px"
-              h="1500px"
-              bgGradient={c.trailGradient}
-              transformOrigin="bottom"
-              initial={{
-                transform: "rotate(28deg) scaleY(0)",
-                filter: `drop-shadow(0 0 8px ${c.trailColor})`
-              }}
-              animate={{
-                transform: "rotate(28deg) scaleY(1)",
-                filter: [
-                  `drop-shadow(0 0 4px ${c.trailColor})`,
-                  `drop-shadow(0 0 8px ${c.trailColor})`,
-                  `drop-shadow(0 0 4px ${c.trailColor})`
-                ]
-              }}
-              transition={{
-                transform: {
-                  duration: 1.2,
-                  ease: "easeInOut",
-                  delay: c.delay + 0.3
-                },
-                filter: {
-                  repeat: Infinity,
-                  duration: 1.5,
-                  ease: "easeInOut",
-                  delay: c.delay + 0.1
-                }
-              }}
-            />
-            {/* car image */}
-            <Box as="img" src={c.car} position="relative" w="100%" zIndex={1} />
-          </MotionBox>
-        ))}
-      </Box>
-
-      {/* Text card */}
-      <Box flexBasis={{ lg: "50%" }} maxW={{ lg: "52vw" }} zIndex={1}>
-        <Box
-          ref={textRef}
-          color="white"
-          p={{ base: 8, md: 10 }}
-          px={{
-            base: 0,
-            md: 10
-          }}
-          pt={{
-            base: -8,
-            md: 0,
-            lg: 10
-          }}
-        >
-          <MotionHeading
-            mb={4}
-            fontFamily="ProRacingSlant"
-            letterSpacing={1.5}
-            fontSize={{ base: "3xl", md: "6xl" }}
-            initial={{ y: -30, opacity: 0 }}
-            animate={textInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            Welcome to R|P!
-          </MotionHeading>
-          <MotionText
-            mb={4}
-            maxW={{ lg: "600px" }}
-            fontSize={{ base: "xl", md: "2xl" }}
-            lineHeight="1.8"
-            fontFamily="Magistral"
-            fontWeight={700}
-            initial={{ y: -20, opacity: 0 }}
-            animate={textInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-          >
-            Start your engines and step into the driver’s seat at the Midwest’s
-            largest student-run technology conference!{" "}
-            <Box
-              as="img"
-              lineHeight={0}
-              src="/site/description/car.svg"
-              alt="Flag"
-              h="auto"
-              transform={"translateY(2px)"}
-              w={{ base: "3rem", md: "3.5rem" }}
-              display="inline-block"
-              verticalAlign="text-top"
-            />
-          </MotionText>
-
-          <MotionText
-            fontSize={{ base: "xl", md: "2xl" }}
-            maxW={{ lg: "600px" }}
-            lineHeight="1.8"
-            fontFamily="Magistral"
-            fontWeight={700}
-            initial={{ y: -20, opacity: 0 }}
-            animate={textInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
-          >
-            Hosted at the Siebel Center for Computer Science at UIUC from
-            September 16–20, we’ll race towards the future with guest speakers,
-            tech talks, a career fair, free merch, and more. At R|P, you’ll gear
-            up for the road ahead.{" "}
-            <Box
-              as="img"
-              src="/site/description/flag.svg"
-              alt="Flag"
-              h={{ base: "2rem", md: "2.5rem" }}
-              transform={{ base: "translateY(-11px)", md: "translateY(-15px)" }}
-              w="auto"
-              display="inline-block"
-              verticalAlign="text-top"
-            />
-          </MotionText>
-        </Box>
-      </Box>
-
-      {/* Gradient bar */}
-      {/* <Box
-        w="100%"
-        h="12px"
-        bg="linear-gradient(90deg, #ff0000 0%, #ffffff 50%, #ff0000 100%)"
+      <Image
+        src="/site/about/about-skyline.jpg"
+        alt=""
+        aria-hidden
+        display={{ base: "block", md: "none" }}
         position="absolute"
-        bottom={0}
+        insetX={0}
+        top={0}
+        zIndex={0}
+        w="100%"
+        h="36%"
+        objectFit="cover"
+        objectPosition="center top"
+      />
+
+      <Image
+        src="/site/about/about-left-tower.jpg"
+        alt=""
+        aria-hidden
+        display="none"
+        position="absolute"
         left={0}
+        top="46.7%"
         zIndex={1}
-      /> */}
+        w="15.55%"
+        h="13.85%"
+      />
+
+      <Image
+        src="/site/about/about-right-tower.jpg"
+        alt=""
+        aria-hidden
+        display="none"
+        position="absolute"
+        right={0}
+        top="46.7%"
+        zIndex={1}
+        w="12.1%"
+        h="13.85%"
+      />
+
+      <Box
+        aria-hidden
+        position="absolute"
+        left={{ base: "4%", md: "15.55%" }}
+        top={{ base: "30%", md: "8%" }}
+        zIndex={2}
+        w={{ base: "92%", md: "72.35%" }}
+        h={{ base: "53%", md: "52%" }}
+        bg="linear-gradient(105deg, #3c237c 0%, #310f78 45%, #34107c 100%)"
+        borderLeft="clamp(4px, 0.5vw, 8px) solid #373792"
+        borderRight="clamp(4px, 0.5vw, 8px) solid #f325c2"
+      >
+        <Box
+          position="absolute"
+          left={{ base: "-1.2rem", md: "-4.8%" }}
+          top={{ base: "1.2rem", md: "2%" }}
+          w={{ base: "3.2rem", md: "8.5%" }}
+          h={{ base: "0.85rem", md: "3.7%" }}
+          bg="#936ae9"
+          borderRadius="2px"
+        />
+        <Box
+          position="absolute"
+          right={{ base: "-1.2rem", md: "-3.2%" }}
+          top={{ base: "1.2rem", md: "2%" }}
+          w={{ base: "3.2rem", md: "8.5%" }}
+          h={{ base: "0.85rem", md: "3.7%" }}
+          bg="#936ae9"
+          borderRadius="2px"
+        />
+      </Box>
+
+      <Image
+        src="/site/about/about-foreground.png"
+        alt=""
+        aria-hidden
+        position="absolute"
+        insetX={0}
+        bottom={0}
+        zIndex={3}
+        w="100%"
+        h={{ base: "39%", md: "33.7%" }}
+        objectFit="cover"
+        objectPosition="center top"
+        clipPath="inset(45% 0 0)"
+        pointerEvents="none"
+      />
+
+      <MotionBox
+        position="absolute"
+        left={{ base: "4%", md: "15.55%" }}
+        top={{ base: "30%", md: "8%" }}
+        zIndex={4}
+        w={{ base: "92%", md: "72.35%" }}
+        h={{ base: "53%", md: "52%" }}
+        px={{ base: 6, sm: 10, md: "5.5%" }}
+        pt={{ base: 8, md: "2.8%" }}
+        pb={{ base: 12, md: "4%" }}
+        initial={{ opacity: 0, y: 36 }}
+        animate={isInView ? { opacity: 1, y: 0 } : undefined}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
+        <Heading
+          id="about-heading"
+          fontFamily="Ethnocentric"
+          fontWeight={400}
+          fontSize={{ base: "clamp(1.7rem, 7.5vw, 2.7rem)", md: "4vw" }}
+          lineHeight={1.05}
+          textAlign="center"
+          whiteSpace={{ md: "nowrap" }}
+          mb={{ base: 8, md: "6%" }}
+        >
+          Welcome to R|P!
+        </Heading>
+
+        {ABOUT_COPY.map((paragraph) => (
+          <Text
+            key={paragraph}
+            maxW="930px"
+            mx="auto"
+            mb={{ base: 5, md: "2.5%" }}
+            fontFamily="'Share Tech Mono', 'Magistral', monospace"
+            fontSize={{
+              base: "clamp(0.95rem, 4vw, 1.15rem)",
+              md: "1.55vw"
+            }}
+            lineHeight={{ base: 1.55, md: 1.45 }}
+          >
+            {paragraph}
+          </Text>
+        ))}
+      </MotionBox>
     </Box>
   );
 };

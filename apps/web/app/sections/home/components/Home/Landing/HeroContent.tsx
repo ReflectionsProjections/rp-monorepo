@@ -54,7 +54,7 @@ export const HeroContent = () => {
       justify="center"
       align="center"
       spacing={{ base: 6, md: 8 }}
-      minH="100dvh"
+      minH={{ base: "100dvh", md: "auto" }}
       px={4}
       pb={16}
     >
