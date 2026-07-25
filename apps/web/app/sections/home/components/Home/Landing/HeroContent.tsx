@@ -36,13 +36,11 @@ const titleFont = {
 };
 
 export const HeroContent = () => {
-  const xOffset = useBreakpointValue({ base: 20, sm: 40, md: 60 }) ?? 60;
-  const wordSpacing = useBreakpointValue({ base: 1, sm: 2, md: 3 });
+  const xOffset = useBreakpointValue({ base: 20, sm: 40, xl: 60 }) ?? 60;
+  const wordSpacing = useBreakpointValue({ base: 1, sm: 2, xl: 3 });
   const fontSize = useBreakpointValue({
     base: "lg",
     sm: "2xl",
-    md: "3xl",
-    lg: "4xl",
     xl: "5xl"
   });
 
@@ -53,8 +51,8 @@ export const HeroContent = () => {
       flex={1}
       justify="center"
       align="center"
-      spacing={{ base: 6, md: 8 }}
-      minH={{ base: "100dvh", md: "auto" }}
+      spacing={{ base: 6, xl: 8 }}
+      minH={{ base: "100dvh", xl: "auto" }}
       px={4}
       pb={16}
     >
@@ -124,10 +122,10 @@ export const HeroContent = () => {
       </HStack>
 
       {/* App store badges */}
-      <MotionBox {...fadeUp(BADGES_DELAY)} mt={{ base: 3, md: 5 }}>
+      <MotionBox {...fadeUp(BADGES_DELAY)} mt={{ base: 3, xl: 5 }}>
         <HStack
           spacing={6}
-          flexDir={{ base: "column", sm: "row" }}
+          flexDir={{ base: "column", xl: "row" }}
           align="center"
           justify="center"
         >
@@ -140,7 +138,7 @@ export const HeroContent = () => {
             <Image
               src="/site/appscreen/app_store.png"
               alt="Download on the App Store"
-              h={{ base: "50px", md: "60px" }}
+              h={{ base: "50px", xl: "60px" }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
@@ -156,7 +154,7 @@ export const HeroContent = () => {
             <Image
               src="/site/appscreen/google_play.png"
               alt="Get it on Google Play"
-              h={{ base: "50px", md: "60px" }}
+              h={{ base: "50px", xl: "60px" }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
@@ -178,9 +176,9 @@ export const HeroContent = () => {
             as="img"
             src={registerBtnSrc}
             alt="Register Now"
-            h={{ base: "58px", md: "74px" }}
+            h={{ base: "58px", xl: "74px" }}
             w="auto"
-            maxW={{ base: "300px", sm: "400px", md: "500px" }}
+            maxW={{ base: "300px", sm: "400px", xl: "500px" }}
           />
         </Link>
       </MotionBox>

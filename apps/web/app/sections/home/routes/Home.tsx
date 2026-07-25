@@ -30,7 +30,7 @@ const Home = () => {
           src={landingAboutBg}
           alt=""
           aria-hidden="true"
-          display={{ base: "none", md: "block" }}
+          display={{ base: "none", xl: "block" }}
           position="absolute"
           inset={0}
           zIndex={0}
