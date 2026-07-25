@@ -13,25 +13,28 @@ export default function Events() {
   const date = useMemo(() => new Date(time), [time]);
   const toast = useToast();
   const [events, setEvents] = useState<Event[]>([]);
-  const [displayedEvents, setDisplayedEvents] = useState<EventSelected[]>([]);
 
-  const fetchData = async () => {
-    try {
-      const events = await api.get("/events");
-      setEvents(events.data);
-    } catch (err: unknown) {
-      console.error(err);
-      toast({
-        title: `Error fetching events`,
-        status: "error",
-        duration: 9000,
-        isClosable: true
-      });
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const events = await api.get("/events");
+        setEvents(events.data);
+      } catch (err: unknown) {
+        console.error(err);
+        toast({
+          title: `Error fetching events`,
+          status: "error",
+          duration: 9000,
+          isClosable: true
+        });
+      }
+    };
+    void fetchData();
+  }, [toast]);
 
-  const handleUpdateData = () => {
-    if (!date) return;
+  const displayedEvents = useMemo<EventSelected[]>(() => {
+    if (!date) return [];
+
     const grouped: { [key: string]: Event[] } = {};
     events.forEach((evt) => {
       const eventDate = moment(evt.startTime).format("M/D");
@@ -67,26 +70,12 @@ export default function Events() {
       }
     }
 
-    newDisplayedEvents = (newDisplayedEvents || []).map((evt) => {
-      return {
-        ...evt,
-        selected:
-          moment(evt.startTime).isSameOrBefore(moment(date)) &&
-          moment(evt.endTime).isAfter(moment(date))
-      };
-    });
-
-    setDisplayedEvents(newDisplayedEvents);
-  };
-
-  useEffect(() => {
-    void fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast]);
-
-  useEffect(() => {
-    void handleUpdateData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return (newDisplayedEvents || []).map((evt) => ({
+      ...evt,
+      selected:
+        moment(evt.startTime).isSameOrBefore(moment(date)) &&
+        moment(evt.endTime).isAfter(moment(date))
+    }));
   }, [events, date]);
 
   return (

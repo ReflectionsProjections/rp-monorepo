@@ -9,7 +9,8 @@ import RoleChecker from "../../middleware/role-checker";
 import { AttendeeCreateValidator } from "../attendee/attendee-validators";
 import cors from "cors";
 import Mustache from "mustache";
-import { sendHTMLEmail } from "../ses/ses-utils";
+import { sendTemplateEmail } from "../ses/ses-utils";
+import { Templates, MailingLists } from "../../config";
 import templates from "../../templates/templates";
 import { Role } from "../auth/auth-models";
 
@@ -191,10 +192,10 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
         SupabaseDB.ATTENDEES.upsert(attendee, {
             onConflict: "userId",
         }).throwOnError(),
-        SupabaseDB.SUBSCRIPTIONS.upsert({
-            userId: payload.userId,
-            mailingList: "attendees",
-        }).throwOnError(),
+        SupabaseDB.MAILING_LISTS.upsert(
+            { listName: MailingLists.ATTENDEES_2026, email: payload.email },
+            { onConflict: "listName,email", ignoreDuplicates: true }
+        ).throwOnError(),
     ]);
 
     const substitution = {
@@ -242,20 +243,21 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
     // NOTE: The school's email filters block emails with an exclamation mark (!) in the subject
     // Not sure why, but do not put exclamation marks in the subject line
     if (!existing) {
-        await sendHTMLEmail(
-            payload.email,
-            "Reflections | Projections 2025 Registration Confirmation",
-            Mustache.render(templates.REGISTRATION_CONFIRMATION, substitution)
-        );
+        await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
+            subject: "Reflections | Projections 2025 Registration Confirmation",
+            body: Mustache.render(
+                templates.REGISTRATION_CONFIRMATION,
+                substitution
+            ),
+        });
     } else {
-        await sendHTMLEmail(
-            payload.email,
-            "Reflections | Projections 2025 Registration Updated",
-            Mustache.render(
+        await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
+            subject: "Reflections | Projections 2025 Registration Updated",
+            body: Mustache.render(
                 templates.REGISTRATION_UPDATE_CONFIRMATION,
                 substitution
-            )
-        );
+            ),
+        });
     }
 
     return res.status(StatusCodes.OK).json(registration);

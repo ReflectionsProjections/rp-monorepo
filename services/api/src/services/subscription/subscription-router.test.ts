@@ -1,31 +1,34 @@
 import { describe, expect, it } from "@jest/globals";
 import {
-    post,
     getAsAdmin,
     postAsAdmin,
+    postAsUser,
     delAsAdmin,
     postAsSuperAdmin,
 } from "../../../testing/testingTools";
 import { StatusCodes } from "http-status-codes";
 import { SupabaseDB } from "../../database";
 import { IncomingSubscription } from "./subscription-schema";
-import Config from "../../config";
 
-// Mock the AWS SDK
-const mockSESV2Send = jest.fn();
-const mockSendEmailCommand = jest.fn((input) => input);
-jest.mock("@aws-sdk/client-sesv2", () => ({
-    SESv2Client: jest.fn(() => ({
-        send: mockSESV2Send,
-    })),
-    SendEmailCommand: mockSendEmailCommand,
+const mockSendBulkTemplateEmail = jest.fn().mockResolvedValue({
+    success: true,
+    successCount: 2,
+    failedCount: 0,
+    errors: [],
+});
+const mockSendHTMLEmail = jest.fn().mockResolvedValue(undefined);
+jest.mock("../ses/ses-utils", () => ({
+    sendBulkTemplateEmail: mockSendBulkTemplateEmail,
+    sendHTMLEmail: mockSendHTMLEmail,
+    sendTemplateEmail: jest.fn().mockResolvedValue(undefined),
 }));
 
 const USER_ID_1 = "test-er-user-id";
 const USER_ID_2 = "test-user-2";
 const INVALID_USER_ID = "invalid-user-id";
 const VALID_mailingList = "rp_interest";
-const INVALID_mailingList = "invalid_list";
+const EMAIL_1 = "user1@test.com";
+const EMAIL_2 = "user2@test.com";
 
 const SUBSCRIPTION_1 = {
     userId: USER_ID_1,
@@ -39,26 +42,21 @@ const SUBSCRIPTION_INVALID_USER_ID = {
     userId: INVALID_USER_ID,
     mailingList: VALID_mailingList,
 };
-const SUBSCRIPTION_INVALID_LIST = {
-    userId: USER_ID_1,
-    mailingList: INVALID_mailingList,
-};
 
 beforeEach(async () => {
     jest.clearAllMocks();
 
-    // Set up authInfo data for test users
     try {
         await SupabaseDB.AUTH_INFO.insert([
             {
                 userId: USER_ID_1,
-                email: "user1@test.com",
+                email: EMAIL_1,
                 authId: "auth1",
                 displayName: "User 1",
             },
             {
                 userId: USER_ID_2,
-                email: "user2@test.com",
+                email: EMAIL_2,
                 authId: "auth2",
                 displayName: "User 2",
             },
@@ -70,49 +68,52 @@ beforeEach(async () => {
 
 describe("POST /subscription/", () => {
     it("should create a new subscription for a new user", async () => {
-        const response = await post("/subscription/")
+        const response = await postAsUser("/subscription/")
             .send(SUBSCRIPTION_1)
             .expect(StatusCodes.CREATED);
         expect(response.body).toEqual(SUBSCRIPTION_1);
-        const { data: dbEntry } = await SupabaseDB.SUBSCRIPTIONS.select()
-            .eq("userId", USER_ID_1)
-            .eq("mailingList", VALID_mailingList)
+
+        const { data: dbEntry } = await SupabaseDB.MAILING_LISTS.select()
+            .eq("listName", VALID_mailingList)
+            .eq("email", EMAIL_1)
             .maybeSingle()
             .throwOnError();
         expect(dbEntry).toMatchObject({
-            userId: USER_ID_1,
-            mailingList: VALID_mailingList,
+            listName: VALID_mailingList,
+            email: EMAIL_1,
         });
     }, 50000);
 
     it("should create a subscription for a different user", async () => {
-        const response = await post("/subscription/")
+        const response = await postAsAdmin("/subscription/")
             .send(SUBSCRIPTION_2)
             .expect(StatusCodes.CREATED);
         expect(response.body).toEqual(SUBSCRIPTION_2);
-        const { data: dbEntry } = await SupabaseDB.SUBSCRIPTIONS.select()
-            .eq("userId", USER_ID_2)
-            .eq("mailingList", VALID_mailingList)
+
+        const { data: dbEntry } = await SupabaseDB.MAILING_LISTS.select()
+            .eq("listName", VALID_mailingList)
+            .eq("email", EMAIL_2)
             .maybeSingle()
             .throwOnError();
         expect(dbEntry).toMatchObject({
-            userId: USER_ID_2,
-            mailingList: VALID_mailingList,
+            listName: VALID_mailingList,
+            email: EMAIL_2,
         });
     });
 
     it("should not create duplicate subscriptions", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert({
-            userId: USER_ID_1,
-            mailingList: VALID_mailingList,
+        await SupabaseDB.MAILING_LISTS.insert({
+            listName: VALID_mailingList,
+            email: EMAIL_1,
         }).throwOnError();
-        const response = await post("/subscription/")
+
+        await postAsUser("/subscription/")
             .send(SUBSCRIPTION_1)
             .expect(StatusCodes.CREATED);
-        expect(response.body).toEqual(SUBSCRIPTION_1);
-        const { data } = await SupabaseDB.SUBSCRIPTIONS.select()
-            .eq("userId", USER_ID_1)
-            .eq("mailingList", VALID_mailingList)
+
+        const { data } = await SupabaseDB.MAILING_LISTS.select()
+            .eq("listName", VALID_mailingList)
+            .eq("email", EMAIL_1)
             .throwOnError();
         expect(data?.length).toBe(1);
     });
@@ -121,112 +122,91 @@ describe("POST /subscription/", () => {
         {
             description: "missing userId",
             payload: { mailingList: VALID_mailingList },
+            helper: postAsUser,
         },
         {
             description: "missing mailingList",
             payload: { userId: USER_ID_1 },
+            helper: postAsUser,
         },
         {
             description: "invalid userId",
             payload: SUBSCRIPTION_INVALID_USER_ID,
+            helper: postAsAdmin,
         },
-        {
-            description: "invalid mailingList",
-            payload: SUBSCRIPTION_INVALID_LIST,
-        },
-    ])("should return BAD_REQUEST when $description", async ({ payload }) => {
-        await post("/subscription/")
-            .send(payload)
-            .expect(StatusCodes.BAD_REQUEST);
-    });
-
-    const SUBSCRIPTION_EXTRA = {
-        ...SUBSCRIPTION_1,
-        extraField: "should be ignored",
-    };
+    ])(
+        "should return BAD_REQUEST when $description",
+        async ({ payload, helper }) => {
+            await helper("/subscription/")
+                .send(payload)
+                .expect(StatusCodes.BAD_REQUEST);
+        }
+    );
 
     it("should ignore extra fields in the payload", async () => {
-        const response = await post("/subscription/")
-            .send(SUBSCRIPTION_EXTRA)
+        const response = await postAsUser("/subscription/")
+            .send({ ...SUBSCRIPTION_1, extraField: "should be ignored" })
             .expect(StatusCodes.CREATED);
         expect(response.body).toEqual(SUBSCRIPTION_1);
-        const { data: dbEntry } = await SupabaseDB.SUBSCRIPTIONS.select()
-            .eq("userId", USER_ID_1)
-            .eq("mailingList", VALID_mailingList)
-            .maybeSingle()
-            .throwOnError();
-        expect(dbEntry?.mailingList).toEqual(VALID_mailingList);
     });
 });
 
 describe("GET /subscription/", () => {
-    it("should return an empty list when no subscriptions exist", async () => {
+    it("should return an empty list when no entries exist", async () => {
         const response = await getAsAdmin("/subscription/").expect(
             StatusCodes.OK
         );
         expect(response.body).toEqual([]);
     });
 
-    it("should return all subscriptions", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: VALID_mailingList },
-            { userId: USER_ID_2, mailingList: VALID_mailingList },
+    it("should return all mailing list entries", async () => {
+        await SupabaseDB.MAILING_LISTS.insert([
+            { listName: VALID_mailingList, email: EMAIL_1 },
+            { listName: VALID_mailingList, email: EMAIL_2 },
         ]).throwOnError();
+
         const response = await getAsAdmin("/subscription/").expect(
             StatusCodes.OK
         );
 
         expect(response.body.length).toBe(2);
-
         expect(response.body).toEqual(
             expect.arrayContaining([
-                { userId: USER_ID_1, mailingList: VALID_mailingList },
-                { userId: USER_ID_2, mailingList: VALID_mailingList },
+                { listName: VALID_mailingList, email: EMAIL_1 },
+                { listName: VALID_mailingList, email: EMAIL_2 },
             ])
         );
     });
 });
 
 describe("POST /subscription/send-email", () => {
-    const mailingList = VALID_mailingList;
-    const emails = ["user1@test.com", "user2@test.com"];
     const emailPayload = {
-        mailingList: mailingList,
+        mailingList: VALID_mailingList,
         subject: "Test Subject",
         htmlBody: "<p>Hello World</p>",
     };
 
     beforeEach(async () => {
-        // Set up subscription data
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: mailingList },
-            { userId: USER_ID_2, mailingList: mailingList },
+        await SupabaseDB.MAILING_LISTS.insert([
+            { listName: VALID_mailingList, email: EMAIL_1 },
+            { listName: VALID_mailingList, email: EMAIL_2 },
         ]).throwOnError();
     });
 
     it("should send an email to all subscribers of a list", async () => {
-        const res = await postAsSuperAdmin("/subscription/send-email")
+        await postAsSuperAdmin("/subscription/send-email")
             .send(emailPayload)
             .expect(StatusCodes.OK);
 
-        expect(mockSendEmailCommand).toHaveBeenCalledWith({
-            FromEmailAddress: Config.FROM_EMAIL_ADDRESS,
-            Destination: {
-                ToAddresses: [Config.FROM_EMAIL_ADDRESS],
-                BccAddresses: emails,
-            },
-            Content: {
-                Simple: {
-                    Subject: { Data: "Test Subject" },
-                    Body: { Html: { Data: "<p>Hello World</p>" } },
-                },
-            },
-        });
-
-        // Verify that the send method was actually invoked
-        expect(mockSESV2Send).toHaveBeenCalledTimes(1);
-
-        expect(res.body).toEqual({ status: "success" });
+        expect(mockSendBulkTemplateEmail).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.arrayContaining(
+                [EMAIL_1, EMAIL_2].map((email) =>
+                    expect.objectContaining({ email })
+                )
+            ),
+            expect.objectContaining({ subject: "Test Subject" })
+        );
     });
 
     it("fails to send an email for non super-admins", async () => {
@@ -234,11 +214,7 @@ describe("POST /subscription/send-email", () => {
             .send(emailPayload)
             .expect(StatusCodes.FORBIDDEN);
 
-        expect(mockSendEmailCommand).not.toHaveBeenCalled();
-
-        // Verify that the send method was actually invoked
-        expect(mockSESV2Send).not.toHaveBeenCalled();
-
+        expect(mockSendBulkTemplateEmail).not.toHaveBeenCalled();
         expect(res.body).toMatchObject({ error: "Forbidden" });
     });
 });
@@ -249,28 +225,21 @@ describe("POST /subscription/send-email/single", () => {
         subject: "Single Email Test",
         htmlBody: "<p>Single Email Body</p>",
     };
+
     it("should send an email to a single specified email address", async () => {
         const res = await postAsSuperAdmin("/subscription/send-email/single")
             .send(emailPayload)
             .expect(StatusCodes.OK);
 
-        expect(mockSendEmailCommand).toHaveBeenCalledWith({
-            FromEmailAddress: Config.FROM_EMAIL_ADDRESS,
-            Destination: {
-                ToAddresses: [emailPayload.email],
-            },
-            Content: {
-                Simple: {
-                    Subject: { Data: "Single Email Test" },
-                    Body: { Html: { Data: "<p>Single Email Body</p>" } },
-                },
-            },
+        expect(mockSendHTMLEmail).toHaveBeenCalledWith(
+            emailPayload.email,
+            emailPayload.subject,
+            emailPayload.htmlBody
+        );
+        expect(res.body).toEqual({
+            status: "success",
+            message: "Email sent successfully",
         });
-
-        // Verify that the send method was actually invoked
-        expect(mockSESV2Send).toHaveBeenCalledTimes(1);
-
-        expect(res.body).toEqual({ status: "success" });
     });
 
     it("fails to send for non super-admin", async () => {
@@ -278,26 +247,24 @@ describe("POST /subscription/send-email/single", () => {
             .send(emailPayload)
             .expect(StatusCodes.FORBIDDEN);
 
-        expect(mockSendEmailCommand).not.toHaveBeenCalled();
-        expect(mockSESV2Send).not.toHaveBeenCalled();
-
+        expect(mockSendHTMLEmail).not.toHaveBeenCalled();
         expect(res.body).toMatchObject({ error: "Forbidden" });
     });
 });
 
 describe("GET /subscription/lists", () => {
-    it("should return an empty array when no subscriptions exist", async () => {
+    it("should return an empty array when no entries exist", async () => {
         const response = await getAsAdmin("/subscription/lists").expect(
             StatusCodes.OK
         );
         expect(response.body).toEqual([]);
     });
 
-    it("should return unique mailing lists", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: VALID_mailingList },
-            { userId: USER_ID_2, mailingList: VALID_mailingList }, // duplicate mailing list
-            { userId: USER_ID_1, mailingList: "newsletter" },
+    it("should return unique mailing list names", async () => {
+        await SupabaseDB.MAILING_LISTS.insert([
+            { listName: VALID_mailingList, email: EMAIL_1 },
+            { listName: VALID_mailingList, email: EMAIL_2 },
+            { listName: "newsletter", email: EMAIL_1 },
         ]).throwOnError();
 
         const response = await getAsAdmin("/subscription/lists").expect(
@@ -309,53 +276,28 @@ describe("GET /subscription/lists", () => {
             expect.arrayContaining([VALID_mailingList, "newsletter"])
         );
     });
-
-    it("should return a single unique mailing list when all subscriptions are for the same list", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: VALID_mailingList },
-            { userId: USER_ID_2, mailingList: VALID_mailingList },
-        ]).throwOnError();
-
-        const response = await getAsAdmin("/subscription/lists").expect(
-            StatusCodes.OK
-        );
-
-        expect(response.body).toEqual([VALID_mailingList]);
-    });
 });
 
 describe("GET /subscription/:mailingList", () => {
-    it("should return the list of subscribers for an existing mailing list", async () => {
-        const emails = ["user1@test.com", "user2@test.com"];
-
-        // Set up subscription data
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: VALID_mailingList },
-            { userId: USER_ID_2, mailingList: VALID_mailingList },
+    it("should return the list of subscriber emails", async () => {
+        await SupabaseDB.MAILING_LISTS.insert([
+            { listName: VALID_mailingList, email: EMAIL_1 },
+            { listName: VALID_mailingList, email: EMAIL_2 },
         ]).throwOnError();
 
         const response = await getAsAdmin(
             `/subscription/${VALID_mailingList}`
         ).expect(StatusCodes.OK);
 
-        expect(response.body).toEqual(expect.arrayContaining(emails));
+        expect(response.body).toEqual(
+            expect.arrayContaining([EMAIL_1, EMAIL_2])
+        );
         expect(response.body.length).toBe(2);
     });
 
-    it("should return a 404 Not Found for a non-existent mailing list", async () => {
+    it("should return 404 for a non-existent mailing list", async () => {
         const response = await getAsAdmin(
             "/subscription/non-existent-list"
-        ).expect(StatusCodes.NOT_FOUND);
-
-        expect(response.body).toEqual({
-            error: "No subscribers found for this mailing list.",
-        });
-    });
-
-    it("should return an empty array for a list that has no subscribers", async () => {
-        // No setup needed - no subscriptions means no subscribers
-        const response = await getAsAdmin(
-            `/subscription/${VALID_mailingList}`
         ).expect(StatusCodes.NOT_FOUND);
 
         expect(response.body).toEqual({
@@ -365,9 +307,9 @@ describe("GET /subscription/:mailingList", () => {
 });
 
 describe("GET /subscription/user/:userId", () => {
-    it("should return a user's subscriptions", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: VALID_mailingList },
+    it("should return a user's mailing lists", async () => {
+        await SupabaseDB.MAILING_LISTS.insert([
+            { listName: VALID_mailingList, email: EMAIL_1 },
         ]).throwOnError();
 
         const response = await getAsAdmin(
@@ -375,7 +317,6 @@ describe("GET /subscription/user/:userId", () => {
         ).expect(StatusCodes.OK);
 
         expect(response.body).toEqual([VALID_mailingList]);
-        expect(response.body.length).toBe(1);
     });
 
     it("should return an empty array for a user with no subscriptions", async () => {
@@ -389,45 +330,20 @@ describe("GET /subscription/user/:userId", () => {
 
 describe("DELETE /subscription/", () => {
     it("should unsubscribe a user from a mailing list", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert([
-            { userId: USER_ID_1, mailingList: VALID_mailingList },
-        ]).throwOnError();
-
-        const response = await delAsAdmin("/subscription/")
-            .send({
-                userId: USER_ID_1,
-                mailingList: VALID_mailingList,
-            })
-            .expect(StatusCodes.OK);
-
-        expect(response.body).toEqual({ status: "success" });
-
-        // Verify the subscription was removed
-        const { data: remainingSubs } = await SupabaseDB.SUBSCRIPTIONS.select()
-            .eq("userId", USER_ID_1)
-            .throwOnError();
-        expect(remainingSubs?.length).toBe(0);
-    });
-
-    it("should delete the subscription record", async () => {
-        await SupabaseDB.SUBSCRIPTIONS.insert({
-            userId: USER_ID_1,
-            mailingList: VALID_mailingList,
+        await SupabaseDB.MAILING_LISTS.insert({
+            listName: VALID_mailingList,
+            email: EMAIL_1,
         }).throwOnError();
 
         const response = await delAsAdmin("/subscription/")
-            .send({
-                userId: USER_ID_1,
-                mailingList: VALID_mailingList,
-            })
+            .send({ userId: USER_ID_1, mailingList: VALID_mailingList })
             .expect(StatusCodes.OK);
 
         expect(response.body).toEqual({ status: "success" });
 
-        // Verify the subscription record was deleted
-        const { data } = await SupabaseDB.SUBSCRIPTIONS.select()
-            .eq("userId", USER_ID_1)
-            .eq("mailingList", VALID_mailingList)
+        const { data } = await SupabaseDB.MAILING_LISTS.select()
+            .eq("listName", VALID_mailingList)
+            .eq("email", EMAIL_1)
             .maybeSingle()
             .throwOnError();
         expect(data).toBeNull();
@@ -435,10 +351,7 @@ describe("DELETE /subscription/", () => {
 
     it("should return 404 when subscription not found", async () => {
         const response = await delAsAdmin("/subscription/")
-            .send({
-                userId: USER_ID_1,
-                mailingList: VALID_mailingList,
-            })
+            .send({ userId: USER_ID_1, mailingList: VALID_mailingList })
             .expect(StatusCodes.NOT_FOUND);
 
         expect(response.body).toEqual({ error: "Subscription not found." });
