@@ -82,8 +82,8 @@ const TopWall = () => (
   <VStack
     aria-hidden
     position="absolute"
-    top="128px"
-    insetX="32px"
+    top="88px"
+    insetX={0}
     display={{ base: "none", lg: "flex" }}
     align="stretch"
     spacing="8px"
@@ -91,16 +91,6 @@ const TopWall = () => (
     pointerEvents="none"
   >
     <BrickCourse pattern={FULL_WALL_PATTERNS[0]} offset="left" />
-    <WallColumns>
-      <BrickCourse pattern={SIDE_WALL_PATTERNS[1]} size="side" reach={86} />
-      <Box />
-      <BrickCourse
-        pattern={SIDE_WALL_PATTERNS[4]}
-        offset="right"
-        size="side"
-        reach={86}
-      />
-    </WallColumns>
   </VStack>
 );
 
@@ -151,7 +141,7 @@ const BottomWall = () => (
   <Box
     position="relative"
     h={{ base: "180px", md: "220px", lg: "220px" }}
-    mt={{ base: 7, lg: "38px" }}
+    mt={{ base: 7, lg: "8px" }}
     overflow="hidden"
   >
     <VStack
@@ -159,17 +149,16 @@ const BottomWall = () => (
       display={{ base: "none", lg: "flex" }}
       align="stretch"
       spacing="8px"
-      px="32px"
       pointerEvents="none"
     >
       <WallColumns>
-        <BrickCourse pattern={SIDE_WALL_PATTERNS[6]} size="side" reach={90} />
+        <BrickCourse pattern={SIDE_WALL_PATTERNS[6]} size="side" reach={100} />
         <Box />
         <BrickCourse
           pattern={SIDE_WALL_PATTERNS[2]}
           offset="right"
           size="side"
-          reach={90}
+          reach={100}
         />
       </WallColumns>
       <BrickCourse pattern={FULL_WALL_PATTERNS[0]} offset="right" />
@@ -244,9 +233,9 @@ export const FAQ = () => {
         columnGap={{ lg: "8px" }}
         rowGap={{ base: 4, lg: "8px" }}
         alignItems="stretch"
-        w={{ base: "calc(100% - 32px)", lg: "calc(100% - 64px)" }}
+        w={{ base: "calc(100% - 32px)", lg: "100%" }}
         mx="auto"
-        pt={{ base: "132px", md: "140px", lg: "222px" }}
+        pt={{ base: "132px", md: "140px", lg: "182px" }}
       >
         {FAQS.map((faqItem, index) => (
           <Fragment key={faqItem.question}>
