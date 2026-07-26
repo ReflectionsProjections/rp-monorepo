@@ -30,18 +30,22 @@ export const FAQQuestion = ({
         alignItems="center"
         justifyContent="space-between"
         w="100%"
-        minH={{ base: "88px", md: "108px", xl: "132px" }}
+        minH={{
+          base: "88px",
+          md: "108px",
+          lg: "clamp(86px, 8.7vw, 132px)"
+        }}
         gap={4}
-        px={{ base: 5, md: 8, xl: "47px" }}
-        py={{ base: 5, md: 7, xl: "38px" }}
+        px={{ base: 5, md: 8, lg: "clamp(30px, 3.1vw, 47px)" }}
+        py={{ base: 5, md: 7, lg: "clamp(24px, 2.5vw, 38px)" }}
         color="white"
         textAlign="left"
-        bg="#312537"
+        bg="rgba(49, 37, 55, 0.78)"
         borderRadius="13px"
         boxShadow="0 8px 0 rgba(0, 0, 0, 0.82)"
         cursor="pointer"
         transition="background 180ms ease, transform 180ms ease"
-        _hover={{ bg: "#3b2d42" }}
+        _hover={{ bg: "rgba(66, 49, 73, 0.84)" }}
         _focusVisible={{
           outline: "3px solid #e952bc",
           outlineOffset: "4px"
