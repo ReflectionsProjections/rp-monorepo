@@ -71,6 +71,7 @@ const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
     display="flex"
     alignItems="center"
     gap={3}
+    flexShrink={0}
     _hover={{ textDecoration: "none" }}
     onClick={() => scrollToHero(onClick)}
   >
@@ -91,6 +92,7 @@ const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
       lineHeight="1"
       letterSpacing="0.02em"
       mt="6px"
+      whiteSpace="nowrap"
     >
       R|P 2026
     </Text>
@@ -130,14 +132,15 @@ const Navbar = ({ isFlush }: NavbarProps) => {
       <HStack
         display={{ base: "none", lg: "flex" }}
         {...pillStyles}
-        px={8}
+        px={{ lg: 4, xl: 8 }}
         py={4}
-        w="80%"
+        w={{ lg: "calc(100% - 32px)", xl: "80%" }}
+        maxW="1512px"
         justify="space-between"
       >
         <LogoBlock />
 
-        <HStack gap={20}>
+        <HStack gap={{ lg: 4, xl: 20 }}>
           {NAV_LINKS.map(({ label, to, id }) => (
             <Link
               key={label}

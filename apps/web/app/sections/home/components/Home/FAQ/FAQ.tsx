@@ -1,5 +1,6 @@
 import { FAQS } from "@app/sections/home/constants/faq-questions";
 import { Box, Image, VStack } from "@chakra-ui/react";
+import type { ReactNode } from "react";
 import { Fragment, useState } from "react";
 
 import { FAQQuestion } from "./FAQQuestion";
@@ -21,20 +22,34 @@ const SIDE_WALL_PATTERNS = [
   "1.06fr 0.74fr"
 ];
 
+const SIDE_WALL_REACHES = [
+  { top: 78, bottom: 68 },
+  { top: 56, bottom: 40 },
+  { top: 30, bottom: 30 },
+  { top: 42, bottom: 58 },
+  { top: 72, bottom: 88 }
+];
+
 type BrickCourseProps = {
   pattern: string;
   offset?: "left" | "right";
+  reach?: number;
   size?: "full" | "side";
 };
 
-const BrickCourse = ({ pattern, offset, size = "full" }: BrickCourseProps) => (
+const BrickCourse = ({
+  pattern,
+  offset,
+  reach = 100,
+  size = "full"
+}: BrickCourseProps) => (
   <Box
     aria-hidden
     display="grid"
     gridTemplateColumns={pattern}
-    gap={{ lg: "8px" }}
-    w={size === "full" ? "104%" : "100%"}
-    ml={size === "full" ? (offset === "right" ? "0" : "-4%") : "0"}
+    gap="8px"
+    w={size === "full" ? "100%" : `${reach}%`}
+    ml={size === "full" ? "0" : offset === "right" ? "auto" : "0"}
   >
     {pattern.split(" ").map((_, index) => (
       <Box
@@ -42,14 +57,24 @@ const BrickCourse = ({ pattern, offset, size = "full" }: BrickCourseProps) => (
         h={
           size === "full"
             ? "clamp(52px, 5.7vw, 86px)"
-            : "clamp(42px, 3.8vw, 58px)"
+            : "calc((clamp(86px, 8.7vw, 132px) - 8px) / 2)"
         }
-        border="2px solid rgba(122, 112, 132, 0.34)"
-        borderRadius="10px"
+        borderRadius="8px"
         bg="#494152"
-        boxShadow="inset 0 2px 0 rgba(255, 255, 255, 0.04)"
       />
     ))}
+  </Box>
+);
+
+const WallColumns = ({ children }: { children: ReactNode }) => (
+  <Box
+    display="grid"
+    gridTemplateColumns="minmax(70px, 1fr) minmax(0, 64vw) minmax(70px, 1fr)"
+    columnGap={{ lg: "8px" }}
+    alignItems="stretch"
+    w="100%"
+  >
+    {children}
   </Box>
 );
 
@@ -57,8 +82,8 @@ const TopWall = () => (
   <VStack
     aria-hidden
     position="absolute"
-    top="22px"
-    insetX={0}
+    top="128px"
+    insetX="32px"
     display={{ base: "none", lg: "flex" }}
     align="stretch"
     spacing="8px"
@@ -66,7 +91,16 @@ const TopWall = () => (
     pointerEvents="none"
   >
     <BrickCourse pattern={FULL_WALL_PATTERNS[0]} offset="left" />
-    <BrickCourse pattern={FULL_WALL_PATTERNS[1]} offset="right" />
+    <WallColumns>
+      <BrickCourse pattern={SIDE_WALL_PATTERNS[1]} size="side" reach={86} />
+      <Box />
+      <BrickCourse
+        pattern={SIDE_WALL_PATTERNS[4]}
+        offset="right"
+        size="side"
+        reach={86}
+      />
+    </WallColumns>
   </VStack>
 );
 
@@ -83,6 +117,7 @@ const WallCell = ({ side, index }: WallCellProps) => {
     SIDE_WALL_PATTERNS[
       (index * 2 + patternOffset + 1) % SIDE_WALL_PATTERNS.length
     ];
+  const { top: topReach, bottom: bottomReach } = SIDE_WALL_REACHES[index];
 
   return (
     <Box
@@ -94,9 +129,20 @@ const WallCell = ({ side, index }: WallCellProps) => {
       minH="clamp(86px, 8.7vw, 132px)"
       overflow="hidden"
       pointerEvents="none"
+      sx={{ contain: "layout paint" }}
     >
-      <BrickCourse pattern={topPattern} offset={side} size="side" />
-      <BrickCourse pattern={bottomPattern} offset={side} size="side" />
+      <BrickCourse
+        pattern={topReach <= 42 ? "1fr" : topPattern}
+        offset={side}
+        reach={topReach}
+        size="side"
+      />
+      <BrickCourse
+        pattern={bottomReach <= 42 ? "1fr" : bottomPattern}
+        offset={side}
+        reach={bottomReach}
+        size="side"
+      />
     </Box>
   );
 };
@@ -104,7 +150,7 @@ const WallCell = ({ side, index }: WallCellProps) => {
 const BottomWall = () => (
   <Box
     position="relative"
-    h={{ base: "180px", md: "220px", lg: "290px", xl: "320px" }}
+    h={{ base: "180px", md: "220px", lg: "220px" }}
     mt={{ base: 7, lg: "38px" }}
     overflow="hidden"
   >
@@ -113,10 +159,19 @@ const BottomWall = () => (
       display={{ base: "none", lg: "flex" }}
       align="stretch"
       spacing="8px"
+      px="32px"
       pointerEvents="none"
     >
-      <BrickCourse pattern={FULL_WALL_PATTERNS[1]} offset="right" />
-      <BrickCourse pattern={FULL_WALL_PATTERNS[2]} offset="left" />
+      <WallColumns>
+        <BrickCourse pattern={SIDE_WALL_PATTERNS[6]} size="side" reach={90} />
+        <Box />
+        <BrickCourse
+          pattern={SIDE_WALL_PATTERNS[2]}
+          offset="right"
+          size="side"
+          reach={90}
+        />
+      </WallColumns>
       <BrickCourse pattern={FULL_WALL_PATTERNS[0]} offset="right" />
     </VStack>
 
@@ -128,8 +183,8 @@ const BottomWall = () => (
       left={{ base: "-8%", lg: "-1%" }}
       bottom={{ base: 0, lg: "-1%" }}
       zIndex={2}
-      w={{ base: "76%", lg: "46%" }}
-      maxW={{ lg: "696px" }}
+      w={{ base: "76%", lg: "39%" }}
+      maxW={{ lg: "590px" }}
       pointerEvents="none"
     />
 
@@ -141,8 +196,8 @@ const BottomWall = () => (
       right={{ base: "-12%", lg: "-1%" }}
       bottom={{ base: "-22px", lg: "-4%" }}
       zIndex={2}
-      w={{ base: "50%", lg: "31%" }}
-      maxW={{ lg: "470px" }}
+      w={{ base: "50%", lg: "25%" }}
+      maxW={{ lg: "381px" }}
       pointerEvents="none"
     />
   </Box>
@@ -158,10 +213,10 @@ export const FAQ = () => {
       aria-label="Frequently asked questions"
       position="relative"
       w="100%"
-      maxW="1512px"
       mx="auto"
       overflow="hidden"
       bg="#18111d"
+      sx={{ overflowAnchor: "none" }}
     >
       <TopWall />
 
@@ -174,8 +229,8 @@ export const FAQ = () => {
         w={{ base: "156%", md: "92%", lg: "57.7%" }}
         aspectRatio={1}
         borderRadius="full"
-        bg="radial-gradient(circle, rgba(157, 102, 151, 0.68) 0%, rgba(112, 69, 108, 0.62) 55%, rgba(59, 36, 63, 0) 72%)"
-        filter="blur(3px)"
+        bg="radial-gradient(circle, rgba(164, 105, 157, 0.76) 0%, rgba(122, 76, 118, 0.68) 56%, rgba(72, 43, 75, 0.22) 67%, rgba(59, 36, 63, 0) 73%)"
+        filter="blur(4px)"
       />
 
       <Box
@@ -184,14 +239,14 @@ export const FAQ = () => {
         display="grid"
         gridTemplateColumns={{
           base: "minmax(0, 1fr)",
-          lg: "minmax(70px, 1fr) minmax(0, min(68vw, 1028px)) minmax(70px, 1fr)"
+          lg: "minmax(70px, 1fr) minmax(0, 64vw) minmax(70px, 1fr)"
         }}
-        columnGap={{ lg: "14px", xl: "20px" }}
-        rowGap={{ base: 4, lg: "10px" }}
+        columnGap={{ lg: "8px" }}
+        rowGap={{ base: 4, lg: "8px" }}
         alignItems="stretch"
-        w={{ base: "calc(100% - 32px)", lg: "100%" }}
+        w={{ base: "calc(100% - 32px)", lg: "calc(100% - 64px)" }}
         mx="auto"
-        pt={{ base: "132px", md: "140px", lg: "170px" }}
+        pt={{ base: "132px", md: "140px", lg: "222px" }}
       >
         {FAQS.map((faqItem, index) => (
           <Fragment key={faqItem.question}>

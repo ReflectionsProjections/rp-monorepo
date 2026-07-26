@@ -1,6 +1,6 @@
 import type { FAQItem } from "@app/sections/home/constants/faq-questions";
 import { parseRichText } from "@app/sections/home/utils/textParser";
-import { Box, Collapse, Image, Text } from "@chakra-ui/react";
+import { Box, Image, Text } from "@chakra-ui/react";
 
 type FAQQuestionProps = {
   index: number;
@@ -40,12 +40,12 @@ export const FAQQuestion = ({
         py={{ base: 5, md: 7, lg: "clamp(24px, 2.5vw, 38px)" }}
         color="white"
         textAlign="left"
-        bg="rgba(49, 37, 55, 0.78)"
+        bg="rgba(49, 37, 55, 0.66)"
         borderRadius="13px"
         boxShadow="0 8px 0 rgba(0, 0, 0, 0.82)"
         cursor="pointer"
         transition="background 180ms ease, transform 180ms ease"
-        _hover={{ bg: "rgba(66, 49, 73, 0.84)" }}
+        _hover={{ bg: "rgba(66, 49, 73, 0.74)" }}
         _focusVisible={{
           outline: "3px solid #e952bc",
           outlineOffset: "4px"
@@ -75,28 +75,40 @@ export const FAQQuestion = ({
         />
       </Box>
 
-      <Collapse in={isOpen} animateOpacity>
-        <Box
-          id={answerId}
-          role="region"
-          aria-label={`${question} answer`}
-          mt="8px"
-          px={{ base: 5, md: 8, xl: "47px" }}
-          py={{ base: 5, md: 7, xl: 8 }}
-          color="#fcf2f6"
-          bg="rgba(49, 37, 55, 0.96)"
-          borderRadius="13px"
-          boxShadow="0 8px 0 rgba(0, 0, 0, 0.6)"
-        >
+      <Box
+        display="grid"
+        gridTemplateRows={isOpen ? "1fr" : "0fr"}
+        opacity={isOpen ? 1 : 0}
+        transition={
+          isOpen
+            ? "grid-template-rows 700ms cubic-bezier(0.4, 0, 0.2, 1), opacity 420ms ease-in-out 160ms"
+            : "grid-template-rows 240ms cubic-bezier(0.4, 0, 1, 1), opacity 160ms ease-in"
+        }
+        aria-hidden={!isOpen}
+      >
+        <Box minH={0} overflow="hidden">
           <Box
-            fontFamily="'Share Tech Mono', Magistral, monospace"
-            fontSize={{ base: "sm", md: "lg" }}
-            lineHeight={1.65}
+            id={answerId}
+            role="region"
+            aria-label={`${question} answer`}
+            mt="8px"
+            px={{ base: 5, md: 8, xl: "47px" }}
+            py={{ base: 5, md: 7, xl: 8 }}
+            color="#fcf2f6"
+            bg="rgba(49, 37, 55, 0.86)"
+            borderRadius="13px"
+            boxShadow="0 8px 0 rgba(0, 0, 0, 0.6)"
           >
-            {parseRichText(answer)}
+            <Box
+              fontFamily="'Share Tech Mono', Magistral, monospace"
+              fontSize={{ base: "sm", md: "lg" }}
+              lineHeight={1.65}
+            >
+              {parseRichText(answer)}
+            </Box>
           </Box>
         </Box>
-      </Collapse>
+      </Box>
     </Box>
   );
 };
