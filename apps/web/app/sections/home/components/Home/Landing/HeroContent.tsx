@@ -52,9 +52,8 @@ export const HeroContent = () => {
       justify="center"
       align="center"
       spacing={{ base: 6, xl: 8 }}
-      minH={{ base: "100dvh", xl: "auto" }}
+      minH={{ base: "100dvh", md: "auto" }}
       px={4}
-      pb={16}
     >
       {/* Title */}
       <HStack spacing={wordSpacing} justify="center" align="center">
