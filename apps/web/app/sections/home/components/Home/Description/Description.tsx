@@ -25,10 +25,10 @@ export const Description = () => {
     >
       <Box
         position="absolute"
-        top={{ base: "35%", md: "49%" }}
-        right={{ base: "4%", md: "12%" }}
+        top={{ base: "36%", md: "49%" }}
+        right={{ base: "5%", md: "12%" }}
         bottom={{ xs: "10%", base: "30%", md: "27%" }}
-        left={{ base: "6.5%", md: "18.5%" }}
+        left={{ base: "7.5%", md: "18.5%" }}
         display="flex"
         flexDirection="column"
         alignItems="center"
