@@ -8,15 +8,18 @@ export const Landing = () => {
       position="relative"
       overflow="hidden"
       id="hero"
-      minH="100dvh"
+      minH={{ base: "100dvh", xl: "auto" }}
+      aspectRatio={{ xl: "1512 / 982" }}
       display="flex"
       flexDirection="column"
-      bg="#0d0b1a"
+      bg={{ base: "#0d0b1a", xl: "transparent" }}
+      zIndex={1}
     >
       <Box
         as="img"
         src={landingBg}
         alt=""
+        display={{ base: "block", xl: "none" }}
         position="absolute"
         inset={0}
         w="100%"
