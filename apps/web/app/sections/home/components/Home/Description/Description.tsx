@@ -25,9 +25,9 @@ export const Description = () => {
     >
       <Box
         position="absolute"
-        top={{ base: "34%", md: "48%" }}
+        top={{ base: "35%", md: "49%" }}
         right={{ base: "4%", md: "12%" }}
-        bottom={{ base: "30%", md: "27%" }}
+        bottom={{ xs: "10%", base: "30%", md: "27%" }}
         left={{ base: "6.5%", md: "18.5%" }}
         display="flex"
         flexDirection="column"
@@ -38,7 +38,10 @@ export const Description = () => {
           id="about-heading"
           fontFamily="Ethnocentric"
           fontWeight={400}
-          fontSize={{ base: "4.75vw", md: "5vw" }}
+          fontSize={{
+            base: "clamp(1rem, 4.75vw, 2.75rem)",
+            md: "clamp(2rem, 3.2vw, 4rem)"
+          }}
           lineHeight={1.05}
           textAlign="center"
           whiteSpace={{ xl: "nowrap" }}
@@ -54,8 +57,8 @@ export const Description = () => {
             mb={{ base: 2, md: 5 }}
             fontFamily="'Share Tech Mono', 'Magistral', monospace"
             fontSize={{
-              base: "3.3vw",
-              md: "2.3vw"
+              base: "clamp(1rem, 3.3vw, 1.375rem)",
+              md: "clamp(1.125rem, 2.3vw, 2.75rem)"
             }}
             textAlign="center"
             lineHeight={{ base: 1.55, md: 1.55 }}
