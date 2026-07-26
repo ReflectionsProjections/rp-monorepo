@@ -78,7 +78,7 @@ const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
     <Image
       src={rpLogo}
       alt="R|P 2026"
-      h="50px"
+      h={{ base: "50px", lg: "40px", xl: "50px" }}
       w="auto"
       transition="transform 0.6s ease-in-out"
       transformOrigin="center"
@@ -87,7 +87,7 @@ const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
     <Text
       fontFamily="Ethnocentric, ProRacing, sans-serif"
       fontWeight="400"
-      fontSize="lg"
+      fontSize={{ base: "lg", lg: "md", xl: "lg" }}
       color="#FCF2F6"
       lineHeight="1"
       letterSpacing="0.02em"
@@ -109,9 +109,16 @@ const Navbar = ({ isFlush }: NavbarProps) => {
   }, [pathname, onClose]);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    if (!isOpen) return;
+
+    const scrollContainer = document.getElementById("home-scroll-container");
+    if (!scrollContainer) return;
+
+    const previousOverflow = scrollContainer.style.overflow;
+    scrollContainer.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      scrollContainer.style.overflow = previousOverflow;
     };
   }, [isOpen]);
 
@@ -121,7 +128,7 @@ const Navbar = ({ isFlush }: NavbarProps) => {
     <Flex
       as="nav"
       position={isFlush ? "sticky" : "fixed"}
-      top={isFlush ? 0 : "37px"}
+      top={isFlush ? 0 : { base: "4px", lg: "37px" }}
       left={0}
       right={0}
       zIndex={15}
@@ -134,13 +141,19 @@ const Navbar = ({ isFlush }: NavbarProps) => {
         {...pillStyles}
         px={{ lg: 4, xl: 8 }}
         py={4}
-        w={{ lg: "calc(100% - 32px)", xl: "80%" }}
+        w="80%"
         maxW="1512px"
         justify="space-between"
+        position="relative"
       >
         <LogoBlock />
 
-        <HStack gap={{ lg: 4, xl: 20 }}>
+        <HStack
+          gap={{ lg: 4, xl: 12, "2xl": 20 }}
+          position="absolute"
+          left="50%"
+          transform="translateX(-50%)"
+        >
           {NAV_LINKS.map(({ label, to, id }) => (
             <Link
               key={label}
@@ -164,10 +177,14 @@ const Navbar = ({ isFlush }: NavbarProps) => {
         borderRadius="2xl"
         px="8px"
         overflow="hidden"
-        maxH="100%"
+        maxH={isFlush ? "100dvh" : "calc(100dvh - 8px)"}
         initial={false}
         animate={{
-          height: isOpen ? "calc(100dvh - 16px)" : `${compactHeight}px`
+          height: isOpen
+            ? isFlush
+              ? "100dvh"
+              : "calc(100dvh - 8px)"
+            : `${compactHeight}px`
         }}
         transition={{ height: { duration: 0.4, ease: "easeOut" } }}
       >
@@ -190,6 +207,8 @@ const Navbar = ({ isFlush }: NavbarProps) => {
               position="relative"
               cursor="pointer"
               aria-label="Toggle menu"
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
               mr={4}
             >
               {[0, 9, 18].map((topVal, i) => (
@@ -222,7 +241,13 @@ const Navbar = ({ isFlush }: NavbarProps) => {
           </Flex>
 
           {isOpen && (
-            <VStack as="nav" align="stretch" mb={16} gap={5}>
+            <VStack
+              as="nav"
+              id="mobile-navigation"
+              align="stretch"
+              mb={16}
+              gap={5}
+            >
               {NAV_LINKS.map(({ label, to, id }) => (
                 <Link
                   key={label}
