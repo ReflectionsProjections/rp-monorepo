@@ -36,12 +36,12 @@ const titleFont = {
 };
 
 export const HeroContent = () => {
-  const xOffset = useBreakpointValue({ base: 20, sm: 40, xl: 60 }) ?? 60;
-  const wordSpacing = useBreakpointValue({ base: 1, sm: 2, xl: 3 });
+  const xOffset = useBreakpointValue({ base: 20, sm: 40, lg: 60 }) ?? 60;
+  const wordSpacing = useBreakpointValue({ base: 1, sm: 2, lg: 3 });
   const fontSize = useBreakpointValue({
     base: "lg",
     sm: "2xl",
-    xl: "5xl"
+    lg: "clamp(2rem, 3.2vw, 3rem)"
   });
 
   return (
@@ -121,10 +121,10 @@ export const HeroContent = () => {
       </HStack>
 
       {/* App store badges */}
-      <MotionBox {...fadeUp(BADGES_DELAY)} mt={{ base: 3, xl: 5 }}>
+      <MotionBox {...fadeUp(BADGES_DELAY)} mt={{ base: 3, lg: 5 }}>
         <HStack
           spacing={6}
-          flexDir={{ base: "column", xl: "row" }}
+          flexDir={{ base: "column", lg: "row" }}
           align="center"
           justify="center"
         >
@@ -137,7 +137,7 @@ export const HeroContent = () => {
             <Image
               src="/site/appscreen/app_store.png"
               alt="Download on the App Store"
-              h={{ base: "50px", xl: "60px" }}
+              h={{ base: "50px", lg: "clamp(50px, 3.97vw, 60px)" }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
@@ -153,7 +153,7 @@ export const HeroContent = () => {
             <Image
               src="/site/appscreen/google_play.png"
               alt="Get it on Google Play"
-              h={{ base: "50px", xl: "60px" }}
+              h={{ base: "50px", lg: "clamp(50px, 3.97vw, 60px)" }}
               w="auto"
               filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))"
               _hover={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))" }}
@@ -175,9 +175,9 @@ export const HeroContent = () => {
             as="img"
             src={registerBtnSrc}
             alt="Register Now"
-            h={{ base: "58px", xl: "74px" }}
+            h={{ base: "58px", lg: "clamp(58px, 4.9vw, 74px)" }}
             w="auto"
-            maxW={{ base: "300px", sm: "400px", xl: "500px" }}
+            maxW={{ base: "300px", sm: "400px", lg: "500px" }}
           />
         </Link>
       </MotionBox>

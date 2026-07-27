@@ -46,6 +46,7 @@ function Main() {
 
   return (
     <VStack
+      id="home-scroll-container"
       w="100%"
       h="100dvh"
       position="relative"
