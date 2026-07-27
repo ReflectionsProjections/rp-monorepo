@@ -195,7 +195,7 @@ const WorkstationScene = () => (
     position="absolute"
     zIndex={3}
     top={{ base: "230px", lg: "19.47%" }}
-    left={{ base: "50%", lg: 0 }}
+    left={{ base: "calc(50% + 2vw)", sm: "50%", lg: 0 }}
     transform={{ base: "translateX(-50%)", lg: "none" }}
     w={{ base: "165vw", sm: "100vw", lg: "100%" }}
     aspectRatio="1512 / 1745"
