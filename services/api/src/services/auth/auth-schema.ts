@@ -9,7 +9,7 @@ export const RoleValidator = registry.register(
     z
         .object({
             userId: z.coerce.string(),
-            displayName: z.coerce.string(),
+            displayName: z.string().nullable(),
             email: z.coerce.string().email(),
             roles: z.array(Role).default([]),
         })

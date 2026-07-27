@@ -1,12 +1,19 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { StatusCodes } from "http-status-codes";
-import { get, post, postAsUser, TESTER } from "../../../testing/testingTools";
+import {
+    get,
+    post,
+    postAsUser,
+    postWithAuthorization,
+    TESTER,
+} from "../../../testing/testingTools";
 import { Role } from "../auth/auth-models";
 import { sendTemplateEmail } from "../ses/ses-utils";
 import { SupabaseDB } from "../../database";
 import { render } from "mustache";
 import templates from "../../templates/templates";
 import { MailingLists } from "../../config";
+import { generateSetupJWT } from "../auth/auth-utils";
 
 jest.mock("../ses/ses-utils", () => ({
     sendHTMLEmail: jest.fn(),
@@ -33,7 +40,7 @@ const VALID_DRAFT = {
     dietaryOther: "",
     educationLevel: "Undergraduate",
     educationOther: "",
-    email: "test@example.com",
+    email: TESTER.email,
     ethnicity: ["Asian"],
     ethnicityOther: "",
     gender: "Male",
@@ -55,7 +62,7 @@ const VALID_REGISTRATION = {
     allergies: ["Peanuts"],
     dietaryRestrictions: ["Vegetarian"],
     educationLevel: "Undergraduate",
-    email: "test@example.com",
+    email: TESTER.email,
     ethnicity: ["Asian"],
     gender: "Male",
     graduationYear: "2025",
@@ -532,6 +539,38 @@ describe("POST /registration/submit", () => {
         };
         await postAsUser("/registration/submit")
             .send(tooLongTagElement)
+            .expect(StatusCodes.BAD_REQUEST);
+    });
+});
+
+describe("POST /registration/complete", () => {
+    it("promotes a setup account to USER and returns an access token", async () => {
+        const setupToken = await generateSetupJWT(TESTER.userId);
+        const response = await postWithAuthorization(
+            "/registration/complete",
+            setupToken
+        )
+            .send(VALID_REGISTRATION)
+            .expect(StatusCodes.OK);
+
+        expect(response.body.registration).toMatchObject({
+            email: TESTER.email,
+            userId: TESTER.userId,
+        });
+        expect(response.body).toHaveProperty("token");
+
+        const { data: role } = await SupabaseDB.AUTH_ROLES.select()
+            .eq("userId", TESTER.userId)
+            .eq("role", Role.Enum.USER)
+            .single()
+            .throwOnError();
+        expect(role.role).toBe(Role.Enum.USER);
+    });
+
+    it("rejects an email that differs from the verified identity", async () => {
+        const setupToken = await generateSetupJWT(TESTER.userId);
+        await postWithAuthorization("/registration/complete", setupToken)
+            .send({ ...VALID_REGISTRATION, email: "attacker@example.com" })
             .expect(StatusCodes.BAD_REQUEST);
     });
 });

@@ -2,9 +2,13 @@
 import { TokenPayload } from "google-auth-library";
 import { Config, EnvironmentEnum } from "../../config";
 import { SupabaseDB } from "../../database";
-import { JwtPayloadType, Role } from "./auth-models";
-import jsonwebtoken from "jsonwebtoken";
+import { JwtPayloadType, Role, SetupJwtPayloadType } from "./auth-models";
+import jsonwebtoken, { SignOptions } from "jsonwebtoken";
 import { randomUUID } from "crypto";
+
+export function normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+}
 
 export type TokenPayloadWithProperScopes = TokenPayload & {
     sub: string;
@@ -22,18 +26,22 @@ export async function updateDatabaseWithAuthPayload(
 ): Promise<string> {
     const authId = payload.sub; // If we ever support multiple platforms, will need to change this, but fine for now
     const displayName = payload.name;
-    const email = payload.email;
+    const email = normalizeEmail(payload.email);
 
-    // Check for an existing user
-    const { data } = await SupabaseDB.AUTH_INFO.select("userId")
+    const { data: authIdMatch } = await SupabaseDB.AUTH_INFO.select("userId")
         .eq("authId", authId)
         .maybeSingle()
         .throwOnError();
 
-    // If they exist, use that userId - otherwise generate a new one
-    const userId = data ? data.userId : randomUUID();
+    const { data: emailMatch } = authIdMatch
+        ? { data: null }
+        : await SupabaseDB.AUTH_INFO.select("userId")
+              .eq("email", email)
+              .maybeSingle()
+              .throwOnError();
 
-    // Create or update that user
+    const userId = authIdMatch?.userId ?? emailMatch?.userId ?? randomUUID();
+
     await SupabaseDB.AUTH_INFO.upsert(
         {
             authId,
@@ -42,7 +50,7 @@ export async function updateDatabaseWithAuthPayload(
             userId,
         },
         {
-            onConflict: "authId",
+            onConflict: "userId",
         }
     ).throwOnError();
 
@@ -113,12 +121,37 @@ export async function getJwtPayloadFromDatabase(
         email,
         displayName,
         roles,
+        tokenType: "access",
     };
 }
 
-export async function generateJWT(userId: string) {
+export async function generateJWT(
+    userId: string,
+    expiresIn: SignOptions["expiresIn"] = Config.JWT_EXPIRATION_TIME
+) {
     const jwtPayload = await getJwtPayloadFromDatabase(userId);
     return jsonwebtoken.sign(jwtPayload, Config.JWT_SIGNING_SECRET, {
+        expiresIn,
+    });
+}
+
+export async function generateSetupJWT(userId: string) {
+    const { data } = await SupabaseDB.AUTH_INFO.select("email")
+        .eq("userId", userId)
+        .maybeSingle()
+        .throwOnError();
+    if (!data) {
+        throw new Error("NoUserFound");
+    }
+
+    const payload: SetupJwtPayloadType = {
+        userId,
+        email: data.email,
+        displayName: null,
+        roles: [],
+        tokenType: "setup",
+    };
+    return jsonwebtoken.sign(payload, Config.JWT_SIGNING_SECRET, {
         expiresIn: Config.JWT_EXPIRATION_TIME,
     });
 }

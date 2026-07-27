@@ -19,9 +19,28 @@ export const PlatformValidator = z.nativeEnum(Platform);
 
 export const JwtPayloadValidator = z.object({
     userId: z.string(),
-    displayName: z.string(),
+    displayName: z.string().nullable(),
     email: z.string().email(),
     roles: Role.array(),
+    tokenType: z.literal("access").optional().default("access"),
 });
 
 export type JwtPayloadType = z.infer<typeof JwtPayloadValidator>;
+
+export const SetupJwtPayloadValidator = z.object({
+    userId: z.string(),
+    displayName: z.null(),
+    email: z.string().email(),
+    roles: z.array(Role).length(0),
+    tokenType: z.literal("setup"),
+});
+
+export const RegistrationJwtPayloadValidator = z.union([
+    JwtPayloadValidator,
+    SetupJwtPayloadValidator,
+]);
+
+export type SetupJwtPayloadType = z.infer<typeof SetupJwtPayloadValidator>;
+export type RegistrationJwtPayloadType = z.infer<
+    typeof RegistrationJwtPayloadValidator
+>;

@@ -17,6 +17,16 @@ import {
 } from "./auth-utils";
 import { OAuth2Client } from "google-auth-library";
 import { SupabaseDB } from "../../database";
+import {
+    MagicLinkIssueValidator,
+    MagicLinkVerifyValidator,
+} from "./magic-link-schema";
+import { issueMagicLink, verifyMagicLink } from "./magic-link-service";
+import {
+    magicLinkIssueEmailLimiter,
+    magicLinkIssueIpLimiter,
+    magicLinkVerifyIpLimiter,
+} from "./magic-link-rate-limit";
 
 const authRouter = Router();
 
@@ -34,6 +44,83 @@ const oauthClients = {
 };
 
 authRouter.use("/sponsor", authSponsorRouter);
+
+/**
+ * @swagger
+ * /auth/magic-links:
+ *   post:
+ *     summary: Request a fixed-purpose magic link
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MagicLinkIssueValidator'
+ *     responses:
+ *       202:
+ *         description: The request was accepted
+ *       400:
+ *         description: The request is invalid
+ *       429:
+ *         description: The request limit was reached
+ *     security: []
+ */
+authRouter.post(
+    "/magic-links",
+    magicLinkIssueIpLimiter,
+    magicLinkIssueEmailLimiter,
+    async (req, res) => {
+        const request = MagicLinkIssueValidator.parse(req.body);
+        try {
+            await issueMagicLink(request);
+        } catch (error) {
+            // The public response must not disclose if an account exists.
+            console.error("Failed to issue a magic link", error);
+        }
+        return res.sendStatus(StatusCodes.ACCEPTED);
+    }
+);
+
+/**
+ * @swagger
+ * /auth/magic-links/verify:
+ *   post:
+ *     summary: Verify and consume a magic link
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MagicLinkVerifyValidator'
+ *     responses:
+ *       200:
+ *         description: A signed setup or access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MagicLinkTokenResponse'
+ *       401:
+ *         description: The token is invalid
+ *       429:
+ *         description: The request limit was reached
+ *     security: []
+ */
+authRouter.post(
+    "/magic-links/verify",
+    magicLinkVerifyIpLimiter,
+    async (req, res) => {
+        const request = MagicLinkVerifyValidator.parse(req.body);
+        const token = await verifyMagicLink(request.token, request.client);
+        if (!token) {
+            return res
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ error: "InvalidToken" });
+        }
+        return res.status(StatusCodes.OK).json({ token });
+    }
+);
 
 /**
  * @swagger

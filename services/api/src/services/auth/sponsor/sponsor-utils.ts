@@ -14,3 +14,9 @@ export function encryptSixDigitCode(sixDigitCode: string): string {
     const hash = bcrypt.hashSync(sixDigitCode, Config.HASH_SALT_ROUNDS);
     return hash;
 }
+
+export async function encryptSixDigitCodeAsync(
+    sixDigitCode: string
+): Promise<string> {
+    return bcrypt.hash(sixDigitCode, Config.HASH_SALT_ROUNDS);
+}
