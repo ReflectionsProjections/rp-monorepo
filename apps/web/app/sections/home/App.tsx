@@ -2,10 +2,13 @@ import "./index.css";
 import { Box, ChakraProvider, VStack } from "@chakra-ui/react";
 import { customTheme } from "@app/theme";
 import { RequireAuth } from "@app";
+import RequireRegistrationAuth from "@components/auth/RequireRegistrationAuth";
 import { useMemo } from "react";
 import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./routes/Home";
+import { Login } from "./routes/Login";
+import { MagicLinkCallback } from "./routes/MagicLinkCallback";
 import { Profile } from "./routes/Profile";
 import Register from "./routes/Register";
 import Resume from "./routes/Resume";
@@ -23,7 +26,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/speakers" element={<Speakers />} />
           <Route path="/app" element={<AppScreen />} />
-          <Route element={<RequireAuth />}>
+          <Route element={<RequireRegistrationAuth />}>
             <Route key="/register" path="/register" element={<Register />} />
           </Route>
         </Route>
@@ -31,6 +34,16 @@ function App() {
           <Route key="/resume" path="/resume" element={<Resume />} />
           <Route key="/profile" path="/profile" element={<Profile />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        {/* Callback paths are fixed by the API's MAGIC_LINK_*_CALLBACK config */}
+        <Route
+          path="/auth/login"
+          element={<MagicLinkCallback destination="/" />}
+        />
+        <Route
+          path="/auth/registration"
+          element={<MagicLinkCallback destination="/register" />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ChakraProvider>
