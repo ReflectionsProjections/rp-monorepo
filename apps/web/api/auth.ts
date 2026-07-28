@@ -61,6 +61,38 @@ export function authRefresh() {
   window.location.href = `/auth/refresh?redirect=${encodeURIComponent(currentPath)}`;
 }
 
+const RETURN_TO_KEY = "magicLinkReturnTo";
+
+/**
+ * Sends a signed-out visitor to the magic-link page, remembering where they
+ * were headed. The link itself carries no state — the API builds that URL from
+ * a fixed callback — so the destination is stashed here for the callback to
+ * pick up. Opening the link on another device simply falls back to the
+ * callback's own default.
+ */
+export function magicLinkSignIn() {
+  const returnTo =
+    window.location.pathname + window.location.search + window.location.hash;
+  localStorage.setItem(RETURN_TO_KEY, returnTo);
+  window.location.href = "/login";
+}
+
+/** Reads and clears the path stashed by {@link magicLinkSignIn}. */
+export function takeMagicLinkReturnTo() {
+  const returnTo = localStorage.getItem(RETURN_TO_KEY);
+  localStorage.removeItem(RETURN_TO_KEY);
+
+  // Only same-origin paths; "//host" would leave the site entirely.
+  if (
+    returnTo === null ||
+    !returnTo.startsWith("/") ||
+    returnTo.startsWith("//")
+  ) {
+    return null;
+  }
+  return returnTo;
+}
+
 export function googleAuth(selectAccount?: boolean, state?: string) {
   const params = new URLSearchParams({
     client_id: Config.GOOGLE_OAUTH_CLIENT_ID,

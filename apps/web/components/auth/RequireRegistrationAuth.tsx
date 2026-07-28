@@ -4,7 +4,7 @@ import axios from "axios";
 import { Outlet } from "react-router-dom";
 import type { RoleObject } from "@api/types";
 import api from "@api/api";
-import { authRefresh, readJwtClaims } from "@api/auth";
+import { magicLinkSignIn, readJwtClaims } from "@api/auth";
 
 /**
  * Guards registration the way the API's RegistrationAuthChecker does: a setup
@@ -50,7 +50,7 @@ const RequireRegistrationAuth: React.FC = () => {
 
   useEffect(() => {
     if (!jwt) {
-      authRefresh();
+      magicLinkSignIn();
       return;
     }
 

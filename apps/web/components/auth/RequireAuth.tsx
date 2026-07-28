@@ -3,19 +3,31 @@ import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import type { Role, RoleObject } from "@api/types";
 import api from "@api/api";
-import { authRefresh, readJwtClaims } from "@api/auth";
+import { authRefresh, magicLinkSignIn, readJwtClaims } from "@api/auth";
 
 type RequireAuthProps = {
   requiredRoles?: Role[];
+  /**
+   * Send a signed-out visitor to the magic-link page rather than to Google.
+   * Off by default, so staff-facing sections keep signing in with Google.
+   */
+  withMagicLink?: boolean;
 };
 
-const RequireAuth: React.FC<RequireAuthProps> = ({ requiredRoles = [] }) => {
+const RequireAuth: React.FC<RequireAuthProps> = ({
+  requiredRoles = [],
+  withMagicLink = false
+}) => {
   const [authInfo, setAuthInfo] = useState<RoleObject | null>(null);
   const jwt = localStorage.getItem("jwt");
 
   useEffect(() => {
     if (!jwt) {
-      authRefresh();
+      if (withMagicLink) {
+        magicLinkSignIn();
+      } else {
+        authRefresh();
+      }
       return;
     }
 
@@ -45,7 +57,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ requiredRoles = [] }) => {
           // Otherwise the jwt is expired and the middleware handles the error
         });
     }
-  }, [authInfo, jwt, requiredRoles]);
+  }, [authInfo, jwt, requiredRoles, withMagicLink]);
 
   if (!jwt) {
     return <p>Redirecting to login...</p>;

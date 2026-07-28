@@ -32,7 +32,7 @@ function App() {
               <Route key="/register" path="/register" element={<Register />} />
             </Route>
           </Route>
-          <Route element={<RequireAuth />}>
+          <Route element={<RequireAuth withMagicLink />}>
             <Route key="/resume" path="/resume" element={<Resume />} />
             <Route key="/profile" path="/profile" element={<Profile />} />
           </Route>

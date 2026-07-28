@@ -2,7 +2,7 @@ import { Link, Spinner, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { api } from "@app";
-import { readJwtClaims } from "@api/auth";
+import { readJwtClaims, takeMagicLinkReturnTo } from "@api/auth";
 import {
   AuthCard,
   BODY_FONT,
@@ -48,7 +48,11 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
         setState("success");
 
         const claims = readJwtClaims(jwt);
-        const next = claims?.tokenType === "setup" ? "/register" : destination;
+        // A roleless account can only register, wherever it was headed.
+        const next =
+          claims?.tokenType === "setup"
+            ? "/register"
+            : (takeMagicLinkReturnTo() ?? destination);
 
         // A full load rather than a client-side navigation, so the route
         // guards re-read the JWT that was just stored.
