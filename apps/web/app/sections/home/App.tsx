@@ -3,6 +3,7 @@ import { Box, ChakraProvider, VStack } from "@chakra-ui/react";
 import { customTheme } from "@app/theme";
 import { RequireAuth } from "@app";
 import RequireRegistrationAuth from "@components/auth/RequireRegistrationAuth";
+import ErrorBoundary from "@components/ErrorBoundary";
 import { useMemo } from "react";
 import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -21,31 +22,33 @@ document.title = "R|P 2026";
 function App() {
   return (
     <ChakraProvider theme={customTheme}>
-      <Routes>
-        <Route element={<Main />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/speakers" element={<Speakers />} />
-          <Route path="/app" element={<AppScreen />} />
-          <Route element={<RequireRegistrationAuth />}>
-            <Route key="/register" path="/register" element={<Register />} />
+      <ErrorBoundary>
+        <Routes>
+          <Route element={<Main />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/speakers" element={<Speakers />} />
+            <Route path="/app" element={<AppScreen />} />
+            <Route element={<RequireRegistrationAuth />}>
+              <Route key="/register" path="/register" element={<Register />} />
+            </Route>
           </Route>
-        </Route>
-        <Route element={<RequireAuth />}>
-          <Route key="/resume" path="/resume" element={<Resume />} />
-          <Route key="/profile" path="/profile" element={<Profile />} />
-        </Route>
-        <Route path="/login" element={<Login />} />
-        {/* Callback paths are fixed by the API's MAGIC_LINK_*_CALLBACK config */}
-        <Route
-          path="/auth/login"
-          element={<MagicLinkCallback destination="/" />}
-        />
-        <Route
-          path="/auth/registration"
-          element={<MagicLinkCallback destination="/register" />}
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route element={<RequireAuth />}>
+            <Route key="/resume" path="/resume" element={<Resume />} />
+            <Route key="/profile" path="/profile" element={<Profile />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
+          {/* Callback paths are fixed by the API's MAGIC_LINK_*_CALLBACK config */}
+          <Route
+            path="/auth/login"
+            element={<MagicLinkCallback destination="/" />}
+          />
+          <Route
+            path="/auth/registration"
+            element={<MagicLinkCallback destination="/register" />}
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </ChakraProvider>
   );
 }
