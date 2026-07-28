@@ -70,10 +70,16 @@ const RETURN_TO_KEY = "magicLinkReturnTo";
  * pick up. Opening the link on another device simply falls back to the
  * callback's own default.
  */
-export function magicLinkSignIn() {
-  const returnTo =
-    window.location.pathname + window.location.search + window.location.hash;
-  localStorage.setItem(RETURN_TO_KEY, returnTo);
+export function magicLinkSignIn({ remember = true } = {}) {
+  if (remember) {
+    const returnTo =
+      window.location.pathname + window.location.search + window.location.hash;
+    localStorage.setItem(RETURN_TO_KEY, returnTo);
+  } else {
+    // Pass remember: false when coming back would fail the same way, so the
+    // two pages can't bounce the visitor between them.
+    localStorage.removeItem(RETURN_TO_KEY);
+  }
   window.location.href = "/login";
 }
 
