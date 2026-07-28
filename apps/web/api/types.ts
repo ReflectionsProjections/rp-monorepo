@@ -546,6 +546,12 @@ export interface APIRoutes {
       response: { message: string };
     };
   };
+  "/registration/complete": {
+    POST: {
+      request: Omit<Registration, "userId">;
+      response: { registration: Registration; token: string };
+    };
+  };
   "/registration/all": {
     GET: {
       response: Array<{
