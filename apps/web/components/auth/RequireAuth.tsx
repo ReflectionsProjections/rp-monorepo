@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import type { Role, RoleObject } from "@api/types";
 import api from "@api/api";
-import { authRefresh } from "@api/auth";
+import { authRefresh, readJwtClaims } from "@api/auth";
 
 type RequireAuthProps = {
   requiredRoles?: Role[];
@@ -35,8 +35,14 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ requiredRoles = [] }) => {
           }
         })
         .catch(() => {
-          // This only happens if jwt is expired
-          // middleware will handle the error
+          // A setup token is refused here by design: the account exists but has
+          // no roles yet, so registration is the only place it can go. Without
+          // this the page would sit on "Loading..." forever.
+          if (readJwtClaims(jwt)?.tokenType === "setup") {
+            window.location.href = "/register";
+            return;
+          }
+          // Otherwise the jwt is expired and the middleware handles the error
         });
     }
   }, [authInfo, jwt, requiredRoles]);
