@@ -47,10 +47,11 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
   const [submitError, setSubmitError] = useState("");
 
   return (
-    <AuthCard title="Sign in to R|P 2026">
+    <AuthCard title="Sign in or register">
       <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.8}>
-        Enter your email and we&rsquo;ll send you a link that signs you in. No
-        password needed.
+        Enter your email and we&rsquo;ll send you a link. No password needed
+        &mdash; the same link works whether you already have an account or
+        you&rsquo;re new here.
       </Text>
 
       <Formik
@@ -139,11 +140,11 @@ function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
   return (
     <AuthCard title="Check your email">
       <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
-        If an account can be created for{" "}
+        We sent a link to{" "}
         <Box as="span" color="#FFFFFF">
           {email}
         </Box>
-        , a sign-in link is on its way. It expires in about 10 minutes.
+        . Open it to continue &mdash; it expires in about 10 minutes.
       </Text>
 
       <Link
