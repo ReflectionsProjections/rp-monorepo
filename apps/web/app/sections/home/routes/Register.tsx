@@ -638,9 +638,11 @@ const Register = () => {
                         ]);
 
                   toast.promise(
-                    Promise.all([
-                      finalise,
-                      (async () => {
+                    finalise
+                      // Sequential, not parallel: /s3/upload also rejects setup
+                      // tokens, so it has to run once the account is registered
+                      // and the access token above is in place.
+                      .then(async () => {
                         if (!values.resume?.file) {
                           return;
                         }
@@ -650,8 +652,7 @@ const Register = () => {
                           download.fields,
                           values.resume.file
                         );
-                      })()
-                    ])
+                      })
                       .then(() => {
                         setConfirmation(true);
                       })
