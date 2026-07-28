@@ -57,7 +57,7 @@ import {
   ResumeField,
   Over18Checkbox
 } from "@app/sections/home/components/Registration/questions";
-import Lottie from "lottie-react";
+import Lottie from "@lib/lottie";
 
 const MotionBox = motion(Box);
 
