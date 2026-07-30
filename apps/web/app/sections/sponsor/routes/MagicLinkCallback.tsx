@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Center,
-  Spinner,
-  Text,
-  VStack
-} from "@chakra-ui/react";
+import { Box, Button, Center, Spinner, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { api } from "@app";
