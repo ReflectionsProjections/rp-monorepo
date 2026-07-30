@@ -54,7 +54,15 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
             window.location.href = "/register";
             return;
           }
-          // Otherwise the jwt is expired and the middleware handles the error
+          // Any other failure (network error, 5xx, unexpected 4xx) needs to send
+          // the user back into sign-in rather than leaving the guard on
+          // "Loading..." forever; an expired/invalid jwt is handled by the
+          // middleware before it gets here, so this only catches the rest.
+          if (withMagicLink) {
+            magicLinkSignIn();
+          } else {
+            authRefresh();
+          }
         });
     }
   }, [authInfo, jwt, requiredRoles, withMagicLink]);

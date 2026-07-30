@@ -1,5 +1,5 @@
 import { Link, Spinner, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { api } from "@app";
 import { readJwtClaims, takeMagicLinkReturnTo } from "@api/auth";
@@ -15,7 +15,12 @@ const MISSING_TOKEN_MESSAGE =
   "This link is missing its token. Please request a new one.";
 
 function tokenFromQuery() {
-  return new URLSearchParams(window.location.search).get("token");
+  const token = new URLSearchParams(window.location.search).get("token");
+  // Strip the single-use token from the address bar immediately: otherwise it
+  // lingers in browser history, can leak to other origins via the Referer
+  // header, and re-submits (and fails) if the user navigates back here.
+  window.history.replaceState({}, "", window.location.pathname);
+  return token;
 }
 
 type MagicLinkCallbackProps = {
@@ -35,10 +40,18 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
     token ? "" : MISSING_TOKEN_MESSAGE
   );
 
+  const verified = useRef(false);
+
   useEffect(() => {
-    if (!token) {
+    if (!token || verified.current) {
       return;
     }
+    // React.StrictMode runs this effect twice in dev; the verify token is
+    // single-use, so a second request would 401 and could clobber a
+    // successful sign-in with an error state.
+    verified.current = true;
+
+    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
 
     api
       .post("/auth/magic-links/verify", { token, client: "web" })
@@ -56,8 +69,8 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
 
         // A full load rather than a client-side navigation, so the route
         // guards re-read the JWT that was just stored.
-        setTimeout(() => {
-          window.location.href = next;
+        redirectTimer = setTimeout(() => {
+          window.location.replace(next);
         }, 800);
       })
       .catch((err) => {
@@ -72,6 +85,8 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
           );
         }
       });
+
+    return () => clearTimeout(redirectTimer);
   }, [token, destination]);
 
   return (

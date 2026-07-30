@@ -50,9 +50,11 @@ export default class ErrorBoundary extends Component<
           Something broke while rendering this page.
         </h1>
         <p style={{ color: "#FFB4D1", marginBottom: "24px" }}>
-          {error.name}: {error.message}
+          {import.meta.env.DEV
+            ? `${error.name}: ${error.message}`
+            : "Please try again, or head back to the homepage."}
         </p>
-        {componentStack && (
+        {import.meta.env.DEV && componentStack && (
           <pre
             style={{
               whiteSpace: "pre-wrap",

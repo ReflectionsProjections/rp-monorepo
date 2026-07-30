@@ -8,6 +8,25 @@ function holdingSetupToken() {
   return jwt !== null && readJwtClaims(jwt)?.tokenType === "setup";
 }
 
+// The API sends the same "InvalidJWT" code both when a route legitimately
+// refuses a setup token (expected mid-registration) and when the token itself
+// is malformed or corrupt (which would otherwise loop forever, since nothing
+// here ever discards it). Without a distinct code from the API, fall back to
+// clearing the token after a run of consecutive rejections.
+const SETUP_TOKEN_REJECTION_KEY = "setupTokenInvalidJwtCount";
+const MAX_SETUP_TOKEN_REJECTIONS = 5;
+
+function tooManySetupTokenRejections() {
+  const count =
+    Number(sessionStorage.getItem(SETUP_TOKEN_REJECTION_KEY)) + 1 || 1;
+  sessionStorage.setItem(SETUP_TOKEN_REJECTION_KEY, String(count));
+  return count > MAX_SETUP_TOKEN_REJECTIONS;
+}
+
+function resetSetupTokenRejections() {
+  sessionStorage.removeItem(SETUP_TOKEN_REJECTION_KEY);
+}
+
 const axiosObject = axios.create({ baseURL: Config.API_BASE_URL });
 
 axiosObject.interceptors.request.use((config) => {
@@ -22,7 +41,10 @@ axiosObject.interceptors.request.use((config) => {
 });
 
 axiosObject.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    resetSetupTokenRejections();
+    return response;
+  },
   (error: ApiError) => {
     const errorType = error.response?.data?.error;
 
@@ -37,7 +59,18 @@ axiosObject.interceptors.response.use(
     // all. That means "this route needs a registered account", not "the session
     // is broken" — discarding the token here would drop a half-finished
     // registration and bounce the user back to the start.
+    //
+    // The API sends this same code for a genuinely malformed token, though,
+    // which this branch can't tell apart from a valid-but-refused setup token.
+    // Clear it after enough consecutive rejections so that case isn't a
+    // permanent loop.
     if (errorType === "InvalidJWT" && holdingSetupToken()) {
+      if (tooManySetupTokenRejections()) {
+        localStorage.removeItem("jwt");
+        resetSetupTokenRejections();
+        window.location.reload();
+        return;
+      }
       return Promise.reject(error);
     }
 

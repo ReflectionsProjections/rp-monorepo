@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import type { Attendee, RoleObject, TierTypes } from "@app";
 import { api, path } from "@app";
-import { magicLinkSignIn } from "@api/auth";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -85,11 +84,11 @@ export function Profile() {
       try {
         newAttendee = (await api.get(path(`/attendee`, {}))).data;
       } catch (error) {
-        // The account has no attendee record, so there is no profile to show.
-        // Send them to sign in rather than rendering an empty page — without a
-        // return path, since coming back here would just fail again.
+        // The account has no attendee record, but the access token is valid —
+        // this is an incomplete registration, not a signed-out visitor. Send
+        // them to finish registering rather than back through sign-in.
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-          magicLinkSignIn({ remember: false });
+          window.location.href = "/register";
           return;
         }
 
