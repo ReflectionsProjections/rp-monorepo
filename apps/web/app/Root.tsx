@@ -1,5 +1,7 @@
 import { Suspense, lazy, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+import { customTheme } from "@app/theme";
 import Fallback from "./Fallback";
 import AuthCallback from "./routes/auth/AuthCallback";
 import AuthRefresh from "./routes/auth/AuthRefresh";
@@ -12,6 +14,9 @@ const HypeApp = lazy(() => import("./sections/hype/App"));
 const InfoApp = lazy(() => import("./sections/info/App"));
 const SponsorApp = lazy(() => import("./sections/sponsor/App"));
 const ArchivedApp = lazy(() => import("./sections/2025/App"));
+const RegisterPage = lazy(
+  () => import("./sections/home/routes/RegisterPage")
+);
 
 function LazySection({ children }: { children: ReactNode }) {
   return <Suspense fallback={<Fallback />}>{children}</Suspense>;
@@ -70,6 +75,16 @@ export default function Root() {
             <LazySection>
               <ArchivedApp />
             </LazySection>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <ChakraProvider theme={customTheme}>
+              <LazySection>
+                <RegisterPage />
+              </LazySection>
+            </ChakraProvider>
           }
         />
         <Route path="/*" element={<SiteApp />} />
