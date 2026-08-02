@@ -1,4 +1,4 @@
-import { Link, Spinner, Text } from "@chakra-ui/react";
+import { Button, Link, Spinner, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { api } from "@app";
@@ -9,18 +9,23 @@ import {
   TEXT_COLOR
 } from "@app/sections/home/components/Auth/AuthCard";
 
-type VerifyState = "verifying" | "success" | "error";
+type VerifyState = "confirming" | "verifying" | "success" | "error";
 
 const MISSING_TOKEN_MESSAGE =
   "This link is missing its token. Please request a new one.";
 
 function tokenFromQuery() {
-  const token = new URLSearchParams(window.location.search).get("token");
-  // Strip the single-use token from the address bar immediately: otherwise it
-  // lingers in browser history, can leak to other origins via the Referer
-  // header, and re-submits (and fails) if the user navigates back here.
-  window.history.replaceState({}, "", window.location.pathname);
-  return token;
+  return new URLSearchParams(window.location.search).get("token");
+}
+
+function stripTokenFromQuery() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("token");
+  window.history.replaceState(
+    {},
+    "",
+    `${url.pathname}${url.search}${url.hash}`
+  );
 }
 
 type MagicLinkCallbackProps = {
@@ -34,31 +39,37 @@ type MagicLinkCallbackProps = {
 export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
   const [token] = useState(tokenFromQuery);
   const [state, setState] = useState<VerifyState>(
-    token ? "verifying" : "error"
+    token ? "confirming" : "error"
   );
   const [errorMessage, setErrorMessage] = useState(
     token ? "" : MISSING_TOKEN_MESSAGE
   );
 
   const verified = useRef(false);
+  const redirectTarget = useRef<string | null>(null);
 
   useEffect(() => {
+    if (token) {
+      // Keep the state initializer pure so React.StrictMode can call it twice
+      // without the second call losing the token.
+      stripTokenFromQuery();
+    }
+  }, [token]);
+
+  const handleConfirm = () => {
+    // A deliberate click keeps email security scanners from consuming this
+    // single-use token merely by loading the page.
     if (!token || verified.current) {
       return;
     }
-    // React.StrictMode runs this effect twice in dev; the verify token is
-    // single-use, so a second request would 401 and could clobber a
-    // successful sign-in with an error state.
     verified.current = true;
-
-    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
+    setState("verifying");
 
     api
       .post("/auth/magic-links/verify", { token, client: "web" })
       .then((response) => {
         const jwt = response.data.token;
         localStorage.setItem("jwt", jwt);
-        setState("success");
 
         const claims = readJwtClaims(jwt);
         // A roleless account can only register, wherever it was headed.
@@ -66,15 +77,12 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
           claims?.tokenType === "setup"
             ? "/register"
             : (takeMagicLinkReturnTo() ?? destination);
-
-        // A full load rather than a client-side navigation, so the route
-        // guards re-read the JWT that was just stored.
-        redirectTimer = setTimeout(() => {
-          window.location.replace(next);
-        }, 800);
+        redirectTarget.current = next;
+        setState("success");
       })
       .catch((err) => {
         setState("error");
+        verified.current = false;
         if (axios.isAxiosError(err) && err.response?.status === 429) {
           setErrorMessage(
             "Too many attempts. Please wait a few minutes and try again."
@@ -85,12 +93,54 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
           );
         }
       });
+  };
+
+  useEffect(() => {
+    if (state !== "success" || redirectTarget.current === null) {
+      return;
+    }
+
+    // A full load rather than a client-side navigation, so the route guards
+    // re-read the JWT that was just stored.
+    const redirectTimer = setTimeout(() => {
+      window.location.replace(redirectTarget.current!);
+    }, 800);
 
     return () => clearTimeout(redirectTimer);
-  }, [token, destination]);
+  }, [state]);
 
   return (
-    <AuthCard title={state === "error" ? "Sign in failed" : "Signing you in"}>
+    <AuthCard
+      title={
+        state === "error"
+          ? "Sign in failed"
+          : state === "confirming"
+            ? "Confirm sign-in"
+            : "Signing you in"
+      }
+    >
+      {state === "confirming" && (
+        <>
+          <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
+            Click below to finish signing in or registering.
+          </Text>
+          <Button
+            type="button"
+            onClick={handleConfirm}
+            w="100%"
+            borderRadius="full"
+            fontFamily={BODY_FONT}
+            fontWeight="400"
+            color="#FFFFFF"
+            bg="rgba(192,38,211,0.85)"
+            _hover={{ bg: "rgba(192,38,211,1)" }}
+            _active={{ bg: "rgba(160,30,180,1)" }}
+          >
+            Continue
+          </Button>
+        </>
+      )}
+
       {state === "verifying" && (
         <>
           <Spinner size="lg" color="#FCF2F6" thickness="3px" speed="0.8s" />

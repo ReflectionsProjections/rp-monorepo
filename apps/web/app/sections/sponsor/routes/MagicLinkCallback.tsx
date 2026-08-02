@@ -9,12 +9,17 @@ const MISSING_TOKEN_MESSAGE =
   "No verification token found. Please request a new login link.";
 
 function tokenFromQuery() {
-  const token = new URLSearchParams(window.location.search).get("token");
-  // Strip the single-use token from the address bar immediately: otherwise it
-  // lingers in browser history, can leak to other origins via the Referer
-  // header, and re-submits (and fails) if the user navigates back here.
-  window.history.replaceState({}, "", window.location.pathname);
-  return token;
+  return new URLSearchParams(window.location.search).get("token");
+}
+
+function stripTokenFromQuery() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("token");
+  window.history.replaceState(
+    {},
+    "",
+    `${url.pathname}${url.search}${url.hash}`
+  );
 }
 
 export function MagicLinkCallback() {
@@ -26,6 +31,14 @@ export function MagicLinkCallback() {
     token ? "" : MISSING_TOKEN_MESSAGE
   );
   const verified = useRef(false);
+
+  useEffect(() => {
+    if (token) {
+      // Keep the state initializer pure so React.StrictMode can call it twice
+      // without the second call losing the token.
+      stripTokenFromQuery();
+    }
+  }, [token]);
 
   const handleConfirm = () => {
     // Guards against double-submission (e.g. a fast double click); the token
