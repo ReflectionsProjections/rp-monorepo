@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
 import type { Role, RoleObject } from "@api/types";
 import api from "@api/api";
 import { authRefresh, magicLinkSignIn, readJwtClaims } from "@api/auth";
@@ -14,11 +14,14 @@ type RequireAuthProps = {
   withMagicLink?: boolean;
 };
 
+const NO_REQUIRED_ROLES: Role[] = [];
+
 const RequireAuth: React.FC<RequireAuthProps> = ({
-  requiredRoles = [],
+  requiredRoles = NO_REQUIRED_ROLES,
   withMagicLink = false
 }) => {
   const [authInfo, setAuthInfo] = useState<RoleObject | null>(null);
+  const [authCheckFailed, setAuthCheckFailed] = useState(false);
   const jwt = localStorage.getItem("jwt");
 
   useEffect(() => {
@@ -31,7 +34,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
       return;
     }
 
-    if (!authInfo) {
+    if (!authInfo && !authCheckFailed) {
       api
         .get("/auth/info")
         .then((response) => {
@@ -46,7 +49,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
             setAuthInfo(response.data);
           }
         })
-        .catch(() => {
+        .catch((error: unknown) => {
           // A setup token is refused here by design: the account exists but has
           // no roles yet, so registration is the only place it can go. Without
           // this the page would sit on "Loading..." forever.
@@ -54,21 +57,45 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
             window.location.href = "/register";
             return;
           }
-          // Any other failure (network error, 5xx, unexpected 4xx) needs to send
-          // the user back into sign-in rather than leaving the guard on
-          // "Loading..." forever; an expired/invalid jwt is handled by the
-          // middleware before it gets here, so this only catches the rest.
-          if (withMagicLink) {
-            magicLinkSignIn();
-          } else {
-            authRefresh();
+          const status = axios.isAxiosError(error)
+            ? error.response?.status
+            : undefined;
+          const credentialsRejected =
+            status === 401 ||
+            status === 403 ||
+            localStorage.getItem("jwt") === null;
+
+          if (credentialsRejected) {
+            localStorage.removeItem("jwt");
+            if (withMagicLink) {
+              magicLinkSignIn();
+            } else {
+              authRefresh();
+            }
+            return;
           }
+
+          // A network failure, 5xx, or unexpected response does not prove the
+          // credentials are bad. Preserve the session and let the user retry
+          // without exposing response details.
+          setAuthCheckFailed(true);
         });
     }
-  }, [authInfo, jwt, requiredRoles, withMagicLink]);
+  }, [authCheckFailed, authInfo, jwt, requiredRoles, withMagicLink]);
 
   if (!jwt) {
     return <p>Redirecting to login...</p>;
+  }
+
+  if (authCheckFailed) {
+    return (
+      <div role="alert">
+        <p>We couldn&rsquo;t verify your session. Please try again.</p>
+        <button type="button" onClick={() => setAuthCheckFailed(false)}>
+          Try again
+        </button>
+      </div>
+    );
   }
 
   if (!authInfo) {
