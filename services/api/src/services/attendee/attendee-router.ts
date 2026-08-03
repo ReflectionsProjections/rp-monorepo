@@ -6,6 +6,7 @@ import {
     AttendeeRedeemMerchValidator,
     EventIdValidator,
     AttendeePointsUpdateValidator,
+    AttendeeAttendanceResponse,
 } from "./attendee-validators";
 import { Tiers } from "./attendee-schema";
 import { SupabaseDB, IconColorType, TierType } from "../../database";
@@ -366,6 +367,52 @@ attendeeRouter.get(
         }
 
         return res.status(StatusCodes.OK).json({ points: user.points });
+    }
+);
+
+/**
+ * @swagger
+ * /attendee/attendance:
+ *   get:
+ *     summary: Get the authenticated attendee's event attendance
+ *     description: |
+ *       Returns the list of event IDs the authenticated attendee has checked in to,
+ *       along with the total count. Returns an empty list for attendees who have
+ *       not checked in to any events yet.
+ *
+ *       **Required roles: USER**
+ *     tags: [Attendee]
+ *     responses:
+ *       200:
+ *         description: The attendee's event attendance
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AttendeeAttendanceResponse'
+ *     security:
+ *       - bearerAuth: []
+ */
+attendeeRouter.get(
+    "/attendance",
+    RoleChecker([Role.Enum.USER]),
+    async (req, res) => {
+        const payload = res.locals.payload;
+        const userId = payload.userId;
+
+        const { data: attendance } =
+            await SupabaseDB.ATTENDEE_ATTENDANCES.select("eventsAttended")
+                .eq("userId", userId)
+                .maybeSingle()
+                .throwOnError();
+
+        const eventsAttended = attendance?.eventsAttended ?? [];
+
+        const response = AttendeeAttendanceResponse.parse({
+            eventsAttended,
+            count: eventsAttended.length,
+        });
+
+        return res.status(StatusCodes.OK).json(response);
     }
 );
 
