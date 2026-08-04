@@ -17,6 +17,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import type { RoleObject } from "@app";
 import { api, useFormAutosave } from "@app";
+import { readJwtClaims } from "@api/auth";
 // import successAnimation from "../assets/animations/success.json";
 import confirmationAnimation from "../assets/animations/confirmation.json";
 import type { RegistrationValues } from "@app/sections/home/components/Registration/schema";
@@ -56,7 +57,7 @@ import {
   ResumeField,
   Over18Checkbox
 } from "@app/sections/home/components/Registration/questions";
-import Lottie from "lottie-react";
+import Lottie from "@lib/lottie";
 
 const MotionBox = motion(Box);
 
@@ -544,6 +545,19 @@ const Register = () => {
             />
           </Link>
         </HStack>
+
+        <Link
+          href="/"
+          mt={2}
+          fontFamily="Magistral"
+          fontSize="xl"
+          color="white"
+          textDecoration="underline"
+          textUnderlineOffset="4px"
+          _hover={{ opacity: 0.75 }}
+        >
+          Back to R|P 2026
+        </Link>
       </VStack>
     </MotionBox>
   );
@@ -601,14 +615,34 @@ const Register = () => {
                 onSubmit={(values, helpers) => {
                   setIsLoading(true);
                   const registration = processFinalRegistration(values);
+
+                  // An account that signed in with a magic link and has no
+                  // roles yet still holds a setup token, which
+                  // /registration/submit rejects. /registration/complete
+                  // accepts it, grants the USER role, clears the draft itself
+                  // and hands back a full access token to replace it.
+                  const jwt = localStorage.getItem("jwt");
+                  const finalise =
+                    jwt !== null && readJwtClaims(jwt)?.tokenType === "setup"
+                      ? api
+                          .post("/registration/complete", registration)
+                          .then(({ data }) => {
+                            localStorage.setItem("jwt", data.token);
+                          })
+                      : Promise.all([
+                          api.post("/registration/submit", registration),
+                          api.post("/registration/draft", {
+                            ...values,
+                            resume: values.resume?.name ?? ""
+                          })
+                        ]);
+
                   toast.promise(
-                    Promise.all([
-                      api.post("/registration/submit", registration),
-                      api.post("/registration/draft", {
-                        ...values,
-                        resume: values.resume?.name ?? ""
-                      }),
-                      (async () => {
+                    finalise
+                      // Sequential, not parallel: /s3/upload also rejects setup
+                      // tokens, so it has to run once the account is registered
+                      // and the access token above is in place.
+                      .then(async () => {
                         if (!values.resume?.file) {
                           return;
                         }
@@ -618,8 +652,7 @@ const Register = () => {
                           download.fields,
                           values.resume.file
                         );
-                      })()
-                    ])
+                      })
                       .then(() => {
                         setConfirmation(true);
                       })

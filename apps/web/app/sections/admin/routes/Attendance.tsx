@@ -10,7 +10,7 @@ import {
   Button,
   VStack
 } from "@chakra-ui/react";
-import Lottie from "lottie-react";
+import Lottie from "@lib/lottie";
 import successAnimation from "../assets/animations/success.json";
 import axios from "axios";
 import { useMirrorStyles } from "@app/sections/admin/styles/Mirror";

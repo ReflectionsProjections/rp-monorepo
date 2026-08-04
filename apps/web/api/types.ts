@@ -372,6 +372,25 @@ export interface APIRoutes {
       response: { token: string };
     };
   };
+  "/auth/magic-links": {
+    POST: {
+      request: {
+        email: string;
+        client: "web" | "mobile";
+        intent: "registration" | "login" | "resume-book";
+      };
+      response: never;
+    };
+  };
+  "/auth/magic-links/verify": {
+    POST: {
+      request: {
+        token: string;
+        client: "web" | "mobile";
+      };
+      response: { token: string };
+    };
+  };
   "/checkin/event": {
     POST: {
       request: { eventId: string; userId: string };
@@ -525,6 +544,12 @@ export interface APIRoutes {
     POST: {
       request: Omit<Registration, "userId">;
       response: { message: string };
+    };
+  };
+  "/registration/complete": {
+    POST: {
+      request: Omit<Registration, "userId">;
+      response: { registration: Registration; token: string };
     };
   };
   "/registration/all": {
