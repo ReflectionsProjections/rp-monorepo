@@ -3,13 +3,20 @@ import { useEffect } from "react";
 import { useRef } from "react";
 
 const useFormAutosave = <T>(callback: (values: T) => void) => {
-  const { values } = useFormikContext<T>();
+  const { values, dirty } = useFormikContext<T>();
   const isFirstRender = useRef(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      return;
+    }
+
+    // Never save an unedited form: the first-render ref doesn't survive a
+    // StrictMode remount, and without this a pristine (possibly empty) form
+    // would overwrite the stored draft ten seconds after load.
+    if (!dirty) {
       return;
     }
 
@@ -24,7 +31,7 @@ const useFormAutosave = <T>(callback: (values: T) => void) => {
         timerRef.current = null;
       }
     };
-  }, [values, callback]);
+  }, [values, dirty, callback]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {

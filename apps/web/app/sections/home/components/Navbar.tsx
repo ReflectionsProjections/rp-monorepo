@@ -127,6 +127,9 @@ const Navbar = ({ isFlush }: NavbarProps) => {
   return (
     <Flex
       as="nav"
+      // Sticky mode renders as a flex child of a center-aligned VStack, where
+      // left/right don't size the box the way they do for fixed mode.
+      w="100%"
       position={isFlush ? "sticky" : "fixed"}
       top={isFlush ? 0 : { base: "4px", lg: "37px" }}
       left={0}
