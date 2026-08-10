@@ -9,6 +9,7 @@ import {
     GlobalLeaderboardResponseValidator,
     SubmitLeaderboardResponseValidator,
     CheckSubmissionResponseValidator,
+    MyLeaderboardRankResponseValidator,
 } from "./leaderboard-schema";
 import RoleChecker from "../../middleware/role-checker";
 import { Role } from "../auth/auth-models";
@@ -116,6 +117,78 @@ leaderboardRouter.get("/global", async (req, res) => {
 
     return res.status(StatusCodes.OK).json(response);
 });
+
+/**
+ * @swagger
+ * /leaderboard/me:
+ *   get:
+ *     summary: Get the authenticated attendee's global leaderboard standing
+ *     description: |
+ *       Returns the authenticated attendee's global rank, total points, and the
+ *       point gap to the next rank above them. `nextRank` and `pointsToNextRank`
+ *       are null when the attendee is ranked first.
+ *
+ *       **Required roles: USER**
+ *     tags: [Leaderboard]
+ *     responses:
+ *       200:
+ *         description: The attendee's leaderboard standing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MyLeaderboardRankResponseValidator'
+ *       404:
+ *         description: Attendee not found on the leaderboard
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "UserNotFound"
+ *     security:
+ *       - bearerAuth: []
+ */
+leaderboardRouter.get(
+    "/me",
+    RoleChecker([Role.Enum.USER]),
+    async (req, res) => {
+        const payload = res.locals.payload;
+        const userId = payload.userId;
+
+        const leaderboard = await getGlobalLeaderboard();
+        const myIndex = leaderboard.findIndex(
+            (entry) => entry.userId === userId
+        );
+
+        if (myIndex === -1) {
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .json({ error: "UserNotFound" });
+        }
+
+        const me = leaderboard[myIndex];
+
+        // With competition ranking, tied entries share a rank, so walk backwards
+        // to the first entry with a strictly better rank.
+        let nextEntry = null;
+        for (let i = myIndex - 1; i >= 0; i--) {
+            if (leaderboard[i].rank < me.rank) {
+                nextEntry = leaderboard[i];
+                break;
+            }
+        }
+
+        const response = MyLeaderboardRankResponseValidator.parse({
+            rank: me.rank,
+            points: me.points,
+            totalParticipants: leaderboard.length,
+            nextRank: nextEntry ? nextEntry.rank : null,
+            pointsToNextRank: nextEntry ? nextEntry.points - me.points : null,
+        });
+
+        return res.status(StatusCodes.OK).json(response);
+    }
+);
 
 /**
  * @swagger

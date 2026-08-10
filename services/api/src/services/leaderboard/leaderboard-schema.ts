@@ -159,6 +159,28 @@ export const SubmitLeaderboardResponseValidator = registry.register(
         })
 );
 
+// GET /me response
+export const MyLeaderboardRankResponseValidator = registry.register(
+    "MyLeaderboardRankResponseValidator",
+    z
+        .object({
+            rank: z.number().int().min(1),
+            points: z.number().int().min(0),
+            totalParticipants: z.number().int().min(0),
+            nextRank: z.number().int().min(1).nullable(),
+            pointsToNextRank: z.number().int().min(0).nullable(),
+        })
+        .openapi("MyLeaderboardRankResponseValidator", {
+            example: {
+                rank: 78,
+                points: 150,
+                totalParticipants: 500,
+                nextRank: 77,
+                pointsToNextRank: 123,
+            },
+        })
+);
+
 // GET /submission-status response
 export const CheckSubmissionResponseValidator = registry.register(
     "CheckSubmissionResponseValidator",
@@ -212,4 +234,7 @@ export type CheckSubmissionRequest = z.infer<
 >;
 export type CheckSubmissionResponse = z.infer<
     typeof CheckSubmissionResponseValidator
+>;
+export type MyLeaderboardRankResponse = z.infer<
+    typeof MyLeaderboardRankResponseValidator
 >;
