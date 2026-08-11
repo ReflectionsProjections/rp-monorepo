@@ -18,12 +18,12 @@ import type { RoleObject } from "@app";
 import { useFormAutosave } from "@app";
 // import successAnimation from "../assets/animations/success.json";
 import confirmationAnimation from "../assets/animations/confirmation.json";
-import type { RegistrationValues } from "@app/sections/home/components/Registration/schema";
+import type { RegistrationValues } from "../components/Registration/schema";
 import {
   finalRegistrationSchema,
   initialValues,
   registrationSchema
-} from "@app/sections/home/components/Registration/schema";
+} from "../components/Registration/schema";
 import { useOutletContext } from "react-router-dom";
 import type { MotionValue } from "framer-motion";
 import {
@@ -54,8 +54,8 @@ import {
   PersonalLinksField,
   ResumeField,
   Over18Checkbox
-} from "@app/sections/home/components/Registration/questions";
-import Lottie from "lottie-react";
+} from "../components/Registration/questions";
+import Lottie from "@lib/lottie";
 
 const MotionBox = motion(Box);
 

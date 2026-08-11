@@ -197,3 +197,15 @@ export const AttendeeTagsResponse = registry.register(
             example: { tags: ["AI", "Systems"] },
         })
 );
+
+export const AttendeeAttendanceResponse = registry.register(
+    "AttendeeAttendanceResponse",
+    z
+        .object({
+            eventsAttended: z.array(z.string()),
+            count: z.number().int().min(0),
+        })
+        .openapi("AttendeeAttendanceResponse", {
+            example: { eventsAttended: ["event1", "event2"], count: 2 },
+        })
+);

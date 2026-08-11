@@ -16,6 +16,9 @@ export const SupabaseDB = {
     get AUTH_CODES() {
         return supabase.from("authCodes");
     },
+    get MAGIC_LINK_TOKENS() {
+        return supabase.from("magicLinkTokens");
+    },
     get CORPORATE() {
         return supabase.from("corporate");
     },

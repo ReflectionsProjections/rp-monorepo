@@ -30,6 +30,7 @@ function setRole(request: request.Test, role?: RoleType) {
         roles: [role],
         displayName: TESTER.displayName,
         email: TESTER.email,
+        tokenType: "access",
     } satisfies JwtPayloadType;
 
     const jwt = jsonwebtoken.sign(payload, Config.JWT_SIGNING_SECRET, {
@@ -178,6 +179,7 @@ export async function clearSupabaseTables(supabase: SupabaseClient) {
         "redemptions",
         "attendees",
         "notifications",
+        "magicLinkTokens",
         "draftRegistrations",
         "registrations",
         "authRoles",

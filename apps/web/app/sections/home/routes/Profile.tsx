@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import type { Attendee, RoleObject, TierTypes } from "@app";
 import { api, path } from "@app";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
@@ -83,6 +84,14 @@ export function Profile() {
       try {
         newAttendee = (await api.get(path(`/attendee`, {}))).data;
       } catch (error) {
+        // The account has no attendee record, but the access token is valid —
+        // this is an incomplete registration, not a signed-out visitor. Send
+        // them to finish registering rather than back through sign-in.
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          window.location.href = "/register";
+          return;
+        }
+
         console.error("Failed to fetch attendee data:", error);
         toast({
           title: "Error loading attendee data",

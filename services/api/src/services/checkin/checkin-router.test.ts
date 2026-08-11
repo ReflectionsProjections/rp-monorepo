@@ -761,6 +761,24 @@ describe("POST /checkin/event", () => {
     });
 
     it("should give priority after second check-in to regular event", async () => {
+        const eventWindowStart = new Date().toISOString();
+        const eventWindowEnd = new Date(
+            Date.now() + ONE_HOUR_SECONDS * 1000
+        ).toISOString();
+
+        await SupabaseDB.EVENTS.update({
+            startTime: eventWindowStart,
+            endTime: eventWindowEnd,
+        })
+            .eq("eventId", REGULAR_EVENT_FOR_CHECKIN.eventId)
+            .throwOnError();
+
+        const specialEventForCurrentDay = {
+            ...SPECIAL_EVENT_FOR_CHECKIN,
+            startTime: eventWindowStart,
+            endTime: eventWindowEnd,
+        };
+
         // First check-in - should not get priority
         payload.eventId = REGULAR_EVENT_FOR_CHECKIN.eventId;
         payload.userId = TEST_ATTENDEE_1.userId;
@@ -787,10 +805,10 @@ describe("POST /checkin/event", () => {
         );
         expect(attendeeAttendanceAfterFirst?.eventsAttended).toHaveLength(1);
 
-        await SupabaseDB.EVENTS.insert([SPECIAL_EVENT_FOR_CHECKIN]);
+        await SupabaseDB.EVENTS.insert([specialEventForCurrentDay]);
 
         // Second check-in - should get priority
-        payload.eventId = SPECIAL_EVENT_FOR_CHECKIN.eventId;
+        payload.eventId = specialEventForCurrentDay.eventId;
 
         await postAsAdmin("/checkin/event")
             .send(payload)
@@ -811,7 +829,7 @@ describe("POST /checkin/event", () => {
                 .eq("userId", payload.userId)
                 .single();
         expect(attendeeAttendance?.eventsAttended).toContain(
-            SPECIAL_EVENT_FOR_CHECKIN.eventId
+            specialEventForCurrentDay.eventId
         );
         expect(attendeeAttendance?.eventsAttended).toContain(
             REGULAR_EVENT_FOR_CHECKIN.eventId
@@ -821,7 +839,7 @@ describe("POST /checkin/event", () => {
         // Clean up
         await SupabaseDB.EVENTS.delete().eq(
             "eventId",
-            SPECIAL_EVENT_FOR_CHECKIN.eventId
+            specialEventForCurrentDay.eventId
         );
     });
 });

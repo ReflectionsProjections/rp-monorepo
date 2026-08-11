@@ -2036,6 +2036,57 @@ const templates = {
         </html>
     `,
 
+    MAGIC_LINK: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{action}}</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 50vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+            }
+            .container {
+                background-color: #ffffff;
+                padding: 20px 40px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                text-align: center;
+            }
+            h2 {
+                font-size: 24px;
+                color: #333333;
+                margin-bottom: 10px;
+            }
+            .button {
+                font-size: 18px;
+                font-weight: bold;
+                color: #ffffff;
+                background-color: #e74c3c;
+                padding: 12px 24px;
+                border-radius: 5px;
+                display: inline-block;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>{{action}} with Reflections | Projections</h2>
+            <p><a class="button" href="{{{link}}}">{{action}}</a></p>
+            <p> Note that this link is single use and will expire approximately 10 minutes from now. </p>
+            <p> If you did not request this link, you can ignore this email. </p>
+        </div>
+    </body>
+    </html>`,
+
     SPONSOR_VERIFICATION: `
     <!DOCTYPE html>
     <html lang="en">

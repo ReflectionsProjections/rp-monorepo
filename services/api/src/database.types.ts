@@ -156,20 +156,20 @@ export type Database = {
             };
             authInfo: {
                 Row: {
-                    authId: string;
-                    displayName: string;
+                    authId: string | null;
+                    displayName: string | null;
                     email: string;
                     userId: string;
                 };
                 Insert: {
-                    authId: string;
-                    displayName: string;
+                    authId?: string | null;
+                    displayName?: string | null;
                     email: string;
                     userId: string;
                 };
                 Update: {
-                    authId?: string;
-                    displayName?: string;
+                    authId?: string | null;
+                    displayName?: string | null;
                     email?: string;
                     userId?: string;
                 };
@@ -330,6 +330,39 @@ export type Database = {
                         referencedColumns: ["eventId"];
                     },
                 ];
+            };
+            magicLinkTokens: {
+                Row: {
+                    client: string;
+                    createdAt: string;
+                    expiresAt: string;
+                    id: string;
+                    intent: string;
+                    subjectEmail: string;
+                    tokenDigest: string;
+                    usedAt: string | null;
+                };
+                Insert: {
+                    client: string;
+                    createdAt?: string;
+                    expiresAt: string;
+                    id?: string;
+                    intent: string;
+                    subjectEmail: string;
+                    tokenDigest: string;
+                    usedAt?: string | null;
+                };
+                Update: {
+                    client?: string;
+                    createdAt?: string;
+                    expiresAt?: string;
+                    id?: string;
+                    intent?: string;
+                    subjectEmail?: string;
+                    tokenDigest?: string;
+                    usedAt?: string | null;
+                };
+                Relationships: [];
             };
             events: {
                 Row: {
@@ -703,6 +736,43 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
+            complete_magic_link_registration: {
+                Args: {
+                    p_email: string;
+                    p_mailing_list: string;
+                    p_registration: Json;
+                    p_user_id: string;
+                };
+                Returns: string;
+            };
+            consume_auth_code: {
+                Args: {
+                    p_email: string;
+                    p_stored_hash: string;
+                };
+                Returns: boolean;
+            };
+            consume_magic_link_token: {
+                Args: {
+                    p_client: string;
+                    p_token_digest: string;
+                };
+                Returns: {
+                    client: string;
+                    intent: string;
+                    subjectEmail: string;
+                }[];
+            };
+            get_or_create_magic_link_account: {
+                Args: {
+                    p_email: string;
+                };
+                Returns: {
+                    displayName: string | null;
+                    email: string;
+                    userId: string;
+                }[];
+            };
             promote_users_batch: {
                 Args: { user_ids: string[] };
                 Returns: number;

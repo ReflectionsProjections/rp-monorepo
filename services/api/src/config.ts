@@ -101,8 +101,9 @@ export const Config = {
     // prettier-ignore
     AUTH_ADMIN_WHITELIST: new Set([
         // Dev Chairs/Code-Owners (reach out to these people for questions)
-        "ronita2@illinois.edu",    // Ronit Anandani
-        "abahl3@illinois.edu",    // Aryan Bahl
+        "akul@reflectionsprojections.org",    // Akul Sharma
+        "dev.patel@reflectionsprojections.org",    // Dev Patel
+        "jacob.edley@reflectionsprojections.org",    // Jacob Edley
     ]),
 
     // For sending emails
@@ -117,6 +118,13 @@ export const Config = {
     JWT_SIGNING_SECRET: getEnv("JWT_SIGNING_SECRET"),
     JWT_EXPIRATION_TIME: "1 day" as const,
     MOBILE_JWT_EXPIRATION_TIME: "10 days" as const,
+    MAGIC_LINK_REGISTRATION_CALLBACK: `${WEB_BASE}/auth/registration`,
+    MAGIC_LINK_WEB_LOGIN_CALLBACK: `${WEB_BASE}/auth/login`,
+    MAGIC_LINK_MOBILE_LOGIN_CALLBACK: `${WEB_BASE}/auth/mobile/login`,
+    MAGIC_LINK_RESUME_BOOK_CALLBACK: `${WEB_BASE}/sponsor/auth/magic-link`,
+    MAGIC_LINK_ISSUE_IP_LIMIT: 50,
+    MAGIC_LINK_ISSUE_EMAIL_LIMIT: 3,
+    MAGIC_LINK_VERIFY_IP_LIMIT: 30,
     STAFF_MEETING_CHECK_IN_WINDOW_SECONDS: 6 * 60 * 60,
 
     S3_ACCESS_KEY: getEnv("S3_ACCESS_KEY"),

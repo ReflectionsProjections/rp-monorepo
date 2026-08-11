@@ -23,9 +23,9 @@ cd dev-env
 
 Before starting services:
 
-- Reach out to your Dev Chairs for the shared `.env`
-- Place it at the repo root as `.env`
-- Install dependencies in `services/api`, `apps/web`, and `apps/mobile` with `yarn`
+- Reach out to your Dev Chairs for the shared `.env`.
+- Place it at the repo root as `.env`.
+- Install dependencies in `services/api`, `apps/web`, and `apps/mobile` with `yarn`.
 
 Web apps load their local `.env` first, then fall back to the root `.env`. The API and local infrastructure also use the root `.env`.
 

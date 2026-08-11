@@ -1,114 +1,114 @@
 import type { FAQItem } from "@app/sections/home/constants/faq-questions";
-import { Box, Collapse, Image, Text } from "@chakra-ui/react";
-import { useState } from "react";
 import { parseRichText } from "@app/sections/home/utils/textParser";
-
-const CAR_URLS = [
-  "/site/faq/car1.svg",
-  "/site/faq/car2.svg",
-  "/site/faq/car3.svg",
-  "/site/faq/car4.svg",
-  "/site/faq/car5.svg"
-];
+import { Box, Image, Text } from "@chakra-ui/react";
 
 type FAQQuestionProps = {
   index: number;
   faqItem: FAQItem;
-  onFaqToggle: (index: number) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 };
 
-export const FAQQuestion: React.FC<FAQQuestionProps> = ({
+export const FAQQuestion = ({
   index,
-  faqItem: { question, answer, colors },
-  onFaqToggle
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-    onFaqToggle(index);
-  };
+  faqItem: { question, answer },
+  isOpen,
+  onToggle
+}: FAQQuestionProps) => {
+  const answerId = `faq-answer-${index}`;
 
   return (
-    <Box w="100%" px={{ base: 3, md: 10 }}>
+    <Box w="100%">
       <Box
-        position={"relative"}
+        as="button"
+        type="button"
+        aria-expanded={isOpen}
+        aria-controls={answerId}
+        onClick={onToggle}
+        position="relative"
         display="flex"
-        alignItems={{ md: "center" }}
-        justifyContent={"flex-start"}
-        bgColor={colors.light}
-        p={4}
-        py={5}
-        pt={{ base: 3, md: 4 }}
-        pb={{ base: 10, md: 5 }}
-        borderRadius={"lg"}
-        borderBottomRadius={isOpen ? 0 : "lg"}
-        transition={"all 0.3s ease-in-out"}
-        onClick={handleToggle}
+        alignItems="center"
+        justifyContent="space-between"
+        w="100%"
+        minH={{
+          base: "88px",
+          md: "108px",
+          lg: "clamp(86px, 8.7vw, 132px)"
+        }}
+        gap={4}
+        px={{ base: 5, md: 8, lg: "clamp(30px, 3.1vw, 47px)" }}
+        py={{ base: 5, md: 7, lg: "clamp(24px, 2.5vw, 38px)" }}
+        color="white"
+        textAlign="left"
+        bg="rgba(49, 37, 55, 0.66)"
+        borderRadius="13px"
+        boxShadow="0 8px 0 rgba(0, 0, 0, 0.82)"
         cursor="pointer"
+        transition="background 180ms ease, transform 180ms ease"
+        _hover={{ bg: "rgba(66, 49, 73, 0.74)" }}
+        _focusVisible={{
+          outline: "3px solid #e952bc",
+          outlineOffset: "4px"
+        }}
       >
-        <Box
-          position="absolute"
-          right="0"
-          top="0"
-          bottom="0"
-          w={{ base: "42%", md: "35%" }}
-          bgColor={colors.dark}
-          sx={{ clipPath: "polygon(28% 0, 100% 0, 100% 100%, 0 100%)" }}
-          borderTopRightRadius="lg"
-          borderBottomRightRadius={isOpen ? 0 : "lg"}
-          pointerEvents="none"
-          zIndex={0}
-        />
-
-        <Image
-          position="absolute"
-          left={{
-            base: isOpen ? "62%" : -1,
-            sm: isOpen ? "70%" : -3,
-            md: isOpen ? "72%" : "-20%",
-            lg: isOpen ? "72%" : "-20%"
-          }}
-          bottom={{ base: 0, md: undefined }}
-          borderRadius="lg"
-          h={{ base: "30px", md: "70px" }}
-          transition={"left 0.3s ease-in-out"}
-          src={CAR_URLS[index % CAR_URLS.length]}
-          alt="Car"
-          objectFit="cover"
-          transform={{ md: "scale(0.7)", lg: "scale(0.8)" }}
-          zIndex={2}
-        />
-
         <Text
-          ml={{ md: isOpen ? 0 : "120px", lg: isOpen ? 0 : "140px" }}
-          mr={{ md: isOpen ? 28 : 0 }}
-          pl={{ base: 1, md: 2 }}
-          color="white"
-          maxH="100%"
-          overflow="hidden"
-          fontFamily="ProRacing"
-          fontSize={{ base: "xl", md: "2xl" }}
-          zIndex={1}
-          transition="all 0.3s ease-in-out"
+          fontFamily="Ethnocentric, ProRacing, sans-serif"
+          fontSize={{
+            base: "clamp(0.7rem, 3.25vw, 0.92rem)",
+            md: "1rem",
+            xl: "clamp(1rem, 1.18vw, 1.12rem)"
+          }}
+          lineHeight={1.3}
         >
           {question}
         </Text>
+
+        <Image
+          src="/site/faq/faq-arrow.svg"
+          alt=""
+          aria-hidden
+          flexShrink={0}
+          w={{ base: "32px", md: "42px", xl: "55px" }}
+          h={{ base: "32px", md: "42px", xl: "55px" }}
+          transform={isOpen ? "rotate(90deg)" : "rotate(180deg)"}
+          transition="transform 220ms ease"
+        />
       </Box>
 
-      <Collapse in={isOpen} animateOpacity unmountOnExit>
-        <Box bg="gray.700" p={4} borderBottomRadius="lg">
+      <Box
+        display="grid"
+        gridTemplateRows={isOpen ? "1fr" : "0fr"}
+        opacity={isOpen ? 1 : 0}
+        transition={
+          isOpen
+            ? "grid-template-rows 700ms cubic-bezier(0.4, 0, 0.2, 1), opacity 420ms ease-in-out 160ms"
+            : "grid-template-rows 240ms cubic-bezier(0.4, 0, 1, 1), opacity 160ms ease-in"
+        }
+        aria-hidden={!isOpen}
+      >
+        <Box minH={0} overflow="hidden">
           <Box
-            fontFamily={"Magistral"}
-            fontWeight={"medium"}
-            color="gray.100"
-            fontSize={"xl"}
-            lineHeight="1.6"
+            id={answerId}
+            role="region"
+            aria-label={`${question} answer`}
+            mt="8px"
+            px={{ base: 5, md: 8, xl: "47px" }}
+            py={{ base: 5, md: 7, xl: 8 }}
+            color="#fcf2f6"
+            bg="rgba(49, 37, 55, 0.86)"
+            borderRadius="13px"
+            boxShadow="0 8px 0 rgba(0, 0, 0, 0.6)"
           >
-            {parseRichText(answer)}
+            <Box
+              fontFamily="'Share Tech Mono', Magistral, monospace"
+              fontSize={{ base: "sm", md: "lg" }}
+              lineHeight={1.65}
+            >
+              {parseRichText(answer)}
+            </Box>
           </Box>
         </Box>
-      </Collapse>
+      </Box>
     </Box>
   );
 };
