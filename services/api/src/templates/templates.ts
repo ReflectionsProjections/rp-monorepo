@@ -564,7 +564,7 @@ const templates = {
                                                 <tr>
                                                     <td style="vertical-align: middle; text-align: center; padding: 40px 20px;">
                                                         <div class="year-badge" style="font-size: 12px; font-weight: bold; color: #cccccc; letter-spacing: 2px; margin: 0 0 15px 0; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                                            2025 PRESENTS
+                                                            2026 PRESENTS
                                                         </div>
                                                         <div class="header-title" style="margin: 0; font-size: 28px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.1;">
                                                             REFLECTIONS<span style="color: #ff0000; margin: 0 10px;">|</span>PROJECTIONS
@@ -582,7 +582,7 @@ const templates = {
                                 <!--[if !mso]><!-->
                                 <div class="header-image-container">
                                     <img
-                                        src="https://rp-web-site.pages.dev/email_header.png"
+                                        src="https://reflectionsprojections.org/site/email_header.png"
                                         alt=""
                                         class="header-image"
                                         style="display: block; width: 100%; height: auto; max-width: 600px;"
@@ -592,7 +592,7 @@ const templates = {
                                     <!-- Enhanced fallback for failed image loads -->
                                     <div class="header-fallback">
                                         <div class="header-fallback-inner">
-                                            <div class="year-badge">2025 PRESENTS</div>
+                                            <div class="year-badge">2026 PRESENTS</div>
                                             <div class="header-title">
                                                 REFLECTIONS<span class="title-separator">|</span>PROJECTIONS
                                             </div>
@@ -625,7 +625,7 @@ const templates = {
                                         <td class="content-area">
                                             <p class="welcome-text">
                                                 Thank you for registering for
-                                                R|P 2025. We have received your
+                                                R|P 2026. We have received your
                                                 information and will be sending
                                                 next steps shortly.
                                             </p>
@@ -980,7 +980,7 @@ const templates = {
                                >
                                    <tr>
                                        <td class="footer-area">
-                                           R|P 2025 • Reflections | Projections
+                                           R|P 2026 • Reflections | Projections
                                        </td>
                                    </tr>
                                </table>
@@ -1555,7 +1555,7 @@ const templates = {
                                                 <tr>
                                                     <td style="vertical-align: middle; text-align: center; padding: 40px 20px;">
                                                         <div class="year-badge" style="font-size: 12px; font-weight: bold; color: #cccccc; letter-spacing: 2px; margin: 0 0 15px 0; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                                            2025 PRESENTS
+                                                            2026 PRESENTS
                                                         </div>
                                                         <div class="header-title" style="margin: 0; font-size: 28px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.1;">
                                                             REFLECTIONS<span style="color: #ff0000; margin: 0 10px;">|</span>PROJECTIONS
@@ -1573,7 +1573,7 @@ const templates = {
                                 <!--[if !mso]><!-->
                                 <div class="header-image-container">
                                     <img
-                                        src="https://rp-web-site.pages.dev/email_header.png"
+                                        src="https://reflectionsprojections.org/site/email_header.png"
                                         alt=""
                                         class="header-image"
                                         style="display: block; width: 100%; height: auto; max-width: 600px;"
@@ -1583,7 +1583,7 @@ const templates = {
                                     <!-- Enhanced fallback for failed image loads -->
                                     <div class="header-fallback">
                                         <div class="header-fallback-inner">
-                                            <div class="year-badge">2025 PRESENTS</div>
+                                            <div class="year-badge">2026 PRESENTS</div>
                                             <div class="header-title">
                                                 REFLECTIONS<span class="title-separator">|</span>PROJECTIONS
                                             </div>
@@ -1969,7 +1969,7 @@ const templates = {
                                >
                                    <tr>
                                        <td class="footer-area">
-                                           R|P 2025 • Reflections | Projections
+                                           R|P 2026 • Reflections | Projections
                                        </td>
                                    </tr>
                                </table>
@@ -1985,7 +1985,7 @@ const templates = {
         <html>
             <body>
                 <div class="container">
-                    <p> Thank you for registering for R|P 2025. We have received your information, and will be sending next steps shortly.  </p>
+                    <p> Thank you for registering for R|P 2026. We have received your information, and will be sending next steps shortly.  </p>
                     
                     <p> Need to update your registration? Return to the 
                         <a href="${Config.WEB_REGISTER_ROUTE}">registration form</a>

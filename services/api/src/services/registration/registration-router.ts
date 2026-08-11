@@ -379,7 +379,7 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
     // Not sure why, but do not put exclamation marks in the subject line
     if (!existing) {
         await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
-            subject: "Reflections | Projections 2025 Registration Confirmation",
+            subject: "Reflections | Projections 2026 Registration Confirmation",
             body: Mustache.render(
                 templates.REGISTRATION_CONFIRMATION,
                 substitution
@@ -387,7 +387,7 @@ registrationRouter.post("/submit", RoleChecker([]), async (req, res) => {
         });
     } else {
         await sendTemplateEmail(payload.email, Templates.RP_EMAILS, {
-            subject: "Reflections | Projections 2025 Registration Updated",
+            subject: "Reflections | Projections 2026 Registration Updated",
             body: Mustache.render(
                 templates.REGISTRATION_UPDATE_CONFIRMATION,
                 substitution
