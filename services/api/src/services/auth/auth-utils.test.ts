@@ -56,7 +56,7 @@ const AUTH_STAFF_PAYLOAD = {
 } satisfies Partial<TokenPayloadWithProperScopes> as TokenPayloadWithProperScopes;
 
 const AUTH_ADMIN_USER = {
-    email: "ronita2@illinois.edu",
+    email: [...Config.AUTH_ADMIN_WHITELIST][0],
     displayName: "The admin",
     userId: "294r-23rn",
     authId: "592493",
