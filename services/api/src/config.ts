@@ -101,8 +101,9 @@ export const Config = {
     // prettier-ignore
     AUTH_ADMIN_WHITELIST: new Set([
         // Dev Chairs/Code-Owners (reach out to these people for questions)
-        "ronita2@illinois.edu",    // Ronit Anandani
-        "abahl3@illinois.edu",    // Aryan Bahl
+        "akul@reflectionsprojections.org",    // Akul Sharma
+        "dev.patel@reflectionsprojections.org",    // Dev Patel
+        "jacob.edley@reflectionsprojections.org",    // Jacob Edley
     ]),
 
     // For sending emails
