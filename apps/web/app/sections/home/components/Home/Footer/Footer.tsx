@@ -1,57 +1,79 @@
 import { Flex, Grid, Image, Link, Text, useMediaQuery } from "@chakra-ui/react";
 
-const footerLinkIcons: { src: string; to: string }[] = [
-  { src: "email_icon.svg", to: "mailto:contact@reflectionsprojections.org" },
+import { Link as ChakraLink } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+
+const footerLinkIcons: { src: string; alt: string; to: string }[] = [
+  {
+    src: "email_icon.svg",
+    alt: "Email",
+    to: "mailto:contact@reflectionsprojections.org"
+  },
   {
     src: "linkedin_icon.svg",
+    alt: "LinkedIn",
     to: "https://linkedin.com/company/reflections-projections-uiuc"
   },
-  { src: "facebook_icon.svg", to: "https://facebook.com/acmrp/" },
-
-  { src: "tiktok_icon.svg", to: "https://www.tiktok.com/@uiuc_rp" },
-  { src: "github_icon.svg", to: "https://github.com/ReflectionsProjections" },
-  { src: "instagram_icon.svg", to: "https://instagram.com/uiuc_rp/" }
+  {
+    src: "facebook_icon.svg",
+    alt: "Facebook",
+    to: "https://facebook.com/acmrp/"
+  },
+  {
+    src: "tiktok_icon.svg",
+    alt: "TikTok",
+    to: "https://www.tiktok.com/@uiuc_rp"
+  },
+  {
+    src: "github_icon.svg",
+    alt: "GitHub",
+    to: "https://github.com/ReflectionsProjections"
+  },
+  {
+    src: "instagram_icon.svg",
+    alt: "Instagram",
+    to: "https://instagram.com/uiuc_rp/"
+  }
 ]; // there should be <= 6 of these
 
 export const Footer = () => {
   const [isTiny] = useMediaQuery("(max-width: 300px)");
 
   return (
-    <Flex
+    <Grid
       w="100%"
-      h="fit-content"
-      flexDir="column"
       bgGradient="linear(to-b, #0F062D 0%, #7C1493 100%)"
-      alignItems="center"
       position="relative"
     >
+      {/* content layer; shares the grid cell with the buildings image below so
+          the footer is always at least as tall as its content */}
       <Flex
+        gridArea="1 / 1"
         w="100%"
         maxW="1500px"
-        h="inherit"
-        flexDir="row"
-        alignItems="flex-end"
+        justifySelf="center"
+        alignSelf="end"
+        flexDir={{ base: "column-reverse", md: "row" }}
+        alignItems={{ base: "center", md: "flex-end" }}
         justifyContent={{ base: "center", md: "space-between" }}
+        gap={{ base: 6, md: 0 }}
         px={12}
         py={14}
         zIndex={2}
-        position="absolute"
-        bottom={0}
       >
         {/* left side content */}
         <Flex
           flexDirection="column"
-          h="inherit"
-          alignItems="flex-start"
+          alignItems={{ base: "center", md: "flex-start" }}
           justifyContent="flex-end"
-          zIndex={2}
         >
           <Image
             display={{
               base: "none",
               md: "block"
             }}
-            src="/site/footer/2026_footer_logo.svg"
+            src="/site/footer/2026/2026_footer_logo.svg"
+            alt="Reflections | Projections 2026"
             maxH={{ md: "150px", lg: "200px" }}
             mx={8}
             my={16}
@@ -69,10 +91,8 @@ export const Footer = () => {
         {/* right side content */}
         <Flex
           flexDirection="column"
-          h="inherit"
-          alignItems="flex-end"
+          alignItems={{ base: "center", md: "flex-end" }}
           justifyContent="center"
-          zIndex={2}
         >
           <Grid
             maxW="600px"
@@ -94,7 +114,8 @@ export const Footer = () => {
                 target="_blank"
               >
                 <Image
-                  src={`/site/footer/socials/${item.src}`}
+                  src={`/site/footer/2026/socials/${item.src}`}
+                  alt={item.alt}
                   w="100%"
                   h="100%"
                   transition="transform 0.2s ease, filter 0.2s ease"
@@ -127,7 +148,7 @@ export const Footer = () => {
               transition="all 0.3s ease"
             >
               <Image
-                src="/site/footer/app_store_bubble.svg"
+                src="/site/footer/2026/app_store_bubble.svg"
                 alt="Download on the App Store"
                 h={{ base: "50px", md: "70px" }}
                 w="auto"
@@ -145,7 +166,7 @@ export const Footer = () => {
               transition="all 0.3s ease"
             >
               <Image
-                src="/site/footer/google_play_bubble.svg"
+                src="/site/footer/2026/google_play_bubble.svg"
                 alt="Get it on Google Play"
                 h={{ base: "50px", md: "70px" }}
                 w="auto"
@@ -156,19 +177,60 @@ export const Footer = () => {
               />
             </Link>
           </Flex>
+          <ChakraLink
+            as={RouterLink}
+            to="/app"
+            _hover={{ textDecoration: "none" }}
+          >
+            <Text
+              mt={8}
+              color="#FFFFFF"
+              w="100%"
+              fontFamily="Inter"
+              fontSize={{ base: "md", md: "lg" }}
+              textAlign={{ base: "center", md: "right" }}
+              letterSpacing="wider"
+              pr={{ base: 0, md: 4 }}
+              textDecoration="underline"
+              _hover={{ color: "#FFFFFFB0" }}
+            >
+              Download the app
+            </Text>
+          </ChakraLink>
+          <ChakraLink
+            as={RouterLink}
+            to="/profile"
+            _hover={{ textDecoration: "none" }}
+          >
+            <Text
+              mt={2}
+              color="#FFFFFF"
+              w="100%"
+              fontFamily="Inter"
+              fontSize={{ base: "md", md: "lg" }}
+              textAlign={{ base: "center", md: "right" }}
+              letterSpacing="wider"
+              pr={{ base: 0, md: 4 }}
+              textDecoration="underline"
+              _hover={{ color: "#FFFFFFB0" }}
+            >
+              Go to profile and QR code
+            </Text>
+          </ChakraLink>
         </Flex>
       </Flex>
       {/* image background content */}
       <Image
+        gridArea="1 / 1"
+        alignSelf="end"
         display="block"
-        position="relative"
-        bottom={0}
         pt={20}
-        src="/site/footer/footer_buildings.svg"
+        src="/site/footer/2026/footer_buildings.svg"
+        alt=""
         w="100%"
         zIndex={1}
       />
-    </Flex>
+    </Grid>
   );
 };
 
