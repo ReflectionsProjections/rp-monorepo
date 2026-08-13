@@ -293,6 +293,7 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
               }
               color={row.color}
               fontFamily="Inter, sans-serif"
+              fontWeight={550}
               letterSpacing={"1px"}
               fontSize={{
                 base: "sm,",

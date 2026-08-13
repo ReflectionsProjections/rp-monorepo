@@ -167,7 +167,11 @@ export function Profile() {
         >
           <HStack justifyContent={"flex-end"} w="100%">
             <HStack alignItems={"center"} gap={2}>
-              <Text fontFamily="'Geist Pixel', sans-serif" fontSize="3xl" ps="auto">
+              <Text
+                fontFamily="'Geist Pixel', sans-serif"
+                fontSize="3xl"
+                ps="auto"
+              >
                 {attendee?.points ?? 0}
               </Text>
               <Text
@@ -283,17 +287,32 @@ export function Profile() {
           )}
         </Text>
 
-        <Text fontFamily="Inter, sans-serif" fontSize="lg" fontWeight="bold" mb={2}>
+        <Text
+          fontFamily="Inter, sans-serif"
+          fontSize="lg"
+          fontWeight="bold"
+          mb={2}
+        >
           Level up your prize tier to unlock more rewards at the end of the
           event.
         </Text>
 
-        <Text fontFamily="Inter, sans-serif" fontSize="lg" fontWeight="bold" mb={2}>
+        <Text
+          fontFamily="Inter, sans-serif"
+          fontSize="lg"
+          fontWeight="bold"
+          mb={2}
+        >
           Attend events and activities to earn points, which advance your prize
           tier.
         </Text>
 
-        <Text fontFamily="Inter, sans-serif" fontSize="2xl" fontWeight="bold" mt={4}>
+        <Text
+          fontFamily="Inter, sans-serif"
+          fontSize="2xl"
+          fontWeight="bold"
+          mt={4}
+        >
           Check-in QR Code
         </Text>
         <Text

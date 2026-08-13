@@ -56,6 +56,7 @@ export const Description = () => {
             mx="auto"
             mb={{ base: 2, md: 5 }}
             fontFamily="Inter, sans-serif"
+            fontWeight={550}
             fontSize={{
               base: "clamp(1rem, 3.3vw, 1.375rem)",
               md: "clamp(1.125rem, 2.3vw, 2.75rem)"

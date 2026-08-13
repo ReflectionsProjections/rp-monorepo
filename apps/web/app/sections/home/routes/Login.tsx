@@ -24,6 +24,7 @@ const inputStyles = {
   borderRadius: "full",
   color: TEXT_COLOR,
   fontFamily: BODY_FONT,
+  fontWeight: 550,
   textAlign: "center" as const,
   _placeholder: { color: "rgba(252,242,246,0.4)" },
   _hover: { borderColor: "rgba(252,242,246,0.35)" },
@@ -48,7 +49,12 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
 
   return (
     <AuthCard title="Sign in or register">
-      <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.8}>
+      <Text
+        fontFamily={BODY_FONT}
+        fontWeight={550}
+        color={TEXT_COLOR}
+        opacity={0.8}
+      >
         Enter your email and we&rsquo;ll send you a link. No password needed
         &mdash; the same link works whether you already have an account or
         you&rsquo;re new here.
@@ -108,7 +114,7 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
                   w="100%"
                   borderRadius="full"
                   fontFamily={BODY_FONT}
-                  fontWeight="400"
+                  fontWeight={550}
                   color="#FFFFFF"
                   bg="rgba(192,38,211,0.85)"
                   _hover={{ bg: "rgba(192,38,211,1)" }}
@@ -120,6 +126,7 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
                 {message && (
                   <Text
                     fontFamily={BODY_FONT}
+                    fontWeight={550}
                     fontSize="sm"
                     color="#FFB4D1"
                     role="alert"
@@ -139,7 +146,12 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
 function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
   return (
     <AuthCard title="Check your email">
-      <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
+      <Text
+        fontFamily={BODY_FONT}
+        fontWeight={550}
+        color={TEXT_COLOR}
+        opacity={0.85}
+      >
         We sent a link to{" "}
         <Box as="span" color="#FFFFFF">
           {email}
@@ -152,6 +164,7 @@ function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
         type="button"
         onClick={onBack}
         fontFamily={BODY_FONT}
+        fontWeight={550}
         color={TEXT_COLOR}
         textDecoration="underline"
         textUnderlineOffset="4px"

@@ -93,6 +93,7 @@ export default function EventCard({
           </Text>
           <Text
             fontFamily="Inter, sans-serif"
+            fontWeight={550}
             fontSize={{ base: "xs", md: "xs" }}
             color="gray.500"
             my={0}

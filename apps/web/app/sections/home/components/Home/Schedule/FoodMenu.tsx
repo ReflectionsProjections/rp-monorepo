@@ -108,7 +108,9 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
             alignItems="center"
             gap={2}
           >
-            <Text fontFamily="Inter, sans-serif">Full Menu</Text>
+            <Text fontFamily="Inter, sans-serif" fontWeight={550}>
+              Full Menu
+            </Text>
             <Icon as={FaExternalLinkAlt} boxSize={3} />
           </Link>
         )}
