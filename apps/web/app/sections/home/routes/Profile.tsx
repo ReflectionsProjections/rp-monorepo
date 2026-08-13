@@ -150,7 +150,7 @@ export function Profile() {
         <Link
           href={"/"}
           color="blue.300"
-          fontFamily={"Magistral"}
+          fontFamily="Inter, sans-serif"
           fontSize={"lg"}
           fontWeight={"bold"}
           py={4}
@@ -167,11 +167,11 @@ export function Profile() {
         >
           <HStack justifyContent={"flex-end"} w="100%">
             <HStack alignItems={"center"} gap={2}>
-              <Text fontFamily="ProRacing" fontSize="3xl" ps="auto">
+              <Text fontFamily="'Geist Pixel', sans-serif" fontSize="3xl" ps="auto">
                 {attendee?.points ?? 0}
               </Text>
               <Text
-                fontFamily="ProRacing"
+                fontFamily="'Geist Pixel', sans-serif"
                 fontSize="lg"
                 ps="auto"
                 bgColor={"red.500"}
@@ -196,7 +196,7 @@ export function Profile() {
         >
           <VStack gap={0} alignItems={"flex-start"}>
             <Text
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
               fontSize="3xl"
               fontWeight="bold"
               color="gray.800"
@@ -204,7 +204,7 @@ export function Profile() {
               {roleObject?.displayName}
             </Text>
             <Text
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
               fontSize="xl"
               fontWeight="bold"
               color="gray.600"
@@ -218,7 +218,7 @@ export function Profile() {
           {foodWave && currDay ? (
             <>
               <Text
-                fontFamily="Magistral"
+                fontFamily="Inter, sans-serif"
                 fontSize="xl"
                 fontWeight="bold"
                 color="white"
@@ -230,7 +230,7 @@ export function Profile() {
               {foodWave === "priority" ? (
                 <HStack spacing={2} alignItems="center">
                   <Text
-                    fontFamily="Magistral"
+                    fontFamily="Inter, sans-serif"
                     fontSize="xl"
                     fontWeight="bold"
                     fontStyle="italic"
@@ -242,7 +242,7 @@ export function Profile() {
                 </HStack>
               ) : foodWave === "standard" ? (
                 <Text
-                  fontFamily="Magistral"
+                  fontFamily="Inter, sans-serif"
                   fontSize="xl"
                   fontWeight="bold"
                   fontStyle="italic"
@@ -251,7 +251,7 @@ export function Profile() {
                 </Text>
               ) : foodWave === "not-yet" ? (
                 <Text
-                  fontFamily="Magistral"
+                  fontFamily="Inter, sans-serif"
                   fontSize="xl"
                   fontWeight="bold"
                   fontStyle="italic"
@@ -265,7 +265,7 @@ export function Profile() {
           )}
         </HStack>
         <Text
-          fontFamily="Magistral"
+          fontFamily="Inter, sans-serif"
           fontSize="xl"
           fontWeight="bold"
           mb={6}
@@ -283,21 +283,21 @@ export function Profile() {
           )}
         </Text>
 
-        <Text fontFamily="Magistral" fontSize="lg" fontWeight="bold" mb={2}>
+        <Text fontFamily="Inter, sans-serif" fontSize="lg" fontWeight="bold" mb={2}>
           Level up your prize tier to unlock more rewards at the end of the
           event.
         </Text>
 
-        <Text fontFamily="Magistral" fontSize="lg" fontWeight="bold" mb={2}>
+        <Text fontFamily="Inter, sans-serif" fontSize="lg" fontWeight="bold" mb={2}>
           Attend events and activities to earn points, which advance your prize
           tier.
         </Text>
 
-        <Text fontFamily="Magistral" fontSize="2xl" fontWeight="bold" mt={4}>
+        <Text fontFamily="Inter, sans-serif" fontSize="2xl" fontWeight="bold" mt={4}>
           Check-in QR Code
         </Text>
         <Text
-          fontFamily="Magistral"
+          fontFamily="Inter, sans-serif"
           fontSize="xl"
           pb={3}
           display="flex"

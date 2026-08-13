@@ -36,7 +36,7 @@ export const Description = () => {
       >
         <Heading
           id="about-heading"
-          fontFamily="Ethnocentric"
+          fontFamily="'Geist Pixel', sans-serif"
           fontWeight={400}
           fontSize={{
             base: "clamp(1rem, 4.75vw, 2.75rem)",
@@ -55,7 +55,7 @@ export const Description = () => {
             key={paragraph}
             mx="auto"
             mb={{ base: 2, md: 5 }}
-            fontFamily="'Share Tech Mono', 'Magistral', monospace"
+            fontFamily="Inter, sans-serif"
             fontSize={{
               base: "clamp(1rem, 3.3vw, 1.375rem)",
               md: "clamp(1.125rem, 2.3vw, 2.75rem)"

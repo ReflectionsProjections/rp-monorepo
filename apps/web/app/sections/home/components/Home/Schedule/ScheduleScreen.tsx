@@ -63,7 +63,7 @@ export default function ScheduleScreen({
               justifyContent="center"
             >
               <Text
-                fontFamily="ProRacing"
+                fontFamily="'Geist Pixel', sans-serif"
                 color="gray.500"
                 textAlign="center"
                 my={0}

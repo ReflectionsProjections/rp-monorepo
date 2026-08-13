@@ -1,8 +1,8 @@
 import { Box, Heading, VStack } from "@chakra-ui/react";
 import type { ReactNode } from "react";
 
-export const TITLE_FONT = "Ethnocentric, ProRacing, sans-serif";
-export const BODY_FONT = "'Expletus Sans', sans-serif";
+export const TITLE_FONT = "'Geist Pixel', sans-serif";
+export const BODY_FONT = "Inter, sans-serif";
 export const TEXT_COLOR = "#FCF2F6";
 export const GLOW = "drop-shadow(0 0 14px rgba(192,38,211,0.75))";
 

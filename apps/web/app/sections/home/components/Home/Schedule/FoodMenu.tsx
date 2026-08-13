@@ -93,7 +93,7 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
         <Text
           fontSize="2xl"
           fontWeight="bold"
-          fontFamily="ProRacing"
+          fontFamily="'Geist Pixel', sans-serif"
           color="white"
         >
           Food Menu
@@ -108,7 +108,7 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
             alignItems="center"
             gap={2}
           >
-            <Text fontFamily={"Magistral"}>Full Menu</Text>
+            <Text fontFamily="Inter, sans-serif">Full Menu</Text>
             <Icon as={FaExternalLinkAlt} boxSize={3} />
           </Link>
         )}
@@ -146,7 +146,7 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
                 <Text
                   fontSize="lg"
                   fontWeight="bold"
-                  fontFamily="Magistral"
+                  fontFamily="Inter, sans-serif"
                   color="white"
                   mb={2}
                 >
@@ -156,7 +156,7 @@ export function FoodMenuGrid({ foodMenu }: { foodMenu: FoodMenuData }) {
                   {item.dietaryRestrictions.map((restriction, idx) => (
                     <Badge
                       key={idx}
-                      fontFamily={"Magistral"}
+                      fontFamily="Inter, sans-serif"
                       colorScheme={getDietaryBadgeColor(restriction)}
                       variant="solid"
                       fontSize="xs"

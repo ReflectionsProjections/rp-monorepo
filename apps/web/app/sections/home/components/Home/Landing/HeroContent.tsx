@@ -8,7 +8,6 @@ import {
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
-import registerBtnSrc from "@app/sections/home/assets/Landing/RegisterButton.svg";
 
 const MotionBox = motion(Box);
 
@@ -28,7 +27,7 @@ const fadeUp = (delay: number) => ({
 });
 
 const titleFont = {
-  fontFamily: "Ethnocentric, ProRacing, sans-serif",
+  fontFamily: "'Geist Pixel', sans-serif",
   fontWeight: "400" as const,
   color: "#FFFFFF",
   lineHeight: "1" as const,
@@ -172,13 +171,20 @@ export const HeroContent = () => {
           transition="all 0.25s ease"
         >
           <Box
-            as="img"
-            src={registerBtnSrc}
-            alt="Register Now"
+            {...titleFont}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             h={{ base: "58px", lg: "clamp(58px, 4.9vw, 74px)" }}
-            w="auto"
-            maxW={{ base: "300px", sm: "400px", lg: "500px" }}
-          />
+            px={{ base: 8, sm: 12, lg: 16 }}
+            fontSize={{ base: "md", lg: "clamp(1rem, 1.5vw, 1.35rem)" }}
+            letterSpacing="0.06em"
+            borderRadius="18px"
+            border="6px solid transparent"
+            background="linear-gradient(#150935, #150935) padding-box, linear-gradient(180deg, #373792, #F52DBC) border-box"
+          >
+            Register Now
+          </Box>
         </Link>
       </MotionBox>
     </VStack>

@@ -32,7 +32,7 @@ const scrollTo = (id: string) =>
 
 const navLinkStyles = {
   color: "#FCF2F6",
-  fontFamily: "'Expletus Sans', sans-serif",
+  fontFamily: "Inter, sans-serif",
   fontWeight: "400",
   fontSize: "lg",
   px: 4,
@@ -85,7 +85,7 @@ const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
       _hover={{ transform: "rotate(360deg)" }}
     />
     <Text
-      fontFamily="Ethnocentric, ProRacing, sans-serif"
+      fontFamily="'Geist Pixel', sans-serif"
       fontWeight="400"
       fontSize={{ base: "lg", lg: "md", xl: "lg" }}
       color="#FCF2F6"
@@ -266,7 +266,7 @@ const Navbar = ({ isFlush }: NavbarProps) => {
                   textAlign="center"
                   rounded="xl"
                   color="#FCF2F6"
-                  fontFamily="'Expletus Sans', sans-serif"
+                  fontFamily="Inter, sans-serif"
                   fontWeight="400"
                   fontSize="3xl"
                   _hover={{ bg: "rgba(252,242,246,0.08)" }}

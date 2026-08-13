@@ -101,7 +101,7 @@ export const Footer = () => {
               mt={{ base: 6, lg: 12 }}
               color="blue.400"
               w="100%"
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
               fontSize={{ base: "md", md: "lg", lg: "xl" }}
               textAlign={{ base: "center", md: "right" }}
               _hover={{
@@ -120,7 +120,7 @@ export const Footer = () => {
             <Text
               color="blue.400"
               w="100%"
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
               fontSize={{ base: "md", md: "lg", lg: "xl" }}
               textAlign={{ base: "center", md: "right" }}
               _hover={{
@@ -134,7 +134,7 @@ export const Footer = () => {
           <Text
             color="white"
             w="100%"
-            fontFamily="Magistral"
+            fontFamily="Inter, sans-serif"
             fontSize={{ base: "md", md: "lg", lg: "xl" }}
             textAlign={{ base: "center", md: "right" }}
           >

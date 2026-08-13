@@ -52,7 +52,7 @@ export const FAQQuestion = ({
         }}
       >
         <Text
-          fontFamily="Ethnocentric, ProRacing, sans-serif"
+          fontFamily="'Geist Pixel', sans-serif"
           fontSize={{
             base: "clamp(0.7rem, 3.25vw, 0.92rem)",
             md: "1rem",
@@ -100,7 +100,7 @@ export const FAQQuestion = ({
             boxShadow="0 8px 0 rgba(0, 0, 0, 0.6)"
           >
             <Box
-              fontFamily="'Share Tech Mono', Magistral, monospace"
+              fontFamily="Inter, sans-serif"
               fontSize={{ base: "sm", md: "lg" }}
               lineHeight={1.65}
             >
