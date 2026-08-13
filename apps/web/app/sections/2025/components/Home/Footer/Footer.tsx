@@ -47,7 +47,7 @@ export const Footer = () => {
             base: "none",
             md: "block"
           }}
-          src="/site/footer/footer_car.svg"
+          src="/site/footer/2025/footer_car.svg"
           zIndex={2}
           maxH={{ md: "150px", lg: "200px" }}
           transform="scaleX(-1)"
@@ -80,7 +80,7 @@ export const Footer = () => {
                 target="_blank"
               >
                 <Image
-                  src={`/site/footer/socials/${item.src}`}
+                  src={`/site/footer/2025/socials/${item.src}`}
                   w="100%"
                   h="100%"
                   transition="transform 0.2s ease, filter 0.2s ease"
