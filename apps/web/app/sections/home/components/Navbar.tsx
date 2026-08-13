@@ -33,7 +33,7 @@ const scrollTo = (id: string) =>
 const navLinkStyles = {
   color: "#FCF2F6",
   fontFamily: "Inter, sans-serif",
-  fontWeight: 550,
+  fontWeight: 500,
   fontSize: "lg",
   px: 4,
   py: 2,
@@ -86,7 +86,7 @@ const LogoBlock = ({ onClick }: { onClick?: () => void }) => (
     />
     <Text
       fontFamily="'Geist Pixel', sans-serif"
-      fontWeight={550}
+      fontWeight={400}
       fontSize={{ base: "lg", lg: "md", xl: "lg" }}
       color="#FCF2F6"
       lineHeight="1"

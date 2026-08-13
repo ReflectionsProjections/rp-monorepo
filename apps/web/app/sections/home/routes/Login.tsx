@@ -24,7 +24,7 @@ const inputStyles = {
   borderRadius: "full",
   color: TEXT_COLOR,
   fontFamily: BODY_FONT,
-  fontWeight: 550,
+  fontWeight: 500,
   textAlign: "center" as const,
   _placeholder: { color: "rgba(252,242,246,0.4)" },
   _hover: { borderColor: "rgba(252,242,246,0.35)" },
@@ -51,7 +51,7 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
     <AuthCard title="Sign in or register">
       <Text
         fontFamily={BODY_FONT}
-        fontWeight={550}
+        fontWeight={500}
         color={TEXT_COLOR}
         opacity={0.8}
       >
@@ -114,7 +114,7 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
                   w="100%"
                   borderRadius="full"
                   fontFamily={BODY_FONT}
-                  fontWeight={550}
+                  fontWeight={500}
                   color="#FFFFFF"
                   bg="rgba(192,38,211,0.85)"
                   _hover={{ bg: "rgba(192,38,211,1)" }}
@@ -126,7 +126,7 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
                 {message && (
                   <Text
                     fontFamily={BODY_FONT}
-                    fontWeight={550}
+                    fontWeight={500}
                     fontSize="sm"
                     color="#FFB4D1"
                     role="alert"
@@ -148,7 +148,7 @@ function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
     <AuthCard title="Check your email">
       <Text
         fontFamily={BODY_FONT}
-        fontWeight={550}
+        fontWeight={500}
         color={TEXT_COLOR}
         opacity={0.85}
       >
@@ -164,7 +164,7 @@ function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
         type="button"
         onClick={onBack}
         fontFamily={BODY_FONT}
-        fontWeight={550}
+        fontWeight={500}
         color={TEXT_COLOR}
         textDecoration="underline"
         textUnderlineOffset="4px"

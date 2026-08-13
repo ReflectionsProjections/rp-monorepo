@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 export const TITLE_FONT = "'Geist Pixel', sans-serif";
 export const BODY_FONT = "Inter, sans-serif";
 export const TEXT_COLOR = "#FCF2F6";
-export const GLOW = "drop-shadow(0 0 14px rgba(192,38,211,0.75))";
+export const GLOW = "drop-shadow(0 0 6px rgba(192,38,211,0.55))";
 
 type AuthCardProps = {
   title: string;

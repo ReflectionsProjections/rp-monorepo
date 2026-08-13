@@ -91,7 +91,7 @@ export default function EventModal({
               lineHeight="1.6"
               whiteSpace="pre-wrap"
               fontFamily="Inter, sans-serif"
-              fontWeight={550}
+              fontWeight={500}
               letterSpacing="0.3px"
               color="gray.100"
               mt={5}

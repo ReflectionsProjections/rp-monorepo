@@ -101,7 +101,7 @@ export const FAQQuestion = ({
           >
             <Box
               fontFamily="Inter, sans-serif"
-              fontWeight={550}
+              fontWeight={450}
               fontSize={{ base: "md", md: "lg" }}
               lineHeight={1.65}
             >

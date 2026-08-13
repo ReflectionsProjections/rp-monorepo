@@ -12,7 +12,7 @@ import { NavLink } from "react-router-dom";
 const MotionBox = motion(Box);
 
 const GLOW =
-  "drop-shadow(0 0 14px rgba(192,38,211,0.75)) drop-shadow(0 0 32px rgba(120,40,200,0.45))";
+  "drop-shadow(0 0 5px rgba(192,38,211,0.55)) drop-shadow(0 0 20px rgba(120,40,200,0.35))";
 
 const PIPE_DELAY = 0.2;
 const WORDS_DELAY = 0.85;

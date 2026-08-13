@@ -82,7 +82,7 @@ export const Footer = () => {
             color="#FFFFFF57"
             w="100%"
             fontFamily="Inter, sans-serif"
-            fontWeight={550}
+            fontWeight={500}
             fontSize={{ base: "md", md: "lg", lg: "xl" }}
             textAlign={{ base: "center", md: "left" }}
           >
@@ -132,7 +132,7 @@ export const Footer = () => {
             color="#FFFFFF"
             w="100%"
             fontFamily="Inter, sans-serif"
-            fontWeight={550}
+            fontWeight={500}
             fontSize={{ base: "md", md: "lg" }}
             textAlign={{ base: "center", md: "right" }}
             letterSpacing="wider"
@@ -189,7 +189,7 @@ export const Footer = () => {
               color="#FFFFFF"
               w="100%"
               fontFamily="Inter, sans-serif"
-              fontWeight={550}
+              fontWeight={500}
               fontSize={{ base: "md", md: "lg" }}
               textAlign={{ base: "center", md: "right" }}
               letterSpacing="wider"
@@ -210,7 +210,7 @@ export const Footer = () => {
               color="#FFFFFF"
               w="100%"
               fontFamily="Inter, sans-serif"
-              fontWeight={550}
+              fontWeight={500}
               fontSize={{ base: "md", md: "lg" }}
               textAlign={{ base: "center", md: "right" }}
               letterSpacing="wider"

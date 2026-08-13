@@ -123,7 +123,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
         <>
           <Text
             fontFamily={BODY_FONT}
-            fontWeight={550}
+            fontWeight={500}
             color={TEXT_COLOR}
             opacity={0.85}
           >
@@ -135,7 +135,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
             w="100%"
             borderRadius="full"
             fontFamily={BODY_FONT}
-            fontWeight={550}
+            fontWeight={500}
             color="#FFFFFF"
             bg="rgba(192,38,211,0.85)"
             _hover={{ bg: "rgba(192,38,211,1)" }}
@@ -151,7 +151,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
           <Spinner size="lg" color="#FCF2F6" thickness="3px" speed="0.8s" />
           <Text
             fontFamily={BODY_FONT}
-            fontWeight={550}
+            fontWeight={500}
             color={TEXT_COLOR}
             opacity={0.85}
           >
@@ -163,7 +163,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
       {state === "success" && (
         <Text
           fontFamily={BODY_FONT}
-          fontWeight={550}
+          fontWeight={500}
           color={TEXT_COLOR}
           opacity={0.85}
         >
@@ -175,7 +175,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
         <>
           <Text
             fontFamily={BODY_FONT}
-            fontWeight={550}
+            fontWeight={500}
             color={TEXT_COLOR}
             opacity={0.85}
           >
@@ -184,7 +184,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
           <Link
             href="/login"
             fontFamily={BODY_FONT}
-            fontWeight={550}
+            fontWeight={500}
             color="#FCF2F6"
             textDecoration="underline"
             textUnderlineOffset="4px"
