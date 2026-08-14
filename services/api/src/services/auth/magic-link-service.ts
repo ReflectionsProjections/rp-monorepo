@@ -96,18 +96,34 @@ async function isRosteredStaff(email: string): Promise<boolean> {
     return data !== null;
 }
 
+async function isRosteredCorporate(email: string): Promise<boolean> {
+    const { data } = await SupabaseDB.CORPORATE.select("email")
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+    return data !== null;
+}
+
 /**
  * Grants roles from the admin-site rosters, exactly as Google login used to on
- * every sign-in: an email on the staff roster gets STAFF, and a whitelisted
- * email gets ADMIN, taking effect the next time the person signs in. Roles are
- * only ever added here — removing someone from a roster is handled by the
- * admin site revoking the role directly.
+ * every sign-in: an email on the staff roster gets STAFF, an email on the
+ * corporate roster gets CORPORATE, and a whitelisted email gets ADMIN, taking
+ * effect the next time the person signs in. Roles are only ever added here —
+ * removing someone from a roster is handled by the roster endpoints revoking
+ * the role directly.
  */
 async function syncRosterRoles(userId: string, email: string): Promise<void> {
     if (await isRosteredStaff(email)) {
         await SupabaseDB.AUTH_ROLES.upsert({
             userId,
             role: Role.Enum.STAFF,
+        }).throwOnError();
+    }
+
+    if (await isRosteredCorporate(email)) {
+        await SupabaseDB.AUTH_ROLES.upsert({
+            userId,
+            role: Role.Enum.CORPORATE,
         }).throwOnError();
     }
 
@@ -141,11 +157,17 @@ async function hasRequiredRole(
     if (rule.requiredRoles === null) {
         return true;
     }
-    // The roster stands in for the STAFF role so a freshly granted staff
-    // member can sign in before their first login materializes the role.
+    // The rosters stand in for their roles so a freshly granted staff member
+    // or sponsor can sign in before their first login materializes the role.
     if (
         rule.requiredRoles.includes(Role.Enum.STAFF) &&
         (await isRosteredStaff(email))
+    ) {
+        return true;
+    }
+    if (
+        rule.requiredRoles.includes(Role.Enum.CORPORATE) &&
+        (await isRosteredCorporate(email))
     ) {
         return true;
     }
@@ -243,9 +265,12 @@ export async function verifyMagicLink(
     let account = rule.createsAccount
         ? await getOrCreateAccount(email)
         : await findAccount(email);
-    if (!account && (await isRosteredStaff(email))) {
-        // Rostered staff signing in for the first time get the account Google
-        // login used to create on the fly.
+    if (
+        !account &&
+        ((await isRosteredStaff(email)) || (await isRosteredCorporate(email)))
+    ) {
+        // Rostered staff and sponsors signing in for the first time get the
+        // account Google login used to create on the fly.
         account = await getOrCreateAccount(email);
     }
     if (!account) {

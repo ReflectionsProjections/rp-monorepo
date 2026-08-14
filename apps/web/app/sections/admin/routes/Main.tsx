@@ -1,5 +1,6 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Box } from "@chakra-ui/react";
 import Navbar from "@app/sections/admin/components/Navbar";
 import type { Role } from "@app";
@@ -34,19 +35,29 @@ const MainContent = () => {
     api
       .get("/auth/info")
       .then((response) => {
-        if (
-          location.pathname !== "/admin/unauthorized" &&
-          !response.data.roles.includes("ADMIN")
-        ) {
-          void navigate("/admin/unauthorized", { replace: true });
-        }
-
         setDisplayName(response.data.displayName);
         setRoles(response.data.roles);
         setLoading(false);
       })
-      .catch(() => {});
-  }, [location.pathname, navigate]);
+      .catch((error: unknown) => {
+        const status = axios.isAxiosError(error)
+          ? error.response?.status
+          : undefined;
+        if (status === 401 || status === 403) {
+          // The session is invalid or expired; drop it so the login screen
+          // shows instead of hanging on a blurred page.
+          localStorage.removeItem("jwt");
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  // The section as a whole admits STAFF or ADMIN; individual pages gate on
+  // finer roles via the Navbar and their own checks. Both redirects below key
+  // off this one predicate so they can never disagree and bounce a user back
+  // and forth between /admin and /admin/unauthorized.
+  const hasAdminSectionAccess =
+    roles.includes("STAFF") || roles.includes("ADMIN");
 
   useEffect(() => {
     if (loading || !localStorage.getItem("jwt")) {
@@ -54,23 +65,23 @@ const MainContent = () => {
     }
 
     if (
-      location.pathname === "/admin/unauthorized" &&
-      roles.includes("STAFF")
+      hasAdminSectionAccess &&
+      location.pathname === "/admin/unauthorized"
     ) {
       void navigate("/admin", { replace: true });
       return;
     }
 
     if (
-      !roles.includes("STAFF") &&
+      !hasAdminSectionAccess &&
       location.pathname !== "/admin/unauthorized"
     ) {
       void navigate("/admin/unauthorized", { replace: true });
     }
-  }, [loading, location.pathname, navigate, roles]);
+  }, [loading, hasAdminSectionAccess, location.pathname, navigate]);
 
   const authenticated = !!localStorage.getItem("jwt");
-  const authorized = !loading && roles.includes("STAFF");
+  const authorized = !loading && hasAdminSectionAccess;
 
   const context = {
     displayName,
