@@ -302,7 +302,7 @@ export default function SponsorSection() {
         transform="translateX(-50%)"
         m={0}
         color="#fcf8fb"
-        fontFamily="Ethnocentric, ProRacing, sans-serif"
+        fontFamily="'Geist Pixel', sans-serif"
         fontSize={{
           base: "clamp(28px, 8vw, 38px)",
           lg: "clamp(52px, 6vw, 92px)"

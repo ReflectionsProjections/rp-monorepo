@@ -697,6 +697,7 @@ const Register = () => {
       overflow="hidden"
       bg={PAGE_GRADIENT}
       fontFamily={BODY_FONT}
+      fontWeight={500}
       color={TEXT_COLOR}
     >
       <BackgroundLayers />

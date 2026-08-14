@@ -59,7 +59,7 @@ export default function EventModal({
           <ModalHeader p={0} w="100%" zIndex={1}>
             <Flex align="flex-start" justify="space-between" w="100%" gap={3}>
               <Text
-                fontFamily="Ethnocentric"
+                fontFamily="'Geist Pixel', sans-serif"
                 fontSize={{ base: "xl", md: "2xl" }}
                 textTransform="uppercase"
                 letterSpacing="0.5px"
@@ -90,7 +90,8 @@ export default function EventModal({
               fontSize={{ base: "sm", md: "md" }}
               lineHeight="1.6"
               whiteSpace="pre-wrap"
-              fontFamily="inter"
+              fontFamily="Inter, sans-serif"
+              fontWeight={500}
               letterSpacing="0.3px"
               color="gray.100"
               mt={5}
@@ -176,7 +177,7 @@ function DetailItem({
       <Icon as={icon} boxSize={5} mr={2} color={accentColor} flexShrink={0} />
       <Text
         fontSize={{ base: "sm", md: "md" }}
-        fontFamily="inter"
+        fontFamily="Inter, sans-serif"
         fontWeight="bold"
         letterSpacing="0.3px"
         my={0}

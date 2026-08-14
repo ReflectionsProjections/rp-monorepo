@@ -3,21 +3,22 @@ import {
   HStack,
   Image,
   Link,
+  Text,
   VStack,
   useBreakpointValue
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
-import registerBtnSrc from "@app/sections/home/assets/Landing/RegisterButton.svg";
 
 const MotionBox = motion(Box);
 
 const GLOW =
-  "drop-shadow(0 0 14px rgba(192,38,211,0.75)) drop-shadow(0 0 32px rgba(120,40,200,0.45))";
+  "drop-shadow(0 0 5px rgba(192,38,211,0.55)) drop-shadow(0 0 20px rgba(120,40,200,0.35))";
 
 const PIPE_DELAY = 0.2;
 const WORDS_DELAY = 0.85;
 const GLOW_DELAY = WORDS_DELAY + 0.75;
+const DATES_DELAY = 1.35;
 const BADGES_DELAY = 1.6;
 const REGISTER_DELAY = 1.9;
 
@@ -28,7 +29,7 @@ const fadeUp = (delay: number) => ({
 });
 
 const titleFont = {
-  fontFamily: "Ethnocentric, ProRacing, sans-serif",
+  fontFamily: "'Geist Pixel', sans-serif",
   fontWeight: "400" as const,
   color: "#FFFFFF",
   lineHeight: "1" as const,
@@ -54,6 +55,10 @@ export const HeroContent = () => {
       spacing={{ base: 6, xl: 8 }}
       minH={{ base: "100dvh", md: "auto" }}
       px={4}
+      // Small guard so the content can't touch the floating navbar on short
+      // windows; anything larger pushes the centered block visibly below the
+      // middle of the viewport.
+      pt="24px"
     >
       {/* Title */}
       <HStack spacing={wordSpacing} justify="center" align="center">
@@ -120,6 +125,23 @@ export const HeroContent = () => {
         </MotionBox>
       </HStack>
 
+      {/* Event dates */}
+      <MotionBox {...fadeUp(DATES_DELAY)}>
+        <Text
+          fontFamily="Inter, sans-serif"
+          fontWeight={500}
+          fontSize={{
+            base: "md",
+            sm: "lg",
+            lg: "clamp(1.125rem, 1.6vw, 1.5rem)"
+          }}
+          color="rgba(252,242,246,0.85)"
+          textAlign="center"
+        >
+          September 16&ndash;19, 2026
+        </Text>
+      </MotionBox>
+
       {/* App store badges */}
       <MotionBox {...fadeUp(BADGES_DELAY)} mt={{ base: 3, lg: 5 }}>
         <HStack
@@ -172,13 +194,20 @@ export const HeroContent = () => {
           transition="all 0.25s ease"
         >
           <Box
-            as="img"
-            src={registerBtnSrc}
-            alt="Register Now"
+            {...titleFont}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             h={{ base: "58px", lg: "clamp(58px, 4.9vw, 74px)" }}
-            w="auto"
-            maxW={{ base: "300px", sm: "400px", lg: "500px" }}
-          />
+            px={{ base: 8, sm: 12, lg: 16 }}
+            fontSize={{ base: "md", lg: "clamp(1rem, 1.5vw, 1.35rem)" }}
+            letterSpacing="0.06em"
+            borderRadius="18px"
+            border="6px solid transparent"
+            background="linear-gradient(#150935, #150935) padding-box, linear-gradient(180deg, #373792, #F52DBC) border-box"
+          >
+            Register Now
+          </Box>
         </Link>
       </MotionBox>
     </VStack>

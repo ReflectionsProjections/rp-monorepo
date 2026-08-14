@@ -121,7 +121,12 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
     >
       {state === "confirming" && (
         <>
-          <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
+          <Text
+            fontFamily={BODY_FONT}
+            fontWeight={500}
+            color={TEXT_COLOR}
+            opacity={0.85}
+          >
             Click below to finish signing in or registering.
           </Text>
           <Button
@@ -130,7 +135,7 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
             w="100%"
             borderRadius="full"
             fontFamily={BODY_FONT}
-            fontWeight="400"
+            fontWeight={500}
             color="#FFFFFF"
             bg="rgba(192,38,211,0.85)"
             _hover={{ bg: "rgba(192,38,211,1)" }}
@@ -144,26 +149,42 @@ export function MagicLinkCallback({ destination }: MagicLinkCallbackProps) {
       {state === "verifying" && (
         <>
           <Spinner size="lg" color="#FCF2F6" thickness="3px" speed="0.8s" />
-          <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
+          <Text
+            fontFamily={BODY_FONT}
+            fontWeight={500}
+            color={TEXT_COLOR}
+            opacity={0.85}
+          >
             Verifying your link…
           </Text>
         </>
       )}
 
       {state === "success" && (
-        <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
+        <Text
+          fontFamily={BODY_FONT}
+          fontWeight={500}
+          color={TEXT_COLOR}
+          opacity={0.85}
+        >
           You&rsquo;re in. Taking you there now…
         </Text>
       )}
 
       {state === "error" && (
         <>
-          <Text fontFamily={BODY_FONT} color={TEXT_COLOR} opacity={0.85}>
+          <Text
+            fontFamily={BODY_FONT}
+            fontWeight={500}
+            color={TEXT_COLOR}
+            opacity={0.85}
+          >
             {errorMessage}
           </Text>
           <Link
             href="/login"
             fontFamily={BODY_FONT}
+            fontWeight={500}
             color="#FCF2F6"
             textDecoration="underline"
             textUnderlineOffset="4px"

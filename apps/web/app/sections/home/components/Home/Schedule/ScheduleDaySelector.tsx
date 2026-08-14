@@ -137,7 +137,7 @@ function DayCushion({
         filter={!selected ? "brightness(0.95)" : undefined}
       >
         <Text
-          fontFamily="Ethnocentric"
+          fontFamily="'Geist Pixel', sans-serif"
           fontStyle="italic"
           fontSize={{ base: "md", sm: "lg", md: "2xl" }}
           lineHeight="1"
@@ -153,7 +153,7 @@ function DayCushion({
           {label.toUpperCase()}
         </Text>
         <Text
-          fontFamily="Magistral"
+          fontFamily="Inter, sans-serif"
           fontSize="xs"
           fontWeight="bold"
           color="whiteAlpha.800"

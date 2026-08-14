@@ -50,7 +50,7 @@ export default function AppScreen() {
               as="h1"
               fontSize={titleSize}
               fontWeight="bold"
-              fontFamily="ProRacing"
+              fontFamily="'Geist Pixel', sans-serif"
               textShadow="2px 2px 4px rgba(0,0,0,0.8)"
               lineHeight="1.2"
             >
@@ -60,7 +60,8 @@ export default function AppScreen() {
             {/* Subtitle */}
             <Text
               fontSize={{ base: "lg", md: "xl" }}
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
+              fontWeight={450}
               maxW="600px"
               textShadow="1px 1px 2px rgba(0,0,0,0.8)"
               opacity={0.9}

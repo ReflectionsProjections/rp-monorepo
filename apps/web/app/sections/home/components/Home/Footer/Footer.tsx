@@ -79,9 +79,10 @@ export const Footer = () => {
             my={16}
           />
           <Text
-            color="#FFFFFF57"
+            color="#FFFFFF80"
             w="100%"
-            fontFamily="Inter"
+            fontFamily="Inter, sans-serif"
+            fontWeight={500}
             fontSize={{ base: "md", md: "lg", lg: "xl" }}
             textAlign={{ base: "center", md: "left" }}
           >
@@ -130,10 +131,10 @@ export const Footer = () => {
           <Text
             color="#FFFFFF"
             w="100%"
-            fontFamily="Inter"
+            fontFamily="Inter, sans-serif"
+            fontWeight={500}
             fontSize={{ base: "md", md: "lg" }}
             textAlign={{ base: "center", md: "right" }}
-            letterSpacing="wider"
             mt={2}
             mb={8}
             pr={4}
@@ -186,10 +187,10 @@ export const Footer = () => {
               mt={8}
               color="#FFFFFF"
               w="100%"
-              fontFamily="Inter"
+              fontFamily="Inter, sans-serif"
+              fontWeight={500}
               fontSize={{ base: "md", md: "lg" }}
               textAlign={{ base: "center", md: "right" }}
-              letterSpacing="wider"
               pr={{ base: 0, md: 4 }}
               textDecoration="underline"
               _hover={{ color: "#FFFFFFB0" }}
@@ -206,10 +207,10 @@ export const Footer = () => {
               mt={2}
               color="#FFFFFF"
               w="100%"
-              fontFamily="Inter"
+              fontFamily="Inter, sans-serif"
+              fontWeight={500}
               fontSize={{ base: "md", md: "lg" }}
               textAlign={{ base: "center", md: "right" }}
-              letterSpacing="wider"
               pr={{ base: 0, md: 4 }}
               textDecoration="underline"
               _hover={{ color: "#FFFFFFB0" }}

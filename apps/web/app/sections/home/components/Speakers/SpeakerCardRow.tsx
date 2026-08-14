@@ -104,7 +104,7 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
                   : 1
               }
               color={row.color}
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
               fontSize={{ base: "lg", md: "2xl" }}
               letterSpacing={"1px"}
               fontWeight={"bold"}
@@ -198,7 +198,7 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
           h={`${bioTextDisplayedHeight}px`}
           textAlign="left"
           color="white"
-          fontFamily="Magistral"
+          fontFamily="Inter, sans-serif"
           fontSize={{
             base: "md",
             lg: "xl"
@@ -292,7 +292,8 @@ export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
                   : 1
               }
               color={row.color}
-              fontFamily="Magistral"
+              fontFamily="Inter, sans-serif"
+              fontWeight={450}
               letterSpacing={"1px"}
               fontSize={{
                 base: "sm,",

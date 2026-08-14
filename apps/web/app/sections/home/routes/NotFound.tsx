@@ -45,7 +45,7 @@ export default function NotFound() {
             fontSize="2xl"
             fontWeight="semibold"
             color="#FFE4E4"
-            fontFamily="Roboto Slab"
+            fontFamily="Inter, sans-serif"
           >
             Page Not Found
           </Heading>
@@ -68,7 +68,7 @@ export default function NotFound() {
             size="lg"
             fontSize="md"
             fontWeight="semibold"
-            fontFamily="ProRacing"
+            fontFamily="'Geist Pixel', sans-serif"
             px={8}
             py={6}
             _hover={{

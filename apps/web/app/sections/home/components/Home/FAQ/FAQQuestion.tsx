@@ -52,11 +52,11 @@ export const FAQQuestion = ({
         }}
       >
         <Text
-          fontFamily="Ethnocentric, ProRacing, sans-serif"
+          fontFamily="'Geist Pixel', sans-serif"
           fontSize={{
-            base: "clamp(0.7rem, 3.25vw, 0.92rem)",
-            md: "1rem",
-            xl: "clamp(1rem, 1.18vw, 1.12rem)"
+            base: "clamp(0.85rem, 3.7vw, 1.1rem)",
+            md: "1.2rem",
+            xl: "clamp(1.2rem, 1.4vw, 1.35rem)"
           }}
           lineHeight={1.3}
         >
@@ -100,8 +100,9 @@ export const FAQQuestion = ({
             boxShadow="0 8px 0 rgba(0, 0, 0, 0.6)"
           >
             <Box
-              fontFamily="'Share Tech Mono', Magistral, monospace"
-              fontSize={{ base: "sm", md: "lg" }}
+              fontFamily="Inter, sans-serif"
+              fontWeight={450}
+              fontSize={{ base: "md", md: "lg" }}
               lineHeight={1.65}
             >
               {parseRichText(answer)}

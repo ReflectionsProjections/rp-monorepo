@@ -62,7 +62,7 @@ export default function EventCard({
         zIndex={1}
       >
         <Text
-          fontFamily="Ethnocentric"
+          fontFamily="'Geist Pixel', sans-serif"
           fontSize={{ base: "md", md: "md" }}
           color="white"
           textTransform="uppercase"
@@ -80,7 +80,7 @@ export default function EventCard({
           minW={0}
         >
           <Text
-            fontFamily="inter"
+            fontFamily="Inter, sans-serif"
             fontSize={{ base: "xs", md: "xs" }}
             color="gray.400"
             fontWeight="bold"
@@ -92,7 +92,8 @@ export default function EventCard({
             {event.location || "Siebel CS"}
           </Text>
           <Text
-            fontFamily="inter"
+            fontFamily="Inter, sans-serif"
+            fontWeight={550}
             fontSize={{ base: "xs", md: "xs" }}
             color="gray.500"
             my={0}

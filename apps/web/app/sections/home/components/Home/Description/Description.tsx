@@ -36,11 +36,11 @@ export const Description = () => {
       >
         <Heading
           id="about-heading"
-          fontFamily="Ethnocentric"
+          fontFamily="'Geist Pixel', sans-serif"
           fontWeight={400}
           fontSize={{
-            base: "clamp(1rem, 4.75vw, 2.75rem)",
-            md: "clamp(2rem, 3.2vw, 4rem)"
+            base: "clamp(1.15rem, 5.2vw, 2.75rem)",
+            md: "clamp(2.25rem, 3.6vw, 4.25rem)"
           }}
           lineHeight={1.05}
           textAlign="center"
@@ -55,13 +55,15 @@ export const Description = () => {
             key={paragraph}
             mx="auto"
             mb={{ base: 2, md: 5 }}
-            fontFamily="'Share Tech Mono', 'Magistral', monospace"
+            maxW="62ch"
+            fontFamily="Inter, sans-serif"
+            fontWeight={450}
             fontSize={{
-              base: "clamp(1rem, 3.3vw, 1.375rem)",
-              md: "clamp(1.125rem, 2.3vw, 2.75rem)"
+              base: "clamp(1rem, 3.3vw, 1.25rem)",
+              md: "clamp(1.125rem, 1.55vw, 1.375rem)"
             }}
             textAlign="center"
-            lineHeight={{ base: 1.55, md: 1.55 }}
+            lineHeight={{ base: 1.55, md: 1.6 }}
           >
             {paragraph}
           </Text>

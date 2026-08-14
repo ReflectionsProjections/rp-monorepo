@@ -110,14 +110,14 @@ export default function Speakers() {
     >
       <Text
         fontSize={{ base: "5xl", sm: "5xl", md: "6xl" }}
-        fontFamily="ProRacing"
+        fontFamily="'Geist Pixel', sans-serif"
         color="white"
       >
         Speakers
       </Text>
       <Text
         fontSize={{ base: "7xl", sm: "6xl", md: "8xl" }}
-        fontFamily="ProRacing"
+        fontFamily="'Geist Pixel', sans-serif"
         color="white"
         my={0}
         mt={{ base: -5, md: -10 }}

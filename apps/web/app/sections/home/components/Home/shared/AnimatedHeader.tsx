@@ -23,7 +23,7 @@ export function AnimatedHeader({ children, ...rest }: AnimatedHeaderProps) {
       fontWeight="bold"
       fontStyle="italic"
       color="white"
-      fontFamily="ProRacingSlant"
+      fontFamily="'Geist Pixel', sans-serif"
       textAlign="center"
       mb={3}
       initial={{ y: -20, opacity: 0 }}
