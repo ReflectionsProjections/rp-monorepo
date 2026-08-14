@@ -64,18 +64,12 @@ const MainContent = () => {
       return;
     }
 
-    if (
-      hasAdminSectionAccess &&
-      location.pathname === "/admin/unauthorized"
-    ) {
+    if (hasAdminSectionAccess && location.pathname === "/admin/unauthorized") {
       void navigate("/admin", { replace: true });
       return;
     }
 
-    if (
-      !hasAdminSectionAccess &&
-      location.pathname !== "/admin/unauthorized"
-    ) {
+    if (!hasAdminSectionAccess && location.pathname !== "/admin/unauthorized") {
       void navigate("/admin/unauthorized", { replace: true });
     }
   }, [loading, hasAdminSectionAccess, location.pathname, navigate]);
