@@ -193,6 +193,17 @@ describe("POST /auth/corporate", () => {
         expect(data).toMatchObject(NEW_CORPORATE);
     });
 
+    it("stores the email normalized so sign-in can match the roster", async () => {
+        await postAsAdmin("/auth/corporate")
+            .send({ name: "Cased Corp", email: "  Sponsor@Cased.Corp " })
+            .expect(StatusCodes.CREATED);
+        const { data } = await SupabaseDB.CORPORATE.select()
+            .eq("email", "sponsor@cased.corp")
+            .single()
+            .throwOnError();
+        expect(data.email).toBe("sponsor@cased.corp");
+    });
+
     it("should not overwrite existing", async () => {
         const res = await postAsAdmin("/auth/corporate")
             .send({
@@ -230,6 +241,28 @@ describe("DELETE /auth/corporate", () => {
             .eq("email", CORPORATE_USER.email)
             .throwOnError();
         expect(data.length).toBe(0);
+    });
+
+    it("revokes the CORPORATE role from the sponsor's account", async () => {
+        await SupabaseDB.AUTH_INFO.insert({
+            authId: "sponsor-auth-id",
+            userId: "sponsor-user-id",
+            displayName: "Big Corporate Guy",
+            email: CORPORATE_USER.email,
+        });
+        await SupabaseDB.AUTH_ROLES.insert({
+            userId: "sponsor-user-id",
+            role: Role.Enum.CORPORATE,
+        });
+
+        await delAsAdmin("/auth/corporate")
+            .send({ email: CORPORATE_USER.email })
+            .expect(StatusCodes.NO_CONTENT);
+
+        const { data: roles } = await SupabaseDB.AUTH_ROLES.select()
+            .eq("userId", "sponsor-user-id")
+            .throwOnError();
+        expect(roles.length).toBe(0);
     });
 
     it("fails to delete a nonexistent user", async () => {

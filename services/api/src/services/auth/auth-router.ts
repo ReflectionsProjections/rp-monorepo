@@ -11,6 +11,7 @@ import {
     MagicLinkVerifyValidator,
 } from "./magic-link-schema";
 import { issueMagicLink, verifyMagicLink } from "./magic-link-service";
+import { normalizeEmail } from "./auth-utils";
 import {
     magicLinkIssueEmailLimiter,
     magicLinkIssueIpLimiter,
@@ -291,7 +292,10 @@ authRouter.post(
     "/corporate",
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
-        const data = CorporateValidator.parse(req.body);
+        const parsed = CorporateValidator.parse(req.body);
+        // Stored normalized so magic-link sign-in can match the roster row
+        // against the normalized email it works with.
+        const data = { ...parsed, email: normalizeEmail(parsed.email) };
         const { data: existing } = await SupabaseDB.CORPORATE.select()
             .eq("email", data.email)
             .throwOnError();
@@ -344,8 +348,9 @@ authRouter.delete(
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
         const { email } = CorporateDeleteRequest.parse(req.body);
+        const normalizedEmail = normalizeEmail(email);
         const { data } = await SupabaseDB.CORPORATE.delete()
-            .eq("email", email)
+            .eq("email", normalizedEmail)
             .select()
             .throwOnError();
 
@@ -353,6 +358,20 @@ authRouter.delete(
             return res
                 .status(StatusCodes.BAD_REQUEST)
                 .send({ error: "NotFound" });
+        }
+
+        // Sign-in copies the roster onto the account as the CORPORATE role, so
+        // removing the roster row must revoke the role too or the sponsor
+        // keeps resume-book access.
+        const { data: account } = await SupabaseDB.AUTH_INFO.select("userId")
+            .eq("email", normalizedEmail)
+            .maybeSingle()
+            .throwOnError();
+        if (account) {
+            await SupabaseDB.AUTH_ROLES.delete()
+                .eq("userId", account.userId)
+                .eq("role", Role.Enum.CORPORATE)
+                .throwOnError();
         }
 
         return res.sendStatus(StatusCodes.NO_CONTENT);

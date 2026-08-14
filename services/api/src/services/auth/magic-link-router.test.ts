@@ -172,7 +172,7 @@ describe("POST /auth/magic-links/verify", () => {
         expect(payload.exp! - payload.iat!).toBe(10 * 24 * 60 * 60);
     });
 
-    it("requires a manually assigned CORPORATE role at verification", async () => {
+    it("honors a directly assigned CORPORATE role and its revocation", async () => {
         const loginToken = await issueWebLink("sponsor@example.com");
         const loginResponse = await post("/auth/magic-links/verify")
             .send({ token: loginToken, client: "web" })
@@ -196,6 +196,51 @@ describe("POST /auth/magic-links/verify", () => {
             .eq("role", Role.Enum.CORPORATE);
         await post("/auth/magic-links/verify")
             .send({ token: resumeToken, client: "web" })
+            .expect(StatusCodes.UNAUTHORIZED);
+    });
+
+    it("lets rostered sponsors use the resume book without an account", async () => {
+        await SupabaseDB.CORPORATE.insert({
+            name: "Acme Corp",
+            email: "sponsor@acme.com",
+        });
+
+        const token = await issueWebLink("Sponsor@Acme.com", "resume-book");
+        const response = await post("/auth/magic-links/verify")
+            .send({ token, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const payload = jsonwebtoken.verify(
+            response.body.token,
+            Config.JWT_SIGNING_SECRET
+        ) as JwtPayload;
+        // An access token, not a setup token — sponsors are never routed into
+        // attendee registration.
+        expect(payload.tokenType).toBe("access");
+        expect(payload.roles).toEqual([Role.Enum.CORPORATE]);
+    });
+
+    it("does not email resume-book links to emails off the corporate roster", async () => {
+        await post("/auth/magic-links")
+            .send({
+                email: "stranger@example.com",
+                client: "web",
+                intent: "resume-book",
+            })
+            .expect(StatusCodes.ACCEPTED);
+        expect(sendTemplateEmail).not.toHaveBeenCalled();
+    });
+
+    it("stops sign-in once a sponsor is removed from the roster", async () => {
+        await SupabaseDB.CORPORATE.insert({
+            name: "Former Corp",
+            email: "former@sponsor.com",
+        });
+        const token = await issueWebLink("former@sponsor.com", "resume-book");
+
+        await SupabaseDB.CORPORATE.delete().eq("email", "former@sponsor.com");
+        await post("/auth/magic-links/verify")
+            .send({ token, client: "web" })
             .expect(StatusCodes.UNAUTHORIZED);
     });
 
