@@ -269,7 +269,11 @@ async function consumeToken(token: string, client: MagicLinkClient) {
     return data.at(0) ?? null;
 }
 
-async function consumeCode(email: string, code: string, client: MagicLinkClient) {
+async function consumeCode(
+    email: string,
+    code: string,
+    client: MagicLinkClient
+) {
     const { data, error } = await supabase.rpc("consume_magic_link_code", {
         p_email: email,
         p_code_digest: digestCode(email, code),

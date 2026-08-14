@@ -438,7 +438,11 @@ describe("POST /auth/magic-links/verify-code", () => {
     });
 
     it("creates an account from the registration flow like the link does", async () => {
-        const { code } = await issueFor("reg@example.com", "web", "registration");
+        const { code } = await issueFor(
+            "reg@example.com",
+            "web",
+            "registration"
+        );
         const response = await post("/auth/magic-links/verify-code")
             .send({ email: "reg@example.com", code, client: "web" })
             .expect(StatusCodes.OK);
@@ -492,7 +496,11 @@ describe("POST /auth/magic-links/verify-code", () => {
         const second = await issueFor("again@example.com");
 
         await post("/auth/magic-links/verify-code")
-            .send({ email: "again@example.com", code: first.code, client: "web" })
+            .send({
+                email: "again@example.com",
+                code: first.code,
+                client: "web",
+            })
             .expect(
                 first.code === second.code
                     ? StatusCodes.OK

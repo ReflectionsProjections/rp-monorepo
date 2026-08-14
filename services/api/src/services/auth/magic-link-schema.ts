@@ -58,7 +58,10 @@ export const MagicLinkCodeVerifyValidator = registry.register(
     z
         .object({
             email: z.string().trim().email().max(256),
-            code: z.string().trim().regex(/^\d{6}$/, "Must be a 6-digit code"),
+            code: z
+                .string()
+                .trim()
+                .regex(/^\d{6}$/, "Must be a 6-digit code"),
             client: MagicLinkClient,
         })
         .strict()
