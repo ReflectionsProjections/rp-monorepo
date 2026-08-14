@@ -6,8 +6,7 @@ const envSchema = yup.object({
   VITE_ENV: yup
     .string()
     .oneOf(["PRODUCTION", "DEVELOPMENT", "TESTING"])
-    .optional(),
-  VITE_GOOGLE_OAUTH_CLIENT_ID: yup.string().required()
+    .optional()
 });
 
 const env = envSchema.validateSync(import.meta.env, { abortEarly: false });
@@ -37,8 +36,7 @@ const Config = {
     "PARTNERS",
     "MEALS",
     "CHECKIN"
-  ] as const,
-  GOOGLE_OAUTH_CLIENT_ID: env.VITE_GOOGLE_OAUTH_CLIENT_ID
+  ] as const
 };
 
 export default Config;

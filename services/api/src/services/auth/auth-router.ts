@@ -1,47 +1,30 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import Config from "../../config";
 import RoleChecker from "../../middleware/role-checker";
-import { Platform, Role } from "../auth/auth-models";
-import {
-    AuthInfo,
-    AuthLoginValidator,
-    AuthRoleChangeRequest,
-} from "./auth-schema";
+import { Role } from "../auth/auth-models";
+import { AuthInfo, AuthRoleChangeRequest } from "./auth-schema";
 import authSponsorRouter from "./sponsor/sponsor-router";
 import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema";
-import {
-    generateJWT,
-    payloadHasProperScopes,
-    updateDatabaseWithAuthPayload,
-} from "./auth-utils";
-import { OAuth2Client } from "google-auth-library";
 import { SupabaseDB } from "../../database";
 import {
+    MagicLinkCodeVerifyValidator,
     MagicLinkIssueValidator,
     MagicLinkVerifyValidator,
 } from "./magic-link-schema";
-import { issueMagicLink, verifyMagicLink } from "./magic-link-service";
+import {
+    issueMagicLink,
+    verifyMagicLink,
+    verifyMagicLinkCode,
+} from "./magic-link-service";
+import { normalizeEmail } from "./auth-utils";
 import {
     magicLinkIssueEmailLimiter,
     magicLinkIssueIpLimiter,
+    magicLinkVerifyEmailLimiter,
     magicLinkVerifyIpLimiter,
 } from "./magic-link-rate-limit";
 
 const authRouter = Router();
-
-const oauthClients = {
-    [Platform.WEB]: new OAuth2Client({
-        clientId: Config.CLIENT_ID,
-        clientSecret: Config.CLIENT_SECRET,
-    }),
-    [Platform.IOS]: new OAuth2Client({
-        clientId: Config.IOS_CLIENT_ID,
-    }),
-    [Platform.ANDROID]: new OAuth2Client({
-        clientId: Config.ANDROID_CLIENT_ID,
-    }),
-};
 
 authRouter.use("/sponsor", authSponsorRouter);
 
@@ -117,6 +100,51 @@ authRouter.post(
             return res
                 .status(StatusCodes.UNAUTHORIZED)
                 .json({ error: "InvalidToken" });
+        }
+        return res.status(StatusCodes.OK).json({ token });
+    }
+);
+
+/**
+ * @swagger
+ * /auth/magic-links/verify-code:
+ *   post:
+ *     summary: Verify and consume the 6-digit code from a magic-link email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MagicLinkCodeVerifyValidator'
+ *     responses:
+ *       200:
+ *         description: A signed setup or access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MagicLinkTokenResponse'
+ *       401:
+ *         description: The code is invalid
+ *       429:
+ *         description: The request limit was reached
+ *     security: []
+ */
+authRouter.post(
+    "/magic-links/verify-code",
+    magicLinkVerifyIpLimiter,
+    magicLinkVerifyEmailLimiter,
+    async (req, res) => {
+        const request = MagicLinkCodeVerifyValidator.parse(req.body);
+        const token = await verifyMagicLinkCode(
+            request.email,
+            request.code,
+            request.client
+        );
+        if (!token) {
+            return res
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ error: "InvalidCode" });
         }
         return res.status(StatusCodes.OK).json({ token });
     }
@@ -245,127 +273,6 @@ authRouter.put("/", RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
     return res.status(StatusCodes.OK).json(updated);
 });
 
-const getAuthPayloadFromCode = async (
-    code: string,
-    redirect_uri: string,
-    platform: Platform,
-    codeVerifier?: string
-) => {
-    try {
-        const googleOAuthClient = oauthClients[platform];
-        const { tokens } = await googleOAuthClient.getToken({
-            code,
-            redirect_uri,
-            codeVerifier, // only for mobile apps
-        });
-        if (!tokens.id_token) {
-            throw new Error("Invalid token");
-        }
-        const ticket = await googleOAuthClient.verifyIdToken({
-            idToken: tokens.id_token,
-        });
-        const payload = ticket.getPayload();
-        if (!payload) {
-            throw new Error("Invalid payload");
-        }
-
-        return payload;
-    } catch (error) {
-        console.error("AUTH ISSUE:", error);
-        return undefined;
-    }
-};
-
-/**
- * @swagger
- * /auth/login/{PLATFORM}:
- *   post:
- *     summary: Log in with Google OAuth
- *     description: |
- *       Exchanges a Google OAuth authorization code for a signed JWT.
- *       The request body shape varies by platform: web omits `codeVerifier`,
- *       iOS and Android require it.
- *
- *       **Required roles: none**
- *     tags: [Auth]
- *     parameters:
- *       - name: PLATFORM
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *           enum: [WEB, IOS, ANDROID]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/AuthLoginValidator'
- *     responses:
- *       200:
- *         description: A signed JWT for the authenticated user
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthJwtResponse'
- *       400:
- *         description: Login failed
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error: "InvalidToken"
- *     security: []
- */
-authRouter.post("/login/:PLATFORM", async (req, res) => {
-    try {
-        const validatedData = AuthLoginValidator.parse({
-            ...req.body,
-            platform: req.params.PLATFORM,
-        });
-
-        const { code, redirectUri, platform } = validatedData;
-        const codeVerifier =
-            "codeVerifier" in validatedData
-                ? validatedData.codeVerifier
-                : undefined;
-
-        const authPayload = await getAuthPayloadFromCode(
-            code,
-            redirectUri,
-            platform,
-            codeVerifier
-        );
-
-        if (!authPayload) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "InvalidToken" });
-        }
-
-        if (!payloadHasProperScopes(authPayload)) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "InvalidScopes" });
-        }
-
-        // Update database by payload
-        const userId = await updateDatabaseWithAuthPayload(authPayload);
-
-        // Generate the JWT
-        const jwtToken = await generateJWT(userId);
-
-        return res.status(StatusCodes.OK).send({ token: jwtToken });
-    } catch (error) {
-        console.error("Error in platform login:", error);
-        return res.status(StatusCodes.BAD_REQUEST).send({
-            error: "InvalidRequest",
-            details: error instanceof Error ? error.message : "Unknown error",
-        });
-    }
-});
-
 /**
  * @swagger
  * /auth/corporate:
@@ -436,7 +343,10 @@ authRouter.post(
     "/corporate",
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
-        const data = CorporateValidator.parse(req.body);
+        const parsed = CorporateValidator.parse(req.body);
+        // Stored normalized so magic-link sign-in can match the roster row
+        // against the normalized email it works with.
+        const data = { ...parsed, email: normalizeEmail(parsed.email) };
         const { data: existing } = await SupabaseDB.CORPORATE.select()
             .eq("email", data.email)
             .throwOnError();
@@ -489,8 +399,9 @@ authRouter.delete(
     RoleChecker([Role.Enum.ADMIN]),
     async (req, res) => {
         const { email } = CorporateDeleteRequest.parse(req.body);
+        const normalizedEmail = normalizeEmail(email);
         const { data } = await SupabaseDB.CORPORATE.delete()
-            .eq("email", email)
+            .eq("email", normalizedEmail)
             .select()
             .throwOnError();
 
@@ -498,6 +409,20 @@ authRouter.delete(
             return res
                 .status(StatusCodes.BAD_REQUEST)
                 .send({ error: "NotFound" });
+        }
+
+        // Sign-in copies the roster onto the account as the CORPORATE role, so
+        // removing the roster row must revoke the role too or the sponsor
+        // keeps resume-book access.
+        const { data: account } = await SupabaseDB.AUTH_INFO.select("userId")
+            .eq("email", normalizedEmail)
+            .maybeSingle()
+            .throwOnError();
+        if (account) {
+            await SupabaseDB.AUTH_ROLES.delete()
+                .eq("userId", account.userId)
+                .eq("role", Role.Enum.CORPORATE)
+                .throwOnError();
         }
 
         return res.sendStatus(StatusCodes.NO_CONTENT);

@@ -322,12 +322,6 @@ export interface APIRoutes {
       response: string[]; // Array of userIds
     };
   };
-  "/auth/login/web": {
-    POST: {
-      request: { code: string; redirectUri: string };
-      response: { token: string };
-    };
-  };
   "/auth/info": {
     GET: {
       response: RoleObject;
@@ -386,6 +380,16 @@ export interface APIRoutes {
     POST: {
       request: {
         token: string;
+        client: "web" | "mobile";
+      };
+      response: { token: string };
+    };
+  };
+  "/auth/magic-links/verify-code": {
+    POST: {
+      request: {
+        email: string;
+        code: string;
         client: "web" | "mobile";
       };
       response: { token: string };

@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 import { z } from "zod";
-import { Platform, Role } from "./auth-models";
+import { Role } from "./auth-models";
 import { Database } from "../../database.types";
 import { registry } from "../../middleware/openapi-registry";
 
@@ -19,38 +19,6 @@ export const RoleValidator = registry.register(
                 displayName: "Jane Doe",
                 email: "jane@example.com",
                 roles: ["USER"],
-            },
-        })
-);
-
-export const AuthLoginValidator = registry.register(
-    "AuthLoginValidator",
-    z
-        .union([
-            // Web platform - no codeVerifier needed
-            z.object({
-                code: z.string(),
-                redirectUri: z.string(),
-                platform: z.literal(Platform.WEB),
-            }),
-            // iOS/Android - codeVerifier is required
-            z.object({
-                code: z.string(),
-                redirectUri: z.string(),
-                codeVerifier: z.string(),
-                platform: z.union([
-                    z.literal(Platform.IOS),
-                    z.literal(Platform.ANDROID),
-                ]),
-            }),
-        ])
-        .openapi("AuthLoginValidator", {
-            description:
-                "Login request body. Web omits codeVerifier; iOS/Android require it.",
-            example: {
-                code: "4/0AfJohXk...",
-                redirectUri: "https://app.example.com/auth/callback",
-                platform: Platform.WEB,
             },
         })
 );

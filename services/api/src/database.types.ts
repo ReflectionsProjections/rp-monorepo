@@ -333,7 +333,9 @@ export type Database = {
             };
             magicLinkTokens: {
                 Row: {
+                    attemptCount: number;
                     client: string;
+                    codeDigest: string | null;
                     createdAt: string;
                     expiresAt: string;
                     id: string;
@@ -343,7 +345,9 @@ export type Database = {
                     usedAt: string | null;
                 };
                 Insert: {
+                    attemptCount?: number;
                     client: string;
+                    codeDigest?: string | null;
                     createdAt?: string;
                     expiresAt: string;
                     id?: string;
@@ -353,7 +357,9 @@ export type Database = {
                     usedAt?: string | null;
                 };
                 Update: {
+                    attemptCount?: number;
                     client?: string;
+                    codeDigest?: string | null;
                     createdAt?: string;
                     expiresAt?: string;
                     id?: string;
@@ -751,6 +757,19 @@ export type Database = {
                     p_stored_hash: string;
                 };
                 Returns: boolean;
+            };
+            consume_magic_link_code: {
+                Args: {
+                    p_client: string;
+                    p_code_digest: string;
+                    p_email: string;
+                    p_max_attempts: number;
+                };
+                Returns: {
+                    client: string;
+                    intent: string;
+                    subjectEmail: string;
+                }[];
             };
             consume_magic_link_token: {
                 Args: {

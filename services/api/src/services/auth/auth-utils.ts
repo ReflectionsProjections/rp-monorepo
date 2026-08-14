@@ -1,101 +1,10 @@
-// Create a function to generate GoogleStrategy instances
-import { TokenPayload } from "google-auth-library";
-import { Config, EnvironmentEnum } from "../../config";
+import { Config } from "../../config";
 import { SupabaseDB } from "../../database";
 import { JwtPayloadType, Role, SetupJwtPayloadType } from "./auth-models";
 import jsonwebtoken, { SignOptions } from "jsonwebtoken";
-import { randomUUID } from "crypto";
 
 export function normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
-}
-
-export type TokenPayloadWithProperScopes = TokenPayload & {
-    sub: string;
-    name: string;
-    email: string;
-};
-export function payloadHasProperScopes(
-    payload: TokenPayload
-): payload is TokenPayloadWithProperScopes {
-    return "email" in payload && "sub" in payload && "name" in payload;
-}
-
-export async function updateDatabaseWithAuthPayload(
-    payload: TokenPayloadWithProperScopes
-): Promise<string> {
-    const authId = payload.sub; // If we ever support multiple platforms, will need to change this, but fine for now
-    const displayName = payload.name;
-    const email = normalizeEmail(payload.email);
-
-    const { data: authIdMatch } = await SupabaseDB.AUTH_INFO.select("userId")
-        .eq("authId", authId)
-        .maybeSingle()
-        .throwOnError();
-
-    const { data: emailMatch } = authIdMatch
-        ? { data: null }
-        : await SupabaseDB.AUTH_INFO.select("userId")
-              .eq("email", email)
-              .maybeSingle()
-              .throwOnError();
-
-    const userId = authIdMatch?.userId ?? emailMatch?.userId ?? randomUUID();
-
-    await SupabaseDB.AUTH_INFO.upsert(
-        {
-            authId,
-            email,
-            displayName,
-            userId,
-        },
-        {
-            onConflict: "userId",
-        }
-    ).throwOnError();
-
-    // If the user is STAFF, add the staff role to them
-    const { data: staff } = await SupabaseDB.STAFF.select()
-        .eq("email", email)
-        .maybeSingle();
-    if (staff) {
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.STAFF,
-        });
-    }
-
-    // In development, allow a specific email to be admin for local testing
-    if (
-        Config.ENV === EnvironmentEnum.DEVELOPMENT &&
-        Config.DEV_ADMIN_EMAIL &&
-        email === Config.DEV_ADMIN_EMAIL
-    ) {
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.SUPER_ADMIN,
-        });
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.ADMIN,
-        });
-
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.STAFF,
-        });
-    }
-
-    // If the user is ADMIN, add the admin role to them
-    if (Config.AUTH_ADMIN_WHITELIST.has(email)) {
-        await SupabaseDB.AUTH_ROLES.upsert({
-            userId,
-            role: Role.Enum.ADMIN,
-        });
-    }
-
-    // Return the userId updated
-    return userId;
 }
 
 export async function getJwtPayloadFromDatabase(

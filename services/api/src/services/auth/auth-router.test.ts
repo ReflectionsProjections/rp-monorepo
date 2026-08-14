@@ -6,7 +6,6 @@ import {
     getAsStaff,
     getAsUser,
     getAsCorporate,
-    post,
     postAsAdmin,
     postAsStaff,
     putAsAdmin,
@@ -15,11 +14,8 @@ import {
     putAsSuperAdmin,
 } from "../../../testing/testingTools";
 import { AuthInfo, AuthRole } from "./auth-schema";
-import { Platform, Role } from "./auth-models";
+import { Role } from "./auth-models";
 import { StatusCodes } from "http-status-codes";
-import * as googleAuthLibrary from "google-auth-library";
-import Config from "../../config";
-import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
 import { Corporate } from "./corporate-schema";
 import { SupabaseDB } from "../../database";
 
@@ -63,15 +59,6 @@ const CORPORATE_OTHER_USER = {
     email: "sponsor@other-big.corp",
     name: "Ronit Smith",
 } satisfies Corporate;
-
-const RANDOM_UUID = "totally-random-but-set-for-tests";
-jest.mock("crypto", () => {
-    const realCrypto = jest.requireActual("crypto");
-    return {
-        ...realCrypto,
-        randomUUID: () => RANDOM_UUID,
-    };
-});
 
 beforeEach(async () => {
     await SupabaseDB.AUTH_INFO.insert([TESTER_USER, OTHER_USER]);
@@ -169,367 +156,6 @@ describe("PUT /auth/", () => {
     });
 });
 
-describe("POST /auth/login/:PLATFORM", () => {
-    const CODE = "loginCode";
-    const REDIRECT_URI = "http://localhost/redirect";
-    const CODE_VERIFIER = "codeVerifier123";
-    const ID_TOKEN = "IdToken";
-    const AUTH_PAYLOAD = {
-        email: TESTER_USER.email,
-        sub: TESTER_USER.authId,
-        name: "newerDisplayName",
-    } satisfies Partial<googleAuthLibrary.TokenPayload>;
-
-    const mockGetToken: jest.SpiedFunction<
-        googleAuthLibrary.OAuth2Client["getToken"]
-    > = jest.fn();
-    const mockVerifyIdToken: jest.SpiedFunction<
-        googleAuthLibrary.OAuth2Client["verifyIdToken"]
-    > = jest.fn();
-
-    const mockOAuth2Client = jest
-        .spyOn(googleAuthLibrary, "OAuth2Client")
-        .mockImplementation(
-            () =>
-                ({
-                    getToken: mockGetToken,
-                    verifyIdToken: mockVerifyIdToken,
-                }) as unknown as googleAuthLibrary.OAuth2Client
-        );
-
-    beforeEach(async () => {
-        mockGetToken.mockClear().mockImplementation(() => {
-            return {
-                tokens: {
-                    id_token: ID_TOKEN,
-                },
-            };
-        });
-        mockVerifyIdToken.mockClear().mockImplementation(() => ({
-            getPayload: () => AUTH_PAYLOAD,
-        }));
-    });
-
-    // Generic tests
-    it("should fail to login with invalid platform in URL parameter", async () => {
-        const res = await post("/auth/login/INVALID_PLATFORM")
-            .send({
-                code: "loginCode",
-                redirectUri: "http://localhost/redirect",
-            })
-            .expect(StatusCodes.BAD_REQUEST);
-        expect(res.body).toHaveProperty("error", "InvalidRequest");
-    });
-
-    it("should fail to login with missing platform in URL parameter", async () => {
-        const res = await post("/auth/login/")
-            .send({
-                code: "loginCode",
-                redirectUri: "http://localhost/redirect",
-            })
-            .expect(StatusCodes.NOT_FOUND);
-        expect(res.body).toHaveProperty("error", "EndpointNotFound");
-    });
-
-    // Platform-specific tests
-    describe.each([
-        {
-            platform: Platform.WEB,
-            clientId: Config.CLIENT_ID,
-            clientSecret: Config.CLIENT_SECRET,
-            hasCodeVerifier: false,
-        },
-        {
-            platform: Platform.IOS,
-            clientId: Config.IOS_CLIENT_ID,
-            hasCodeVerifier: true,
-        },
-        {
-            platform: Platform.ANDROID,
-            clientId: Config.ANDROID_CLIENT_ID,
-            hasCodeVerifier: true,
-        },
-    ])(
-        "for $platform platform",
-        ({ platform, clientId, clientSecret, hasCodeVerifier }) => {
-            const loginRequest = hasCodeVerifier
-                ? {
-                      code: CODE,
-                      redirectUri: REDIRECT_URI,
-                      codeVerifier: CODE_VERIFIER,
-                  }
-                : { code: CODE, redirectUri: REDIRECT_URI };
-
-            const expectedOAuthConfig = clientSecret
-                ? { clientId, clientSecret }
-                : { clientId };
-
-            const expectedGetTokenParams = hasCodeVerifier
-                ? {
-                      code: CODE,
-                      redirect_uri: REDIRECT_URI,
-                      codeVerifier: CODE_VERIFIER,
-                  }
-                : { code: CODE, redirect_uri: REDIRECT_URI };
-
-            it("should login as a new user with a valid code", async () => {
-                await SupabaseDB.AUTH_INFO.delete()
-                    .eq("userId", TESTER_USER.userId)
-                    .throwOnError();
-                await SupabaseDB.AUTH_ROLES.delete()
-                    .eq("userId", TESTER_USER.userId)
-                    .throwOnError();
-                const start = Math.floor(Date.now() / 1000);
-                const res = await post(`/auth/login/${platform}`)
-                    .send(loginRequest)
-                    .expect(StatusCodes.OK);
-
-                expect(mockOAuth2Client).toHaveBeenCalledWith(
-                    expectedOAuthConfig
-                );
-                expect(mockGetToken).toHaveBeenCalledWith(
-                    expectedGetTokenParams
-                );
-                expect(mockVerifyIdToken).toHaveBeenCalledWith({
-                    idToken: ID_TOKEN,
-                });
-
-                expect(res.body).toHaveProperty("token");
-                const jwtPayload = jsonwebtoken.verify(
-                    res.body.token,
-                    Config.JWT_SIGNING_SECRET
-                ) as JwtPayload;
-
-                const expected = {
-                    email: AUTH_PAYLOAD.email,
-                    displayName: AUTH_PAYLOAD.name,
-                    roles: [],
-                    userId: RANDOM_UUID,
-                };
-                expect(jwtPayload).toMatchObject(expected);
-                expect(jwtPayload.iat).toBeGreaterThanOrEqual(start);
-
-                const { data: info } = await SupabaseDB.AUTH_INFO.select()
-                    .eq("userId", expected.userId)
-                    .single();
-                expect(info).toMatchObject({
-                    userId: expected.userId,
-                    displayName: expected.displayName,
-                    email: expected.email,
-                });
-                const { data: roleRows } =
-                    await SupabaseDB.AUTH_ROLES.select().eq(
-                        "userId",
-                        expected.userId
-                    );
-                expect(
-                    roleRows?.map((row: { role: Role }) => row.role)
-                ).toEqual(expected.roles);
-            });
-
-            it("should login as an existing user with a valid code", async () => {
-                const start = Math.floor(Date.now() / 1000);
-                const res = await post(`/auth/login/${platform}`)
-                    .send(loginRequest)
-                    .expect(StatusCodes.OK);
-
-                expect(mockOAuth2Client).toHaveBeenCalledWith(
-                    expectedOAuthConfig
-                );
-                expect(mockGetToken).toHaveBeenCalledWith(
-                    expectedGetTokenParams
-                );
-                expect(mockVerifyIdToken).toHaveBeenCalledWith({
-                    idToken: ID_TOKEN,
-                });
-
-                expect(res.body).toHaveProperty("token");
-                const jwtPayload = jsonwebtoken.verify(
-                    res.body.token,
-                    Config.JWT_SIGNING_SECRET
-                ) as JwtPayload;
-
-                const expected = {
-                    email: AUTH_PAYLOAD.email,
-                    displayName: AUTH_PAYLOAD.name,
-                    roles: [Role.Enum.USER],
-                    userId: TESTER.userId,
-                };
-                expect(jwtPayload).toMatchObject(expected);
-                expect(jwtPayload.iat).toBeGreaterThanOrEqual(start);
-
-                const { data: info } = await SupabaseDB.AUTH_INFO.select()
-                    .eq("userId", TESTER.userId)
-                    .single();
-                expect(info).toMatchObject({
-                    userId: expected.userId,
-                    displayName: expected.displayName,
-                    email: expected.email,
-                });
-                const { data: roleRows } =
-                    await SupabaseDB.AUTH_ROLES.select().eq(
-                        "userId",
-                        TESTER_USER.userId
-                    );
-                expect(
-                    roleRows?.map((row: { role: Role }) => row.role)
-                ).toEqual(expected.roles);
-            });
-
-            it("fails to login with an invalid code", async () => {
-                await SupabaseDB.AUTH_INFO.delete()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-                await SupabaseDB.AUTH_ROLES.delete()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-
-                mockGetToken.mockImplementation(() => {
-                    throw new Error("Test invalid code");
-                });
-                const res = await post(`/auth/login/${platform}`)
-                    .send(loginRequest)
-                    .expect(StatusCodes.BAD_REQUEST);
-
-                expect(mockOAuth2Client).toHaveBeenCalledWith(
-                    expectedOAuthConfig
-                );
-                expect(mockGetToken).toHaveBeenCalledWith(
-                    expectedGetTokenParams
-                );
-                expect(mockVerifyIdToken).not.toHaveBeenCalled();
-
-                expect(res.body).toHaveProperty("error", "InvalidToken");
-
-                const { data } = await SupabaseDB.AUTH_INFO.select()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-                expect(data.length).toBe(0);
-            });
-
-            it("fails to login with no id token", async () => {
-                await SupabaseDB.AUTH_INFO.delete()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-                await SupabaseDB.AUTH_ROLES.delete()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-
-                mockGetToken.mockImplementation(() => ({ tokens: {} }));
-                const res = await post(`/auth/login/${platform}`)
-                    .send(loginRequest)
-                    .expect(StatusCodes.BAD_REQUEST);
-
-                expect(mockOAuth2Client).toHaveBeenCalledWith(
-                    expectedOAuthConfig
-                );
-                expect(mockGetToken).toHaveBeenCalledWith(
-                    expectedGetTokenParams
-                );
-                expect(mockVerifyIdToken).not.toHaveBeenCalled();
-
-                expect(res.body).toHaveProperty("error", "InvalidToken");
-
-                const { data } = await SupabaseDB.AUTH_INFO.select()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-                expect(data.length).toBe(0);
-            });
-
-            it("fails to login when ticket has no payload", async () => {
-                await SupabaseDB.AUTH_INFO.delete()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-                await SupabaseDB.AUTH_ROLES.delete()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-
-                mockVerifyIdToken.mockImplementation(() => ({
-                    getPayload: () => undefined,
-                }));
-                const res = await post(`/auth/login/${platform}`)
-                    .send(loginRequest)
-                    .expect(StatusCodes.BAD_REQUEST);
-
-                expect(mockOAuth2Client).toHaveBeenCalledWith(
-                    expectedOAuthConfig
-                );
-                expect(mockGetToken).toHaveBeenCalledWith(
-                    expectedGetTokenParams
-                );
-                expect(mockVerifyIdToken).toHaveBeenCalledWith({
-                    idToken: ID_TOKEN,
-                });
-
-                expect(res.body).toHaveProperty("error", "InvalidToken");
-
-                const { data } = await SupabaseDB.AUTH_INFO.select()
-                    .eq("userId", TESTER.userId)
-                    .throwOnError();
-                expect(data.length).toBe(0);
-            });
-
-            it.each(["email", "sub", "name"])(
-                "fails to login when missing scopes (missing payload.%s)",
-                async (payloadProp) => {
-                    await SupabaseDB.AUTH_INFO.delete()
-                        .eq("userId", TESTER.userId)
-                        .throwOnError();
-                    await SupabaseDB.AUTH_ROLES.delete()
-                        .eq("userId", TESTER.userId)
-                        .throwOnError();
-
-                    mockVerifyIdToken.mockImplementation(() => ({
-                        getPayload: () => {
-                            const payload = {
-                                ...AUTH_PAYLOAD,
-                            };
-                            delete payload[payloadProp as keyof typeof payload];
-                            return payload;
-                        },
-                    }));
-                    const res = await post(`/auth/login/${platform}`)
-                        .send(loginRequest)
-                        .expect(StatusCodes.BAD_REQUEST);
-
-                    expect(mockOAuth2Client).toHaveBeenCalledWith(
-                        expectedOAuthConfig
-                    );
-                    expect(mockGetToken).toHaveBeenCalledWith(
-                        expectedGetTokenParams
-                    );
-                    expect(mockVerifyIdToken).toHaveBeenCalledWith({
-                        idToken: ID_TOKEN,
-                    });
-
-                    expect(res.body).toHaveProperty("error", "InvalidScopes");
-
-                    const { data } = await SupabaseDB.AUTH_INFO.select()
-                        .eq("userId", TESTER.userId)
-                        .throwOnError();
-                    expect(data.length).toBe(0);
-                }
-            );
-        }
-    );
-
-    // Mobile platform-specific test for missing codeVerifier
-    it.each([Platform.IOS, Platform.ANDROID])(
-        "fails to login for %s when codeVerifier is missing",
-        async (platform) => {
-            const invalidRequest = {
-                code: "loginCode",
-                redirectUri: "http://localhost/redirect",
-            };
-            const res = await post(`/auth/login/${platform}`)
-                .send(invalidRequest)
-                .expect(StatusCodes.BAD_REQUEST);
-
-            expect(res.body).toHaveProperty("error", "InvalidRequest");
-        }
-    );
-});
-
 describe("GET /auth/corporate", () => {
     it("should get all corporate users", async () => {
         const res = await getAsAdmin("/auth/corporate").expect(StatusCodes.OK);
@@ -565,6 +191,17 @@ describe("POST /auth/corporate", () => {
             .single()
             .throwOnError();
         expect(data).toMatchObject(NEW_CORPORATE);
+    });
+
+    it("stores the email normalized so sign-in can match the roster", async () => {
+        await postAsAdmin("/auth/corporate")
+            .send({ name: "Cased Corp", email: "  Sponsor@Cased.Corp " })
+            .expect(StatusCodes.CREATED);
+        const { data } = await SupabaseDB.CORPORATE.select()
+            .eq("email", "sponsor@cased.corp")
+            .single()
+            .throwOnError();
+        expect(data.email).toBe("sponsor@cased.corp");
     });
 
     it("should not overwrite existing", async () => {
@@ -604,6 +241,28 @@ describe("DELETE /auth/corporate", () => {
             .eq("email", CORPORATE_USER.email)
             .throwOnError();
         expect(data.length).toBe(0);
+    });
+
+    it("revokes the CORPORATE role from the sponsor's account", async () => {
+        await SupabaseDB.AUTH_INFO.insert({
+            authId: "sponsor-auth-id",
+            userId: "sponsor-user-id",
+            displayName: "Big Corporate Guy",
+            email: CORPORATE_USER.email,
+        });
+        await SupabaseDB.AUTH_ROLES.insert({
+            userId: "sponsor-user-id",
+            role: Role.Enum.CORPORATE,
+        });
+
+        await delAsAdmin("/auth/corporate")
+            .send({ email: CORPORATE_USER.email })
+            .expect(StatusCodes.NO_CONTENT);
+
+        const { data: roles } = await SupabaseDB.AUTH_ROLES.select()
+            .eq("userId", "sponsor-user-id")
+            .throwOnError();
+        expect(roles.length).toBe(0);
     });
 
     it("fails to delete a nonexistent user", async () => {

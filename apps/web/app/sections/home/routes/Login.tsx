@@ -4,6 +4,7 @@ import axios from "axios";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
 import { api } from "@app";
+import { readJwtClaims, takeMagicLinkReturnTo } from "@api/auth";
 import {
   AuthCard,
   BODY_FONT,
@@ -15,6 +16,13 @@ const emailSchema = yup.object({
     .string()
     .email("Please enter a valid email address.")
     .required("Please enter an email address.")
+});
+
+const codeSchema = yup.object({
+  code: yup
+    .string()
+    .matches(/^\d{6}$/, "The code is the 6 digits from the email.")
+    .required("Please enter the 6-digit code from the email.")
 });
 
 const inputStyles = {
@@ -144,6 +152,8 @@ function EmailForm({ onSent }: { onSent: (email: string) => void }) {
 }
 
 function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
+  const [submitError, setSubmitError] = useState("");
+
   return (
     <AuthCard title="Check your email">
       <Text
@@ -152,12 +162,111 @@ function LinkSent({ email, onBack }: { email: string; onBack: () => void }) {
         color={TEXT_COLOR}
         opacity={0.85}
       >
-        We sent a link to{" "}
+        We sent a link and a 6-digit code to{" "}
         <Box as="span" color="#FFFFFF">
           {email}
         </Box>
-        . Open it to continue &mdash; it expires in about 10 minutes.
+        . Open the link, or enter the code below &mdash; both expire in about 10
+        minutes.
       </Text>
+
+      <Formik
+        initialValues={{ code: "" }}
+        validationSchema={codeSchema}
+        onSubmit={({ code }, { setSubmitting }) => {
+          setSubmitError("");
+          api
+            .post("/auth/magic-links/verify-code", {
+              email,
+              code,
+              client: "web"
+            })
+            .then((response) => {
+              const jwt = response.data.token;
+              localStorage.setItem("jwt", jwt);
+
+              const claims = readJwtClaims(jwt);
+              // A roleless account can only register, wherever it was headed.
+              const next =
+                claims?.tokenType === "setup"
+                  ? "/register"
+                  : (takeMagicLinkReturnTo() ?? "/");
+              // A full load rather than a client-side navigation, so the
+              // route guards re-read the JWT that was just stored.
+              window.location.replace(next);
+            })
+            .catch((err) => {
+              setSubmitting(false);
+              if (axios.isAxiosError(err) && err.response?.status === 429) {
+                setSubmitError(
+                  "Too many attempts. Please wait a few minutes and try again."
+                );
+              } else {
+                setSubmitError(
+                  "That code is incorrect, expired, or already used. Check the newest email or request a new one."
+                );
+              }
+            });
+        }}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          isSubmitting
+        }) => {
+          const message = (touched.code ? errors.code : "") || submitError;
+
+          return (
+            <Form style={{ width: "100%" }}>
+              <VStack spacing={4} w="100%">
+                <Input
+                  type="text"
+                  name="code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  placeholder="123456"
+                  maxLength={6}
+                  letterSpacing="0.4em"
+                  value={values.code}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  {...inputStyles}
+                />
+
+                <Button
+                  type="submit"
+                  isLoading={isSubmitting}
+                  w="100%"
+                  borderRadius="full"
+                  fontFamily={BODY_FONT}
+                  fontWeight={500}
+                  color="#FFFFFF"
+                  bg="rgba(192,38,211,0.85)"
+                  _hover={{ bg: "rgba(192,38,211,1)" }}
+                  _active={{ bg: "rgba(160,30,180,1)" }}
+                >
+                  Sign in with code
+                </Button>
+
+                {message && (
+                  <Text
+                    fontFamily={BODY_FONT}
+                    fontWeight={500}
+                    fontSize="sm"
+                    color="#FFB4D1"
+                    role="alert"
+                  >
+                    {message}
+                  </Text>
+                )}
+              </VStack>
+            </Form>
+          );
+        }}
+      </Formik>
 
       <Link
         as="button"

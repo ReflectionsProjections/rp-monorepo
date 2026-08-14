@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { ApiError, TypedAxiosInstance } from "./type-wrapper";
 import Config from "../constants/config";
-import { authRefresh, readJwtClaims } from "./auth";
+import { magicLinkSignIn, readJwtClaims } from "./auth";
 
 function holdingSetupToken() {
   const jwt = localStorage.getItem("jwt");
@@ -50,7 +50,7 @@ axiosObject.interceptors.response.use(
 
     if (errorType === "NoJWT") {
       localStorage.removeItem("jwt");
-      authRefresh();
+      magicLinkSignIn();
       return;
     }
 
