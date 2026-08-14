@@ -91,8 +91,19 @@ export const Config = {
         },
     ],
 
+    // prettier-ignore
+    AUTH_ADMIN_WHITELIST: new Set([
+        // Dev Chairs/Code-Owners (reach out to these people for questions)
+        "akul@reflectionsprojections.org",    // Akul Sharma
+        "dev.patel@reflectionsprojections.org",    // Dev Patel
+        "jacob.edley@reflectionsprojections.org",    // Jacob Edley
+    ]),
+
     // For sending emails
     FROM_EMAIL_ADDRESS: process.env.FROM_EMAIL_ADDRESS,
+
+    // Development admin email - allows developer email to be admin in development
+    DEV_ADMIN_EMAIL: process.env.DEV_ADMIN_EMAIL,
 
     // Event date override for testing - allows overriding the hardcoded event start date
     EVENT_START_DATE_OVERRIDE: process.env.EVENT_START_DATE_OVERRIDE,

@@ -199,6 +199,102 @@ describe("POST /auth/magic-links/verify", () => {
             .expect(StatusCodes.UNAUTHORIZED);
     });
 
+    it("grants STAFF from the roster on the next sign-in", async () => {
+        await SupabaseDB.AUTH_INFO.insert({
+            userId: "attendee-turned-staff",
+            email: "newstaff@example.com",
+            displayName: "New Staff",
+        });
+        await SupabaseDB.AUTH_ROLES.insert({
+            userId: "attendee-turned-staff",
+            role: Role.Enum.USER,
+        });
+        await SupabaseDB.STAFF.insert({
+            email: "newstaff@example.com",
+            name: "New Staff",
+            team: "DEV",
+            attendances: {},
+        });
+
+        const token = await issueWebLink("newstaff@example.com");
+        const response = await post("/auth/magic-links/verify")
+            .send({ token, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const payload = jsonwebtoken.verify(
+            response.body.token,
+            Config.JWT_SIGNING_SECRET
+        ) as JwtPayload;
+        expect(payload.roles).toEqual(
+            expect.arrayContaining([Role.Enum.USER, Role.Enum.STAFF])
+        );
+    });
+
+    it("lets rostered staff sign in on web without registering", async () => {
+        await SupabaseDB.STAFF.insert({
+            email: "unregistered-staff@example.com",
+            name: "Unregistered Staff",
+            team: "DEV",
+            attendances: {},
+        });
+
+        const token = await issueWebLink("unregistered-staff@example.com");
+        const response = await post("/auth/magic-links/verify")
+            .send({ token, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const payload = jsonwebtoken.verify(
+            response.body.token,
+            Config.JWT_SIGNING_SECRET
+        ) as JwtPayload;
+        // An access token, not a setup token — staff are never routed into
+        // attendee registration.
+        expect(payload.tokenType).toBe("access");
+        expect(payload.roles).toEqual([Role.Enum.STAFF]);
+    });
+
+    it("lets rostered staff without an account sign in on mobile", async () => {
+        await SupabaseDB.STAFF.insert({
+            email: "scanner@example.com",
+            name: "Scanner Staff",
+            team: "DEV",
+            attendances: {},
+        });
+
+        await post("/auth/magic-links")
+            .send({
+                email: "scanner@example.com",
+                client: "mobile",
+                intent: "login",
+            })
+            .expect(StatusCodes.ACCEPTED);
+        const token = lastMagicLinkToken();
+
+        const response = await post("/auth/magic-links/verify")
+            .send({ token, client: "mobile" })
+            .expect(StatusCodes.OK);
+        const payload = jsonwebtoken.verify(
+            response.body.token,
+            Config.JWT_SIGNING_SECRET
+        ) as JwtPayload;
+        expect(payload.roles).toContain(Role.Enum.STAFF);
+        expect(payload.tokenType).toBe("access");
+    });
+
+    it("grants ADMIN from the whitelist on sign-in", async () => {
+        const adminEmail = [...Config.AUTH_ADMIN_WHITELIST][0];
+        const token = await issueWebLink(adminEmail);
+        const response = await post("/auth/magic-links/verify")
+            .send({ token, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const payload = jsonwebtoken.verify(
+            response.body.token,
+            Config.JWT_SIGNING_SECRET
+        ) as JwtPayload;
+        expect(payload.roles).toContain(Role.Enum.ADMIN);
+    });
+
     it("always stores emails normalized and never duplicates an account", async () => {
         const firstToken = await issueWebLink("  Casing@Example.COM ");
         await post("/auth/magic-links/verify")
