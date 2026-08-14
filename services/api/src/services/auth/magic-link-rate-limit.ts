@@ -32,3 +32,16 @@ export const magicLinkVerifyIpLimiter = rateLimit({
     ...common,
     max: Config.MAGIC_LINK_VERIFY_IP_LIMIT,
 });
+
+// Caps code guesses per email across IPs; the per-token attempt cap in the
+// database is the hard stop, this just cuts the noise off earlier.
+export const magicLinkVerifyEmailLimiter = rateLimit({
+    ...common,
+    max: Config.MAGIC_LINK_VERIFY_EMAIL_LIMIT,
+    keyGenerator: (request) =>
+        normalizeEmail(
+            typeof request.body?.email === "string"
+                ? request.body.email
+                : "invalid-email"
+        ),
+});

@@ -351,14 +351,26 @@ const templates = {
                 display: inline-block;
                 text-decoration: none;
             }
+            .code {
+                font-size: 28px;
+                font-weight: bold;
+                letter-spacing: 6px;
+                color: #333333;
+                background-color: #f0f0f0;
+                padding: 12px 24px;
+                border-radius: 5px;
+                display: inline-block;
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <h2>{{action}} with Reflections | Projections</h2>
             <p><a class="button" href="{{{link}}}">{{action}}</a></p>
-            <p> Note that this link is single use and will expire approximately 10 minutes from now. </p>
-            <p> If you did not request this link, you can ignore this email. </p>
+            <p> Or enter this code on the page where you requested it: </p>
+            <p><span class="code">{{code}}</span></p>
+            <p> Note that the link and code are single use and will expire approximately 10 minutes from now. </p>
+            <p> If you did not request this email, you can ignore it. </p>
         </div>
     </body>
     </html>`,

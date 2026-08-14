@@ -53,6 +53,24 @@ export const MagicLinkVerifyValidator = registry.register(
         })
 );
 
+export const MagicLinkCodeVerifyValidator = registry.register(
+    "MagicLinkCodeVerifyValidator",
+    z
+        .object({
+            email: z.string().trim().email().max(256),
+            code: z.string().trim().regex(/^\d{6}$/, "Must be a 6-digit code"),
+            client: MagicLinkClient,
+        })
+        .strict()
+        .openapi("MagicLinkCodeVerifyValidator", {
+            example: {
+                email: "user@example.com",
+                code: "123456",
+                client: "web",
+            },
+        })
+);
+
 export const MagicLinkTokenResponse = registry.register(
     "MagicLinkTokenResponse",
     z.object({ token: z.string() }).openapi("MagicLinkTokenResponse", {

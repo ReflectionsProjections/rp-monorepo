@@ -36,8 +36,10 @@ REVOKE ALL ON FUNCTION public.consume_magic_link_token(text, text) FROM PUBLIC, 
 REVOKE ALL ON FUNCTION public.get_or_create_magic_link_account(text) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.complete_magic_link_registration(character varying, text, jsonb, text) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.consume_auth_code(text, text) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.consume_magic_link_code(text, text, text, integer) FROM PUBLIC, anon, authenticated;
 
 GRANT EXECUTE ON FUNCTION public.consume_magic_link_token(text, text) TO service_role;
 GRANT EXECUTE ON FUNCTION public.get_or_create_magic_link_account(text) TO service_role;
 GRANT EXECUTE ON FUNCTION public.complete_magic_link_registration(character varying, text, jsonb, text) TO service_role;
 GRANT EXECUTE ON FUNCTION public.consume_auth_code(text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.consume_magic_link_code(text, text, text, integer) TO service_role;
