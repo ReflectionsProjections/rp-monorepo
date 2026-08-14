@@ -170,6 +170,29 @@ const Navbar = ({ isFlush }: NavbarProps) => {
             </Link>
           ))}
         </HStack>
+
+        {/* Login: /profile bounces through the sign-in flow when logged out */}
+        <Link
+          as={NavLink}
+          to="/profile"
+          flexShrink={0}
+          fontFamily="Inter, sans-serif"
+          fontWeight={500}
+          fontSize="lg"
+          color="#FFFFFF"
+          bg="rgba(192,38,211,0.85)"
+          px={6}
+          py={2}
+          borderRadius="full"
+          transition="all 0.2s ease"
+          _hover={{
+            bg: "rgba(192,38,211,1)",
+            textDecoration: "none",
+            transform: "scale(1.03)"
+          }}
+        >
+          Login
+        </Link>
       </HStack>
 
       {/* Mobile animated pill */}
@@ -267,13 +290,33 @@ const Navbar = ({ isFlush }: NavbarProps) => {
                   rounded="xl"
                   color="#FCF2F6"
                   fontFamily="Inter, sans-serif"
-                  fontWeight="400"
+                  fontWeight={450}
                   fontSize="3xl"
                   _hover={{ bg: "rgba(252,242,246,0.08)" }}
                 >
                   {label}
                 </Link>
               ))}
+
+              <Link
+                as={NavLink}
+                to="/profile"
+                onClick={onClose}
+                alignSelf="center"
+                mt={3}
+                px="44px"
+                py="10px"
+                textAlign="center"
+                rounded="full"
+                color="#FFFFFF"
+                bg="rgba(192,38,211,0.85)"
+                fontFamily="Inter, sans-serif"
+                fontWeight={500}
+                fontSize="2xl"
+                _hover={{ bg: "rgba(192,38,211,1)" }}
+              >
+                Login
+              </Link>
             </VStack>
           )}
         </Flex>

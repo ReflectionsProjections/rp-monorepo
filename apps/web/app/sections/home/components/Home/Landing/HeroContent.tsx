@@ -3,6 +3,7 @@ import {
   HStack,
   Image,
   Link,
+  Text,
   VStack,
   useBreakpointValue
 } from "@chakra-ui/react";
@@ -17,6 +18,7 @@ const GLOW =
 const PIPE_DELAY = 0.2;
 const WORDS_DELAY = 0.85;
 const GLOW_DELAY = WORDS_DELAY + 0.75;
+const DATES_DELAY = 1.35;
 const BADGES_DELAY = 1.6;
 const REGISTER_DELAY = 1.9;
 
@@ -53,6 +55,9 @@ export const HeroContent = () => {
       spacing={{ base: 6, xl: 8 }}
       minH={{ base: "100dvh", md: "auto" }}
       px={4}
+      // The navbar floats over the hero; pad it out so the content centers in
+      // the space that is actually visible below it.
+      pt={{ base: "80px", lg: "128px" }}
     >
       {/* Title */}
       <HStack spacing={wordSpacing} justify="center" align="center">
@@ -118,6 +123,23 @@ export const HeroContent = () => {
           </Box>
         </MotionBox>
       </HStack>
+
+      {/* Event dates */}
+      <MotionBox {...fadeUp(DATES_DELAY)}>
+        <Text
+          fontFamily="Inter, sans-serif"
+          fontWeight={500}
+          fontSize={{
+            base: "md",
+            sm: "lg",
+            lg: "clamp(1.125rem, 1.6vw, 1.5rem)"
+          }}
+          color="rgba(252,242,246,0.85)"
+          textAlign="center"
+        >
+          September 16&ndash;19, 2026
+        </Text>
+      </MotionBox>
 
       {/* App store badges */}
       <MotionBox {...fadeUp(BADGES_DELAY)} mt={{ base: 3, lg: 5 }}>

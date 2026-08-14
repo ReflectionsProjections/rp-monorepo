@@ -7,7 +7,7 @@ export const Landing = () => {
       position="relative"
       overflow="hidden"
       id="hero"
-      h={{ base: "auto", md: "75svh" }}
+      h={{ base: "auto", md: "100svh" }}
       display="flex"
       flexDirection="column"
       bg="transparent"
