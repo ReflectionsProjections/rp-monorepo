@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, createHmac, randomBytes, randomInt } from "crypto";
 import { Config, EnvironmentEnum, Templates } from "../../config";
 import { SupabaseDB, supabase } from "../../database";
 import { sendTemplateEmail } from "../ses/ses-utils";
@@ -69,6 +69,19 @@ function flowRuleFor(
 
 function digestToken(token: string): string {
     return createHash("sha256").update(token).digest("hex");
+}
+
+// A 6-digit code has only a million possibilities, so a plain hash could be
+// brute-forced offline from a leaked row; keying the digest with a server
+// secret means the stored value is useless without it.
+function digestCode(email: string, code: string): string {
+    return createHmac("sha256", Config.JWT_SIGNING_SECRET)
+        .update(`magic-link-code:${email}:${code}`)
+        .digest("hex");
+}
+
+function generateCode(): string {
+    return randomInt(0, 1_000_000).toString().padStart(6, "0");
 }
 
 async function findAccount(email: string): Promise<Account | null> {
@@ -196,8 +209,18 @@ export async function issueMagicLink(
 
     const token = randomBytes(32).toString("base64url");
     const tokenDigest = digestToken(token);
+    const code = generateCode();
+
+    // A new request supersedes any earlier one: at most one live token per
+    // email, so an emailed code always refers to the newest email.
+    await SupabaseDB.MAGIC_LINK_TOKENS.delete()
+        .eq("subjectEmail", normalizedRequest.email)
+        .is("usedAt", null)
+        .throwOnError();
+
     await SupabaseDB.MAGIC_LINK_TOKENS.insert({
         tokenDigest,
+        codeDigest: digestCode(normalizedRequest.email, code),
         subjectEmail: normalizedRequest.email,
         client: normalizedRequest.client,
         intent: normalizedRequest.intent,
@@ -210,7 +233,7 @@ export async function issueMagicLink(
     try {
         await sendTemplateEmail(normalizedRequest.email, Templates.RP_EMAILS, {
             subject: "Your Reflections | Projections sign-in link",
-            body: renderMagicLinkEmail(link, normalizedRequest.intent),
+            body: renderMagicLinkEmail(link, code, normalizedRequest.intent),
         });
     } catch (error) {
         await SupabaseDB.MAGIC_LINK_TOKENS.delete()
@@ -246,15 +269,37 @@ async function consumeToken(token: string, client: MagicLinkClient) {
     return data.at(0) ?? null;
 }
 
-export async function verifyMagicLink(
-    token: string,
+async function consumeCode(
+    email: string,
+    code: string,
+    client: MagicLinkClient
+) {
+    const { data, error } = await supabase.rpc("consume_magic_link_code", {
+        p_email: email,
+        p_code_digest: digestCode(email, code),
+        p_client: client,
+        p_max_attempts: Config.MAGIC_LINK_CODE_MAX_ATTEMPTS,
+    });
+    if (error) {
+        throw error;
+    }
+    return data.at(0) ?? null;
+}
+
+type ConsumedToken = {
+    subjectEmail: string;
+    intent: string;
+};
+
+/**
+ * Turns a consumed token into a session JWT. The link and code paths both end
+ * here, so they mint identical sessions: same account lookup and creation,
+ * same roster role sync, same role checks, and the same setup or access token.
+ */
+async function sessionForConsumed(
+    consumed: ConsumedToken,
     client: MagicLinkClient
 ): Promise<string | null> {
-    const consumed = await consumeToken(token, client);
-    if (!consumed) {
-        return null;
-    }
-
     const intent = MagicLinkIntent.parse(consumed.intent);
     const rule = flowRuleFor(client, intent);
     if (!rule) {
@@ -298,4 +343,28 @@ export async function verifyMagicLink(
     );
 }
 
+export async function verifyMagicLink(
+    token: string,
+    client: MagicLinkClient
+): Promise<string | null> {
+    const consumed = await consumeToken(token, client);
+    if (!consumed) {
+        return null;
+    }
+    return sessionForConsumed(consumed, client);
+}
+
+export async function verifyMagicLinkCode(
+    email: string,
+    code: string,
+    client: MagicLinkClient
+): Promise<string | null> {
+    const consumed = await consumeCode(normalizeEmail(email), code, client);
+    if (!consumed) {
+        return null;
+    }
+    return sessionForConsumed(consumed, client);
+}
+
 export const magicLinkTokenDigestForTest = digestToken;
+export const magicLinkCodeDigestForTest = digestCode;

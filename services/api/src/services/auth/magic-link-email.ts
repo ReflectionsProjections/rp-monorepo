@@ -21,10 +21,12 @@ function assertNever(intent: never): never {
 
 export function renderMagicLinkEmail(
     link: string,
+    code: string,
     intent: MagicLinkIntent
 ): string {
     return mustache.render(templates.MAGIC_LINK, {
         action: actionFor(intent),
         link,
+        code,
     });
 }

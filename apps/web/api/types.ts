@@ -385,6 +385,16 @@ export interface APIRoutes {
       response: { token: string };
     };
   };
+  "/auth/magic-links/verify-code": {
+    POST: {
+      request: {
+        email: string;
+        code: string;
+        client: "web" | "mobile";
+      };
+      response: { token: string };
+    };
+  };
   "/checkin/event": {
     POST: {
       request: { eventId: string; userId: string };

@@ -106,7 +106,7 @@ export function Login() {
 
 function LoginForm() {
   const toast = useToast();
-  const [emailSent, setEmailSent] = useState(false);
+  const [emailSent, setEmailSent] = useState<string | null>(null);
 
   const submitEmail: EmailSubmitHandler = ({ email }, { setSubmitting }) => {
     toast.promise(
@@ -116,7 +116,7 @@ function LoginForm() {
           client: "web",
           intent: "resume-book"
         })
-        .then(() => setEmailSent(true))
+        .then(() => setEmailSent(email))
         .finally(() => setSubmitting(false)),
       {
         success: { title: "Please check your email for the login link" },
@@ -127,7 +127,7 @@ function LoginForm() {
   };
 
   return emailSent ? (
-    <MagicLinkSentPage onBack={() => setEmailSent(false)} />
+    <MagicLinkSentPage email={emailSent} onBack={() => setEmailSent(null)} />
   ) : (
     <EmailPage onSubmit={submitEmail} />
   );
@@ -202,18 +202,109 @@ function EmailPage({ onSubmit }: { onSubmit: EmailSubmitHandler }) {
   );
 }
 
-function MagicLinkSentPage({ onBack }: { onBack: () => void }) {
+function MagicLinkSentPage({
+  email,
+  onBack
+}: {
+  email: string;
+  onBack: () => void;
+}) {
+  const [submitError, setSubmitError] = useState("");
+
   return (
     <VStack spacing={6} maxW="400px" px={4}>
       <Text fontSize="24" fontFamily="Nunito" fontWeight="400">
         Check your email
       </Text>
       <Text fontSize="16" fontFamily="Nunito" fontWeight="300" opacity={0.8}>
-        We sent a magic link to your email address. Click the link in the email
-        to log in to the Resume Book.
+        We sent a magic link and a 6-digit code to your email address. Click the
+        link, or enter the code below to log in to the Resume Book.
       </Text>
+      <Formik
+        initialValues={{ code: "" }}
+        validationSchema={yup.object({
+          code: yup
+            .string()
+            .matches(/^\d{6}$/, "The code is the 6 digits from the email.")
+            .required("Please enter the 6-digit code from the email.")
+        })}
+        onSubmit={({ code }, { setSubmitting }) => {
+          setSubmitError("");
+          api
+            .post("/auth/magic-links/verify-code", {
+              email,
+              code,
+              client: "web"
+            })
+            .then((response) => {
+              localStorage.setItem("jwt", response.data.token);
+              window.location.replace("/sponsor/resume-book");
+            })
+            .catch(() => {
+              setSubmitting(false);
+              setSubmitError(
+                "That code is incorrect, expired, or already used. Check the newest email or request a new one."
+              );
+            });
+        }}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting
+        }) => (
+          <Form onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              name="code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="123456"
+              maxLength={6}
+              width="250px"
+              textColor="white"
+              textAlign="center"
+              letterSpacing="0.4em"
+              _placeholder={{ color: "gray.400" }}
+              value={values.code}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+            <Button
+              bg="blue.500"
+              color="white"
+              borderRadius="5px"
+              zIndex="3"
+              m={4}
+              mb={2}
+              _hover={{ bg: "blue.600" }}
+              type="submit"
+              isLoading={isSubmitting}
+            >
+              Log in with code
+            </Button>
+            {((touched.code && errors.code) || submitError) && (
+              <Box
+                mt={2}
+                p={2}
+                bg="red.500"
+                color="white"
+                borderRadius="md"
+                maxWidth="250px"
+                mx="auto"
+              >
+                {(touched.code ? errors.code : "") || submitError}
+              </Box>
+            )}
+          </Form>
+        )}
+      </Formik>
       <Text fontSize="14" fontFamily="Nunito" fontWeight="300" opacity={0.6}>
-        The link will expire in approximately 10 minutes.
+        The link and code will expire in approximately 10 minutes.
       </Text>
       <Button
         variant="ghost"

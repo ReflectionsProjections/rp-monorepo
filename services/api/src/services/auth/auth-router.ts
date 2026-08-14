@@ -7,14 +7,20 @@ import authSponsorRouter from "./sponsor/sponsor-router";
 import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema";
 import { SupabaseDB } from "../../database";
 import {
+    MagicLinkCodeVerifyValidator,
     MagicLinkIssueValidator,
     MagicLinkVerifyValidator,
 } from "./magic-link-schema";
-import { issueMagicLink, verifyMagicLink } from "./magic-link-service";
+import {
+    issueMagicLink,
+    verifyMagicLink,
+    verifyMagicLinkCode,
+} from "./magic-link-service";
 import { normalizeEmail } from "./auth-utils";
 import {
     magicLinkIssueEmailLimiter,
     magicLinkIssueIpLimiter,
+    magicLinkVerifyEmailLimiter,
     magicLinkVerifyIpLimiter,
 } from "./magic-link-rate-limit";
 
@@ -94,6 +100,51 @@ authRouter.post(
             return res
                 .status(StatusCodes.UNAUTHORIZED)
                 .json({ error: "InvalidToken" });
+        }
+        return res.status(StatusCodes.OK).json({ token });
+    }
+);
+
+/**
+ * @swagger
+ * /auth/magic-links/verify-code:
+ *   post:
+ *     summary: Verify and consume the 6-digit code from a magic-link email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MagicLinkCodeVerifyValidator'
+ *     responses:
+ *       200:
+ *         description: A signed setup or access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MagicLinkTokenResponse'
+ *       401:
+ *         description: The code is invalid
+ *       429:
+ *         description: The request limit was reached
+ *     security: []
+ */
+authRouter.post(
+    "/magic-links/verify-code",
+    magicLinkVerifyIpLimiter,
+    magicLinkVerifyEmailLimiter,
+    async (req, res) => {
+        const request = MagicLinkCodeVerifyValidator.parse(req.body);
+        const token = await verifyMagicLinkCode(
+            request.email,
+            request.code,
+            request.client
+        );
+        if (!token) {
+            return res
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ error: "InvalidCode" });
         }
         return res.status(StatusCodes.OK).json({ token });
     }
