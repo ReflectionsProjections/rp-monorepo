@@ -322,12 +322,6 @@ export interface APIRoutes {
       response: string[]; // Array of userIds
     };
   };
-  "/auth/login/web": {
-    POST: {
-      request: { code: string; redirectUri: string };
-      response: { token: string };
-    };
-  };
   "/auth/info": {
     GET: {
       response: RoleObject;

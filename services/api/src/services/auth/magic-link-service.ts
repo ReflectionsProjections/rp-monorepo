@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "crypto";
-import { Config, Templates } from "../../config";
+import { Config, EnvironmentEnum, Templates } from "../../config";
 import { SupabaseDB, supabase } from "../../database";
 import { sendTemplateEmail } from "../ses/ses-utils";
 import { Role } from "./auth-models";
@@ -23,9 +23,11 @@ type FlowRule = {
     callback: string;
     // Whether verification may create a roleless base account for the email.
     createsAccount: boolean;
-    // A role the account must already have, checked at issue and again after
-    // the token is consumed. Authentication never grants this role.
-    requiredRole: Role | null;
+    // Roles of which the account must already hold at least one, checked at
+    // issue and again after the token is consumed. Authentication itself never
+    // grants these roles — STAFF/ADMIN come from the admin-site rosters via
+    // syncRosterRoles, and USER from completing registration.
+    requiredRoles: Role[] | null;
 };
 
 // Every client and intent combination must be listed here; unsupported flows
@@ -35,22 +37,24 @@ const FLOW_RULES: Record<FlowKey, FlowRule | null> = {
     "web:registration": {
         callback: Config.MAGIC_LINK_REGISTRATION_CALLBACK,
         createsAccount: true,
-        requiredRole: null,
+        requiredRoles: null,
     },
     "web:login": {
         callback: Config.MAGIC_LINK_WEB_LOGIN_CALLBACK,
         createsAccount: true,
-        requiredRole: null,
+        requiredRoles: null,
     },
     "mobile:login": {
         callback: Config.MAGIC_LINK_MOBILE_LOGIN_CALLBACK,
         createsAccount: false,
-        requiredRole: Role.Enum.USER,
+        // STAFF alongside USER so staff can use the app without having
+        // registered as attendees, as they could when Google login existed.
+        requiredRoles: [Role.Enum.USER, Role.Enum.STAFF],
     },
     "web:resume-book": {
         callback: Config.MAGIC_LINK_RESUME_BOOK_CALLBACK,
         createsAccount: false,
-        requiredRole: Role.Enum.CORPORATE,
+        requiredRoles: [Role.Enum.CORPORATE],
     },
     "mobile:registration": null,
     "mobile:resume-book": null,
@@ -84,11 +88,65 @@ async function rolesFor(userId: string): Promise<Role[]> {
     return data.map((row) => row.role);
 }
 
+async function isRosteredStaff(email: string): Promise<boolean> {
+    const { data } = await SupabaseDB.STAFF.select("email")
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+    return data !== null;
+}
+
+/**
+ * Grants roles from the admin-site rosters, exactly as Google login used to on
+ * every sign-in: an email on the staff roster gets STAFF, and a whitelisted
+ * email gets ADMIN, taking effect the next time the person signs in. Roles are
+ * only ever added here — removing someone from a roster is handled by the
+ * admin site revoking the role directly.
+ */
+async function syncRosterRoles(userId: string, email: string): Promise<void> {
+    if (await isRosteredStaff(email)) {
+        await SupabaseDB.AUTH_ROLES.upsert({
+            userId,
+            role: Role.Enum.STAFF,
+        }).throwOnError();
+    }
+
+    if (Config.AUTH_ADMIN_WHITELIST.has(email)) {
+        await SupabaseDB.AUTH_ROLES.upsert({
+            userId,
+            role: Role.Enum.ADMIN,
+        }).throwOnError();
+    }
+
+    // In development, allow a specific email to be admin for local testing
+    if (
+        Config.ENV === EnvironmentEnum.DEVELOPMENT &&
+        Config.DEV_ADMIN_EMAIL &&
+        email === Config.DEV_ADMIN_EMAIL
+    ) {
+        for (const role of [
+            Role.Enum.SUPER_ADMIN,
+            Role.Enum.ADMIN,
+            Role.Enum.STAFF,
+        ]) {
+            await SupabaseDB.AUTH_ROLES.upsert({ userId, role }).throwOnError();
+        }
+    }
+}
+
 async function hasRequiredRole(
     email: string,
     rule: FlowRule
 ): Promise<boolean> {
-    if (rule.requiredRole === null) {
+    if (rule.requiredRoles === null) {
+        return true;
+    }
+    // The roster stands in for the STAFF role so a freshly granted staff
+    // member can sign in before their first login materializes the role.
+    if (
+        rule.requiredRoles.includes(Role.Enum.STAFF) &&
+        (await isRosteredStaff(email))
+    ) {
         return true;
     }
     const account = await findAccount(email);
@@ -96,7 +154,7 @@ async function hasRequiredRole(
         return false;
     }
     const roles = await rolesFor(account.userId);
-    return roles.includes(rule.requiredRole);
+    return rule.requiredRoles.some((role) => roles.includes(role));
 }
 
 export async function issueMagicLink(
@@ -182,15 +240,25 @@ export async function verifyMagicLink(
     }
 
     const email = normalizeEmail(consumed.subjectEmail);
-    const account = rule.createsAccount
+    let account = rule.createsAccount
         ? await getOrCreateAccount(email)
         : await findAccount(email);
+    if (!account && (await isRosteredStaff(email))) {
+        // Rostered staff signing in for the first time get the account Google
+        // login used to create on the fly.
+        account = await getOrCreateAccount(email);
+    }
     if (!account) {
         return null;
     }
 
+    await syncRosterRoles(account.userId, email);
+
     const roles = await rolesFor(account.userId);
-    if (rule.requiredRole !== null && !roles.includes(rule.requiredRole)) {
+    if (
+        rule.requiredRoles !== null &&
+        !rule.requiredRoles.some((role) => roles.includes(role))
+    ) {
         return null;
     }
 

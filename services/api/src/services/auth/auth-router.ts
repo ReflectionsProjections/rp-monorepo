@@ -1,21 +1,10 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import Config from "../../config";
 import RoleChecker from "../../middleware/role-checker";
-import { Platform, Role } from "../auth/auth-models";
-import {
-    AuthInfo,
-    AuthLoginValidator,
-    AuthRoleChangeRequest,
-} from "./auth-schema";
+import { Role } from "../auth/auth-models";
+import { AuthInfo, AuthRoleChangeRequest } from "./auth-schema";
 import authSponsorRouter from "./sponsor/sponsor-router";
 import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema";
-import {
-    generateJWT,
-    payloadHasProperScopes,
-    updateDatabaseWithAuthPayload,
-} from "./auth-utils";
-import { OAuth2Client } from "google-auth-library";
 import { SupabaseDB } from "../../database";
 import {
     MagicLinkIssueValidator,
@@ -29,19 +18,6 @@ import {
 } from "./magic-link-rate-limit";
 
 const authRouter = Router();
-
-const oauthClients = {
-    [Platform.WEB]: new OAuth2Client({
-        clientId: Config.CLIENT_ID,
-        clientSecret: Config.CLIENT_SECRET,
-    }),
-    [Platform.IOS]: new OAuth2Client({
-        clientId: Config.IOS_CLIENT_ID,
-    }),
-    [Platform.ANDROID]: new OAuth2Client({
-        clientId: Config.ANDROID_CLIENT_ID,
-    }),
-};
 
 authRouter.use("/sponsor", authSponsorRouter);
 
@@ -243,127 +219,6 @@ authRouter.put("/", RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
         .throwOnError();
 
     return res.status(StatusCodes.OK).json(updated);
-});
-
-const getAuthPayloadFromCode = async (
-    code: string,
-    redirect_uri: string,
-    platform: Platform,
-    codeVerifier?: string
-) => {
-    try {
-        const googleOAuthClient = oauthClients[platform];
-        const { tokens } = await googleOAuthClient.getToken({
-            code,
-            redirect_uri,
-            codeVerifier, // only for mobile apps
-        });
-        if (!tokens.id_token) {
-            throw new Error("Invalid token");
-        }
-        const ticket = await googleOAuthClient.verifyIdToken({
-            idToken: tokens.id_token,
-        });
-        const payload = ticket.getPayload();
-        if (!payload) {
-            throw new Error("Invalid payload");
-        }
-
-        return payload;
-    } catch (error) {
-        console.error("AUTH ISSUE:", error);
-        return undefined;
-    }
-};
-
-/**
- * @swagger
- * /auth/login/{PLATFORM}:
- *   post:
- *     summary: Log in with Google OAuth
- *     description: |
- *       Exchanges a Google OAuth authorization code for a signed JWT.
- *       The request body shape varies by platform: web omits `codeVerifier`,
- *       iOS and Android require it.
- *
- *       **Required roles: none**
- *     tags: [Auth]
- *     parameters:
- *       - name: PLATFORM
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *           enum: [WEB, IOS, ANDROID]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/AuthLoginValidator'
- *     responses:
- *       200:
- *         description: A signed JWT for the authenticated user
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthJwtResponse'
- *       400:
- *         description: Login failed
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error: "InvalidToken"
- *     security: []
- */
-authRouter.post("/login/:PLATFORM", async (req, res) => {
-    try {
-        const validatedData = AuthLoginValidator.parse({
-            ...req.body,
-            platform: req.params.PLATFORM,
-        });
-
-        const { code, redirectUri, platform } = validatedData;
-        const codeVerifier =
-            "codeVerifier" in validatedData
-                ? validatedData.codeVerifier
-                : undefined;
-
-        const authPayload = await getAuthPayloadFromCode(
-            code,
-            redirectUri,
-            platform,
-            codeVerifier
-        );
-
-        if (!authPayload) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "InvalidToken" });
-        }
-
-        if (!payloadHasProperScopes(authPayload)) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "InvalidScopes" });
-        }
-
-        // Update database by payload
-        const userId = await updateDatabaseWithAuthPayload(authPayload);
-
-        // Generate the JWT
-        const jwtToken = await generateJWT(userId);
-
-        return res.status(StatusCodes.OK).send({ token: jwtToken });
-    } catch (error) {
-        console.error("Error in platform login:", error);
-        return res.status(StatusCodes.BAD_REQUEST).send({
-            error: "InvalidRequest",
-            details: error instanceof Error ? error.message : "Unknown error",
-        });
-    }
 });
 
 /**

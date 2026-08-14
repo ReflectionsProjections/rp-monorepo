@@ -11,7 +11,7 @@ import {
   HStack,
   Heading
 } from "@chakra-ui/react";
-import { googleAuth } from "@app";
+import { magicLinkSignIn } from "@app";
 
 export default function Login() {
   return (
@@ -81,7 +81,7 @@ export default function Login() {
         size="lg"
         fontWeight="bold"
         onClick={() => {
-          googleAuth(true);
+          magicLinkSignIn();
         }}
         fontFamily={"Nunito"}
       >
