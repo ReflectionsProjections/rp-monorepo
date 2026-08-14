@@ -55,9 +55,10 @@ export const HeroContent = () => {
       spacing={{ base: 6, xl: 8 }}
       minH={{ base: "100dvh", md: "auto" }}
       px={4}
-      // The navbar floats over the hero; pad it out so the content centers in
-      // the space that is actually visible below it.
-      pt={{ base: "80px", lg: "128px" }}
+      // Small guard so the content can't touch the floating navbar on short
+      // windows; anything larger pushes the centered block visibly below the
+      // middle of the viewport.
+      pt="24px"
     >
       {/* Title */}
       <HStack spacing={wordSpacing} justify="center" align="center">
