@@ -1,8 +1,6 @@
 import { Suspense, lazy, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Fallback from "./Fallback";
-import AuthCallback from "./routes/auth/AuthCallback";
-import AuthRefresh from "./routes/auth/AuthRefresh";
 import SiteApp from "./sections/home/App";
 import Unauthorized from "@components/auth/Unauthorized";
 
@@ -21,8 +19,6 @@ export default function Root() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/auth/refresh" element={<AuthRefresh />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route
           path="/admin/*"

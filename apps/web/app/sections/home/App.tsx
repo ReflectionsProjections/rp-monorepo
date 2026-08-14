@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import Home from "./routes/Home";
 import { Login } from "./routes/Login";
 import { MagicLinkCallback } from "./routes/MagicLinkCallback";
+import { MobileMagicLink } from "./routes/MobileMagicLink";
 import { Profile } from "./routes/Profile";
 import Register from "./routes/Register";
 import Resume from "./routes/Resume";
@@ -32,7 +33,7 @@ function App() {
               <Route key="/register" path="/register" element={<Register />} />
             </Route>
           </Route>
-          <Route element={<RequireAuth withMagicLink />}>
+          <Route element={<RequireAuth />}>
             <Route key="/resume" path="/resume" element={<Resume />} />
             <Route key="/profile" path="/profile" element={<Profile />} />
           </Route>
@@ -46,6 +47,7 @@ function App() {
             path="/auth/registration"
             element={<MagicLinkCallback destination="/register" />}
           />
+          <Route path="/auth/mobile/login" element={<MobileMagicLink />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>

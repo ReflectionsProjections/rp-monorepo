@@ -55,14 +55,13 @@ function getEnv(key: string): string {
     return val;
 }
 
-const API_BASE =
-    env === EnvironmentEnum.PRODUCTION
-        ? "https://api.reflectionsprojections.org"
-        : "http://localhost:3000";
+// Overridable so staging/preview deployments can mint magic links that point
+// back at their own host instead of production.
 const WEB_BASE =
-    env === EnvironmentEnum.PRODUCTION
+    process.env.WEB_BASE_URL ||
+    (env === EnvironmentEnum.PRODUCTION
         ? "https://reflectionsprojections.org"
-        : "http://localhost:3001";
+        : "http://localhost:3001");
 
 export const Config = {
     ENV: env,
@@ -78,12 +77,6 @@ export const Config = {
     DATABASE_PASSWORD: getEnv("DATABASE_PASSWORD"),
     DATABASE_HOST: getEnv("DATABASE_HOST"),
 
-    CLIENT_ID: getEnv("OAUTH_GOOGLE_CLIENT_ID"),
-    CLIENT_SECRET: getEnv("OAUTH_GOOGLE_CLIENT_SECRET"),
-    IOS_CLIENT_ID: getEnv("IOS_OAUTH_GOOGLE_CLIENT_ID"),
-    ANDROID_CLIENT_ID: getEnv("ANDROID_OAUTH_GOOGLE_CLIENT_ID"),
-    AUTH_CALLBACK_URI_BASE: `${API_BASE}/auth/callback/`,
-
     FIREBASE_ADMIN_CERT_PATH: getEnv("FIREBASE_ADMIN_CERT_PATH"),
 
     PUZZLEBANG_API_KEY: getEnv("PUZZLEBANG_API_KEY"),
@@ -98,19 +91,8 @@ export const Config = {
         },
     ],
 
-    // prettier-ignore
-    AUTH_ADMIN_WHITELIST: new Set([
-        // Dev Chairs/Code-Owners (reach out to these people for questions)
-        "akul@reflectionsprojections.org",    // Akul Sharma
-        "dev.patel@reflectionsprojections.org",    // Dev Patel
-        "jacob.edley@reflectionsprojections.org",    // Jacob Edley
-    ]),
-
     // For sending emails
     FROM_EMAIL_ADDRESS: process.env.FROM_EMAIL_ADDRESS,
-
-    // Development admin email - allows developer email to be admin in development
-    DEV_ADMIN_EMAIL: process.env.DEV_ADMIN_EMAIL,
 
     // Event date override for testing - allows overriding the hardcoded event start date
     EVENT_START_DATE_OVERRIDE: process.env.EVENT_START_DATE_OVERRIDE,

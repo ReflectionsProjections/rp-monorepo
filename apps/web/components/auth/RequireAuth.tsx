@@ -3,22 +3,16 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import type { Role, RoleObject } from "@api/types";
 import api from "@api/api";
-import { authRefresh, magicLinkSignIn, readJwtClaims } from "@api/auth";
+import { magicLinkSignIn, readJwtClaims } from "@api/auth";
 
 type RequireAuthProps = {
   requiredRoles?: Role[];
-  /**
-   * Send a signed-out visitor to the magic-link page rather than to Google.
-   * Off by default, so staff-facing sections keep signing in with Google.
-   */
-  withMagicLink?: boolean;
 };
 
 const NO_REQUIRED_ROLES: Role[] = [];
 
 const RequireAuth: React.FC<RequireAuthProps> = ({
-  requiredRoles = NO_REQUIRED_ROLES,
-  withMagicLink = false
+  requiredRoles = NO_REQUIRED_ROLES
 }) => {
   const [authInfo, setAuthInfo] = useState<RoleObject | null>(null);
   const [authCheckFailed, setAuthCheckFailed] = useState(false);
@@ -26,11 +20,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   useEffect(() => {
     if (!jwt) {
-      if (withMagicLink) {
-        magicLinkSignIn();
-      } else {
-        authRefresh();
-      }
+      magicLinkSignIn();
       return;
     }
 
@@ -67,11 +57,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
           if (credentialsRejected) {
             localStorage.removeItem("jwt");
-            if (withMagicLink) {
-              magicLinkSignIn();
-            } else {
-              authRefresh();
-            }
+            magicLinkSignIn();
             return;
           }
 
@@ -81,7 +67,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
           setAuthCheckFailed(true);
         });
     }
-  }, [authCheckFailed, authInfo, jwt, requiredRoles, withMagicLink]);
+  }, [authCheckFailed, authInfo, jwt, requiredRoles]);
 
   if (!jwt) {
     return <p>Redirecting to login...</p>;

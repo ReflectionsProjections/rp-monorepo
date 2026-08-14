@@ -1,4 +1,3 @@
-import Config from "../constants/config";
 import type { Role } from "./types";
 
 export type JwtClaims = {
@@ -55,12 +54,6 @@ export function readJwtClaims(jwt: string): JwtClaims | null {
   };
 }
 
-export function authRefresh() {
-  const currentPath =
-    window.location.pathname + window.location.search + window.location.hash;
-  window.location.href = `/auth/refresh?redirect=${encodeURIComponent(currentPath)}`;
-}
-
 const RETURN_TO_KEY = "magicLinkReturnTo";
 
 /**
@@ -97,25 +90,4 @@ export function takeMagicLinkReturnTo() {
     return null;
   }
   return returnTo;
-}
-
-export function googleAuth(selectAccount?: boolean, state?: string) {
-  const params = new URLSearchParams({
-    client_id: Config.GOOGLE_OAUTH_CLIENT_ID,
-    redirect_uri: `${window.location.origin}/auth/callback`,
-    response_type: "code",
-    scope: "openid email profile",
-    access_type: "offline",
-    state:
-      state ??
-      encodeURIComponent(
-        window.location.pathname + window.location.search + window.location.hash
-      )
-  });
-
-  if (selectAccount) {
-    params.set("prompt", "select_account");
-  }
-
-  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }

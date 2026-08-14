@@ -20,13 +20,6 @@ process.env.FIREBASE_ADMIN_CERT_PATH = "testing.json";
 
 process.env.PUZZLEBANG_API_KEY = "iampuzzlebangtrust";
 
-process.env.IOS_OAUTH_GOOGLE_CLIENT_ID =
-    "himynameistimothygonzalezandiliketoeatcoldtoastforbreakfastbecauseblahblahblahyouhavetoreadthiswholethingbecauseimyourbosshahahahahah";
-process.env.ANDROID_OAUTH_GOOGLE_CLIENT_ID =
-    "ronitanandanisittinginatreeC-O-D-I-N-Gllamallamallamafurryfurrryfurryryfyryy";
-process.env.OAUTH_GOOGLE_CLIENT_ID = "beepbeepimasheep";
-process.env.OAUTH_GOOGLE_CLIENT_SECRET = "isaidbeepbeepimasheep";
-
 process.env.JWT_SIGNING_SECRET = "supersecretsecret";
 process.env.QR_HASH_SECRET = "raidshadowlegends";
 

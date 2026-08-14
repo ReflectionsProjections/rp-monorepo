@@ -3311,46 +3311,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/oauth@npm:*":
-  version: 0.9.6
-  resolution: "@types/oauth@npm:0.9.6"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/2f3e4ee1059fd28fc2cb6dd9d0973365a0630ea1fa305ac5455ea9666220b73d8ac42e5bee42367a0f12a1041ef103a16c55bf7803d0a82898319c3e32095b4a
-  languageName: node
-  linkType: hard
-
-"@types/passport-google-oauth20@npm:^2.0.14":
-  version: 2.0.16
-  resolution: "@types/passport-google-oauth20@npm:2.0.16"
-  dependencies:
-    "@types/express": "npm:*"
-    "@types/passport": "npm:*"
-    "@types/passport-oauth2": "npm:*"
-  checksum: 10c0/59b044d4227e5481972ec8734dd826e1cf88673905e14e09fb21e061764796eb543b070e679a2077f69ae3e35ede265b91ae23f9975cad6085b72ae4272ae928
-  languageName: node
-  linkType: hard
-
-"@types/passport-oauth2@npm:*":
-  version: 1.4.17
-  resolution: "@types/passport-oauth2@npm:1.4.17"
-  dependencies:
-    "@types/express": "npm:*"
-    "@types/oauth": "npm:*"
-    "@types/passport": "npm:*"
-  checksum: 10c0/f00c671f93c66c07f871f12257280a1eaf9f95f119694018d03005c3dd35ac44aff2854c65b6cd5d3ea9e19658a27dcf5e9ad43d0742a1237a7876658a94584e
-  languageName: node
-  linkType: hard
-
-"@types/passport@npm:*":
-  version: 1.0.17
-  resolution: "@types/passport@npm:1.0.17"
-  dependencies:
-    "@types/express": "npm:*"
-  checksum: 10c0/09039429a9178117a80880c4e7d437abc83216eac5e0c97bc6f14a03a59193386cff484931dc880693f8b13a512c366ef7a51ecd8cc1a63f17366be68161f633
-  languageName: node
-  linkType: hard
-
 "@types/pg@npm:^8.15.2":
   version: 8.15.4
   resolution: "@types/pg@npm:8.15.4"
@@ -5643,7 +5603,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^9.14.2, google-auth-library@npm:^9.15.1, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3":
+"google-auth-library@npm:^9.14.2, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3":
   version: 9.15.1
   resolution: "google-auth-library@npm:9.15.1"
   dependencies:
@@ -9096,7 +9056,6 @@ __metadata:
     "@types/morgan": "npm:^1.9.9"
     "@types/mustache": "npm:^4.2.5"
     "@types/node": "npm:^20.9.3"
-    "@types/passport-google-oauth20": "npm:^2.0.14"
     "@types/pg": "npm:^8.15.2"
     "@types/supertest": "npm:^6.0.2"
     "@types/swagger-jsdoc": "npm:^6.0.4"
@@ -9115,7 +9074,6 @@ __metadata:
     express-rate-limit: "npm:^6.0.0"
     firebase-admin: "npm:^13.5.0"
     globals: "npm:^16.0.0"
-    google-auth-library: "npm:^9.15.1"
     http-status-codes: "npm:^2.3.0"
     jest: "npm:^29.7.0"
     jsonwebtoken: "npm:^9.0.2"
