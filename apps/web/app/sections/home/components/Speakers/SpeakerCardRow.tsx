@@ -1,344 +1,102 @@
-import { useElementHeight } from "@app/sections/home/hooks/use-element-height-hook";
-import type { SpeakerRow } from "@app/sections/home/types/speaker-types";
+import type { Speaker } from "@app";
 import { CloseIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  HStack,
-  IconButton,
-  Text,
-  useMediaQuery,
-  VStack
-} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import SpeakerImageCard from "./SpeakerImageCard";
+import { Box, Collapse, IconButton, SimpleGrid, Text } from "@chakra-ui/react";
+import SpeakerCard from "./SpeakerCard";
 
-export default function SpeakerCardRow({ row }: { row: SpeakerRow }) {
-  const [isSmallScreen] = useMediaQuery("(max-width: 768px)");
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const { ref: bioTextRef, height: bioTextHeight } =
-    useElementHeight<HTMLParagraphElement>();
+type SpeakerCardRowProps = {
+  speakers: Speaker[];
+  columns: number;
+  selectedId: string | null;
+  onSelect: (speakerId: string | null) => void;
+};
 
-  const bioTextDisplayedHeight = Math.max(bioTextHeight + 20, 150);
+const PANEL_BODY = "#240131";
 
-  const handleSetSelectedIndex = (index: number) => {
-    if (selectedIndex) {
-      return;
-    }
-    setSelectedIndex(index);
-  };
-
-  const handleLeave = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(null);
-    }
-  };
-
-  useEffect(() => {
-    // Reset selected index when the number of speakers changes
-    setSelectedIndex(null);
-  }, [row.speakers.length]);
-
-  const speakerSelected = selectedIndex !== null;
-
-  /** For the split-second between changing the number of speakers in a row on a screen width change */
-  const displayedSelectedIndex =
-    selectedIndex !== null
-      ? Math.min(selectedIndex, row.speakers.length - 1)
-      : null;
-
-  const displayedContent =
-    displayedSelectedIndex !== null
-      ? row.speakers[displayedSelectedIndex].bio
-      : null;
-
-  useEffect(() => {
-    console.log("displayedContent", displayedContent?.split("\n"));
-  }, [displayedContent]);
+export default function SpeakerCardRow({
+  speakers,
+  columns,
+  selectedId,
+  onSelect
+}: SpeakerCardRowProps) {
+  const selected = speakers.find((s) => s.speakerId === selectedId) ?? null;
 
   return (
-    <VStack
-      w={{
-        base: "80%",
-        lg: "80%"
-      }}
-      mb={10}
-      maxW="1000px"
-      position="relative"
-    >
-      <HStack
-        gap={{ base: speakerSelected ? 0 : 3, md: 3 }}
-        w={
-          row.speakers.length === 1 && !speakerSelected
-            ? {
-                base: "50%",
-                md: "33%"
-              }
-            : "100%"
-        }
-        maxW="1000px"
-        ml={{
-          base: speakerSelected ? 0 : 7,
-          md: 28
-        }}
-        transition={
-          row.speakers.length === 1 && !speakerSelected
-            ? "all 0.5s"
-            : "all 0.3s"
-        }
-        mb={{
-          base: 1,
-          md: 3
-        }}
-      >
-        {row.speakers.map((speaker, index) => {
-          const isKeynote = speaker.name.split(" ")[0] === "Sue";
-          return (
-            <Text
-              key={`speaker-name-${index}`}
-              display={"flex"}
-              flex={
-                displayedSelectedIndex !== null
-                  ? displayedSelectedIndex === index
-                    ? 1
-                    : 0
-                  : 1
-              }
-              color={row.color}
-              fontFamily="Inter, sans-serif"
-              fontSize={{ base: "lg", md: "2xl" }}
-              letterSpacing={"1px"}
-              fontWeight={"bold"}
-              transition={
-                row.speakers.length === 1 && !speakerSelected
-                  ? "all 0.5s"
-                  : "all 0.3s"
-              }
-              w={
-                displayedSelectedIndex !== null
-                  ? displayedSelectedIndex === index
-                    ? "100%"
-                    : "0"
-                  : "100%"
-              }
-              opacity={
-                displayedSelectedIndex !== null
-                  ? displayedSelectedIndex === index
-                    ? 1
-                    : 0
-                  : 1
-              }
-              isTruncated
-              minWidth="0"
-              overflow={"hidden"}
-              // Keynote speaker emphasis - keep name glow and star always
-              textShadow={isKeynote ? "0 0 1px rgba(255, 215, 0, 0.3)" : "none"}
-              _before={
-                isKeynote
-                  ? {
-                      content: '"★ "',
-                      color: "gold"
-                    }
-                  : undefined
-              }
-            >
-              {speaker.name}
-            </Text>
-          );
-        })}
-      </HStack>
-      <HStack
-        display="flex"
-        position="relative"
-        h={speakerSelected ? `${bioTextDisplayedHeight}px` : "150px"}
-        w={
-          row.speakers.length === 1 && !speakerSelected
-            ? {
-                base: "50%",
-                md: "33%"
-              }
-            : "100%"
-        }
-        maxW="1000px"
-        alignItems={"center"}
-        gap={displayedSelectedIndex !== null ? 0 : 5}
-        transition={
-          row.speakers.length === 1 && !speakerSelected
-            ? "all 0.5s"
-            : "all 0.3s"
-        }
-        ml={{
-          base: 0,
-          md: 0
-        }}
-      >
-        {row.speakers.map((speaker, index) => (
-          <SpeakerImageCard
-            key={`speaker-image-${index}`}
-            row={row}
-            index={index}
-            displayedSelectedIndex={displayedSelectedIndex}
-            speakerSelected={speakerSelected}
+    <Box w="100%">
+      <SimpleGrid columns={columns} spacingX={{ base: 4, md: 8, xl: 12 }}>
+        {speakers.map((speaker) => (
+          <SpeakerCard
+            key={speaker.speakerId}
             speaker={speaker}
-            customHeight={
-              speakerSelected ? `${bioTextDisplayedHeight}px` : "150px"
+            isSelected={speaker.speakerId === selectedId}
+            onClick={() =>
+              onSelect(
+                speaker.speakerId === selectedId ? null : speaker.speakerId
+              )
             }
-            handleSetSelectedIndex={handleSetSelectedIndex}
           />
         ))}
-        <Box
-          display={"flex"}
-          alignItems={"flex-start"}
-          justifyContent={"center"}
-          position="absolute"
-          top={2}
-          left={0}
-          right={0}
-          pl={{ base: "1rem", md: "3rem" }}
-          pr={{ base: 14, md: 16 }}
-          h={`${bioTextDisplayedHeight}px`}
-          textAlign="left"
-          color="white"
-          fontFamily="Inter, sans-serif"
-          fontSize={{
-            base: "md",
-            lg: "xl"
-          }}
-          opacity={displayedSelectedIndex !== null ? 1 : 0.5}
-          transition={
-            row.speakers.length === 1 && !speakerSelected
-              ? "all 0.5s"
-              : "all 0.3s"
-          }
-          zIndex={3}
-          pointerEvents={displayedSelectedIndex !== null ? undefined : "none"}
-          fontWeight={"semibold"}
-          overflow={"hidden"}
-        >
-          <Text ref={bioTextRef} whiteSpace={"pre-wrap"} m="5px" maxW="80%">
-            {displayedContent ? (
-              displayedContent.split("\\n").map((line, i) => (
-                <>
-                  {line}
-                  {i < displayedContent.split("\\n").length - 1 && (
-                    <>
-                      <br />
-                    </>
-                  )}
-                </>
-              ))
-            ) : (
-              <></>
-            )}
-          </Text>
-        </Box>
-        <Box
-          position="absolute"
-          top={2}
-          right={1}
-          zIndex={4}
-          opacity={displayedSelectedIndex !== null ? "1" : "0"}
-          display={displayedSelectedIndex !== null ? "flex" : "none"}
-        >
-          {/* Exit button, x icon */}
-          <IconButton
-            size="sm"
-            aria-label="Exit"
-            icon={<CloseIcon transform={{ md: "skewX(10deg)" }} />}
-            onClick={handleLeave}
-            transform={{ base: "", md: "skewX(-10deg)" }}
-            px={4}
-          />
-        </Box>
-      </HStack>
-      <HStack
-        gap={{
-          base: 2,
-          md: 0
-        }}
-        w={
-          row.speakers.length === 1 && !speakerSelected
-            ? {
-                base: "50%",
-                md: "33%"
-              }
-            : "100%"
-        }
-        maxW="1000px"
-        transition={
-          row.speakers.length === 1 && !speakerSelected
-            ? "all 0.5s"
-            : "all 0.3s"
-        }
-        mt={{
-          base: 0,
-          md: 2
-        }}
-        ml={{
-          base: -4,
-          md: 0
-        }}
-      >
-        {row.speakers.map((speaker, index) => {
-          const isKeynote = speaker.name.split(" ")[0] === "Sue";
-          return (
-            <Text
-              key={`speaker-title-${index}`}
-              display={"block"}
-              flex={
-                displayedSelectedIndex !== null
-                  ? displayedSelectedIndex === index
-                    ? 1
-                    : 0
-                  : 1
-              }
-              color={row.color}
-              fontFamily="Inter, sans-serif"
-              fontWeight={450}
-              letterSpacing={"1px"}
-              fontSize={{
-                base: "sm,",
-                md: "xl"
-              }}
-              h={displayedSelectedIndex ? "30px" : "100px"}
-              isTruncated={
-                isSmallScreen ? false : displayedSelectedIndex !== null
-              }
-              pl={speakerSelected ? (index === 0 ? 2 : 0) : 0}
-              pr={
-                displayedSelectedIndex !== null
-                  ? displayedSelectedIndex === index
-                    ? 3
-                    : 0
-                  : 3
-              }
-              minWidth="0"
-              transition={
-                row.speakers.length === 1 && !speakerSelected
-                  ? "all 0.5s"
-                  : "all 0.3s"
-              }
-              w={
-                displayedSelectedIndex !== null
-                  ? displayedSelectedIndex === index
-                    ? "100%"
-                    : "0"
-                  : "100%"
-              }
-              overflow={"hidden"}
-              // Keynote speaker emphasis - only show when not selected
-              textShadow={
-                isKeynote && !speakerSelected
-                  ? "0 0 8px rgba(255, 215, 0, 0.6)"
-                  : "none"
-              }
+      </SimpleGrid>
+      <Collapse in={selected !== null} animateOpacity>
+        {selected && (
+          <Box
+            position="relative"
+            mt={{ base: 4, md: 8 }}
+            mb={{ base: 2, md: 4 }}
+            bg={PANEL_BODY}
+            borderRadius="16px"
+            p={{ base: "16px", md: "28px 40px 28px 28px" }}
+          >
+            <Box
+              bg="white"
+              clipPath="polygon(28px 0, 100% 0, 100% 100%, 28px 100%, 0 calc(100% - 28px), 0 28px)"
+              border={`2px solid ${"#FAE2EE"}`}
+              p={{ base: "20px 20px 20px 40px", md: "28px 48px 28px 60px" }}
+              minH={{ base: "160px", md: "220px" }}
             >
-              {isKeynote && !speakerSelected
-                ? "Keynote Speaker"
-                : speaker.title}
-            </Text>
-          );
-        })}
-      </HStack>
-    </VStack>
+              <Text
+                fontFamily="'Geist Pixel', sans-serif"
+                textTransform="uppercase"
+                color={PANEL_BODY}
+                fontSize={{ base: "xl", md: "2xl" }}
+                mb={1}
+              >
+                {selected.name}
+              </Text>
+              {selected.title && (
+                <Text
+                  fontFamily="Inter, sans-serif"
+                  fontWeight={600}
+                  color="#B52E74"
+                  fontSize={{ base: "sm", md: "md" }}
+                  mb={3}
+                >
+                  {selected.title}
+                </Text>
+              )}
+              <Text
+                fontFamily="Inter, sans-serif"
+                color="#2A2A2A"
+                fontSize={{ base: "sm", md: "md" }}
+                whiteSpace="pre-wrap"
+              >
+                {selected.bio}
+              </Text>
+            </Box>
+            <IconButton
+              aria-label="Close speaker details"
+              icon={<CloseIcon boxSize="10px" />}
+              size="sm"
+              position="absolute"
+              top={{ base: 1, md: 2 }}
+              right={{ base: 1, md: 2 }}
+              variant="ghost"
+              color="#FDEFBA"
+              _hover={{ bg: "rgba(253,239,186,0.15)" }}
+              onClick={() => onSelect(null)}
+            />
+          </Box>
+        )}
+      </Collapse>
+    </Box>
   );
 }

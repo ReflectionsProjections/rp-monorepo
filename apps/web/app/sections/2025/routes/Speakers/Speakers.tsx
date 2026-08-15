@@ -1,5 +1,5 @@
-import SpeakerCardRow from "@app/sections/home/components/Speakers/SpeakerCardRow";
-import type { SpeakerRow } from "@app/sections/home/types/speaker-types";
+import SpeakerCardRow from "@app/sections/2025/components/Speakers/SpeakerCardRow";
+import type { SpeakerRow } from "@app/sections/2025/types/speaker-types";
 import { Text, useMediaQuery, VStack } from "@chakra-ui/react";
 import type { Speaker } from "@app";
 import { useCallback, useEffect, useMemo, useState } from "react";
