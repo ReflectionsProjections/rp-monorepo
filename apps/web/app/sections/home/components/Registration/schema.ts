@@ -86,7 +86,7 @@ const baseRegistrationSchema = yup.object({
 });
 
 export const finalRegistrationSchema = baseRegistrationSchema.shape({
-  hasResume: yup.boolean().required()
+  hasResume: yup.boolean().oneOf([true]).required()
 });
 
 export const registrationSchema = baseRegistrationSchema.shape({
@@ -95,6 +95,6 @@ export const registrationSchema = baseRegistrationSchema.shape({
   dietaryOther: yup.string().nonNullable(),
   allergiesOther: yup.string().nonNullable(),
   educationOther: yup.string().nonNullable(),
-  resume: yup.object().nullable(),
+  resume: yup.object().required("Please upload your resume"),
   over18: yup.boolean().oneOf([true], "You must be over 18").required()
 });
