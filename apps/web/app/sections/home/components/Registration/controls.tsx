@@ -487,9 +487,21 @@ const LINK_PLACEHOLDERS = [
   "Portfolio or personal site"
 ];
 
+/**
+ * Pasted links usually come without a scheme ("linkedin.com/in/…"), which the
+ * URL validator rejects — quietly add https:// instead of surfacing an error.
+ */
+const normalizeLink = (raw: string) => {
+  const trimmed = raw.trim();
+  return trimmed === "" || /^([a-z][a-z0-9+.-]*:)?\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+};
+
 type LinksInputProps = {
   value: string[];
   onChange: (next: string[]) => void;
+  error?: string | (string | undefined)[];
 };
 
 /**
@@ -497,7 +509,7 @@ type LinksInputProps = {
  * Formik value only ever holds the non-empty entries, which is what the API
  * schema (an array of up to 3 URLs) expects.
  */
-export const LinksInput = ({ value, onChange }: LinksInputProps) => {
+export const LinksInput = ({ value, onChange, error }: LinksInputProps) => {
   const [slots, setSlots] = useState<string[]>(() => [
     value[0] ?? "",
     value[1] ?? "",
@@ -510,17 +522,42 @@ export const LinksInput = ({ value, onChange }: LinksInputProps) => {
     onChange(updated.map((slot) => slot.trim()).filter((slot) => slot !== ""));
   };
 
+  // The Formik value (and so yup's error array) holds only the non-empty
+  // slots, so a slot's error sits at its position among the non-empty ones.
+  const errorFor = (index: number): string | undefined => {
+    if (!Array.isArray(error) || slots[index].trim() === "") {
+      return undefined;
+    }
+    const filteredIndex = slots
+      .slice(0, index)
+      .filter((slot) => slot.trim() !== "").length;
+    const message: unknown = error[filteredIndex];
+    return typeof message === "string" ? message : undefined;
+  };
+
   return (
     <VStack spacing="10px" align="stretch">
       {slots.map((slot, index) => (
-        <WizardInput
-          key={index}
-          value={slot}
-          maxLength={50}
-          placeholder={LINK_PLACEHOLDERS[index]}
-          onChange={(event) => update(index, event.target.value)}
-        />
+        <Box key={index}>
+          <WizardInput
+            value={slot}
+            maxLength={50}
+            placeholder={LINK_PLACEHOLDERS[index]}
+            onChange={(event) => update(index, event.target.value)}
+            onBlur={() => update(index, normalizeLink(slot))}
+          />
+          {errorFor(index) !== undefined && (
+            <Text fontSize="12.5px" color="#FFB4D1" mt="8px" role="alert">
+              {errorFor(index)}
+            </Text>
+          )}
+        </Box>
       ))}
+      {typeof error === "string" && (
+        <Text fontSize="12.5px" color="#FFB4D1" role="alert">
+          {error}
+        </Text>
+      )}
     </VStack>
   );
 };
