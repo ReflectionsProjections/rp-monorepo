@@ -103,8 +103,9 @@ export const FieldLabel = ({ children, isRequired }: FieldLabelProps) => (
 
 /**
  * Inline validation message for a Formik field, shown once it's been touched.
- * Array fields (majors, personalLinks…) can hold nested error objects, so any
- * non-string error falls back to a generic message.
+ * Array fields (majors…) can hold nested error objects, so any non-string
+ * error falls back to a generic message. personalLinks renders its own
+ * per-slot errors inside LinksInput instead.
  */
 export const FieldError = ({ name }: { name: string }) => {
   const { errors, touched } = useFormikContext<Record<string, unknown>>();

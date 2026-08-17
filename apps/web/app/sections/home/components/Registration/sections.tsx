@@ -519,7 +519,8 @@ export const InterestsSection = () => {
 };
 
 export const CareerSection = () => {
-  const { values, setFieldValue } = useFormikContext<RegistrationValues>();
+  const { values, setFieldValue, errors, touched } =
+    useFormikContext<RegistrationValues>();
 
   return (
     <>
@@ -550,8 +551,8 @@ export const CareerSection = () => {
         <LinksInput
           value={values.personalLinks}
           onChange={(next) => void setFieldValue("personalLinks", next)}
+          error={touched.personalLinks ? errors.personalLinks : undefined}
         />
-        <FieldError name="personalLinks" />
       </Box>
     </>
   );
