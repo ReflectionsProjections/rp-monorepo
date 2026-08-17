@@ -394,6 +394,12 @@ describe("POST /registration/submit", () => {
             .expect(StatusCodes.BAD_REQUEST);
     });
 
+    it("should return 400 when submitted without a resume", async () => {
+        await post("/registration/submit", Role.enum.USER)
+            .send({ ...VALID_REGISTRATION, hasResume: false })
+            .expect(StatusCodes.BAD_REQUEST);
+    });
+
     it("should return 400 when array limits are exceeded", async () => {
         const tooManyAllergies = {
             ...VALID_REGISTRATION,

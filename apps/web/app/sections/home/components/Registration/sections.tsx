@@ -145,14 +145,14 @@ export const SECTIONS: SectionMeta[] = [
 /**
  * Which Formik fields each step must pass before Continue advances. Optional
  * questions are omitted; personalLinks is listed so a malformed URL blocks the
- * final step.
+ * final step, and resume so a missing upload does too.
  */
 export const STEP_FIELDS: (keyof RegistrationValues)[][] = [
   ["name", "gender"],
   [],
   ["school", "educationLevel", "majors", "graduationYear"],
   ["howDidYouHear", "tags"],
-  ["personalLinks"]
+  ["personalLinks", "resume"]
 ];
 
 /** Drives the skyline towers and the "% complete" readout. */
@@ -177,7 +177,7 @@ export const sectionComplete = (
     case 3:
       return values.howDidYouHear.length > 0 && values.tags.length > 0;
     case 4:
-      return values.opportunities.length > 0 || values.resume !== null;
+      return values.resume !== null;
     default:
       return false;
   }
@@ -535,11 +535,12 @@ export const CareerSection = () => {
       </Box>
 
       <Box>
-        <FieldLabel>Resume</FieldLabel>
+        <FieldLabel isRequired>Resume</FieldLabel>
         <FileDrop
           value={values.resume}
           onChange={(next) => void setFieldValue("resume", next)}
         />
+        <FieldError name="resume" />
         <Text fontSize="12.5px" lineHeight="1.6" color={MUTED} mt="11px">
           Your resume will be shared with our corporate sponsors. You may return
           to this page at any time to update it.

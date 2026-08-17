@@ -77,7 +77,11 @@ const RegistrationValidator = registry.register(
             name: z.string().max(50),
             opportunities: z.array(z.string().max(50)).max(10),
             personalLinks: z.array(z.string().max(50)).max(3),
-            hasResume: z.boolean(),
+            // A resume is mandatory to register; the file itself is uploaded
+            // to S3 separately once the registration is accepted.
+            hasResume: z.literal(true, {
+                errorMap: () => ({ message: "A resume is required" }),
+            }),
             school: z.string().max(50),
             isInterestedMechMania: z.boolean(),
             isInterestedPuzzleBang: z.boolean(),
