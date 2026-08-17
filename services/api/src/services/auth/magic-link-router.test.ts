@@ -314,6 +314,34 @@ describe("POST /auth/magic-links/verify", () => {
         // attendee registration.
         expect(payload.tokenType).toBe("access");
         expect(payload.roles).toEqual([Role.Enum.STAFF]);
+        // Staff never fill in attendee registration, so the roster name is
+        // the only source for the fresh account's displayName.
+        expect(payload.displayName).toBe("Unregistered Staff");
+    });
+
+    it("keeps an existing displayName over the roster name", async () => {
+        await SupabaseDB.AUTH_INFO.insert({
+            userId: "renamed-staff",
+            email: "renamed@example.com",
+            displayName: "Chosen Name",
+        });
+        await SupabaseDB.STAFF.insert({
+            email: "renamed@example.com",
+            name: "Roster Name",
+            team: "DEV",
+            attendances: {},
+        });
+
+        const token = await issueWebLink("renamed@example.com");
+        const response = await post("/auth/magic-links/verify")
+            .send({ token, client: "web" })
+            .expect(StatusCodes.OK);
+
+        const payload = jsonwebtoken.verify(
+            response.body.token,
+            Config.JWT_SIGNING_SECRET
+        ) as JwtPayload;
+        expect(payload.displayName).toBe("Chosen Name");
     });
 
     it("lets rostered staff without an account sign in on mobile", async () => {

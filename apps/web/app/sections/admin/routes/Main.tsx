@@ -35,7 +35,7 @@ const MainContent = () => {
     api
       .get("/auth/info")
       .then((response) => {
-        setDisplayName(response.data.displayName);
+        setDisplayName(response.data.displayName ?? "");
         setRoles(response.data.roles);
         setLoading(false);
       })
