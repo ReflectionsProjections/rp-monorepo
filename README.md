@@ -25,6 +25,7 @@ Before starting services:
 
 - Reach out to your Dev Chairs for the shared `.env`.
 - Place it at the repo root as `.env`.
+- Install root formatting dependencies with `npm install`.
 - Install dependencies in `services/api`, `apps/web`, and `apps/mobile` with `yarn`.
 
 Web apps load their local `.env` first, then fall back to the root `.env`. The API and local infrastructure also use the root `.env`.
@@ -103,13 +104,21 @@ cd apps/web && yarn verify
 cd apps/mobile && yarn verify
 ```
 
+Formatting is owned by the monorepo root:
+
+```bash
+npm run format
+npm run format:check
+```
+
 ## CI
 
 GitHub Actions live in `.github/workflows/ci.yml`.
 
 - Root changes run the root sanity checks
-- `services/api/**` changes run API build, lint, format, and tests against the root DB/tooling stack
-- `apps/web/**` changes run the web verify and format checks
+- `services/api/**` changes run API build, lint, and tests against the root DB/tooling stack
+- `apps/web/**` changes run the web build, type-check, and lint checks
 - `apps/mobile/**` changes run the mobile verify checks
+- Every change runs the shared root formatting check
 
 The final `ci` job is the branch-protection surface for pull requests.

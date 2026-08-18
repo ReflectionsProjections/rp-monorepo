@@ -1,28 +1,28 @@
-import { Schema } from "mongoose";
-import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
-import { registry } from "../../middleware/openapi-registry";
+import { Schema } from 'mongoose';
+import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
+import { registry } from '../../middleware/openapi-registry';
 
 export const EventType = z.enum([
-    "SPEAKER",
-    "CORPORATE",
-    "SPECIAL",
-    "PARTNERS",
-    "MEALS",
-    "CHECKIN",
+    'SPEAKER',
+    'CORPORATE',
+    'SPECIAL',
+    'PARTNERS',
+    'MEALS',
+    'CHECKIN',
 ]);
 
 export type InternalEvent = z.infer<typeof internalEventView>;
 export type EventInputPayload = z.infer<typeof eventInfoValidator>;
 
 export const externalEventView = registry.register(
-    "ExternalEventView",
+    'ExternalEventView',
     z
         .object({
             eventId: z.coerce.string().default(() => uuidv4()),
             name: z.string(),
-            startTime: z.coerce.date().openapi({ format: "date-time" }),
-            endTime: z.coerce.date().openapi({ format: "date-time" }),
+            startTime: z.coerce.date().openapi({ format: 'date-time' }),
+            endTime: z.coerce.date().openapi({ format: 'date-time' }),
             points: z.number().min(0),
             description: z.string(),
             isVirtual: z.boolean(),
@@ -31,47 +31,47 @@ export const externalEventView = registry.register(
             eventType: EventType,
             tags: z.array(z.string()).default([]),
         })
-        .openapi("ExternalEventView", {
+        .openapi('ExternalEventView', {
             example: {
-                eventId: "3a72d491-c2f9-4baf-af5a-55713621d978",
-                name: "Test Event",
-                startTime: new Date("2025-03-31T19:30:00Z"),
-                endTime: new Date("2025-03-31T23:30:00Z"),
+                eventId: '3a72d491-c2f9-4baf-af5a-55713621d978',
+                name: 'Test Event',
+                startTime: new Date('2025-03-31T19:30:00Z'),
+                endTime: new Date('2025-03-31T23:30:00Z'),
                 points: 0,
-                description: "Awesome test event",
+                description: 'Awesome test event',
                 isVirtual: false,
-                imageUrl: "example.com/image.png",
-                location: "Siebel Center for CS",
+                imageUrl: 'example.com/image.png',
+                location: 'Siebel Center for CS',
                 eventType: EventType.Enum.SPEAKER,
                 tags: [],
             },
-        })
+        }),
 );
 
 export const internalEventView = registry.register(
-    "InternalEventView",
+    'InternalEventView',
     externalEventView
         .extend({
             attendanceCount: z.number(),
             isVisible: z.boolean(),
         })
-        .openapi("InternalEventView", {
+        .openapi('InternalEventView', {
             example: {
-                eventId: "3a72d491-c2f9-4baf-af5a-55713621d978",
-                name: "Test Event",
-                startTime: new Date("2025-03-31T19:30:00Z"),
-                endTime: new Date("2025-03-31T23:30:00Z"),
+                eventId: '3a72d491-c2f9-4baf-af5a-55713621d978',
+                name: 'Test Event',
+                startTime: new Date('2025-03-31T19:30:00Z'),
+                endTime: new Date('2025-03-31T23:30:00Z'),
                 points: 0,
-                description: "Cool hidden event",
+                description: 'Cool hidden event',
                 isVirtual: false,
-                imageUrl: "example.com/image.png",
-                location: "Siebel Center for CS",
+                imageUrl: 'example.com/image.png',
+                location: 'Siebel Center for CS',
                 eventType: EventType.Enum.SPEAKER,
                 tags: [],
                 attendanceCount: 0,
                 isVisible: false,
             },
-        })
+        }),
 );
 
 // ApiResponseSchema objects used to create expected internal and external event objects
@@ -80,39 +80,33 @@ const eventTimeExtension = {
     endTime: z.string(),
 };
 
-export const externalEventApiResponseSchema =
-    externalEventView.extend(eventTimeExtension);
-export type ExternalEventApiResponse = z.infer<
-    typeof externalEventApiResponseSchema
->;
+export const externalEventApiResponseSchema = externalEventView.extend(eventTimeExtension);
+export type ExternalEventApiResponse = z.infer<typeof externalEventApiResponseSchema>;
 
-export const internalEventApiResponseSchema =
-    internalEventView.extend(eventTimeExtension);
-export type InternalEventApiResponse = z.infer<
-    typeof internalEventApiResponseSchema
->;
+export const internalEventApiResponseSchema = internalEventView.extend(eventTimeExtension);
+export type InternalEventApiResponse = z.infer<typeof internalEventApiResponseSchema>;
 
 export const eventInfoValidator = registry.register(
-    "EventInfoValidator",
+    'EventInfoValidator',
     internalEventView
         .omit({ eventId: true })
         .strict()
-        .openapi("EventInfoValidator", {
+        .openapi('EventInfoValidator', {
             example: {
-                name: "Test Event",
-                startTime: new Date("2025-03-31T19:30:00Z"),
-                endTime: new Date("2025-03-31T23:30:00Z"),
+                name: 'Test Event',
+                startTime: new Date('2025-03-31T19:30:00Z'),
+                endTime: new Date('2025-03-31T23:30:00Z'),
                 points: 0,
-                description: "Awesome test event",
+                description: 'Awesome test event',
                 isVirtual: false,
-                imageUrl: "example.com/image.png",
-                location: "Siebel Center for CS",
-                eventType: "SPEAKER",
+                imageUrl: 'example.com/image.png',
+                location: 'Siebel Center for CS',
+                eventType: 'SPEAKER',
                 tags: [],
                 attendanceCount: 0,
                 isVisible: true,
             },
-        })
+        }),
 );
 
 export const EventSchema = new Schema({
@@ -172,13 +166,13 @@ export const EventSchema = new Schema({
 export const EventAttendanceSchema = new Schema({
     eventId: {
         type: String,
-        ref: "Event",
+        ref: 'Event',
         required: true,
     },
     attendees: [
         {
             type: String,
-            ref: "Attendee",
+            ref: 'Attendee',
             required: true,
         },
     ],

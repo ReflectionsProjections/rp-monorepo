@@ -68,8 +68,10 @@ Run commands from `apps/web`:
 - `yarn preview`
 - `yarn type-check`
 - `yarn lint`
-- `yarn format:check`
 - `yarn verify`
+
+Run repository-wide formatting from the monorepo root with `npm run format` or
+`npm run format:check`.
 
 ## Editing Guidance
 

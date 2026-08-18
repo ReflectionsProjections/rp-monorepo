@@ -1,0 +1,17 @@
+{
+    "name": "rp-monorepo",
+    "private": true,
+    "scripts": {
+        "format": "prettier . --write",
+        "format:check": "prettier . --check",
+        "prepare": "husky"
+    },
+    "devDependencies": {
+        "husky": "^9.1.7",
+        "lint-staged": "^15.5.1",
+        "prettier": "^3.5.3"
+    },
+    "lint-staged": {
+        "**/*": "prettier --ignore-unknown --write"
+    }
+}

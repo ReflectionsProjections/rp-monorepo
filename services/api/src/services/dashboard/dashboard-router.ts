@@ -1,15 +1,15 @@
-import express, { Request, Response } from "express";
-import { WebSocket } from "ws";
+import express, { Request, Response } from 'express';
+import { WebSocket } from 'ws';
 import {
     DashboardMessageValidator,
     Display,
     DisplayId,
     DisplayMetadataSchema,
-} from "./dashboard-schema";
-import Config from "../../config";
-import { StatusCodes } from "http-status-codes";
-import RoleChecker from "../../middleware/role-checker";
-import { Role } from "../auth/auth-models";
+} from './dashboard-schema';
+import Config from '../../config';
+import { StatusCodes } from 'http-status-codes';
+import RoleChecker from '../../middleware/role-checker';
+import { Role } from '../auth/auth-models';
 
 const dashboardRouter = express.Router();
 const displays: Display[] = [];
@@ -34,14 +34,14 @@ export function handleWs(ws: WebSocket) {
     };
     displays[id] = display;
 
-    ws.on("message", (message) => {
+    ws.on('message', (message) => {
         try {
             display.lastUpdate = Date.now();
             const json = JSON.parse(message.toString());
             const metadata = DisplayMetadataSchema.parse(json);
             display.metadata = metadata;
         } catch {
-            ws.send("Invalid message");
+            ws.send('Invalid message');
             ws.close(1008); // 1008 = policy violation
         }
     });
@@ -55,14 +55,14 @@ export function handleWs(ws: WebSocket) {
 
         ws.send(
             JSON.stringify({
-                type: "ping",
-            })
+                type: 'ping',
+            }),
         );
     }
 
     const interval = setInterval(pingForUpdate, Config.DASHBOARD_PING_EVERY_MS);
 
-    ws.on("close", () => {
+    ws.on('close', () => {
         clearInterval(interval);
         delete displays[id];
         delete websockets[id];
@@ -93,7 +93,7 @@ export function handleWs(ws: WebSocket) {
  *     security:
  *       - bearerAuth: []
  */
-dashboardRouter.get("/", RoleChecker([Role.Enum.ADMIN]), (req, res) => {
+dashboardRouter.get('/', RoleChecker([Role.Enum.ADMIN]), (req, res) => {
     // Displays can contain gaps - this endpoint just returns each display
     const displaysWithoutSpaces = displays.filter((display) => display);
     return res.status(StatusCodes.OK).send(displaysWithoutSpaces);
@@ -104,18 +104,14 @@ dashboardRouter.get("/", RoleChecker([Role.Enum.ADMIN]), (req, res) => {
 // and returns a request handler
 function send(message: object | ((id: number) => object)) {
     return (req: Request, res: Response) => {
-        const target =
-            "id" in req.params ? DisplayId.parse(req.params["id"]) : undefined;
+        const target = 'id' in req.params ? DisplayId.parse(req.params['id']) : undefined;
         if (target !== undefined) {
             const ws = websockets[target];
             if (!ws) {
-                return res
-                    .status(StatusCodes.NOT_FOUND)
-                    .send({ error: "NotFound" });
+                return res.status(StatusCodes.NOT_FOUND).send({ error: 'NotFound' });
             }
 
-            const toSend =
-                typeof message === "object" ? message : message(target);
+            const toSend = typeof message === 'object' ? message : message(target);
             ws.send(JSON.stringify(toSend));
 
             return res.status(StatusCodes.OK).send({ sentTo: [target] });
@@ -124,7 +120,7 @@ function send(message: object | ((id: number) => object)) {
         const sentTo = [];
         for (const [i, ws] of websockets.entries()) {
             if (!ws) continue;
-            const toSend = typeof message === "object" ? message : message(i);
+            const toSend = typeof message === 'object' ? message : message(i);
             sentTo.push(i);
             ws.send(JSON.stringify(toSend));
         }
@@ -154,12 +150,12 @@ function send(message: object | ((id: number) => object)) {
  *       - bearerAuth: []
  */
 dashboardRouter.post(
-    "/identify",
+    '/identify',
     RoleChecker([Role.Enum.ADMIN]),
     send((id) => ({
-        type: "message",
+        type: 'message',
         message: id.toString(),
-    }))
+    })),
 );
 /**
  * @swagger
@@ -196,12 +192,12 @@ dashboardRouter.post(
  *       - bearerAuth: []
  */
 dashboardRouter.post(
-    "/identify/:id",
+    '/identify/:id',
     RoleChecker([Role.Enum.ADMIN]),
     send((id) => ({
-        type: "message",
+        type: 'message',
         message: id.toString(),
-    }))
+    })),
 );
 
 /**
@@ -224,11 +220,7 @@ dashboardRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-dashboardRouter.post(
-    "/reload",
-    RoleChecker([Role.Enum.ADMIN]),
-    send({ type: "reload" })
-);
+dashboardRouter.post('/reload', RoleChecker([Role.Enum.ADMIN]), send({ type: 'reload' }));
 /**
  * @swagger
  * /dashboard/reload/{id}:
@@ -263,11 +255,7 @@ dashboardRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-dashboardRouter.post(
-    "/reload/:id",
-    RoleChecker([Role.Enum.ADMIN]),
-    send({ type: "reload" })
-);
+dashboardRouter.post('/reload/:id', RoleChecker([Role.Enum.ADMIN]), send({ type: 'reload' }));
 
 /**
  * @swagger
@@ -295,10 +283,10 @@ dashboardRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-dashboardRouter.post("/message", RoleChecker([Role.Enum.ADMIN]), (req, res) => {
+dashboardRouter.post('/message', RoleChecker([Role.Enum.ADMIN]), (req, res) => {
     const message = DashboardMessageValidator.parse(req.body);
     return send({
-        type: "message",
+        type: 'message',
         ...message,
     })(req, res);
 });
@@ -342,16 +330,12 @@ dashboardRouter.post("/message", RoleChecker([Role.Enum.ADMIN]), (req, res) => {
  *     security:
  *       - bearerAuth: []
  */
-dashboardRouter.post(
-    "/message/:id",
-    RoleChecker([Role.Enum.ADMIN]),
-    (req, res) => {
-        const message = DashboardMessageValidator.parse(req.body);
-        return send({
-            type: "message",
-            ...message,
-        })(req, res);
-    }
-);
+dashboardRouter.post('/message/:id', RoleChecker([Role.Enum.ADMIN]), (req, res) => {
+    const message = DashboardMessageValidator.parse(req.body);
+    return send({
+        type: 'message',
+        ...message,
+    })(req, res);
+});
 
 export default dashboardRouter;

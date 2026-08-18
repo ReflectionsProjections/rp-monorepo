@@ -1,7 +1,7 @@
-import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
-import { StatusCodes } from "http-status-codes";
-import { z } from "zod";
-import { Config } from "../config";
+import jsonwebtoken, { TokenExpiredError } from 'jsonwebtoken';
+import { StatusCodes } from 'http-status-codes';
+import { z } from 'zod';
+import { Config } from '../config';
 
 export type JwtVerificationResult<Validator extends z.ZodTypeAny> =
     | { success: true; payload: z.infer<Validator> }
@@ -12,7 +12,7 @@ export type JwtVerificationResult<Validator extends z.ZodTypeAny> =
 // JwtPayloadValidator rejects setup tokens).
 export function verifyJwtPayload<Validator extends z.ZodTypeAny>(
     jwt: string,
-    validator: Validator
+    validator: Validator,
 ): JwtVerificationResult<Validator> {
     let payloadData: unknown;
     try {
@@ -22,13 +22,13 @@ export function verifyJwtPayload<Validator extends z.ZodTypeAny>(
             return {
                 success: false,
                 status: StatusCodes.FORBIDDEN,
-                error: "ExpiredJWT",
+                error: 'ExpiredJWT',
             };
         }
         return {
             success: false,
             status: StatusCodes.UNAUTHORIZED,
-            error: "InvalidJWT",
+            error: 'InvalidJWT',
         };
     }
 
@@ -37,7 +37,7 @@ export function verifyJwtPayload<Validator extends z.ZodTypeAny>(
         return {
             success: false,
             status: StatusCodes.UNAUTHORIZED,
-            error: "InvalidJWT",
+            error: 'InvalidJWT',
         };
     }
 

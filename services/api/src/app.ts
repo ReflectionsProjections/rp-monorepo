@@ -1,53 +1,50 @@
-import express, { Request, Response, RequestHandler } from "express";
-import { StatusCodes } from "http-status-codes";
-import { Config, EnvironmentEnum } from "./config";
-import { injectOneOfExamples, isTest } from "./utilities";
-import "./firebase";
-import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
+import express, { Request, Response, RequestHandler } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { Config, EnvironmentEnum } from './config';
+import { injectOneOfExamples, isTest } from './utilities';
+import './firebase';
+import jsonwebtoken, { TokenExpiredError } from 'jsonwebtoken';
 
 // import databaseMiddleware from "./middleware/database-middleware";
 // import customCors from "./middleware/cors-middleware";
-import morgan from "morgan";
-import bodyParser from "body-parser";
-import errorHandler from "./middleware/error-handler";
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+import errorHandler from './middleware/error-handler';
 
-import attendeeRouter from "./services/attendee/attendee-router";
-import staffRouter from "./services/staff/staff-router";
-import checkinRouter from "./services/checkin/checkin-router";
+import attendeeRouter from './services/attendee/attendee-router';
+import staffRouter from './services/staff/staff-router';
+import checkinRouter from './services/checkin/checkin-router';
 import dashboardRouter, {
     handleWs as handleWsDashboard,
-} from "./services/dashboard/dashboard-router";
-import authRouter from "./services/auth/auth-router";
-import eventsRouter from "./services/events/events-router";
-import notificationsRouter from "./services/notifications/notifications-router";
-import registrationRouter from "./services/registration/registration-router";
-import s3Router from "./services/s3/s3-router";
-import statsRouter from "./services/stats/stats-router";
-import subscriptionRouter from "./services/subscription/subscription-router";
-import speakersRouter from "./services/speakers/speakers-router";
-import puzzlebangRouter from "./services/puzzlebang/puzzlebang-router";
-import meetingsRouter from "./services/meetings/meetings-router";
-import shiftsRouter from "./services/shifts/shifts-router";
-import leaderboardRouter from "./services/leaderboard/leaderboard-router";
+} from './services/dashboard/dashboard-router';
+import authRouter from './services/auth/auth-router';
+import eventsRouter from './services/events/events-router';
+import notificationsRouter from './services/notifications/notifications-router';
+import registrationRouter from './services/registration/registration-router';
+import s3Router from './services/s3/s3-router';
+import statsRouter from './services/stats/stats-router';
+import subscriptionRouter from './services/subscription/subscription-router';
+import speakersRouter from './services/speakers/speakers-router';
+import puzzlebangRouter from './services/puzzlebang/puzzlebang-router';
+import meetingsRouter from './services/meetings/meetings-router';
+import shiftsRouter from './services/shifts/shifts-router';
+import leaderboardRouter from './services/leaderboard/leaderboard-router';
 
-import cors from "cors";
-import { JwtPayloadValidator } from "./services/auth/auth-models";
-import swaggerJsdoc from "swagger-jsdoc";
-import { registry } from "./middleware/openapi-registry";
-import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
-import type { OpenAPIObject } from "openapi3-ts/oas30";
-import swaggerUi from "swagger-ui-express";
-import { createServer } from "http";
-import { WebSocketServer } from "ws";
-import path from "path";
+import cors from 'cors';
+import { JwtPayloadValidator } from './services/auth/auth-models';
+import swaggerJsdoc from 'swagger-jsdoc';
+import { registry } from './middleware/openapi-registry';
+import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
+import type { OpenAPIObject } from 'openapi3-ts/oas30';
+import swaggerUi from 'swagger-ui-express';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import path from 'path';
 
 const app = express();
 
 // only if we aren't running in a testing environment, generate api docs at /docs
-if (
-    Config.ENV !== EnvironmentEnum.TESTING &&
-    Config.ENV !== EnvironmentEnum.GITHUB_CI
-) {
+if (Config.ENV !== EnvironmentEnum.TESTING && Config.ENV !== EnvironmentEnum.GITHUB_CI) {
     // TESTING NOTE: currently, tests are not run on docs generation. if tests are ever written for
     // the docs endpoint, you (may) have to lazy initialize the openapi generation -- wrap the creation
     // of swaggerSpec in a function and call it before swaggerUi.setup() IN the app.use("/docs") statement.
@@ -61,12 +58,11 @@ if (
     // set up swagger-ui docs
     const swaggerOptions: swaggerJsdoc.Options = {
         definition: {
-            openapi: "3.0.0",
+            openapi: '3.0.0',
             info: {
-                title: "R|P API",
-                version: "1.0.0",
-                description:
-                    "Documentation for the Reflections|Projections API",
+                title: 'R|P API',
+                version: '1.0.0',
+                description: 'Documentation for the Reflections|Projections API',
             },
             // configures the "Authorize" button for JWTs
             components: {
@@ -74,9 +70,9 @@ if (
                 securitySchemes: {
                     // defines available auth mechanisms
                     bearerAuth: {
-                        type: "http",
-                        scheme: "bearer",
-                        bearerFormat: "JWT",
+                        type: 'http',
+                        scheme: 'bearer',
+                        bearerFormat: 'JWT',
                     },
                 },
             },
@@ -88,7 +84,7 @@ if (
             ],
         },
         // tells Swagger to look for JSDoc comments in all TypeScript files inside the services folder
-        apis: [path.join(__dirname, "./services/**/*-router.ts")],
+        apis: [path.join(__dirname, './services/**/*-router.ts')],
     };
 
     const swaggerSpec = swaggerJsdoc(swaggerOptions) as OpenAPIObject;
@@ -98,20 +94,20 @@ if (
     injectOneOfExamples(swaggerSpec);
 
     app.use(
-        "/docs",
+        '/docs',
         swaggerUi.serve as unknown as RequestHandler,
-        swaggerUi.setup(swaggerSpec) as unknown as RequestHandler
+        swaggerUi.setup(swaggerSpec) as unknown as RequestHandler,
     );
 }
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-app.enable("trust proxy");
+app.enable('trust proxy');
 
 // to prevent server-side caching/returning status code 200
 // (we can remove this later)
-app.disable("etag");
+app.disable('etag');
 
 // app.use(rateLimiter);
 
@@ -120,32 +116,29 @@ app.use(cors());
 
 // Logs
 if (Config.ENV != EnvironmentEnum.TESTING) {
-    morgan.token("userid", (req, _res) => {
+    morgan.token('userid', (req, _res) => {
         const jwt = req.headers.authorization;
         if (!jwt) {
-            return "unauthorized";
+            return 'unauthorized';
         }
 
         try {
-            const payloadData = jsonwebtoken.verify(
-                jwt,
-                Config.JWT_SIGNING_SECRET
-            );
+            const payloadData = jsonwebtoken.verify(jwt, Config.JWT_SIGNING_SECRET);
             const payload = JwtPayloadValidator.parse(payloadData);
             return payload.userId;
         } catch (error) {
             if (error instanceof TokenExpiredError) {
-                return "expired-token";
+                return 'expired-token';
             }
 
-            return "invalid-token";
+            return 'invalid-token';
         }
     });
 
     app.use(
         morgan(
-            ':remote-addr - :remote-user :userid ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
-        )
+            ':remote-addr - :remote-user :userid ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
+        ),
     );
 }
 
@@ -156,66 +149,66 @@ app.use(bodyParser.json());
 // app.use(databaseMiddleware);
 
 // API routes
-app.use("/attendee", attendeeRouter);
-app.use("/staff", staffRouter);
-app.use("/auth", authRouter);
-app.use("/checkin", checkinRouter);
-app.use("/dashboard", dashboardRouter);
-app.use("/events", eventsRouter);
-app.use("/leaderboard", leaderboardRouter);
-app.use("/notifications", notificationsRouter);
-app.use("/puzzlebang", puzzlebangRouter);
-app.use("/registration", registrationRouter);
-app.use("/s3", s3Router);
-app.use("/stats", statsRouter);
-app.use("/subscription", subscriptionRouter);
-app.use("/speakers", speakersRouter);
-app.use("/meetings", meetingsRouter);
-app.use("/shifts", shiftsRouter);
+app.use('/attendee', attendeeRouter);
+app.use('/staff', staffRouter);
+app.use('/auth', authRouter);
+app.use('/checkin', checkinRouter);
+app.use('/dashboard', dashboardRouter);
+app.use('/events', eventsRouter);
+app.use('/leaderboard', leaderboardRouter);
+app.use('/notifications', notificationsRouter);
+app.use('/puzzlebang', puzzlebangRouter);
+app.use('/registration', registrationRouter);
+app.use('/s3', s3Router);
+app.use('/stats', statsRouter);
+app.use('/subscription', subscriptionRouter);
+app.use('/speakers', speakersRouter);
+app.use('/meetings', meetingsRouter);
+app.use('/shifts', shiftsRouter);
 
 const status = (req: Request, res: Response) => {
     return res.status(StatusCodes.OK).send({
         ok: true,
-        message: "API is alive!",
+        message: 'API is alive!',
         timestamp: new Date().toISOString(),
         environment: Config.ENV,
     });
 };
-app.get("/status", status);
-app.get("/", status);
+app.get('/status', status);
+app.get('/', status);
 
 app.use((req, res) =>
     res.status(StatusCodes.NOT_FOUND).send({
-        error: "EndpointNotFound",
-    })
+        error: 'EndpointNotFound',
+    }),
 );
 
 app.use(errorHandler);
 
 // Websocket handling
-wss.on("connection", (ws, request) => {
+wss.on('connection', (ws, request) => {
     try {
-        if (request.url === "/dashboard") {
+        if (request.url === '/dashboard') {
             handleWsDashboard(ws);
         } else {
-            ws.send("Unknown url");
+            ws.send('Unknown url');
             ws.close(1008); // 1008 = policy violation
         }
     } catch (err) {
-        console.error("WebSocket connection handle issue:", err);
+        console.error('WebSocket connection handle issue:', err);
         ws.close(1008); // 1008 = policy violation
     }
 });
 
-wss.on("error", (err) => {
-    console.error("WebSocket server issue:", err);
+wss.on('error', (err) => {
+    console.error('WebSocket server issue:', err);
 });
 
 // Start the server
 if (!isTest()) {
     server.listen(Config.DEFAULT_APP_PORT, async () => {
-        process.send?.("ready");
-        console.log("Server is listening on port 3000...");
+        process.send?.('ready');
+        console.log('Server is listening on port 3000...');
     });
 }
 export { app, server };

@@ -1,12 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-import { JwtPayloadValidator, Role } from "../services/auth/auth-models";
-import { StatusCodes } from "http-status-codes";
-import { verifyJwtPayload } from "./jwt-verifier";
+import { NextFunction, Request, Response } from 'express';
+import { JwtPayloadValidator, Role } from '../services/auth/auth-models';
+import { StatusCodes } from 'http-status-codes';
+import { verifyJwtPayload } from './jwt-verifier';
 
-export default function RoleChecker(
-    requiredRoles: Role[],
-    weakVerification: boolean = false
-) {
+export default function RoleChecker(requiredRoles: Role[], weakVerification: boolean = false) {
     return function (req: Request, res: Response, next: NextFunction) {
         const jwt = req.headers.authorization;
 
@@ -15,9 +12,7 @@ export default function RoleChecker(
                 return next();
             }
 
-            return res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({ error: "NoJWT" });
+            return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'NoJWT' });
         }
 
         const result = verifyJwtPayload(jwt, JwtPayloadValidator);
@@ -37,13 +32,11 @@ export default function RoleChecker(
             return next();
         }
 
-        const matchingRoles = userRoles.filter((role) =>
-            requiredRoles.includes(role)
-        );
+        const matchingRoles = userRoles.filter((role) => requiredRoles.includes(role));
         if (matchingRoles.length == 0) {
             return res.status(StatusCodes.FORBIDDEN).send({
-                error: "Forbidden",
-                message: `You require one of the following roles to do that: ${requiredRoles.join(", ")}`,
+                error: 'Forbidden',
+                message: `You require one of the following roles to do that: ${requiredRoles.join(', ')}`,
             });
         }
 

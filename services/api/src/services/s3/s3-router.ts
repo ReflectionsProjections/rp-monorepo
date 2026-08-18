@@ -1,12 +1,12 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
-import RoleChecker from "../../middleware/role-checker";
-import { s3ClientMiddleware } from "../../middleware/s3";
-import { Role } from "../auth/auth-models";
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import RoleChecker from '../../middleware/role-checker';
+import { s3ClientMiddleware } from '../../middleware/s3';
+import { Role } from '../auth/auth-models';
 
-import { S3 } from "@aws-sdk/client-s3";
-import { getResumeUrl, postResumeUrl } from "./s3-utils";
-import BatchResumeDownloadValidator from "./s3-schema";
+import { S3 } from '@aws-sdk/client-s3';
+import { getResumeUrl, postResumeUrl } from './s3-utils';
+import BatchResumeDownloadValidator from './s3-schema';
 
 const s3Router: Router = Router();
 
@@ -32,20 +32,15 @@ const s3Router: Router = Router();
  *     security:
  *       - bearerAuth: []
  */
-s3Router.get(
-    "/upload/",
-    RoleChecker([], false),
-    s3ClientMiddleware,
-    async (req, res) => {
-        const payload = res.locals.payload;
+s3Router.get('/upload/', RoleChecker([], false), s3ClientMiddleware, async (req, res) => {
+    const payload = res.locals.payload;
 
-        const s3 = res.locals.s3 as S3;
-        const userId: string = payload.userId;
+    const s3 = res.locals.s3 as S3;
+    const userId: string = payload.userId;
 
-        const { url, fields } = await postResumeUrl(userId, s3);
-        return res.status(StatusCodes.OK).send({ url, fields });
-    }
-);
+    const { url, fields } = await postResumeUrl(userId, s3);
+    return res.status(StatusCodes.OK).send({ url, fields });
+});
 
 /**
  * @swagger
@@ -68,7 +63,7 @@ s3Router.get(
  *       - bearerAuth: []
  */
 s3Router.get(
-    "/download/",
+    '/download/',
     RoleChecker([Role.Enum.USER], false),
     s3ClientMiddleware,
     async (req, res) => {
@@ -79,7 +74,7 @@ s3Router.get(
 
         const downloadUrl = await getResumeUrl(userId, s3);
         return res.status(StatusCodes.OK).send({ url: downloadUrl });
-    }
+    },
 );
 
 /**
@@ -109,7 +104,7 @@ s3Router.get(
  *       - bearerAuth: []
  */
 s3Router.get(
-    "/download/user/:USERID",
+    '/download/user/:USERID',
     RoleChecker([Role.Enum.STAFF, Role.Enum.CORPORATE], false),
     s3ClientMiddleware,
     async (req, res) => {
@@ -118,7 +113,7 @@ s3Router.get(
 
         const downloadUrl = await getResumeUrl(userId, s3);
         return res.status(StatusCodes.OK).send({ url: downloadUrl });
-    }
+    },
 );
 
 /**
@@ -149,7 +144,7 @@ s3Router.get(
  *       - bearerAuth: []
  */
 s3Router.post(
-    "/download/batch/",
+    '/download/batch/',
     RoleChecker([Role.Enum.STAFF, Role.Enum.CORPORATE], false),
     s3ClientMiddleware,
     async (req, res) => {
@@ -160,17 +155,15 @@ s3Router.post(
         const batchDownloadPromises = userIds.map((userId) =>
             getResumeUrl(userId, s3)
                 .then((url) => ({ userId, url: url }))
-                .catch(() => ({ userId, url: null }))
+                .catch(() => ({ userId, url: null })),
         );
 
-        const batchDownloadResults = await Promise.allSettled(
-            batchDownloadPromises
-        );
+        const batchDownloadResults = await Promise.allSettled(batchDownloadPromises);
 
         batchDownloadPromises.forEach((bdp) => console.log(bdp));
 
         const filteredUrls = batchDownloadResults
-            .filter((result) => result.status === "fulfilled")
+            .filter((result) => result.status === 'fulfilled')
             .map((result) => {
                 return (
                     result as PromiseFulfilledResult<{
@@ -180,14 +173,10 @@ s3Router.post(
                 ).value.url;
             });
 
-        const errors = batchDownloadResults.filter(
-            (result) => result.status === "rejected"
-        ).length;
+        const errors = batchDownloadResults.filter((result) => result.status === 'rejected').length;
 
-        return res
-            .status(StatusCodes.OK)
-            .send({ data: filteredUrls, errorCount: errors });
-    }
+        return res.status(StatusCodes.OK).send({ data: filteredUrls, errorCount: errors });
+    },
 );
 
 export default s3Router;

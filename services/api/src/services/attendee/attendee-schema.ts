@@ -1,29 +1,29 @@
-import { Schema } from "mongoose";
-import { TierType, IconColorType } from "../../database";
-import { Database } from "../../database.types";
-import { z } from "zod";
-import { registry } from "../../middleware/openapi-registry";
+import { Schema } from 'mongoose';
+import { TierType, IconColorType } from '../../database';
+import { Database } from '../../database.types';
+import { z } from 'zod';
+import { registry } from '../../middleware/openapi-registry';
 
-export type DayKey = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
+export type DayKey = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
 
 // Database types for consistency with other schema patterns
-export type AttendeeType = Database["public"]["Tables"]["attendees"]["Row"];
+export type AttendeeType = Database['public']['Tables']['attendees']['Row'];
 
 // Zod enums for runtime validation and .Enum access
 export const Tiers = registry.register(
-    "Tiers",
+    'Tiers',
     z
-        .enum(["TIER1", "TIER2", "TIER3", "TIER4"])
-        .openapi("Tiers", { description: "Attendee merchandise tier" })
+        .enum(['TIER1', 'TIER2', 'TIER3', 'TIER4'])
+        .openapi('Tiers', { description: 'Attendee merchandise tier' }),
 ) satisfies z.ZodEnum<[TierType, ...TierType[]]>;
 
 export const IconColors = z.enum([
-    "BLUE",
-    "RED",
-    "GREEN",
-    "PINK",
-    "PURPLE",
-    "ORANGE",
+    'BLUE',
+    'RED',
+    'GREEN',
+    'PINK',
+    'PURPLE',
+    'ORANGE',
 ] as const) satisfies z.ZodEnum<[IconColorType, ...IconColorType[]]>;
 
 // sub-schemas
@@ -46,7 +46,7 @@ const MerchView = z.object({
 
 // Main Attendee schema
 export const AttendeeView = registry.register(
-    "AttendeeView",
+    'AttendeeView',
     z
         .object({
             userId: z.string(),
@@ -80,16 +80,16 @@ export const AttendeeView = registry.register(
             favorites: z.array(z.string()).default([]),
             puzzlesCompleted: z.array(z.string()).default([]),
         })
-        .openapi("AttendeeView", {
+        .openapi('AttendeeView', {
             example: {
-                userId: "user_12345",
-                name: "Alice Johnson",
-                email: "alice@example.com",
+                userId: 'user_12345',
+                name: 'Alice Johnson',
+                email: 'alice@example.com',
 
-                events: ["event_1", "event_2"],
+                events: ['event_1', 'event_2'],
 
-                dietaryRestrictions: ["vegetarian"],
-                allergies: ["peanuts"],
+                dietaryRestrictions: ['vegetarian'],
+                allergies: ['peanuts'],
 
                 points: 120,
 
@@ -117,10 +117,10 @@ export const AttendeeView = registry.register(
                     Cap: false,
                 },
 
-                favorites: ["event_3", "event_7"],
-                puzzlesCompleted: ["puzzle_1", "puzzle_2"],
+                favorites: ['event_3', 'event_7'],
+                puzzlesCompleted: ['puzzle_1', 'puzzle_2'],
             },
-        })
+        }),
 );
 
 // Mongoose schema for attendee
@@ -128,7 +128,7 @@ export const AttendeeSchema = new Schema({
     userId: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    events: [{ type: String, ref: "Event", default: [] }],
+    events: [{ type: String, ref: 'Event', default: [] }],
     dietaryRestrictions: { type: [String], required: true },
     allergies: { type: [String], required: true },
     points: { type: Number, default: 0 },
@@ -143,7 +143,7 @@ export const AttendeeSchema = new Schema({
                 Sat: { type: Boolean, default: false },
                 Sun: { type: Boolean, default: false },
             },
-            { _id: false }
+            { _id: false },
         ),
         default: {
             Mon: false,
@@ -163,7 +163,7 @@ export const AttendeeSchema = new Schema({
                 Tote: { type: Boolean, default: false },
                 Cap: { type: Boolean, default: false },
             },
-            { _id: false }
+            { _id: false },
         ),
         default: {
             Tshirt: false,
@@ -180,7 +180,7 @@ export const AttendeeSchema = new Schema({
                 Tote: { type: Boolean, default: false },
                 Cap: { type: Boolean, default: false },
             },
-            { _id: false }
+            { _id: false },
         ),
         default: {
             Tshirt: true,
@@ -197,8 +197,8 @@ export const AttendeeSchema = new Schema({
 export const AttendeeAttendanceSchema = new Schema({
     userId: {
         type: String,
-        ref: "Attendee",
+        ref: 'Attendee',
         required: true,
     },
-    eventsAttended: [{ type: String, ref: "Event", required: true }],
+    eventsAttended: [{ type: String, ref: 'Event', required: true }],
 });

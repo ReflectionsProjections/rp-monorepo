@@ -1,11 +1,11 @@
-import { ses, Config } from "../../config";
+import { ses, Config } from '../../config';
 import {
     SendEmailCommand,
     SendBulkEmailCommand,
     TooManyRequestsException,
-} from "@aws-sdk/client-sesv2";
-import { Templates } from "../../config";
-import { setTimeout } from "timers/promises";
+} from '@aws-sdk/client-sesv2';
+import { Templates } from '../../config';
+import { setTimeout } from 'timers/promises';
 
 export interface BulkSendResult {
     success: boolean;
@@ -23,7 +23,7 @@ function isThrottlingError(error: unknown): boolean {
     if (error instanceof TooManyRequestsException) {
         return true;
     }
-    if (error instanceof Error && error.name === "Throttling") {
+    if (error instanceof Error && error.name === 'Throttling') {
         return true;
     }
     return false;
@@ -35,10 +35,7 @@ async function sendWithRetry(command: SendEmailCommand): Promise<void> {
             await ses.send(command);
             return;
         } catch (error) {
-            if (
-                isThrottlingError(error) &&
-                attempt < Config.MAX_MAIL_SEND_RETRIES - 1
-            ) {
+            if (isThrottlingError(error) && attempt < Config.MAX_MAIL_SEND_RETRIES - 1) {
                 await setTimeout(getBackoffDuration(attempt));
             } else {
                 throw error;
@@ -50,20 +47,18 @@ async function sendWithRetry(command: SendEmailCommand): Promise<void> {
 export async function sendHTMLEmail(
     emailId: string,
     subject: string,
-    emailHtml: string
+    emailHtml: string,
 ): Promise<void> {
     const command = new SendEmailCommand({
         FromEmailAddress:
-            Config.OUTGOING_EMAIL_ADDRESSES.Enum[
-                "no-reply@reflectionsprojections.org"
-            ],
+            Config.OUTGOING_EMAIL_ADDRESSES.Enum['no-reply@reflectionsprojections.org'],
         Destination: {
             ToAddresses: [emailId],
         },
         Content: {
             Simple: {
-                Subject: { Data: subject, Charset: "utf-8" },
-                Body: { Html: { Data: emailHtml, Charset: "utf-8" } },
+                Subject: { Data: subject, Charset: 'utf-8' },
+                Body: { Html: { Data: emailHtml, Charset: 'utf-8' } },
             },
         },
     });
@@ -74,13 +69,11 @@ export async function sendHTMLEmail(
 export async function sendEmail(
     emailId: string,
     subject: string,
-    emailBody: string
+    emailBody: string,
 ): Promise<void> {
     const command = new SendEmailCommand({
         FromEmailAddress:
-            Config.OUTGOING_EMAIL_ADDRESSES.Enum[
-                "no-reply@reflectionsprojections.org"
-            ],
+            Config.OUTGOING_EMAIL_ADDRESSES.Enum['no-reply@reflectionsprojections.org'],
         Destination: {
             ToAddresses: [emailId],
         },
@@ -98,13 +91,11 @@ export async function sendEmail(
 export async function sendTemplateEmail(
     emailId: string,
     templateId: Templates,
-    templateData: Record<string, unknown>
+    templateData: Record<string, unknown>,
 ): Promise<void> {
     const command = new SendEmailCommand({
         FromEmailAddress:
-            Config.OUTGOING_EMAIL_ADDRESSES.Enum[
-                "no-reply@reflectionsprojections.org"
-            ],
+            Config.OUTGOING_EMAIL_ADDRESSES.Enum['no-reply@reflectionsprojections.org'],
         Destination: {
             ToAddresses: [emailId],
         },
@@ -122,7 +113,7 @@ export async function sendTemplateEmail(
 export async function sendBulkTemplateEmail(
     templateId: Templates,
     recipients: Array<{ email: string; data?: Record<string, unknown> }>,
-    defaultTemplateData?: Record<string, unknown>
+    defaultTemplateData?: Record<string, unknown>,
 ): Promise<BulkSendResult> {
     const errors: string[] = [];
     let successCount = 0;
@@ -132,9 +123,7 @@ export async function sendBulkTemplateEmail(
 
         const command = new SendBulkEmailCommand({
             FromEmailAddress:
-                Config.OUTGOING_EMAIL_ADDRESSES.Enum[
-                    "no-reply@reflectionsprojections.org"
-                ],
+                Config.OUTGOING_EMAIL_ADDRESSES.Enum['no-reply@reflectionsprojections.org'],
             DefaultContent: {
                 Template: {
                     TemplateName: templateId,
@@ -154,38 +143,26 @@ export async function sendBulkTemplateEmail(
             })),
         });
 
-        for (
-            let attempt = 0;
-            attempt < Config.MAX_MAIL_SEND_RETRIES;
-            attempt++
-        ) {
+        for (let attempt = 0; attempt < Config.MAX_MAIL_SEND_RETRIES; attempt++) {
             try {
                 const response = await ses.send(command);
 
                 response.BulkEmailEntryResults?.forEach((result, index) => {
-                    if (result.Status === "SUCCESS") {
+                    if (result.Status === 'SUCCESS') {
                         successCount++;
                     } else {
                         const email = batch[index]!.email;
-                        errors.push(
-                            `${email}: ${result.Error ?? "Unknown error"}`
-                        );
+                        errors.push(`${email}: ${result.Error ?? 'Unknown error'}`);
                     }
                 });
 
                 break;
             } catch (error) {
-                if (
-                    isThrottlingError(error) &&
-                    attempt < Config.MAX_MAIL_SEND_RETRIES - 1
-                ) {
+                if (isThrottlingError(error) && attempt < Config.MAX_MAIL_SEND_RETRIES - 1) {
                     await setTimeout(getBackoffDuration(attempt));
                 } else {
                     for (const { email } of batch) {
-                        const message =
-                            error instanceof Error
-                                ? error.message
-                                : String(error);
+                        const message = error instanceof Error ? error.message : String(error);
                         errors.push(`${email}: ${message}`);
                     }
                     break;

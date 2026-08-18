@@ -1,7 +1,7 @@
-import { SupabaseDB, TierType, IconColorType, supabase } from "../../database";
-import { LeaderboardEntry } from "./leaderboard-schema";
-import { getEventDayForDate } from "../attendee/attendee-utils";
-import { getFirebaseAdmin } from "../../firebase";
+import { SupabaseDB, TierType, IconColorType, supabase } from '../../database';
+import { LeaderboardEntry } from './leaderboard-schema';
+import { getEventDayForDate } from '../attendee/attendee-utils';
+import { getFirebaseAdmin } from '../../firebase';
 
 function getDailyPointsForEventDay(
     attendee: {
@@ -11,7 +11,7 @@ function getDailyPointsForEventDay(
         pointsDay4: number;
         pointsDay5: number;
     },
-    eventDay: number
+    eventDay: number,
 ): number {
     switch (eventDay) {
         case 1:
@@ -35,12 +35,9 @@ function getDailyPointsForEventDay(
  * @param n - Number of top attendees to include (optional - returns all if not specified)
  * @returns Promise<LeaderboardEntry[]> - Ranked list of attendees with ties handled
  */
-export async function getDailyLeaderboard(
-    day: string,
-    n?: number
-): Promise<LeaderboardEntry[]> {
+export async function getDailyLeaderboard(day: string, n?: number): Promise<LeaderboardEntry[]> {
     // Step 1: Map day string to event day number (Central Time)
-    const dayDate = new Date(day + "T00:00:00-05:00");
+    const dayDate = new Date(day + 'T00:00:00-05:00');
     const eventDay = getEventDayForDate(dayDate);
 
     if (eventDay === null) {
@@ -59,9 +56,9 @@ export async function getDailyLeaderboard(
             currentTier,
             icon,
             authInfo!inner(displayName)
-        `
+        `,
     )
-        .neq("currentTier", "TIER4")
+        .neq('currentTier', 'TIER4')
         .throwOnError();
 
     if (!attendees || attendees.length === 0) {
@@ -69,25 +66,21 @@ export async function getDailyLeaderboard(
     }
 
     // Step 3: Create leaderboard entries with daily points
-    const leaderboardEntries: Array<LeaderboardEntry> = attendees.map(
-        (attendee) => ({
-            rank: 0, // Will be set after sorting
-            userId: attendee.userId,
-            displayName: attendee.authInfo.displayName ?? "",
-            points: getDailyPointsForEventDay(attendee, eventDay),
-            currentTier: attendee.currentTier as TierType,
-            icon: attendee.icon as IconColorType,
-        })
-    );
+    const leaderboardEntries: Array<LeaderboardEntry> = attendees.map((attendee) => ({
+        rank: 0, // Will be set after sorting
+        userId: attendee.userId,
+        displayName: attendee.authInfo.displayName ?? '',
+        points: getDailyPointsForEventDay(attendee, eventDay),
+        currentTier: attendee.currentTier as TierType,
+        icon: attendee.icon as IconColorType,
+    }));
 
     // Step 4: Sort by daily points descending, then by displayName ascending for ties
     leaderboardEntries.sort((a, b) => {
         if (b.points !== a.points) {
             return b.points - a.points;
         }
-        return a.displayName
-            .toLowerCase()
-            .localeCompare(b.displayName.toLowerCase());
+        return a.displayName.toLowerCase().localeCompare(b.displayName.toLowerCase());
     });
 
     // Step 5: Assign ranks (handle ties)
@@ -116,8 +109,7 @@ export async function getDailyLeaderboard(
         return rankedEntries;
     }
 
-    const topRank =
-        rankedEntries[Math.min(n - 1, rankedEntries.length - 1)]?.rank || 1;
+    const topRank = rankedEntries[Math.min(n - 1, rankedEntries.length - 1)]?.rank || 1;
     return rankedEntries.filter((entry) => entry.rank <= topRank);
 }
 
@@ -126,9 +118,7 @@ export async function getDailyLeaderboard(
  * @param n - Number of top attendees to include (optional - returns all if not specified)
  * @returns Promise<LeaderboardEntry[]> - Ranked list of attendees with ties handled
  */
-export async function getGlobalLeaderboard(
-    n?: number
-): Promise<LeaderboardEntry[]> {
+export async function getGlobalLeaderboard(n?: number): Promise<LeaderboardEntry[]> {
     // Get all attendees with their total points, including all tiers
     const { data: attendees } = await SupabaseDB.ATTENDEES.select(
         `
@@ -137,7 +127,7 @@ export async function getGlobalLeaderboard(
             currentTier,
             icon,
             authInfo!inner(displayName)
-        `
+        `,
     ).throwOnError();
 
     if (!attendees || attendees.length === 0) {
@@ -149,9 +139,9 @@ export async function getGlobalLeaderboard(
         if (b.points !== a.points) {
             return b.points - a.points;
         }
-        return (a.authInfo.displayName ?? "")
+        return (a.authInfo.displayName ?? '')
             .toLowerCase()
-            .localeCompare((b.authInfo.displayName ?? "").toLowerCase());
+            .localeCompare((b.authInfo.displayName ?? '').toLowerCase());
     });
 
     // Create leaderboard entries with rankings
@@ -168,7 +158,7 @@ export async function getGlobalLeaderboard(
         return {
             rank: currentRank,
             userId: attendee.userId,
-            displayName: attendee.authInfo.displayName ?? "",
+            displayName: attendee.authInfo.displayName ?? '',
             points: attendee.points,
             currentTier: attendee.currentTier as TierType,
             icon: attendee.icon as IconColorType,
@@ -180,8 +170,7 @@ export async function getGlobalLeaderboard(
         return rankedEntries;
     }
 
-    const topRank =
-        rankedEntries[Math.min(n - 1, rankedEntries.length - 1)]?.rank || 1;
+    const topRank = rankedEntries[Math.min(n - 1, rankedEntries.length - 1)]?.rank || 1;
     return rankedEntries.filter((entry) => entry.rank <= topRank);
 }
 
@@ -190,16 +179,13 @@ export async function getGlobalLeaderboard(
  * @param userIds - Array of userIds to promote (should come from leaderboard winners)
  * @returns Promise<number> - Number of users actually promoted
  */
-export async function promoteUsersToNextTier(
-    userIds: string[],
-    day: string
-): Promise<number> {
+export async function promoteUsersToNextTier(userIds: string[], day: string): Promise<number> {
     if (!userIds || userIds.length === 0) {
         return 0;
     }
 
     // Call the PostgreSQL function for atomic tier promotion
-    const { data, error } = await supabase.rpc("promote_users_batch", {
+    const { data, error } = await supabase.rpc('promote_users_batch', {
         user_ids: userIds,
     });
 
@@ -209,24 +195,20 @@ export async function promoteUsersToNextTier(
 
     // Enroll every userId into a Firebase topic if they got promoted today
 
-    const { data: userDevices } = await SupabaseDB.NOTIFICATIONS.select(
-        "deviceId"
-    )
-        .in("userId", userIds)
+    const { data: userDevices } = await SupabaseDB.NOTIFICATIONS.select('deviceId')
+        .in('userId', userIds)
         .throwOnError();
 
     if (userDevices && userDevices.length > 0) {
         const deviceTokens = userDevices.map((device) => device.deviceId);
         const topicName = `tier-promotion-${day.toLowerCase()}`;
-        await getFirebaseAdmin()
-            .messaging()
-            .subscribeToTopic(deviceTokens, topicName);
+        await getFirebaseAdmin().messaging().subscribeToTopic(deviceTokens, topicName);
         // Add today's tier promotion day
         await SupabaseDB.CUSTOM_TOPICS.upsert(
             {
                 topicName: topicName,
             },
-            { onConflict: "topicName", ignoreDuplicates: true }
+            { onConflict: 'topicName', ignoreDuplicates: true },
         ).throwOnError();
     }
 
@@ -248,9 +230,9 @@ export async function checkLeaderboardSubmissionExists(day: string): Promise<{
     };
 }> {
     const { data } = await SupabaseDB.LEADERBOARD_SUBMISSIONS.select(
-        "submissionId, submittedAt, submittedBy, count"
+        'submissionId, submittedAt, submittedBy, count',
     )
-        .eq("day", day)
+        .eq('day', day)
         .maybeSingle()
         .throwOnError();
 
@@ -279,14 +261,14 @@ export async function checkLeaderboardSubmissionExists(day: string): Promise<{
 export async function recordLeaderboardSubmission(
     day: string,
     count: number,
-    submittedBy: string
+    submittedBy: string,
 ): Promise<{ submissionId: string; submittedAt: string }> {
     const { data } = await SupabaseDB.LEADERBOARD_SUBMISSIONS.insert({
         day,
         count,
         submittedBy,
     })
-        .select("submissionId, submittedAt")
+        .select('submissionId, submittedAt')
         .single()
         .throwOnError();
 

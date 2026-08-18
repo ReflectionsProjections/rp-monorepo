@@ -1,35 +1,35 @@
-import { beforeEach, describe, expect, it } from "@jest/globals";
-import { StatusCodes } from "http-status-codes";
-import { SupabaseDB } from "../../database";
-import { Tiers, IconColors } from "../attendee/attendee-schema";
-import { Role } from "../auth/auth-models";
-import { getAsStaff, get } from "../../../testing/testingTools";
-import { getCurrentDay } from "../checkin/checkin-utils";
-import { v4 as uuidv4 } from "uuid";
+import { beforeEach, describe, expect, it } from '@jest/globals';
+import { StatusCodes } from 'http-status-codes';
+import { SupabaseDB } from '../../database';
+import { Tiers, IconColors } from '../attendee/attendee-schema';
+import { Role } from '../auth/auth-models';
+import { getAsStaff, get } from '../../../testing/testingTools';
+import { getCurrentDay } from '../checkin/checkin-utils';
+import { v4 as uuidv4 } from 'uuid';
 
 const currentDay = getCurrentDay();
 const now = new Date();
 
 const ATTENDEE_RITAM = {
-    userId: "a1",
-    tags: ["testtag1", "testtag2"],
+    userId: 'a1',
+    tags: ['testtag1', 'testtag2'],
     points: 10,
     currentTier: Tiers.Enum.TIER1,
     icon: IconColors.Enum.RED,
-    hasPriorityMon: currentDay === "Mon",
-    hasPriorityTue: currentDay === "Tue",
-    hasPriorityWed: currentDay === "Wed",
-    hasPriorityThu: currentDay === "Thu",
-    hasPriorityFri: currentDay === "Fri",
-    hasPrioritySat: currentDay === "Sat",
-    hasPrioritySun: currentDay === "Sun",
+    hasPriorityMon: currentDay === 'Mon',
+    hasPriorityTue: currentDay === 'Tue',
+    hasPriorityWed: currentDay === 'Wed',
+    hasPriorityThu: currentDay === 'Thu',
+    hasPriorityFri: currentDay === 'Fri',
+    hasPrioritySat: currentDay === 'Sat',
+    hasPrioritySun: currentDay === 'Sun',
     favoriteEvents: [],
     puzzlesCompleted: [],
 };
 
 const ATTENDEE_NATHAN = {
-    userId: "a2",
-    tags: ["testtag1", "testtag2"],
+    userId: 'a2',
+    tags: ['testtag1', 'testtag2'],
     points: 25,
     currentTier: Tiers.Enum.TIER1,
     icon: IconColors.Enum.BLUE,
@@ -45,8 +45,8 @@ const ATTENDEE_NATHAN = {
 };
 
 const ATTENDEE_TIMOTHY = {
-    userId: "a3",
-    tags: ["testtag1", "testtag2"],
+    userId: 'a3',
+    tags: ['testtag1', 'testtag2'],
     points: 20,
     currentTier: Tiers.Enum.TIER1,
     icon: IconColors.Enum.GREEN,
@@ -63,53 +63,53 @@ const ATTENDEE_TIMOTHY = {
 
 // Auth records required for foreign key constraints
 const AUTH_INFO_RITAM = {
-    userId: "a1",
-    displayName: "Ritam Test",
-    email: "ritam@test.com",
-    authId: "auth_ritam",
+    userId: 'a1',
+    displayName: 'Ritam Test',
+    email: 'ritam@test.com',
+    authId: 'auth_ritam',
 };
 
 const AUTH_INFO_NATHAN = {
-    userId: "a2",
-    displayName: "Nathan Test",
-    email: "nathan@test.com",
-    authId: "auth_nathan",
+    userId: 'a2',
+    displayName: 'Nathan Test',
+    email: 'nathan@test.com',
+    authId: 'auth_nathan',
 };
 
 const AUTH_INFO_TIMOTHY = {
-    userId: "a3",
-    displayName: "Timothy Test",
-    email: "timothy@test.com",
-    authId: "auth_timothy",
+    userId: 'a3',
+    displayName: 'Timothy Test',
+    email: 'timothy@test.com',
+    authId: 'auth_timothy',
 };
 
 const AUTH_ROLES_RITAM = {
-    userId: "a1",
+    userId: 'a1',
     role: Role.enum.USER,
 };
 
 const AUTH_ROLES_NATHAN = {
-    userId: "a2",
+    userId: 'a2',
     role: Role.enum.USER,
 };
 
 const AUTH_ROLES_TIMOTHY = {
-    userId: "a3",
+    userId: 'a3',
     role: Role.enum.USER,
 };
 
 // CHECKIN event for testing check-in functionality
 const CHECKIN_EVENT = {
     eventId: uuidv4(),
-    name: "Check-in Event",
+    name: 'Check-in Event',
     startTime: new Date(now.getTime() - 3600000).toISOString(),
     endTime: new Date(now.getTime() + 3600000).toISOString(),
     points: 0,
-    description: "Daily check-in",
+    description: 'Daily check-in',
     isVirtual: false,
     imageUrl: null,
     location: null,
-    eventType: "CHECKIN" as const,
+    eventType: 'CHECKIN' as const,
     attendanceCount: 0,
     isVisible: true,
 };
@@ -117,71 +117,71 @@ const CHECKIN_EVENT = {
 // Event attendance records to simulate checked-in users
 const EVENT_ATTENDANCES_RITAM = {
     eventId: CHECKIN_EVENT.eventId,
-    attendee: "a1",
+    attendee: 'a1',
 };
 
 const EVENT_ATTENDANCES_NATHAN = {
     eventId: CHECKIN_EVENT.eventId,
-    attendee: "a2",
+    attendee: 'a2',
 };
 
 // Past events for attendance testing
 const EVENT_1 = {
     eventId: uuidv4(),
-    name: "Event 1",
+    name: 'Event 1',
     startTime: new Date(now.getTime() - 120000).toISOString(),
     endTime: new Date(now.getTime() - 100000).toISOString(),
     points: 10,
-    description: "Event 1 description",
+    description: 'Event 1 description',
     isVirtual: false,
     imageUrl: null,
-    location: "Room A",
-    eventType: "SPEAKER" as const,
+    location: 'Room A',
+    eventType: 'SPEAKER' as const,
     attendanceCount: 20,
     isVisible: true,
 };
 
 const EVENT_2 = {
     eventId: uuidv4(),
-    name: "Event 2",
+    name: 'Event 2',
     startTime: new Date(now.getTime() - 220000).toISOString(),
     endTime: new Date(now.getTime() - 200000).toISOString(),
     points: 15,
-    description: "Event 2 description",
+    description: 'Event 2 description',
     isVirtual: true,
     imageUrl: null,
     location: null,
-    eventType: "SPEAKER" as const,
+    eventType: 'SPEAKER' as const,
     attendanceCount: 50,
     isVisible: true,
 };
 
 const EVENT_3 = {
     eventId: uuidv4(),
-    name: "Event 3",
+    name: 'Event 3',
     startTime: new Date(now.getTime() - 320000).toISOString(),
     endTime: new Date(now.getTime() - 300000).toISOString(),
     points: 5,
-    description: "Event 3 description",
+    description: 'Event 3 description',
     isVirtual: false,
     imageUrl: null,
-    location: "Room B",
-    eventType: "SPEAKER" as const,
+    location: 'Room B',
+    eventType: 'SPEAKER' as const,
     attendanceCount: 35,
     isVisible: true,
 };
 
 const FUTURE_EVENT = {
     eventId: uuidv4(),
-    name: "Future Event",
+    name: 'Future Event',
     startTime: new Date(Date.now() + 3600000).toISOString(),
     endTime: new Date(Date.now() + 3600000).toISOString(),
     points: 5,
-    description: "Future event description",
+    description: 'Future event description',
     isVirtual: true,
     imageUrl: null,
-    location: "Room B",
-    eventType: "SPEAKER" as const,
+    location: 'Room B',
+    eventType: 'SPEAKER' as const,
     attendanceCount: 123,
     isVisible: true,
 };
@@ -189,30 +189,30 @@ const FUTURE_EVENT = {
 // Additional events for check-in testing
 const SECOND_CHECKIN_EVENT = {
     eventId: uuidv4(),
-    name: "Second Check-in Event",
+    name: 'Second Check-in Event',
     startTime: new Date(now.getTime() - 1800000).toISOString(),
     endTime: new Date(now.getTime() + 1800000).toISOString(),
     points: 0,
-    description: "Another daily check-in",
+    description: 'Another daily check-in',
     isVirtual: false,
     imageUrl: null,
     location: null,
-    eventType: "CHECKIN" as const,
+    eventType: 'CHECKIN' as const,
     attendanceCount: 0,
     isVisible: true,
 };
 
 const SPEAKER_EVENT = {
     eventId: uuidv4(),
-    name: "Speaker Event",
+    name: 'Speaker Event',
     startTime: new Date(now.getTime() - 1800000).toISOString(),
     endTime: new Date(now.getTime() + 1800000).toISOString(),
     points: 10,
-    description: "A speaker presentation",
+    description: 'A speaker presentation',
     isVirtual: false,
     imageUrl: null,
-    location: "Main Hall",
-    eventType: "SPEAKER" as const,
+    location: 'Main Hall',
+    eventType: 'SPEAKER' as const,
     attendanceCount: 0,
     isVisible: true,
 };
@@ -220,28 +220,28 @@ const SPEAKER_EVENT = {
 // Additional attendance records for testing
 const EVENT_ATTENDANCES_RITAM_SECOND_CHECKIN = {
     eventId: SECOND_CHECKIN_EVENT.eventId,
-    attendee: "a1",
+    attendee: 'a1',
 };
 
 const EVENT_ATTENDANCES_TIMOTHY_SPEAKER = {
     eventId: SPEAKER_EVENT.eventId,
-    attendee: "a3",
+    attendee: 'a3',
 };
 
 // Registration data for dietary restrictions testing
 const ATTENDEES_DIETARY = [
     {
-        userId: "a1",
-        name: "Test User 1",
-        tags: ["testtag1", "testtag2"],
-        email: "a1@test.com",
-        school: "University of Illinois",
-        educationLevel: "Computer Science",
-        graduationYear: "2025",
-        majors: ["Computer Science"],
+        userId: 'a1',
+        name: 'Test User 1',
+        tags: ['testtag1', 'testtag2'],
+        email: 'a1@test.com',
+        school: 'University of Illinois',
+        educationLevel: 'Computer Science',
+        graduationYear: '2025',
+        majors: ['Computer Science'],
         dietaryRestrictions: [],
         allergies: [],
-        gender: "Prefer not to say",
+        gender: 'Prefer not to say',
         ethnicity: [],
         howDidYouHear: [],
         personalLinks: [],
@@ -250,17 +250,17 @@ const ATTENDEES_DIETARY = [
         isInterestedPuzzleBang: false,
     },
     {
-        userId: "a2",
-        name: "Test User 2",
-        tags: ["testtag1", "testtag2"],
-        email: "a2@test.com",
-        school: "University of Illinois",
-        educationLevel: "Computer Science",
-        graduationYear: "2024",
-        majors: ["Computer Science"],
-        dietaryRestrictions: ["Vegetarian"],
+        userId: 'a2',
+        name: 'Test User 2',
+        tags: ['testtag1', 'testtag2'],
+        email: 'a2@test.com',
+        school: 'University of Illinois',
+        educationLevel: 'Computer Science',
+        graduationYear: '2024',
+        majors: ['Computer Science'],
+        dietaryRestrictions: ['Vegetarian'],
         allergies: [],
-        gender: "Prefer not to say",
+        gender: 'Prefer not to say',
         ethnicity: [],
         howDidYouHear: [],
         personalLinks: [],
@@ -269,17 +269,17 @@ const ATTENDEES_DIETARY = [
         isInterestedPuzzleBang: false,
     },
     {
-        userId: "a3",
-        name: "Test User 3",
-        tags: ["testtag1", "testtag2"],
-        email: "a3@test.com",
-        school: "University of Illinois",
-        educationLevel: "Computer Science",
-        graduationYear: "2023",
-        majors: ["Computer Science"],
+        userId: 'a3',
+        name: 'Test User 3',
+        tags: ['testtag1', 'testtag2'],
+        email: 'a3@test.com',
+        school: 'University of Illinois',
+        educationLevel: 'Computer Science',
+        graduationYear: '2023',
+        majors: ['Computer Science'],
         dietaryRestrictions: [],
-        allergies: ["Peanuts"],
-        gender: "Prefer not to say",
+        allergies: ['Peanuts'],
+        gender: 'Prefer not to say',
         ethnicity: [],
         howDidYouHear: [],
         personalLinks: [],
@@ -288,17 +288,17 @@ const ATTENDEES_DIETARY = [
         isInterestedPuzzleBang: false,
     },
     {
-        userId: "a4",
-        name: "Test User 4",
-        tags: ["testtag1", "testtag2"],
-        email: "a4@test.com",
-        school: "University of Illinois",
-        educationLevel: "Computer Science",
-        graduationYear: "2022",
-        majors: ["Computer Science"],
-        dietaryRestrictions: ["Vegan"],
-        allergies: ["Shellfish"],
-        gender: "Prefer not to say",
+        userId: 'a4',
+        name: 'Test User 4',
+        tags: ['testtag1', 'testtag2'],
+        email: 'a4@test.com',
+        school: 'University of Illinois',
+        educationLevel: 'Computer Science',
+        graduationYear: '2022',
+        majors: ['Computer Science'],
+        dietaryRestrictions: ['Vegan'],
+        allergies: ['Shellfish'],
+        gender: 'Prefer not to say',
         ethnicity: [],
         howDidYouHear: [],
         personalLinks: [],
@@ -307,17 +307,17 @@ const ATTENDEES_DIETARY = [
         isInterestedPuzzleBang: false,
     },
     {
-        userId: "a5",
-        name: "Test User 5",
-        tags: ["testtag1", "testtag2"],
-        email: "a5@test.com",
-        school: "University of Illinois",
-        educationLevel: "Computer Science",
-        graduationYear: "2021",
-        majors: ["Computer Science"],
-        dietaryRestrictions: ["Vegetarian"],
-        allergies: ["Peanuts"],
-        gender: "Prefer not to say",
+        userId: 'a5',
+        name: 'Test User 5',
+        tags: ['testtag1', 'testtag2'],
+        email: 'a5@test.com',
+        school: 'University of Illinois',
+        educationLevel: 'Computer Science',
+        graduationYear: '2021',
+        majors: ['Computer Science'],
+        dietaryRestrictions: ['Vegetarian'],
+        allergies: ['Peanuts'],
+        gender: 'Prefer not to say',
         ethnicity: [],
         howDidYouHear: [],
         personalLinks: [],
@@ -327,24 +327,16 @@ const ATTENDEES_DIETARY = [
     },
 ];
 
-describe("GET /stats/check-in", () => {
+describe('GET /stats/check-in', () => {
     beforeEach(async () => {
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
         await SupabaseDB.AUTH_ROLES.insert([
             AUTH_ROLES_RITAM,
             AUTH_ROLES_NATHAN,
             AUTH_ROLES_TIMOTHY,
         ]);
 
-        await SupabaseDB.ATTENDEES.insert([
-            ATTENDEE_RITAM,
-            ATTENDEE_NATHAN,
-            ATTENDEE_TIMOTHY,
-        ]);
+        await SupabaseDB.ATTENDEES.insert([ATTENDEE_RITAM, ATTENDEE_NATHAN, ATTENDEE_TIMOTHY]);
 
         await SupabaseDB.EVENTS.insert([CHECKIN_EVENT]);
 
@@ -354,303 +346,241 @@ describe("GET /stats/check-in", () => {
         ]).throwOnError();
     });
 
-    it("should return correct count for checked-in attendees", async () => {
-        const response = await getAsStaff("/stats/check-in").expect(
-            StatusCodes.OK
-        );
+    it('should return correct count for checked-in attendees', async () => {
+        const response = await getAsStaff('/stats/check-in').expect(StatusCodes.OK);
 
         expect(response.body).toEqual({ count: 2 });
     });
 
-    it("should return 0 if no attendees are checked in", async () => {
+    it('should return 0 if no attendees are checked in', async () => {
         await SupabaseDB.EVENT_ATTENDANCES.delete().throwOnError();
 
-        const response = await getAsStaff("/stats/check-in").expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff('/stats/check-in').expect(StatusCodes.OK);
 
         expect(response.body).toEqual({ count: 0 });
     });
 
-    it("should return 0 if no CHECKIN events exist", async () => {
+    it('should return 0 if no CHECKIN events exist', async () => {
         await SupabaseDB.EVENT_ATTENDANCES.delete().throwOnError();
         await SupabaseDB.EVENTS.delete().throwOnError();
         await SupabaseDB.ATTENDEES.delete().throwOnError();
         await SupabaseDB.AUTH_ROLES.delete().throwOnError();
         await SupabaseDB.AUTH_INFO.delete().throwOnError();
 
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
         await SupabaseDB.AUTH_ROLES.insert([
             AUTH_ROLES_RITAM,
             AUTH_ROLES_NATHAN,
             AUTH_ROLES_TIMOTHY,
         ]);
-        await SupabaseDB.ATTENDEES.insert([
-            ATTENDEE_RITAM,
-            ATTENDEE_NATHAN,
-            ATTENDEE_TIMOTHY,
-        ]);
+        await SupabaseDB.ATTENDEES.insert([ATTENDEE_RITAM, ATTENDEE_NATHAN, ATTENDEE_TIMOTHY]);
 
-        const response = await getAsStaff("/stats/check-in").expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff('/stats/check-in').expect(StatusCodes.OK);
 
         expect(response.body).toEqual({ count: 0 });
     });
 
-    it("should count unique attendees even if they checked into multiple CHECKIN events", async () => {
+    it('should count unique attendees even if they checked into multiple CHECKIN events', async () => {
         await SupabaseDB.EVENTS.insert([SECOND_CHECKIN_EVENT]);
 
-        await SupabaseDB.EVENT_ATTENDANCES.insert([
-            EVENT_ATTENDANCES_RITAM_SECOND_CHECKIN,
-        ]);
+        await SupabaseDB.EVENT_ATTENDANCES.insert([EVENT_ATTENDANCES_RITAM_SECOND_CHECKIN]);
 
-        const response = await getAsStaff("/stats/check-in").expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff('/stats/check-in').expect(StatusCodes.OK);
 
         expect(response.body).toEqual({ count: 2 });
     });
 
-    it("should only count attendees who checked into CHECKIN events, not other event types", async () => {
+    it('should only count attendees who checked into CHECKIN events, not other event types', async () => {
         await SupabaseDB.EVENTS.insert([SPEAKER_EVENT]);
 
-        await SupabaseDB.EVENT_ATTENDANCES.insert([
-            EVENT_ATTENDANCES_TIMOTHY_SPEAKER,
-        ]);
+        await SupabaseDB.EVENT_ATTENDANCES.insert([EVENT_ATTENDANCES_TIMOTHY_SPEAKER]);
 
-        const response = await getAsStaff("/stats/check-in").expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff('/stats/check-in').expect(StatusCodes.OK);
 
         expect(response.body).toEqual({ count: 2 });
     });
 
-    it("should return 401 for unauthenticated users", async () => {
-        await get("/stats/check-in").expect(StatusCodes.UNAUTHORIZED);
+    it('should return 401 for unauthenticated users', async () => {
+        await get('/stats/check-in').expect(StatusCodes.UNAUTHORIZED);
     });
 
-    it("should return 403 for users without STAFF access", async () => {
-        await get("/stats/check-in", Role.enum.USER).expect(
-            StatusCodes.FORBIDDEN
-        );
+    it('should return 403 for users without STAFF access', async () => {
+        await get('/stats/check-in', Role.enum.USER).expect(StatusCodes.FORBIDDEN);
     });
 });
 
-describe("GET /stats/merch-item/:PRICE", () => {
+describe('GET /stats/merch-item/:PRICE', () => {
     beforeEach(async () => {
         await SupabaseDB.ATTENDEES.delete().throwOnError();
         await SupabaseDB.AUTH_ROLES.delete().throwOnError();
         await SupabaseDB.AUTH_INFO.delete().throwOnError();
 
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
         await SupabaseDB.AUTH_ROLES.insert([
             AUTH_ROLES_RITAM,
             AUTH_ROLES_NATHAN,
             AUTH_ROLES_TIMOTHY,
         ]);
 
-        await SupabaseDB.ATTENDEES.insert([
-            ATTENDEE_RITAM,
-            ATTENDEE_NATHAN,
-            ATTENDEE_TIMOTHY,
-        ]);
+        await SupabaseDB.ATTENDEES.insert([ATTENDEE_RITAM, ATTENDEE_NATHAN, ATTENDEE_TIMOTHY]);
     });
 
-    it("should return correct count for people with points threshold", async () => {
+    it('should return correct count for people with points threshold', async () => {
         const pointsThreshold = 20;
-        const response = await getAsStaff(
-            `/stats/merch-item/${pointsThreshold}`
-        ).expect(StatusCodes.OK);
+        const response = await getAsStaff(`/stats/merch-item/${pointsThreshold}`).expect(
+            StatusCodes.OK,
+        );
 
         expect(response.body).toEqual({ count: 2 });
     });
 
-    it("should return 0 if no one has enough points", async () => {
+    it('should return 0 if no one has enough points', async () => {
         const pointsThreshold = 30;
-        const response = await getAsStaff(
-            `/stats/merch-item/${pointsThreshold}`
-        ).expect(StatusCodes.OK);
+        const response = await getAsStaff(`/stats/merch-item/${pointsThreshold}`).expect(
+            StatusCodes.OK,
+        );
 
         expect(response.body).toEqual({ count: 0 });
     });
 
-    it("should return all attendees if threshold is 0", async () => {
+    it('should return all attendees if threshold is 0', async () => {
         const pointsThreshold = 0;
-        const response = await getAsStaff(
-            `/stats/merch-item/${pointsThreshold}`
-        ).expect(StatusCodes.OK);
+        const response = await getAsStaff(`/stats/merch-item/${pointsThreshold}`).expect(
+            StatusCodes.OK,
+        );
 
         expect(response.body).toEqual({ count: 3 });
     });
 
     it("should return exact count when threshold equals someone's points", async () => {
         const pointsThreshold = 10;
-        const response = await getAsStaff(
-            `/stats/merch-item/${pointsThreshold}`
-        ).expect(StatusCodes.OK);
+        const response = await getAsStaff(`/stats/merch-item/${pointsThreshold}`).expect(
+            StatusCodes.OK,
+        );
 
         expect(response.body).toEqual({ count: 3 });
     });
 
-    it("should return 400 if PRICE is not a number", async () => {
-        const response = await getAsStaff(
-            `/stats/merch-item/notanumber`
-        ).expect(StatusCodes.BAD_REQUEST);
-
-        expect(response.body).toHaveProperty("error");
-    });
-
-    it("should return 400 if PRICE is negative", async () => {
-        const response = await getAsStaff(`/stats/merch-item/-5`).expect(
-            StatusCodes.BAD_REQUEST
+    it('should return 400 if PRICE is not a number', async () => {
+        const response = await getAsStaff(`/stats/merch-item/notanumber`).expect(
+            StatusCodes.BAD_REQUEST,
         );
 
-        expect(response.body).toHaveProperty("error");
-        expect(response.body.error).toContain("non-negative");
+        expect(response.body).toHaveProperty('error');
     });
 
-    it("should return 400 if PRICE is not an integer", async () => {
-        const response = await getAsStaff(`/stats/merch-item/10.5`).expect(
-            StatusCodes.BAD_REQUEST
-        );
+    it('should return 400 if PRICE is negative', async () => {
+        const response = await getAsStaff(`/stats/merch-item/-5`).expect(StatusCodes.BAD_REQUEST);
 
-        expect(response.body).toHaveProperty("error");
+        expect(response.body).toHaveProperty('error');
+        expect(response.body.error).toContain('non-negative');
     });
 
-    it("should return 401 for unauthenticated users", async () => {
-        await get("/stats/merch-item/20").expect(StatusCodes.UNAUTHORIZED);
+    it('should return 400 if PRICE is not an integer', async () => {
+        const response = await getAsStaff(`/stats/merch-item/10.5`).expect(StatusCodes.BAD_REQUEST);
+
+        expect(response.body).toHaveProperty('error');
     });
 
-    it("should return 403 for users without STAFF access", async () => {
-        await get("/stats/merch-item/20", Role.enum.USER).expect(
-            StatusCodes.FORBIDDEN
-        );
+    it('should return 401 for unauthenticated users', async () => {
+        await get('/stats/merch-item/20').expect(StatusCodes.UNAUTHORIZED);
+    });
+
+    it('should return 403 for users without STAFF access', async () => {
+        await get('/stats/merch-item/20', Role.enum.USER).expect(StatusCodes.FORBIDDEN);
     });
 });
 
-describe("GET /stats/priority-attendee", () => {
+describe('GET /stats/priority-attendee', () => {
     beforeEach(async () => {
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
         await SupabaseDB.AUTH_ROLES.insert([
             AUTH_ROLES_RITAM,
             AUTH_ROLES_NATHAN,
             AUTH_ROLES_TIMOTHY,
         ]);
 
-        await SupabaseDB.ATTENDEES.insert([
-            ATTENDEE_RITAM,
-            ATTENDEE_NATHAN,
-            ATTENDEE_TIMOTHY,
-        ]);
+        await SupabaseDB.ATTENDEES.insert([ATTENDEE_RITAM, ATTENDEE_NATHAN, ATTENDEE_TIMOTHY]);
     });
 
-    it("should return correct count for people with priority attendance for today", async () => {
-        const response = await getAsStaff("/stats/priority-attendee").expect(
-            StatusCodes.OK
-        );
+    it('should return correct count for people with priority attendance for today', async () => {
+        const response = await getAsStaff('/stats/priority-attendee').expect(StatusCodes.OK);
         expect(response.body).toEqual({ count: 1 });
     });
 
-    it("should return 0 if no attendee has priority for today", async () => {
+    it('should return 0 if no attendee has priority for today', async () => {
         const dayFieldMap = {
-            Mon: "hasPriorityMon",
-            Tue: "hasPriorityTue",
-            Wed: "hasPriorityWed",
-            Thu: "hasPriorityThu",
-            Fri: "hasPriorityFri",
-            Sat: "hasPrioritySat",
-            Sun: "hasPrioritySun",
+            Mon: 'hasPriorityMon',
+            Tue: 'hasPriorityTue',
+            Wed: 'hasPriorityWed',
+            Thu: 'hasPriorityThu',
+            Fri: 'hasPriorityFri',
+            Sat: 'hasPrioritySat',
+            Sun: 'hasPrioritySun',
         };
 
         const updateData = Object.fromEntries(
-            Object.values(dayFieldMap).map((field) => [field, false])
+            Object.values(dayFieldMap).map((field) => [field, false]),
         );
 
         await SupabaseDB.ATTENDEES.update(updateData);
 
-        const response = await getAsStaff("/stats/priority-attendee").expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff('/stats/priority-attendee').expect(StatusCodes.OK);
         expect(response.body).toEqual({ count: 0 });
     });
 
-    it("should return 401 for unauthenticated users", async () => {
-        await get("/stats/priority-attendee").expect(StatusCodes.UNAUTHORIZED);
+    it('should return 401 for unauthenticated users', async () => {
+        await get('/stats/priority-attendee').expect(StatusCodes.UNAUTHORIZED);
     });
 
-    it("should return 403 for users without STAFF role", async () => {
-        await get("/stats/priority-attendee", Role.enum.USER).expect(
-            StatusCodes.FORBIDDEN
-        );
+    it('should return 403 for users without STAFF role', async () => {
+        await get('/stats/priority-attendee', Role.enum.USER).expect(StatusCodes.FORBIDDEN);
     });
 });
 
-describe("GET /stats/attendance/:N", () => {
+describe('GET /stats/attendance/:N', () => {
     beforeEach(async () => {
         await SupabaseDB.EVENT_ATTENDANCES.delete().throwOnError();
 
         await SupabaseDB.EVENTS.delete().throwOnError();
     });
 
-    it("should return attendance counts for the N most recent past events", async () => {
+    it('should return attendance counts for the N most recent past events', async () => {
         await SupabaseDB.EVENTS.insert([EVENT_1, EVENT_2, EVENT_3]);
 
-        const response = await getAsStaff(`/stats/attendance/2`).expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff(`/stats/attendance/2`).expect(StatusCodes.OK);
         expect(response.body.attendanceCounts).toEqual([20, 50]);
     });
 
-    it("should return all past events if fewer than N exist", async () => {
+    it('should return all past events if fewer than N exist', async () => {
         await SupabaseDB.EVENTS.insert([EVENT_3]);
 
-        const response = await getAsStaff(`/stats/attendance/5`).expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff(`/stats/attendance/5`).expect(StatusCodes.OK);
         expect(response.body.attendanceCounts).toEqual([35]);
     });
 
-    it("should return empty array if no past events exist", async () => {
+    it('should return empty array if no past events exist', async () => {
         await SupabaseDB.EVENTS.insert([FUTURE_EVENT]);
 
-        const response = await getAsStaff(`/stats/attendance/3`).expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff(`/stats/attendance/3`).expect(StatusCodes.OK);
         expect(response.body.attendanceCounts).toEqual([]);
     });
 
-    it("should return 400 for invalid or missing N param", async () => {
-        await getAsStaff(`/stats/attendance/not-a-number`).expect(
-            StatusCodes.BAD_REQUEST
-        );
+    it('should return 400 for invalid or missing N param', async () => {
+        await getAsStaff(`/stats/attendance/not-a-number`).expect(StatusCodes.BAD_REQUEST);
         await getAsStaff(`/stats/attendance/`).expect(StatusCodes.NOT_FOUND);
     });
 
-    it("should return 401 for unauthenticated users", async () => {
+    it('should return 401 for unauthenticated users', async () => {
         await get(`/stats/attendance/2`).expect(StatusCodes.UNAUTHORIZED);
     });
 
-    it("should return 403 for users without STAFF access", async () => {
-        await get(`/stats/attendance/2`, Role.enum.USER).expect(
-            StatusCodes.FORBIDDEN
-        );
+    it('should return 403 for users without STAFF access', async () => {
+        await get(`/stats/attendance/2`, Role.enum.USER).expect(StatusCodes.FORBIDDEN);
     });
 });
 
-describe("GET /stats/dietary-restrictions", () => {
+describe('GET /stats/dietary-restrictions', () => {
     beforeEach(async () => {
         const requiredAuthInfo = ATTENDEES_DIETARY.map((attendee, index) => ({
             userId: attendee.userId,
@@ -670,11 +600,10 @@ describe("GET /stats/dietary-restrictions", () => {
         await SupabaseDB.REGISTRATIONS.insert(ATTENDEES_DIETARY).throwOnError();
     });
 
-    it("should return correct dietary/allergy aggregation counts", async () => {
-        const response = await get(
-            "/stats/dietary-restrictions",
-            Role.enum.STAFF
-        ).expect(StatusCodes.OK);
+    it('should return correct dietary/allergy aggregation counts', async () => {
+        const response = await get('/stats/dietary-restrictions', Role.enum.STAFF).expect(
+            StatusCodes.OK,
+        );
 
         expect(response.body).toEqual({
             none: 1,
@@ -692,12 +621,11 @@ describe("GET /stats/dietary-restrictions", () => {
         });
     });
 
-    it("should return all zeros and empty maps if no attendees exist", async () => {
+    it('should return all zeros and empty maps if no attendees exist', async () => {
         await SupabaseDB.REGISTRATIONS.delete().throwOnError();
-        const response = await get(
-            "/stats/dietary-restrictions",
-            Role.enum.STAFF
-        ).expect(StatusCodes.OK);
+        const response = await get('/stats/dietary-restrictions', Role.enum.STAFF).expect(
+            StatusCodes.OK,
+        );
         expect(response.body).toEqual({
             none: 0,
             dietaryRestrictions: 0,
@@ -708,34 +636,30 @@ describe("GET /stats/dietary-restrictions", () => {
         });
     });
 
-    it("should return 401 for unauthenticated users", async () => {
-        await get("/stats/dietary-restrictions").expect(
-            StatusCodes.UNAUTHORIZED
-        );
+    it('should return 401 for unauthenticated users', async () => {
+        await get('/stats/dietary-restrictions').expect(StatusCodes.UNAUTHORIZED);
     });
 
-    it("should return 403 for users without STAFF role", async () => {
-        await get("/stats/dietary-restrictions", Role.enum.USER).expect(
-            StatusCodes.FORBIDDEN
-        );
+    it('should return 403 for users without STAFF role', async () => {
+        await get('/stats/dietary-restrictions', Role.enum.USER).expect(StatusCodes.FORBIDDEN);
     });
 });
 
-describe("GET /stats/registrations", () => {
+describe('GET /stats/registrations', () => {
     beforeEach(async () => {
         await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN]);
         await SupabaseDB.REGISTRATIONS.insert([
             {
-                userId: "a1",
-                name: "Ritam",
-                email: "ritam@test.com",
-                school: "University of Illinois",
-                educationLevel: "Computer Science",
-                graduationYear: "2025",
-                majors: ["Computer Science"],
+                userId: 'a1',
+                name: 'Ritam',
+                email: 'ritam@test.com',
+                school: 'University of Illinois',
+                educationLevel: 'Computer Science',
+                graduationYear: '2025',
+                majors: ['Computer Science'],
                 dietaryRestrictions: [],
                 allergies: [],
-                gender: "Prefer not to say",
+                gender: 'Prefer not to say',
                 ethnicity: [],
                 howDidYouHear: [],
                 personalLinks: [],
@@ -744,16 +668,16 @@ describe("GET /stats/registrations", () => {
                 isInterestedPuzzleBang: false,
             },
             {
-                userId: "a2",
-                name: "Nathan",
-                email: "nathan@test.com",
-                school: "University of Illinois",
-                educationLevel: "Computer Science",
-                graduationYear: "2024",
-                majors: ["Computer Science"],
+                userId: 'a2',
+                name: 'Nathan',
+                email: 'nathan@test.com',
+                school: 'University of Illinois',
+                educationLevel: 'Computer Science',
+                graduationYear: '2024',
+                majors: ['Computer Science'],
                 dietaryRestrictions: [],
                 allergies: [],
-                gender: "Prefer not to say",
+                gender: 'Prefer not to say',
                 ethnicity: [],
                 howDidYouHear: [],
                 personalLinks: [],
@@ -764,58 +688,46 @@ describe("GET /stats/registrations", () => {
         ]);
     });
 
-    it("should return the correct count of total registrations", async () => {
-        const response = await getAsStaff("/stats/registrations").expect(
-            StatusCodes.OK
-        );
+    it('should return the correct count of total registrations', async () => {
+        const response = await getAsStaff('/stats/registrations').expect(StatusCodes.OK);
         expect(response.body.count).toBe(2);
     });
 
-    it("should return 0 when no registrations exist", async () => {
+    it('should return 0 when no registrations exist', async () => {
         await SupabaseDB.REGISTRATIONS.delete().throwOnError();
-        const response = await getAsStaff("/stats/registrations").expect(
-            StatusCodes.OK
-        );
+        const response = await getAsStaff('/stats/registrations').expect(StatusCodes.OK);
         expect(response.body.count).toBe(0);
     });
 });
 
-describe("GET /stats/event/:EVENT_ID/attendance", () => {
+describe('GET /stats/event/:EVENT_ID/attendance', () => {
     beforeEach(async () => {
         await SupabaseDB.EVENTS.delete().throwOnError();
         await SupabaseDB.EVENTS.insert(EVENT_1);
     });
 
-    it("should return the attendance count for a specific event", async () => {
-        const response = await getAsStaff(
-            `/stats/event/${EVENT_1.eventId}/attendance`
-        ).expect(StatusCodes.OK);
+    it('should return the attendance count for a specific event', async () => {
+        const response = await getAsStaff(`/stats/event/${EVENT_1.eventId}/attendance`).expect(
+            StatusCodes.OK,
+        );
         expect(response.body.attendanceCount).toBe(EVENT_1.attendanceCount);
     });
 
-    it("should return 404 for a non-existent event", async () => {
-        await getAsStaff(`/stats/event/${uuidv4()}/attendance`).expect(
-            StatusCodes.NOT_FOUND
-        );
+    it('should return 404 for a non-existent event', async () => {
+        await getAsStaff(`/stats/event/${uuidv4()}/attendance`).expect(StatusCodes.NOT_FOUND);
     });
 
-    it("should return 400 for an invalid event ID format", async () => {
-        await getAsStaff("/stats/event/not-a-uuid/attendance").expect(
-            StatusCodes.BAD_REQUEST
-        );
+    it('should return 400 for an invalid event ID format', async () => {
+        await getAsStaff('/stats/event/not-a-uuid/attendance').expect(StatusCodes.BAD_REQUEST);
     });
 });
 
-describe("GET /stats/tier-counts", () => {
+describe('GET /stats/tier-counts', () => {
     beforeEach(async () => {
         await SupabaseDB.ATTENDEES.delete();
         await SupabaseDB.AUTH_INFO.delete();
 
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
         // Setup attendees with different tiers
         await SupabaseDB.ATTENDEES.insert([
             { ...ATTENDEE_RITAM, currentTier: Tiers.Enum.TIER1 },
@@ -824,10 +736,8 @@ describe("GET /stats/tier-counts", () => {
         ]);
     });
 
-    it("should return the count of attendees in each tier", async () => {
-        const response = await getAsStaff("/stats/tier-counts").expect(
-            StatusCodes.OK
-        );
+    it('should return the count of attendees in each tier', async () => {
+        const response = await getAsStaff('/stats/tier-counts').expect(StatusCodes.OK);
         expect(response.body).toEqual({
             TIER1: 2,
             TIER2: 1,
@@ -837,7 +747,7 @@ describe("GET /stats/tier-counts", () => {
     });
 });
 
-describe("GET /stats/tag-counts", () => {
+describe('GET /stats/tag-counts', () => {
     beforeEach(async () => {
         await SupabaseDB.ATTENDEES.delete();
         await SupabaseDB.AUTH_INFO.delete();
@@ -845,15 +755,13 @@ describe("GET /stats/tag-counts", () => {
         await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN]);
         // Setup attendees with overlapping tags
         await SupabaseDB.ATTENDEES.insert([
-            { ...ATTENDEE_RITAM, tags: ["AI", "career_readiness"] },
-            { ...ATTENDEE_NATHAN, tags: ["AI", "networking"] },
+            { ...ATTENDEE_RITAM, tags: ['AI', 'career_readiness'] },
+            { ...ATTENDEE_NATHAN, tags: ['AI', 'networking'] },
         ]);
     });
 
-    it("should return the count of each tag used by attendees", async () => {
-        const response = await getAsStaff("/stats/tag-counts").expect(
-            StatusCodes.OK
-        );
+    it('should return the count of each tag used by attendees', async () => {
+        const response = await getAsStaff('/stats/tag-counts').expect(StatusCodes.OK);
         expect(response.body).toEqual({
             AI: 2,
             career_readiness: 1,
@@ -862,28 +770,22 @@ describe("GET /stats/tag-counts", () => {
     });
 });
 
-describe("GET /stats/merch-redemption-counts", () => {
+describe('GET /stats/merch-redemption-counts', () => {
     beforeEach(async () => {
         await SupabaseDB.ATTENDEES.delete();
         await SupabaseDB.AUTH_INFO.delete();
 
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
 
         await SupabaseDB.REDEMPTIONS.insert([
-            { userId: "a1", item: Tiers.Enum.TIER1 },
-            { userId: "a2", item: Tiers.Enum.TIER2 },
-            { userId: "a3", item: Tiers.Enum.TIER4 },
+            { userId: 'a1', item: Tiers.Enum.TIER1 },
+            { userId: 'a2', item: Tiers.Enum.TIER2 },
+            { userId: 'a3', item: Tiers.Enum.TIER4 },
         ]).throwOnError();
     });
 
-    it("should return the total number of merch redemptions", async () => {
-        const response = await getAsStaff(
-            "/stats/merch-redemption-counts"
-        ).expect(StatusCodes.OK);
+    it('should return the total number of merch redemptions', async () => {
+        const response = await getAsStaff('/stats/merch-redemption-counts').expect(StatusCodes.OK);
         expect(response.body).toEqual({
             TIER1: 1,
             TIER2: 1,
@@ -893,7 +795,7 @@ describe("GET /stats/merch-redemption-counts", () => {
     });
 });
 
-describe("GET /stats/attended-at-least/:N", () => {
+describe('GET /stats/attended-at-least/:N', () => {
     beforeEach(async () => {
         await SupabaseDB.EVENTS.delete();
         await SupabaseDB.EVENT_ATTENDANCES.delete();
@@ -901,22 +803,14 @@ describe("GET /stats/attended-at-least/:N", () => {
         await SupabaseDB.AUTH_INFO.delete();
         await SupabaseDB.AUTH_ROLES.delete();
 
-        await SupabaseDB.AUTH_INFO.insert([
-            AUTH_INFO_RITAM,
-            AUTH_INFO_NATHAN,
-            AUTH_INFO_TIMOTHY,
-        ]);
+        await SupabaseDB.AUTH_INFO.insert([AUTH_INFO_RITAM, AUTH_INFO_NATHAN, AUTH_INFO_TIMOTHY]);
 
         await SupabaseDB.AUTH_ROLES.insert([
             AUTH_ROLES_RITAM,
             AUTH_ROLES_NATHAN,
             AUTH_ROLES_TIMOTHY,
         ]);
-        await SupabaseDB.ATTENDEES.insert([
-            ATTENDEE_RITAM,
-            ATTENDEE_NATHAN,
-            ATTENDEE_TIMOTHY,
-        ]);
+        await SupabaseDB.ATTENDEES.insert([ATTENDEE_RITAM, ATTENDEE_NATHAN, ATTENDEE_TIMOTHY]);
 
         // Create 3 events
         const eventA = { ...EVENT_1, eventId: uuidv4() };
@@ -931,11 +825,7 @@ describe("GET /stats/attended-at-least/:N", () => {
             },
             {
                 userId: ATTENDEE_NATHAN.userId,
-                eventsAttended: [
-                    eventA.eventId,
-                    eventB.eventId,
-                    eventC.eventId,
-                ],
+                eventsAttended: [eventA.eventId, eventB.eventId, eventC.eventId],
             },
             {
                 userId: ATTENDEE_TIMOTHY.userId,
@@ -944,41 +834,27 @@ describe("GET /stats/attended-at-least/:N", () => {
         ]);
     });
 
-    it("should return the count of attendees who have attended at least N events", async () => {
-        const response = await getAsStaff("/stats/attended-at-least/2").expect(
-            StatusCodes.OK
-        );
+    it('should return the count of attendees who have attended at least N events', async () => {
+        const response = await getAsStaff('/stats/attended-at-least/2').expect(StatusCodes.OK);
         // Ritam (2) and Nathan (3) have attended at least 2 events
         expect(response.body).toEqual({ count: 2 });
     });
 
-    it("should return 0 if no attendees have attended at least N events", async () => {
-        const response = await getAsStaff("/stats/attended-at-least/4").expect(
-            StatusCodes.OK
-        );
+    it('should return 0 if no attendees have attended at least N events', async () => {
+        const response = await getAsStaff('/stats/attended-at-least/4').expect(StatusCodes.OK);
         expect(response.body).toEqual({ count: 0 });
     });
 
-    it("should return all attendees if N is 0", async () => {
-        const response = await getAsStaff("/stats/attended-at-least/0").expect(
-            StatusCodes.OK
-        );
+    it('should return all attendees if N is 0', async () => {
+        const response = await getAsStaff('/stats/attended-at-least/0').expect(StatusCodes.OK);
         // All 3 attendees have attended at least 0 events
         expect(response.body).toEqual({ count: 3 });
     });
 
-    it("should return 400 for invalid or missing N param", async () => {
-        await getAsStaff("/stats/attended-at-least/not-a-number").expect(
-            StatusCodes.BAD_REQUEST
-        );
-        await getAsStaff("/stats/attended-at-least/").expect(
-            StatusCodes.NOT_FOUND
-        );
-        await getAsStaff("/stats/attended-at-least/-1").expect(
-            StatusCodes.BAD_REQUEST
-        );
-        await getAsStaff("/stats/attended-at-least/2.5").expect(
-            StatusCodes.BAD_REQUEST
-        );
+    it('should return 400 for invalid or missing N param', async () => {
+        await getAsStaff('/stats/attended-at-least/not-a-number').expect(StatusCodes.BAD_REQUEST);
+        await getAsStaff('/stats/attended-at-least/').expect(StatusCodes.NOT_FOUND);
+        await getAsStaff('/stats/attended-at-least/-1').expect(StatusCodes.BAD_REQUEST);
+        await getAsStaff('/stats/attended-at-least/2.5').expect(StatusCodes.BAD_REQUEST);
     });
 });

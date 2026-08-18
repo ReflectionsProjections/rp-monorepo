@@ -2,16 +2,16 @@
 module.exports = {
     apps: [
         {
-            name: "RP_API",
-            script: "build/src/app.js",
-            node_args: "--enable-source-maps",
+            name: 'RP_API',
+            script: 'build/src/app.js',
+            node_args: '--enable-source-maps',
             wait_ready: true,
             instances: 1,
             listen_timeout: 10 * 1000,
-            out_file: "/home/ubuntu/.pm2/logs/api_out.log",
-            err_file: "/home/ubuntu/.pm2/logs/api_err.log",
+            out_file: '/home/ubuntu/.pm2/logs/api_out.log',
+            err_file: '/home/ubuntu/.pm2/logs/api_err.log',
             combine_logs: true,
-            log_date_format: "YYYY-MM-DD HH:mm:ss.SSS",
+            log_date_format: 'YYYY-MM-DD HH:mm:ss.SSS',
         },
     ],
 };

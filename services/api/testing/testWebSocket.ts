@@ -1,4 +1,4 @@
-import { WebSocket } from "ws";
+import { WebSocket } from 'ws';
 
 const WS_TIMEOUT = 30 * 1000;
 
@@ -7,10 +7,8 @@ export default class TestWebSocket {
     private ws: WebSocket | undefined = undefined;
     private received: string[] = [];
     private closePromise: Promise<number> | undefined = undefined;
-    private resolveClosePromise: ((code: number) => void) | undefined =
-        undefined;
-    private rejectClosePromise: ((reason?: unknown) => void) | undefined =
-        undefined;
+    private resolveClosePromise: ((code: number) => void) | undefined = undefined;
+    private rejectClosePromise: ((reason?: unknown) => void) | undefined = undefined;
 
     constructor(url: string) {
         this.url = url;
@@ -35,10 +33,7 @@ export default class TestWebSocket {
             };
 
             this.ws.onmessage = (event) => {
-                const data =
-                    typeof event.data === "string"
-                        ? event.data
-                        : event.data.toString();
+                const data = typeof event.data === 'string' ? event.data : event.data.toString();
                 this.received.push(data);
             };
 
@@ -59,7 +54,7 @@ export default class TestWebSocket {
     }
 
     send(message: string) {
-        if (!this.ws) throw new Error("Cannot send - websocket not open");
+        if (!this.ws) throw new Error('Cannot send - websocket not open');
         this.ws.send(message);
     }
 

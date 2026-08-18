@@ -1,27 +1,25 @@
-import { Config } from "../../config";
-import { SupabaseDB } from "../../database";
-import { JwtPayloadType, Role, SetupJwtPayloadType } from "./auth-models";
-import jsonwebtoken, { SignOptions } from "jsonwebtoken";
+import { Config } from '../../config';
+import { SupabaseDB } from '../../database';
+import { JwtPayloadType, Role, SetupJwtPayloadType } from './auth-models';
+import jsonwebtoken, { SignOptions } from 'jsonwebtoken';
 
 export function normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
 }
 
-export async function getJwtPayloadFromDatabase(
-    userId: string
-): Promise<JwtPayloadType> {
-    const { data } = await SupabaseDB.AUTH_INFO.select("email, displayName")
-        .eq("userId", userId)
+export async function getJwtPayloadFromDatabase(userId: string): Promise<JwtPayloadType> {
+    const { data } = await SupabaseDB.AUTH_INFO.select('email, displayName')
+        .eq('userId', userId)
         .maybeSingle()
         .throwOnError();
 
     if (!data) {
-        throw new Error("NoUserFound");
+        throw new Error('NoUserFound');
     }
     const { email, displayName } = data;
 
     const { data: rolesRows } = await SupabaseDB.AUTH_ROLES.select()
-        .eq("userId", userId)
+        .eq('userId', userId)
         .throwOnError();
     const roles = rolesRows.map((row: { role: Role }) => row.role);
 
@@ -30,13 +28,13 @@ export async function getJwtPayloadFromDatabase(
         email,
         displayName,
         roles,
-        tokenType: "access",
+        tokenType: 'access',
     };
 }
 
 export async function generateJWT(
     userId: string,
-    expiresIn: SignOptions["expiresIn"] = Config.JWT_EXPIRATION_TIME
+    expiresIn: SignOptions['expiresIn'] = Config.JWT_EXPIRATION_TIME,
 ) {
     const jwtPayload = await getJwtPayloadFromDatabase(userId);
     return jsonwebtoken.sign(jwtPayload, Config.JWT_SIGNING_SECRET, {
@@ -45,12 +43,12 @@ export async function generateJWT(
 }
 
 export async function generateSetupJWT(userId: string) {
-    const { data } = await SupabaseDB.AUTH_INFO.select("email")
-        .eq("userId", userId)
+    const { data } = await SupabaseDB.AUTH_INFO.select('email')
+        .eq('userId', userId)
         .maybeSingle()
         .throwOnError();
     if (!data) {
-        throw new Error("NoUserFound");
+        throw new Error('NoUserFound');
     }
 
     const payload: SetupJwtPayloadType = {
@@ -58,7 +56,7 @@ export async function generateSetupJWT(userId: string) {
         email: data.email,
         displayName: null,
         roles: [],
-        tokenType: "setup",
+        tokenType: 'setup',
     };
     return jsonwebtoken.sign(payload, Config.JWT_SIGNING_SECRET, {
         expiresIn: Config.JWT_EXPIRATION_TIME,

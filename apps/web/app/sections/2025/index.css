@@ -1,56 +1,56 @@
 :root {
-  color: #213547;
-  background-color: #000000;
+    color: #213547;
+    background-color: #000000;
 }
 
 @font-face {
-  font-family: "Magistral";
-  src: url("/site/magistral.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Magistral';
+    src: url('/site/magistral.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "ProRacing";
-  src: url("/site/pro-racing.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'ProRacing';
+    src: url('/site/pro-racing.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "ProRacingSlant";
-  src: url("/site/pro-racing-slant.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'ProRacingSlant';
+    src: url('/site/pro-racing-slant.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 .condensed {
-  font-stretch: condensed;
+    font-stretch: condensed;
 }
 
 @font-face {
-  font-family: "Magistral";
-  src: url("/site/magistral-wide.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Magistral';
+    src: url('/site/magistral-wide.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "ProRacingSlant";
-  src: url("/site/pro-racing-slant-narrow.ttf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'ProRacingSlant';
+    src: url('/site/pro-racing-slant-narrow.ttf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "ProRacing";
-  src: url("/site/pro-racing-narrow.ttf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'ProRacing';
+    src: url('/site/pro-racing-narrow.ttf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }

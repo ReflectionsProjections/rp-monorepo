@@ -1,21 +1,21 @@
-import { z } from "zod";
-import { registry } from "../../middleware/openapi-registry";
+import { z } from 'zod';
+import { registry } from '../../middleware/openapi-registry';
 
-export const MagicLinkClient = z.enum(["web", "mobile"]);
-export const MagicLinkIntent = z.enum(["registration", "login", "resume-book"]);
+export const MagicLinkClient = z.enum(['web', 'mobile']);
+export const MagicLinkIntent = z.enum(['registration', 'login', 'resume-book']);
 
 export type MagicLinkClient = z.infer<typeof MagicLinkClient>;
 export type MagicLinkIntent = z.infer<typeof MagicLinkIntent>;
 
 const allowedMagicLinkRequests = new Set([
-    "web:registration",
-    "web:login",
-    "mobile:login",
-    "web:resume-book",
+    'web:registration',
+    'web:login',
+    'mobile:login',
+    'web:resume-book',
 ]);
 
 export const MagicLinkIssueValidator = registry.register(
-    "MagicLinkIssueValidator",
+    'MagicLinkIssueValidator',
     z
         .object({
             email: z.string().trim().email().max(256),
@@ -23,64 +23,62 @@ export const MagicLinkIssueValidator = registry.register(
             intent: MagicLinkIntent,
         })
         .strict()
-        .refine(
-            ({ client, intent }) =>
-                allowedMagicLinkRequests.has(`${client}:${intent}`),
-            { message: "Unsupported client and intent combination" }
-        )
-        .openapi("MagicLinkIssueValidator", {
-            example: {
-                email: "user@example.com",
-                client: "web",
-                intent: "login",
-            },
+        .refine(({ client, intent }) => allowedMagicLinkRequests.has(`${client}:${intent}`), {
+            message: 'Unsupported client and intent combination',
         })
+        .openapi('MagicLinkIssueValidator', {
+            example: {
+                email: 'user@example.com',
+                client: 'web',
+                intent: 'login',
+            },
+        }),
 );
 
 export const MagicLinkVerifyValidator = registry.register(
-    "MagicLinkVerifyValidator",
+    'MagicLinkVerifyValidator',
     z
         .object({
             token: z.string().min(20).max(512),
             client: MagicLinkClient,
         })
         .strict()
-        .openapi("MagicLinkVerifyValidator", {
+        .openapi('MagicLinkVerifyValidator', {
             example: {
-                token: "opaque-base64url-token",
-                client: "web",
+                token: 'opaque-base64url-token',
+                client: 'web',
             },
-        })
+        }),
 );
 
 export const MagicLinkCodeVerifyValidator = registry.register(
-    "MagicLinkCodeVerifyValidator",
+    'MagicLinkCodeVerifyValidator',
     z
         .object({
             email: z.string().trim().email().max(256),
             code: z
                 .string()
                 .trim()
-                .regex(/^\d{6}$/, "Must be a 6-digit code"),
+                .regex(/^\d{6}$/, 'Must be a 6-digit code'),
             client: MagicLinkClient,
         })
         .strict()
-        .openapi("MagicLinkCodeVerifyValidator", {
+        .openapi('MagicLinkCodeVerifyValidator', {
             example: {
-                email: "user@example.com",
-                code: "123456",
-                client: "web",
+                email: 'user@example.com',
+                code: '123456',
+                client: 'web',
             },
-        })
+        }),
 );
 
 export const MagicLinkTokenResponse = registry.register(
-    "MagicLinkTokenResponse",
-    z.object({ token: z.string() }).openapi("MagicLinkTokenResponse", {
+    'MagicLinkTokenResponse',
+    z.object({ token: z.string() }).openapi('MagicLinkTokenResponse', {
         example: {
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         },
-    })
+    }),
 );
 
 export type MagicLinkIssueRequest = z.infer<typeof MagicLinkIssueValidator>;

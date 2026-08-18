@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { z } from "zod";
-import { registry } from "../../../middleware/openapi-registry";
+import mongoose from 'mongoose';
+import { z } from 'zod';
+import { registry } from '../../../middleware/openapi-registry';
 
 export const SponsorAuthSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
@@ -15,24 +15,24 @@ export const SponsorAuthValidator = z.object({
 });
 
 export const AuthSponsorLoginValidator = registry.register(
-    "AuthSponsorLoginValidator",
+    'AuthSponsorLoginValidator',
     z
         .object({
             email: z.string().email(),
         })
-        .openapi("AuthSponsorLoginValidator", {
-            example: { email: "sponsor@acme.com" },
-        })
+        .openapi('AuthSponsorLoginValidator', {
+            example: { email: 'sponsor@acme.com' },
+        }),
 );
 
 export const AuthSponsorVerifyValidator = registry.register(
-    "AuthSponsorVerifyValidator",
+    'AuthSponsorVerifyValidator',
     z
         .object({
             email: z.string().email(),
             sixDigitCode: z.string().length(6),
         })
-        .openapi("AuthSponsorVerifyValidator", {
-            example: { email: "sponsor@acme.com", sixDigitCode: "123456" },
-        })
+        .openapi('AuthSponsorVerifyValidator', {
+            example: { email: 'sponsor@acme.com', sixDigitCode: '123456' },
+        }),
 );

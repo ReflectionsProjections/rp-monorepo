@@ -1,5 +1,5 @@
-import cors from "cors";
-import { Config } from "../config";
+import cors from 'cors';
+import { Config } from '../config';
 
 const allowedOrigins = Config.ALLOWED_CORS_ORIGIN_PATTERNS;
 
@@ -12,7 +12,7 @@ const customCors = cors({
         if (!origin || matchesRegex(origin, allowedOrigins)) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new Error('Not allowed by CORS'));
         }
     },
 });

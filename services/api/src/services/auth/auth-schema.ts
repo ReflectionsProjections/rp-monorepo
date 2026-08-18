@@ -1,11 +1,11 @@
-import { Schema } from "mongoose";
-import { z } from "zod";
-import { Role } from "./auth-models";
-import { Database } from "../../database.types";
-import { registry } from "../../middleware/openapi-registry";
+import { Schema } from 'mongoose';
+import { z } from 'zod';
+import { Role } from './auth-models';
+import { Database } from '../../database.types';
+import { registry } from '../../middleware/openapi-registry';
 
 export const RoleValidator = registry.register(
-    "RoleValidator",
+    'RoleValidator',
     z
         .object({
             userId: z.coerce.string(),
@@ -13,54 +13,54 @@ export const RoleValidator = registry.register(
             email: z.coerce.string().email(),
             roles: z.array(Role).default([]),
         })
-        .openapi("RoleValidator", {
+        .openapi('RoleValidator', {
             example: {
-                userId: "abc123",
-                displayName: "Jane Doe",
-                email: "jane@example.com",
-                roles: ["USER"],
+                userId: 'abc123',
+                displayName: 'Jane Doe',
+                email: 'jane@example.com',
+                roles: ['USER'],
             },
-        })
+        }),
 );
 
 export const AuthRoleChangeRequest = registry.register(
-    "AuthRoleChangeRequest",
+    'AuthRoleChangeRequest',
     z
         .object({
             userId: z.string(),
             role: Role,
         })
-        .openapi("AuthRoleChangeRequest", {
-            example: { userId: "abc123", role: "STAFF" },
-        })
+        .openapi('AuthRoleChangeRequest', {
+            example: { userId: 'abc123', role: 'STAFF' },
+        }),
 );
 
 // Response schemas
 export const AuthJwtResponse = registry.register(
-    "AuthJwtResponse",
-    z.object({ token: z.string() }).openapi("AuthJwtResponse", {
-        example: { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
-    })
+    'AuthJwtResponse',
+    z.object({ token: z.string() }).openapi('AuthJwtResponse', {
+        example: { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+    }),
 );
 
 export const AuthRoleView = registry.register(
-    "AuthRoleView",
+    'AuthRoleView',
     z
         .object({
             userId: z.string(),
             role: Role,
         })
-        .openapi("AuthRoleView", {
-            example: { userId: "abc123", role: "STAFF" },
-        })
+        .openapi('AuthRoleView', {
+            example: { userId: 'abc123', role: 'STAFF' },
+        }),
 );
 
 export const UserIdsResponse = registry.register(
-    "UserIdsResponse",
-    z.array(z.string()).openapi("UserIdsResponse", {
-        description: "List of user IDs",
-        example: ["abc123", "def456"],
-    })
+    'UserIdsResponse',
+    z.array(z.string()).openapi('UserIdsResponse', {
+        description: 'List of user IDs',
+        example: ['abc123', 'def456'],
+    }),
 );
 
 export const RoleSchema = new Schema(
@@ -84,7 +84,7 @@ export const RoleSchema = new Schema(
             required: true,
         },
     },
-    { timestamps: { createdAt: "createdAt" } }
+    { timestamps: { createdAt: 'createdAt' } },
 );
-export type AuthInfo = Database["public"]["Tables"]["authInfo"]["Row"];
-export type AuthRole = Database["public"]["Tables"]["authRoles"]["Row"];
+export type AuthInfo = Database['public']['Tables']['authInfo']['Row'];
+export type AuthRole = Database['public']['Tables']['authRoles']['Row'];

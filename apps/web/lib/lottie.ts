@@ -1,4 +1,4 @@
-import LottieDefaultImport from "lottie-react";
+import LottieDefaultImport from 'lottie-react';
 
 type MaybeNamespaced<T> = T & { default?: T };
 
@@ -14,7 +14,7 @@ type MaybeNamespaced<T> = T & { default?: T };
  * the component directly. Unwrapping a nested `default` covers both.
  */
 const Lottie =
-  (LottieDefaultImport as MaybeNamespaced<typeof LottieDefaultImport>)
-    .default ?? LottieDefaultImport;
+    (LottieDefaultImport as MaybeNamespaced<typeof LottieDefaultImport>).default ??
+    LottieDefaultImport;
 
 export default Lottie;

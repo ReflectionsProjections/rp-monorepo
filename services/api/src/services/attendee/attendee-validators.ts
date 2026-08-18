@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { IconColorType } from "../../database";
-import { Tiers } from "./attendee-schema";
-import { registry } from "../../middleware/openapi-registry";
+import { z } from 'zod';
+import { IconColorType } from '../../database';
+import { Tiers } from './attendee-schema';
+import { registry } from '../../middleware/openapi-registry';
 
 // Zod schema for attendee
 export const AttendeeCreateValidator = z.object({
@@ -10,15 +10,15 @@ export const AttendeeCreateValidator = z.object({
 });
 
 export const AttendeeRedeemMerchValidator = registry.register(
-    "AttendeeRedeemMerchValidator",
+    'AttendeeRedeemMerchValidator',
     z
         .object({
             userId: z.string(),
             tier: Tiers,
         })
-        .openapi("AttendeeRedeemMerchValidator", {
-            example: { userId: "abc123", tier: "TIER1" },
-        })
+        .openapi('AttendeeRedeemMerchValidator', {
+            example: { userId: 'abc123', tier: 'TIER1' },
+        }),
 );
 
 export const EventIdValidator = z.object({
@@ -26,124 +26,124 @@ export const EventIdValidator = z.object({
 });
 
 const IconColorEnumValues: [IconColorType, ...IconColorType[]] = [
-    "BLUE",
-    "RED",
-    "GREEN",
-    "PINK",
-    "PURPLE",
-    "ORANGE",
+    'BLUE',
+    'RED',
+    'GREEN',
+    'PINK',
+    'PURPLE',
+    'ORANGE',
 ];
 
 export const AttendeeIconUpdateValidator = registry.register(
-    "AttendeeIconUpdateValidator",
+    'AttendeeIconUpdateValidator',
     z
         .object({
             icon: z.enum(IconColorEnumValues),
         })
-        .openapi("AttendeeIconUpdateValidator", {
-            example: { icon: "BLUE" },
-        })
+        .openapi('AttendeeIconUpdateValidator', {
+            example: { icon: 'BLUE' },
+        }),
 );
 
 export const AttendeeTagsUpdateValidator = registry.register(
-    "AttendeeTagsUpdateValidator",
+    'AttendeeTagsUpdateValidator',
     z
         .object({
             tags: z.array(z.string()),
         })
-        .openapi("AttendeeTagsUpdateValidator", {
-            example: { tags: ["AI", "Systems"] },
-        })
+        .openapi('AttendeeTagsUpdateValidator', {
+            example: { tags: ['AI', 'Systems'] },
+        }),
 );
 
 export const AttendeePointsUpdateValidator = registry.register(
-    "AttendeePointsUpdateValidator",
+    'AttendeePointsUpdateValidator',
     z
         .object({
             userId: z.string(),
             pointsToAdd: z.number().int().min(1),
         })
-        .openapi("AttendeePointsUpdateValidator", {
-            example: { userId: "abc123", pointsToAdd: 10 },
-        })
+        .openapi('AttendeePointsUpdateValidator', {
+            example: { userId: 'abc123', pointsToAdd: 10 },
+        }),
 );
 
 // Response schemas
 
 export const AttendeeFavoritesView = registry.register(
-    "AttendeeFavoritesView",
+    'AttendeeFavoritesView',
     z
         .object({
             userId: z.string(),
             favoriteEvents: z.array(z.string()),
         })
-        .openapi("AttendeeFavoritesView", {
+        .openapi('AttendeeFavoritesView', {
             example: {
-                userId: "abc123",
-                favoriteEvents: ["3a72d491-c2f9-4baf-af5a-55713621d978"],
+                userId: 'abc123',
+                favoriteEvents: ['3a72d491-c2f9-4baf-af5a-55713621d978'],
             },
-        })
+        }),
 );
 
 export const AttendeeFavoritesUpdateResponse = registry.register(
-    "AttendeeFavoritesUpdateResponse",
+    'AttendeeFavoritesUpdateResponse',
     z
         .object({
             favorites: z.array(z.string()),
         })
-        .openapi("AttendeeFavoritesUpdateResponse", {
-            example: { favorites: ["3a72d491-c2f9-4baf-af5a-55713621d978"] },
-        })
+        .openapi('AttendeeFavoritesUpdateResponse', {
+            example: { favorites: ['3a72d491-c2f9-4baf-af5a-55713621d978'] },
+        }),
 );
 
 export const AttendeeQrResponse = registry.register(
-    "AttendeeQrResponse",
+    'AttendeeQrResponse',
     z
         .object({
             qrCode: z.string(),
         })
-        .openapi("AttendeeQrResponse", {
-            example: { qrCode: "abc123:1711483200" },
-        })
+        .openapi('AttendeeQrResponse', {
+            example: { qrCode: 'abc123:1711483200' },
+        }),
 );
 
 export const AttendeePointsResponse = registry.register(
-    "AttendeePointsResponse",
+    'AttendeePointsResponse',
     z
         .object({
             points: z.number(),
         })
-        .openapi("AttendeePointsResponse", { example: { points: 42 } })
+        .openapi('AttendeePointsResponse', { example: { points: 42 } }),
 );
 
 export const AttendeeFoodwaveResponse = registry.register(
-    "AttendeeFoodwaveResponse",
+    'AttendeeFoodwaveResponse',
     z
         .object({
             foodwave: z.number().int().min(1).max(2),
         })
-        .openapi("AttendeeFoodwaveResponse", { example: { foodwave: 1 } })
+        .openapi('AttendeeFoodwaveResponse', { example: { foodwave: 1 } }),
 );
 
 export const AttendeeEmailEntry = registry.register(
-    "AttendeeEmailEntry",
+    'AttendeeEmailEntry',
     z
         .object({
             email: z.string(),
             userId: z.string(),
             name: z.string(),
         })
-        .openapi("AttendeeEmailEntry", {
+        .openapi('AttendeeEmailEntry', {
             example: {
-                email: "jane@example.com",
-                userId: "abc123",
-                name: "Jane Doe",
+                email: 'jane@example.com',
+                userId: 'abc123',
+                name: 'Jane Doe',
             },
-        })
+        }),
 );
 
 export const AttendeeRedeemableView = registry.register(
-    "AttendeeRedeemableView",
+    'AttendeeRedeemableView',
     z
         .object({
             userId: z.string(),
@@ -151,61 +151,61 @@ export const AttendeeRedeemableView = registry.register(
             redeemedTiers: z.array(Tiers),
             redeemableTiers: z.array(Tiers),
         })
-        .openapi("AttendeeRedeemableView", {
+        .openapi('AttendeeRedeemableView', {
             example: {
-                userId: "abc123",
-                currentTier: "TIER2",
-                redeemedTiers: ["TIER1"],
-                redeemableTiers: ["TIER2"],
+                userId: 'abc123',
+                currentTier: 'TIER2',
+                redeemedTiers: ['TIER1'],
+                redeemableTiers: ['TIER2'],
             },
-        })
+        }),
 );
 
 export const AttendeeRedeemResponse = registry.register(
-    "AttendeeRedeemResponse",
+    'AttendeeRedeemResponse',
     z
         .object({
             message: z.string(),
             userId: z.string(),
             tier: Tiers,
         })
-        .openapi("AttendeeRedeemResponse", {
+        .openapi('AttendeeRedeemResponse', {
             example: {
-                message: "Tier redeemed successfully!",
-                userId: "abc123",
-                tier: "TIER1",
+                message: 'Tier redeemed successfully!',
+                userId: 'abc123',
+                tier: 'TIER1',
             },
-        })
+        }),
 );
 
 export const AttendeeIconResponse = registry.register(
-    "AttendeeIconResponse",
+    'AttendeeIconResponse',
     z
         .object({
             icon: z.enum(IconColorEnumValues),
         })
-        .openapi("AttendeeIconResponse", { example: { icon: "BLUE" } })
+        .openapi('AttendeeIconResponse', { example: { icon: 'BLUE' } }),
 );
 
 export const AttendeeTagsResponse = registry.register(
-    "AttendeeTagsResponse",
+    'AttendeeTagsResponse',
     z
         .object({
             tags: z.array(z.string()),
         })
-        .openapi("AttendeeTagsResponse", {
-            example: { tags: ["AI", "Systems"] },
-        })
+        .openapi('AttendeeTagsResponse', {
+            example: { tags: ['AI', 'Systems'] },
+        }),
 );
 
 export const AttendeeAttendanceResponse = registry.register(
-    "AttendeeAttendanceResponse",
+    'AttendeeAttendanceResponse',
     z
         .object({
             eventsAttended: z.array(z.string()),
             count: z.number().int().min(0),
         })
-        .openapi("AttendeeAttendanceResponse", {
-            example: { eventsAttended: ["event1", "event2"], count: 2 },
-        })
+        .openapi('AttendeeAttendanceResponse', {
+            example: { eventsAttended: ['event1', 'event2'], count: 2 },
+        }),
 );

@@ -1,15 +1,11 @@
-import { createHash, createHmac, randomBytes, randomInt } from "crypto";
-import { Config, EnvironmentEnum, Templates } from "../../config";
-import { SupabaseDB, supabase } from "../../database";
-import { sendTemplateEmail } from "../ses/ses-utils";
-import { Role } from "./auth-models";
-import { generateJWT, generateSetupJWT, normalizeEmail } from "./auth-utils";
-import { renderMagicLinkEmail } from "./magic-link-email";
-import {
-    MagicLinkClient,
-    MagicLinkIntent,
-    MagicLinkIssueRequest,
-} from "./magic-link-schema";
+import { createHash, createHmac, randomBytes, randomInt } from 'crypto';
+import { Config, EnvironmentEnum, Templates } from '../../config';
+import { SupabaseDB, supabase } from '../../database';
+import { sendTemplateEmail } from '../ses/ses-utils';
+import { Role } from './auth-models';
+import { generateJWT, generateSetupJWT, normalizeEmail } from './auth-utils';
+import { renderMagicLinkEmail } from './magic-link-email';
+import { MagicLinkClient, MagicLinkIntent, MagicLinkIssueRequest } from './magic-link-schema';
 
 type Account = {
     userId: string;
@@ -34,84 +30,77 @@ type FlowRule = {
 // are null. The Record key is exhaustive, so adding a new client or intent is
 // a compile error until every combination has an explicit rule.
 const FLOW_RULES: Record<FlowKey, FlowRule | null> = {
-    "web:registration": {
+    'web:registration': {
         callback: Config.MAGIC_LINK_REGISTRATION_CALLBACK,
         createsAccount: true,
         requiredRoles: null,
     },
-    "web:login": {
+    'web:login': {
         callback: Config.MAGIC_LINK_WEB_LOGIN_CALLBACK,
         createsAccount: true,
         requiredRoles: null,
     },
-    "mobile:login": {
+    'mobile:login': {
         callback: Config.MAGIC_LINK_MOBILE_LOGIN_CALLBACK,
         createsAccount: false,
         // STAFF alongside USER so staff can use the app without having
         // registered as attendees, as they could when Google login existed.
         requiredRoles: [Role.Enum.USER, Role.Enum.STAFF],
     },
-    "web:resume-book": {
+    'web:resume-book': {
         callback: Config.MAGIC_LINK_RESUME_BOOK_CALLBACK,
         createsAccount: false,
         requiredRoles: [Role.Enum.CORPORATE],
     },
-    "mobile:registration": null,
-    "mobile:resume-book": null,
+    'mobile:registration': null,
+    'mobile:resume-book': null,
 };
 
-function flowRuleFor(
-    client: MagicLinkClient,
-    intent: MagicLinkIntent
-): FlowRule | null {
+function flowRuleFor(client: MagicLinkClient, intent: MagicLinkIntent): FlowRule | null {
     return FLOW_RULES[`${client}:${intent}`];
 }
 
 function digestToken(token: string): string {
-    return createHash("sha256").update(token).digest("hex");
+    return createHash('sha256').update(token).digest('hex');
 }
 
 // A 6-digit code has only a million possibilities, so a plain hash could be
 // brute-forced offline from a leaked row; keying the digest with a server
 // secret means the stored value is useless without it.
 function digestCode(email: string, code: string): string {
-    return createHmac("sha256", Config.JWT_SIGNING_SECRET)
+    return createHmac('sha256', Config.JWT_SIGNING_SECRET)
         .update(`magic-link-code:${email}:${code}`)
-        .digest("hex");
+        .digest('hex');
 }
 
 function generateCode(): string {
-    return randomInt(0, 1_000_000).toString().padStart(6, "0");
+    return randomInt(0, 1_000_000).toString().padStart(6, '0');
 }
 
 async function findAccount(email: string): Promise<Account | null> {
-    const { data } = await SupabaseDB.AUTH_INFO.select(
-        "userId,email,displayName"
-    )
-        .eq("email", normalizeEmail(email))
+    const { data } = await SupabaseDB.AUTH_INFO.select('userId,email,displayName')
+        .eq('email', normalizeEmail(email))
         .maybeSingle()
         .throwOnError();
     return data;
 }
 
 async function rolesFor(userId: string): Promise<Role[]> {
-    const { data } = await SupabaseDB.AUTH_ROLES.select("role")
-        .eq("userId", userId)
-        .throwOnError();
+    const { data } = await SupabaseDB.AUTH_ROLES.select('role').eq('userId', userId).throwOnError();
     return data.map((row) => row.role);
 }
 
 async function isRosteredStaff(email: string): Promise<boolean> {
-    const { data } = await SupabaseDB.STAFF.select("email")
-        .eq("email", email)
+    const { data } = await SupabaseDB.STAFF.select('email')
+        .eq('email', email)
         .maybeSingle()
         .throwOnError();
     return data !== null;
 }
 
 async function isRosteredCorporate(email: string): Promise<boolean> {
-    const { data } = await SupabaseDB.CORPORATE.select("email")
-        .eq("email", email)
+    const { data } = await SupabaseDB.CORPORATE.select('email')
+        .eq('email', email)
         .maybeSingle()
         .throwOnError();
     return data !== null;
@@ -153,35 +142,22 @@ async function syncRosterRoles(userId: string, email: string): Promise<void> {
         Config.DEV_ADMIN_EMAIL &&
         email === Config.DEV_ADMIN_EMAIL
     ) {
-        for (const role of [
-            Role.Enum.SUPER_ADMIN,
-            Role.Enum.ADMIN,
-            Role.Enum.STAFF,
-        ]) {
+        for (const role of [Role.Enum.SUPER_ADMIN, Role.Enum.ADMIN, Role.Enum.STAFF]) {
             await SupabaseDB.AUTH_ROLES.upsert({ userId, role }).throwOnError();
         }
     }
 }
 
-async function hasRequiredRole(
-    email: string,
-    rule: FlowRule
-): Promise<boolean> {
+async function hasRequiredRole(email: string, rule: FlowRule): Promise<boolean> {
     if (rule.requiredRoles === null) {
         return true;
     }
     // The rosters stand in for their roles so a freshly granted staff member
     // or sponsor can sign in before their first login materializes the role.
-    if (
-        rule.requiredRoles.includes(Role.Enum.STAFF) &&
-        (await isRosteredStaff(email))
-    ) {
+    if (rule.requiredRoles.includes(Role.Enum.STAFF) && (await isRosteredStaff(email))) {
         return true;
     }
-    if (
-        rule.requiredRoles.includes(Role.Enum.CORPORATE) &&
-        (await isRosteredCorporate(email))
-    ) {
+    if (rule.requiredRoles.includes(Role.Enum.CORPORATE) && (await isRosteredCorporate(email))) {
         return true;
     }
     const account = await findAccount(email);
@@ -192,30 +168,25 @@ async function hasRequiredRole(
     return rule.requiredRoles.some((role) => roles.includes(role));
 }
 
-export async function issueMagicLink(
-    request: MagicLinkIssueRequest
-): Promise<void> {
+export async function issueMagicLink(request: MagicLinkIssueRequest): Promise<void> {
     const normalizedRequest = {
         ...request,
         email: normalizeEmail(request.email),
     };
-    const rule = flowRuleFor(
-        normalizedRequest.client,
-        normalizedRequest.intent
-    );
+    const rule = flowRuleFor(normalizedRequest.client, normalizedRequest.intent);
     if (!rule || !(await hasRequiredRole(normalizedRequest.email, rule))) {
         return;
     }
 
-    const token = randomBytes(32).toString("base64url");
+    const token = randomBytes(32).toString('base64url');
     const tokenDigest = digestToken(token);
     const code = generateCode();
 
     // A new request supersedes any earlier one: at most one live token per
     // email, so an emailed code always refers to the newest email.
     await SupabaseDB.MAGIC_LINK_TOKENS.delete()
-        .eq("subjectEmail", normalizedRequest.email)
-        .is("usedAt", null)
+        .eq('subjectEmail', normalizedRequest.email)
+        .is('usedAt', null)
         .throwOnError();
 
     await SupabaseDB.MAGIC_LINK_TOKENS.insert({
@@ -224,42 +195,37 @@ export async function issueMagicLink(
         subjectEmail: normalizedRequest.email,
         client: normalizedRequest.client,
         intent: normalizedRequest.intent,
-        expiresAt: new Date(
-            Date.now() + Config.VERIFY_EXP_TIME_MS
-        ).toISOString(),
+        expiresAt: new Date(Date.now() + Config.VERIFY_EXP_TIME_MS).toISOString(),
     }).throwOnError();
 
     const link = `${rule.callback}?token=${encodeURIComponent(token)}`;
     try {
         await sendTemplateEmail(normalizedRequest.email, Templates.RP_EMAILS, {
-            subject: "Your Reflections | Projections sign-in link",
+            subject: 'Your Reflections | Projections sign-in link',
             body: renderMagicLinkEmail(link, code, normalizedRequest.intent),
         });
     } catch (error) {
-        await SupabaseDB.MAGIC_LINK_TOKENS.delete()
-            .eq("tokenDigest", tokenDigest)
-            .throwOnError();
+        await SupabaseDB.MAGIC_LINK_TOKENS.delete().eq('tokenDigest', tokenDigest).throwOnError();
         throw error;
     }
 }
 
 async function getOrCreateAccount(email: string): Promise<Account> {
-    const { data, error } = await supabase.rpc(
-        "get_or_create_magic_link_account",
-        { p_email: email }
-    );
+    const { data, error } = await supabase.rpc('get_or_create_magic_link_account', {
+        p_email: email,
+    });
     if (error) {
         throw error;
     }
     const account = data.at(0);
     if (!account) {
-        throw new Error("NoUserFound");
+        throw new Error('NoUserFound');
     }
     return account;
 }
 
 async function consumeToken(token: string, client: MagicLinkClient) {
-    const { data, error } = await supabase.rpc("consume_magic_link_token", {
+    const { data, error } = await supabase.rpc('consume_magic_link_token', {
         p_token_digest: digestToken(token),
         p_client: client,
     });
@@ -269,12 +235,8 @@ async function consumeToken(token: string, client: MagicLinkClient) {
     return data.at(0) ?? null;
 }
 
-async function consumeCode(
-    email: string,
-    code: string,
-    client: MagicLinkClient
-) {
-    const { data, error } = await supabase.rpc("consume_magic_link_code", {
+async function consumeCode(email: string, code: string, client: MagicLinkClient) {
+    const { data, error } = await supabase.rpc('consume_magic_link_code', {
         p_email: email,
         p_code_digest: digestCode(email, code),
         p_client: client,
@@ -298,7 +260,7 @@ type ConsumedToken = {
  */
 async function sessionForConsumed(
     consumed: ConsumedToken,
-    client: MagicLinkClient
+    client: MagicLinkClient,
 ): Promise<string | null> {
     const intent = MagicLinkIntent.parse(consumed.intent);
     const rule = flowRuleFor(client, intent);
@@ -307,13 +269,8 @@ async function sessionForConsumed(
     }
 
     const email = normalizeEmail(consumed.subjectEmail);
-    let account = rule.createsAccount
-        ? await getOrCreateAccount(email)
-        : await findAccount(email);
-    if (
-        !account &&
-        ((await isRosteredStaff(email)) || (await isRosteredCorporate(email)))
-    ) {
+    let account = rule.createsAccount ? await getOrCreateAccount(email) : await findAccount(email);
+    if (!account && ((await isRosteredStaff(email)) || (await isRosteredCorporate(email)))) {
         // Rostered staff and sponsors signing in for the first time get the
         // account Google login used to create on the fly.
         account = await getOrCreateAccount(email);
@@ -325,10 +282,7 @@ async function sessionForConsumed(
     await syncRosterRoles(account.userId, email);
 
     const roles = await rolesFor(account.userId);
-    if (
-        rule.requiredRoles !== null &&
-        !rule.requiredRoles.some((role) => roles.includes(role))
-    ) {
+    if (rule.requiredRoles !== null && !rule.requiredRoles.some((role) => roles.includes(role))) {
         return null;
     }
 
@@ -337,15 +291,13 @@ async function sessionForConsumed(
     }
     return generateJWT(
         account.userId,
-        client === "mobile"
-            ? Config.MOBILE_JWT_EXPIRATION_TIME
-            : Config.JWT_EXPIRATION_TIME
+        client === 'mobile' ? Config.MOBILE_JWT_EXPIRATION_TIME : Config.JWT_EXPIRATION_TIME,
     );
 }
 
 export async function verifyMagicLink(
     token: string,
-    client: MagicLinkClient
+    client: MagicLinkClient,
 ): Promise<string | null> {
     const consumed = await consumeToken(token, client);
     if (!consumed) {
@@ -357,7 +309,7 @@ export async function verifyMagicLink(
 export async function verifyMagicLinkCode(
     email: string,
     code: string,
-    client: MagicLinkClient
+    client: MagicLinkClient,
 ): Promise<string | null> {
     const consumed = await consumeCode(normalizeEmail(email), code, client);
     if (!consumed) {

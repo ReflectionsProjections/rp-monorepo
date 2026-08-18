@@ -1,2 +1,2 @@
-import "@fontsource/nunito";
-import "@fontsource/roboto-slab";
+import '@fontsource/nunito';
+import '@fontsource/roboto-slab';

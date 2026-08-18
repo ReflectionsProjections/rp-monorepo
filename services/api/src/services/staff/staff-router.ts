@@ -1,16 +1,16 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import {
     CheckInValidator,
     StaffAttendanceTypeEnum,
     StaffValidator,
     UpdateStaffAttendanceValidator,
     AttendancesMap,
-} from "./staff-schema";
-import { SupabaseDB } from "../../database";
-import RoleChecker from "../../middleware/role-checker";
-import { JwtPayloadType, Role } from "../auth/auth-models";
-import Config from "../../config";
+} from './staff-schema';
+import { SupabaseDB } from '../../database';
+import RoleChecker from '../../middleware/role-checker';
+import { JwtPayloadType, Role } from '../auth/auth-models';
+import Config from '../../config';
 
 const staffRouter = Router();
 
@@ -58,78 +58,69 @@ const staffRouter = Router();
  *       - bearerAuth: []
  */
 // Check in to a meeting
-staffRouter.post(
-    "/check-in",
-    RoleChecker([Role.Enum.STAFF, Role.Enum.ADMIN]),
-    async (req, res) => {
-        // TODO: TEST THIS WITH VALID JWT
-        const { email } = res.locals.payload as JwtPayloadType;
-        const { meetingId } = CheckInValidator.parse(req.body);
+staffRouter.post('/check-in', RoleChecker([Role.Enum.STAFF, Role.Enum.ADMIN]), async (req, res) => {
+    // TODO: TEST THIS WITH VALID JWT
+    const { email } = res.locals.payload as JwtPayloadType;
+    const { meetingId } = CheckInValidator.parse(req.body);
 
-        const { data: meeting } = await SupabaseDB.MEETINGS.select("*")
-            .eq("meetingId", meetingId)
-            .maybeSingle()
-            .throwOnError();
+    const { data: meeting } = await SupabaseDB.MEETINGS.select('*')
+        .eq('meetingId', meetingId)
+        .maybeSingle()
+        .throwOnError();
 
-        if (!meeting) {
-            return res.status(StatusCodes.NOT_FOUND).send({
-                error: "NotFound",
-                message: "Meeting not found",
-            });
-        }
-
-        const { data: staff } = await SupabaseDB.STAFF.select("*")
-            .eq("email", email)
-            .maybeSingle()
-            .throwOnError();
-
-        if (!staff) {
-            throw new Error(`Could not find staff for ${email}`);
-        }
-
-        if (
-            (staff.attendances as AttendancesMap)[meetingId] ===
-            StaffAttendanceTypeEnum.PRESENT
-        ) {
-            return res.status(StatusCodes.BAD_REQUEST).send({
-                error: "AlreadyCheckedIn",
-                message: "You're already checked into this meeting!",
-            });
-        }
-
-        // Must be within a certain range of meeting time
-        const diffSeconds =
-            Math.abs(Date.now() - new Date(meeting.startTime).getTime()) / 1000;
-        if (diffSeconds >= Config.STAFF_MEETING_CHECK_IN_WINDOW_SECONDS) {
-            return res.status(StatusCodes.BAD_REQUEST).send({
-                error: "Expired",
-                message:
-                    "That meeting has already passed - you can no longer check into it",
-            });
-        }
-
-        const { data: updateStaff } = await SupabaseDB.STAFF.update({
-            attendances: {
-                ...(staff.attendances as AttendancesMap),
-                [meetingId]: StaffAttendanceTypeEnum.PRESENT,
-            },
-        })
-            .eq("email", email)
-            .select()
-            .maybeSingle()
-            .throwOnError();
-
-        if (!updateStaff) {
-            return res.status(StatusCodes.NOT_FOUND).send({
-                error: "NotFound",
-                message: "Staff not found",
-            });
-        }
-
-        const updatedStaff = await StaffValidator.parse(updateStaff);
-        return res.status(StatusCodes.OK).send(updatedStaff);
+    if (!meeting) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+            error: 'NotFound',
+            message: 'Meeting not found',
+        });
     }
-);
+
+    const { data: staff } = await SupabaseDB.STAFF.select('*')
+        .eq('email', email)
+        .maybeSingle()
+        .throwOnError();
+
+    if (!staff) {
+        throw new Error(`Could not find staff for ${email}`);
+    }
+
+    if ((staff.attendances as AttendancesMap)[meetingId] === StaffAttendanceTypeEnum.PRESENT) {
+        return res.status(StatusCodes.BAD_REQUEST).send({
+            error: 'AlreadyCheckedIn',
+            message: "You're already checked into this meeting!",
+        });
+    }
+
+    // Must be within a certain range of meeting time
+    const diffSeconds = Math.abs(Date.now() - new Date(meeting.startTime).getTime()) / 1000;
+    if (diffSeconds >= Config.STAFF_MEETING_CHECK_IN_WINDOW_SECONDS) {
+        return res.status(StatusCodes.BAD_REQUEST).send({
+            error: 'Expired',
+            message: 'That meeting has already passed - you can no longer check into it',
+        });
+    }
+
+    const { data: updateStaff } = await SupabaseDB.STAFF.update({
+        attendances: {
+            ...(staff.attendances as AttendancesMap),
+            [meetingId]: StaffAttendanceTypeEnum.PRESENT,
+        },
+    })
+        .eq('email', email)
+        .select()
+        .maybeSingle()
+        .throwOnError();
+
+    if (!updateStaff) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+            error: 'NotFound',
+            message: 'Staff not found',
+        });
+    }
+
+    const updatedStaff = await StaffValidator.parse(updateStaff);
+    return res.status(StatusCodes.OK).send(updatedStaff);
+});
 
 /**
  * @swagger
@@ -173,61 +164,56 @@ staffRouter.post(
  *       - bearerAuth: []
  */
 // Update a staff's attendance
-staffRouter.post(
-    "/:EMAIL/attendance",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (req, res) => {
-        const userEmail = req.params.EMAIL;
-        const { meetingId, attendanceType } =
-            UpdateStaffAttendanceValidator.parse(req.body);
+staffRouter.post('/:EMAIL/attendance', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+    const userEmail = req.params.EMAIL;
+    const { meetingId, attendanceType } = UpdateStaffAttendanceValidator.parse(req.body);
 
-        const { data: meeting } = await SupabaseDB.MEETINGS.select("*")
-            .eq("meetingId", meetingId)
-            .maybeSingle()
-            .throwOnError();
+    const { data: meeting } = await SupabaseDB.MEETINGS.select('*')
+        .eq('meetingId', meetingId)
+        .maybeSingle()
+        .throwOnError();
 
-        if (!meeting) {
-            return res.status(StatusCodes.NOT_FOUND).send({
-                error: "NotFound",
-                message: "Meeting not found",
-            });
-        }
-
-        const { data: staff } = await SupabaseDB.STAFF.select("attendances")
-            .eq("email", userEmail)
-            .maybeSingle()
-            .throwOnError();
-
-        if (!staff) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .send({ error: "NotFound", message: "Staff not found" });
-        }
-
-        const updatedAttendances = {
-            ...(staff.attendances as AttendancesMap),
-            [meetingId]: attendanceType,
-        };
-
-        const { data: updateStaff } = await SupabaseDB.STAFF.update({
-            attendances: updatedAttendances,
-        })
-            .eq("email", userEmail)
-            .select()
-            .maybeSingle()
-            .throwOnError();
-
-        if (!updateStaff) {
-            return res.status(StatusCodes.NOT_FOUND).send({
-                error: "NotFound",
-                message: "Staff not found",
-            });
-        }
-
-        const updatedStaff = await StaffValidator.parse(updateStaff);
-        return res.status(StatusCodes.OK).send(updatedStaff);
+    if (!meeting) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+            error: 'NotFound',
+            message: 'Meeting not found',
+        });
     }
-);
+
+    const { data: staff } = await SupabaseDB.STAFF.select('attendances')
+        .eq('email', userEmail)
+        .maybeSingle()
+        .throwOnError();
+
+    if (!staff) {
+        return res
+            .status(StatusCodes.NOT_FOUND)
+            .send({ error: 'NotFound', message: 'Staff not found' });
+    }
+
+    const updatedAttendances = {
+        ...(staff.attendances as AttendancesMap),
+        [meetingId]: attendanceType,
+    };
+
+    const { data: updateStaff } = await SupabaseDB.STAFF.update({
+        attendances: updatedAttendances,
+    })
+        .eq('email', userEmail)
+        .select()
+        .maybeSingle()
+        .throwOnError();
+
+    if (!updateStaff) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+            error: 'NotFound',
+            message: 'Staff not found',
+        });
+    }
+
+    const updatedStaff = await StaffValidator.parse(updateStaff);
+    return res.status(StatusCodes.OK).send(updatedStaff);
+});
 
 /**
  * @swagger
@@ -252,16 +238,11 @@ staffRouter.post(
  *       - bearerAuth: []
  */
 // Get all staff
-staffRouter.get(
-    "/",
-    RoleChecker([Role.Enum.STAFF, Role.Enum.ADMIN]),
-    async (req, res) => {
-        const { data: staffRecords } =
-            await SupabaseDB.STAFF.select("*").throwOnError();
+staffRouter.get('/', RoleChecker([Role.Enum.STAFF, Role.Enum.ADMIN]), async (req, res) => {
+    const { data: staffRecords } = await SupabaseDB.STAFF.select('*').throwOnError();
 
-        return res.status(StatusCodes.OK).json(staffRecords);
-    }
-);
+    return res.status(StatusCodes.OK).json(staffRecords);
+});
 
 /**
  * @swagger
@@ -299,28 +280,24 @@ staffRouter.get(
  *       - bearerAuth: []
  */
 // Get staff member by ID
-staffRouter.get(
-    "/:EMAIL",
-    RoleChecker([Role.Enum.STAFF, Role.Enum.ADMIN]),
-    async (req, res) => {
-        const userEmail = req.params.EMAIL;
+staffRouter.get('/:EMAIL', RoleChecker([Role.Enum.STAFF, Role.Enum.ADMIN]), async (req, res) => {
+    const userEmail = req.params.EMAIL;
 
-        const { data: staffData } = await SupabaseDB.STAFF.select("*")
-            .eq("email", userEmail)
-            .maybeSingle()
-            .throwOnError();
+    const { data: staffData } = await SupabaseDB.STAFF.select('*')
+        .eq('email', userEmail)
+        .maybeSingle()
+        .throwOnError();
 
-        if (!staffData) {
-            return res.status(StatusCodes.NOT_FOUND).send({
-                error: "UserNotFound",
-            });
-        }
-
-        const user = StaffValidator.parse(staffData);
-
-        return res.status(StatusCodes.OK).json(user);
+    if (!staffData) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+            error: 'UserNotFound',
+        });
     }
-);
+
+    const user = StaffValidator.parse(staffData);
+
+    return res.status(StatusCodes.OK).json(user);
+});
 
 /**
  * @swagger
@@ -358,30 +335,28 @@ staffRouter.get(
  *       - bearerAuth: []
  */
 // Create new staff member
-staffRouter.post("/", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+staffRouter.post('/', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
     // validate input using StaffValidator
     const validationResult = StaffValidator.safeParse(req.body);
 
     if (!validationResult.success) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            error: "ValidationError",
-            message: validationResult.error.errors
-                .map((e) => e.message)
-                .join(", "),
+            error: 'ValidationError',
+            message: validationResult.error.errors.map((e) => e.message).join(', '),
         });
     }
 
     const staffData = validationResult.data;
     // Check if staff member already exists
-    const { data: existingStaff } = await SupabaseDB.STAFF.select("email")
-        .eq("email", staffData.email)
+    const { data: existingStaff } = await SupabaseDB.STAFF.select('email')
+        .eq('email', staffData.email)
         .maybeSingle()
         .throwOnError();
 
     if (existingStaff) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            error: "UserAlreadyExists",
-            message: "Staff member with this email already exists",
+            error: 'UserAlreadyExists',
+            message: 'Staff member with this email already exists',
         });
     }
 
@@ -425,24 +400,18 @@ staffRouter.post("/", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
  *       - bearerAuth: []
  */
 // Delete staff member by ID
-staffRouter.delete(
-    "/:EMAIL",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (req, res) => {
-        const email = req.params.EMAIL;
-        const { data: deletedStaff } = await SupabaseDB.STAFF.delete()
-            .eq("email", email)
-            .select()
-            .maybeSingle()
-            .throwOnError();
+staffRouter.delete('/:EMAIL', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+    const email = req.params.EMAIL;
+    const { data: deletedStaff } = await SupabaseDB.STAFF.delete()
+        .eq('email', email)
+        .select()
+        .maybeSingle()
+        .throwOnError();
 
-        if (!deletedStaff) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ error: "UserNotFound" });
-        }
-        return res.sendStatus(StatusCodes.NO_CONTENT);
+    if (!deletedStaff) {
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'UserNotFound' });
     }
-);
+    return res.sendStatus(StatusCodes.NO_CONTENT);
+});
 
 export default staffRouter;
