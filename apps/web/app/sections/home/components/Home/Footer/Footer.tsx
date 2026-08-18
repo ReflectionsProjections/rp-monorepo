@@ -180,31 +180,11 @@ export const Footer = () => {
           </Flex>
           <ChakraLink
             as={RouterLink}
-            to="/app"
-            _hover={{ textDecoration: "none" }}
-          >
-            <Text
-              mt={8}
-              color="#FFFFFF"
-              w="100%"
-              fontFamily="Inter, sans-serif"
-              fontWeight={500}
-              fontSize={{ base: "md", md: "lg" }}
-              textAlign={{ base: "center", md: "right" }}
-              pr={{ base: 0, md: 4 }}
-              textDecoration="underline"
-              _hover={{ color: "#FFFFFFB0" }}
-            >
-              Download the app
-            </Text>
-          </ChakraLink>
-          <ChakraLink
-            as={RouterLink}
             to="/profile"
             _hover={{ textDecoration: "none" }}
           >
             <Text
-              mt={2}
+              mt={8}
               color="#FFFFFF"
               w="100%"
               fontFamily="Inter, sans-serif"

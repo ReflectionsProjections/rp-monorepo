@@ -65,7 +65,7 @@ const ALLERGY_OPTIONS = [
 const DIETARY_OPTIONS = [
   "Vegetarian",
   "Vegan",
-  "Pescetarian",
+  "Pescatarian",
   "Gluten-Free",
   "Kosher",
   "Halal",
@@ -149,7 +149,7 @@ export const SECTIONS: SectionMeta[] = [
  */
 export const STEP_FIELDS: (keyof RegistrationValues)[][] = [
   ["name", "gender"],
-  [],
+  ["allergiesOther", "dietaryOther"],
   ["school", "educationLevel", "majors", "graduationYear"],
   ["howDidYouHear", "tags"],
   ["personalLinks", "resume"]
@@ -165,7 +165,12 @@ export const sectionComplete = (
       return values.name !== "" && values.gender !== "";
     case 1:
       return (
-        values.allergies.length > 0 || values.dietaryRestrictions.length > 0
+        (values.allergies.length > 0 ||
+          values.dietaryRestrictions.length > 0) &&
+        (!values.allergies.includes("Other") ||
+          values.allergiesOther.trim() !== "") &&
+        (!values.dietaryRestrictions.includes("Other") ||
+          values.dietaryOther.trim() !== "")
       );
     case 2:
       return (
@@ -373,6 +378,9 @@ export const FoodSection = () => {
           value={values.allergiesOther}
           onChange={(next) => void setFieldValue("allergiesOther", next)}
         />
+        {values.allergies.includes("Other") && (
+          <FieldError name="allergiesOther" />
+        )}
       </Box>
       <Box>
         <FieldLabel>Dietary Restrictions</FieldLabel>
@@ -387,6 +395,9 @@ export const FoodSection = () => {
           value={values.dietaryOther}
           onChange={(next) => void setFieldValue("dietaryOther", next)}
         />
+        {values.dietaryRestrictions.includes("Other") && (
+          <FieldError name="dietaryOther" />
+        )}
       </Box>
     </>
   );
