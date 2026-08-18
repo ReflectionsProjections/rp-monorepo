@@ -92,8 +92,17 @@ export const finalRegistrationSchema = baseRegistrationSchema.shape({
 export const registrationSchema = baseRegistrationSchema.shape({
   genderOther: yup.string().nonNullable(),
   ethnicityOther: yup.string().nonNullable(),
-  dietaryOther: yup.string().nonNullable(),
-  allergiesOther: yup.string().nonNullable(),
+  dietaryOther: yup.string().when("dietaryRestrictions", {
+    is: (selected: string[]) => selected.includes("Other"),
+    then: (schema) =>
+      schema.trim().required("Please specify your dietary restriction"),
+    otherwise: (schema) => schema.nonNullable()
+  }),
+  allergiesOther: yup.string().when("allergies", {
+    is: (selected: string[]) => selected.includes("Other"),
+    then: (schema) => schema.trim().required("Please specify your allergy"),
+    otherwise: (schema) => schema.nonNullable()
+  }),
   educationOther: yup.string().nonNullable(),
   resume: yup.object().required("Please upload your resume"),
   over18: yup.boolean().oneOf([true], "You must be over 18").required()
