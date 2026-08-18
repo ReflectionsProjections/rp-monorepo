@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
-import { sendTemplateEmail } from "../../ses/ses-utils";
-import { Templates } from "../../../config";
-import { Config } from "../../../config";
-import { Role } from "../../auth/auth-models";
-import mustache from "mustache";
-import templates from "../../../templates/templates";
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { sendTemplateEmail } from '../../ses/ses-utils';
+import { Templates } from '../../../config';
+import { Config } from '../../../config';
+import { Role } from '../../auth/auth-models';
+import mustache from 'mustache';
+import templates from '../../../templates/templates';
 
-import { createSixDigitCode, encryptSixDigitCodeAsync } from "./sponsor-utils";
-import * as bcrypt from "bcrypt";
-import {
-    AuthSponsorLoginValidator,
-    AuthSponsorVerifyValidator,
-} from "./sponsor-schema";
-import { SupabaseDB, supabase } from "../../../database";
-import { generateJWT, normalizeEmail } from "../auth-utils";
+import { createSixDigitCode, encryptSixDigitCodeAsync } from './sponsor-utils';
+import * as bcrypt from 'bcrypt';
+import { AuthSponsorLoginValidator, AuthSponsorVerifyValidator } from './sponsor-schema';
+import { SupabaseDB, supabase } from '../../../database';
+import { generateJWT, normalizeEmail } from '../auth-utils';
 
 const authSponsorRouter = Router();
 
@@ -40,18 +37,18 @@ const authSponsorRouter = Router();
  *         description: Request accepted
  *     security: []
  */
-authSponsorRouter.post("/login", async (req, res) => {
+authSponsorRouter.post('/login', async (req, res) => {
     const request = AuthSponsorLoginValidator.parse(req.body);
     const email = normalizeEmail(request.email);
-    const { data: account } = await SupabaseDB.AUTH_INFO.select("userId")
-        .eq("email", email)
+    const { data: account } = await SupabaseDB.AUTH_INFO.select('userId')
+        .eq('email', email)
         .maybeSingle()
         .throwOnError();
 
     const { data: corporateRole } = account
-        ? await SupabaseDB.AUTH_ROLES.select("role")
-              .eq("userId", account.userId)
-              .eq("role", Role.Enum.CORPORATE)
+        ? await SupabaseDB.AUTH_ROLES.select('role')
+              .eq('userId', account.userId)
+              .eq('role', Role.Enum.CORPORATE)
               .maybeSingle()
               .throwOnError()
         : { data: null };
@@ -59,37 +56,34 @@ authSponsorRouter.post("/login", async (req, res) => {
     if (account && corporateRole) {
         try {
             const sixDigitCode = createSixDigitCode();
-            const hashedVerificationCode =
-                await encryptSixDigitCodeAsync(sixDigitCode);
+            const hashedVerificationCode = await encryptSixDigitCodeAsync(sixDigitCode);
             await SupabaseDB.AUTH_CODES.upsert(
                 {
                     email,
                     hashedVerificationCode,
-                    expTime: new Date(
-                        Date.now() + Config.VERIFY_EXP_TIME_MS
-                    ).toISOString(),
+                    expTime: new Date(Date.now() + Config.VERIFY_EXP_TIME_MS).toISOString(),
                 },
                 {
-                    onConflict: "email",
-                }
+                    onConflict: 'email',
+                },
             ).throwOnError();
 
             try {
                 await sendTemplateEmail(email, Templates.RP_EMAILS, {
-                    subject: "R|P Resume Book Email Verification",
+                    subject: 'R|P Resume Book Email Verification',
                     body: mustache.render(templates.SPONSOR_VERIFICATION, {
                         code: sixDigitCode,
                     }),
                 });
             } catch (error) {
                 await SupabaseDB.AUTH_CODES.delete()
-                    .eq("email", email)
-                    .eq("hashedVerificationCode", hashedVerificationCode)
+                    .eq('email', email)
+                    .eq('hashedVerificationCode', hashedVerificationCode)
                     .throwOnError();
                 throw error;
             }
         } catch (error) {
-            console.error("Failed to issue a legacy sponsor code", error);
+            console.error('Failed to issue a legacy sponsor code', error);
         }
     }
     return res.sendStatus(StatusCodes.ACCEPTED);
@@ -129,43 +123,40 @@ authSponsorRouter.post("/login", async (req, res) => {
  *               error: "InvalidCode"
  *     security: []
  */
-authSponsorRouter.post("/verify", async (req, res) => {
+authSponsorRouter.post('/verify', async (req, res) => {
     const request = AuthSponsorVerifyValidator.parse(req.body);
     const email = normalizeEmail(request.email);
     const { sixDigitCode } = request;
     const { data: sponsorData } = await SupabaseDB.AUTH_CODES.select()
-        .eq("email", email)
+        .eq('email', email)
         .maybeSingle()
         .throwOnError();
-    const { data: account } = await SupabaseDB.AUTH_INFO.select("userId")
-        .eq("email", email)
+    const { data: account } = await SupabaseDB.AUTH_INFO.select('userId')
+        .eq('email', email)
         .maybeSingle()
         .throwOnError();
     const { data: corporateRole } = account
-        ? await SupabaseDB.AUTH_ROLES.select("role")
-              .eq("userId", account.userId)
-              .eq("role", Role.Enum.CORPORATE)
+        ? await SupabaseDB.AUTH_ROLES.select('role')
+              .eq('userId', account.userId)
+              .eq('role', Role.Enum.CORPORATE)
               .maybeSingle()
               .throwOnError()
         : { data: null };
 
     if (!sponsorData || !account || !corporateRole) {
         return res.status(StatusCodes.UNAUTHORIZED).send({
-            error: "InvalidCode",
+            error: 'InvalidCode',
         });
     }
 
-    const match = await bcrypt.compare(
-        sixDigitCode,
-        sponsorData.hashedVerificationCode
-    );
+    const match = await bcrypt.compare(sixDigitCode, sponsorData.hashedVerificationCode);
     if (!match) {
         return res.status(StatusCodes.UNAUTHORIZED).send({
-            error: "InvalidCode",
+            error: 'InvalidCode',
         });
     }
 
-    const { data: consumed, error } = await supabase.rpc("consume_auth_code", {
+    const { data: consumed, error } = await supabase.rpc('consume_auth_code', {
         p_email: email,
         p_stored_hash: sponsorData.hashedVerificationCode,
     });
@@ -174,7 +165,7 @@ authSponsorRouter.post("/verify", async (req, res) => {
     }
     if (!consumed) {
         return res.status(StatusCodes.UNAUTHORIZED).send({
-            error: "InvalidCode",
+            error: 'InvalidCode',
         });
     }
 

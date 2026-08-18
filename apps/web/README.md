@@ -23,7 +23,7 @@ These commands assume you are in `apps/web`.
 | Type-check | `yarn type-check` |
 | Lint | `yarn lint` |
 | Verify | `yarn verify` |
-| Format workspace files | `yarn format` |
+| Format repository files | `cd ../.. && npm run format` |
 
 ## Workspace Structure
 

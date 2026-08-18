@@ -1,9 +1,9 @@
-import * as bcrypt from "bcrypt";
-import { Config } from "../../../config";
+import * as bcrypt from 'bcrypt';
+import { Config } from '../../../config';
 
 export function createSixDigitCode() {
-    let result = "";
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = '';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     for (let i = 0; i < 6; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -15,8 +15,6 @@ export function encryptSixDigitCode(sixDigitCode: string): string {
     return hash;
 }
 
-export async function encryptSixDigitCodeAsync(
-    sixDigitCode: string
-): Promise<string> {
+export async function encryptSixDigitCodeAsync(sixDigitCode: string): Promise<string> {
     return bcrypt.hash(sixDigitCode, Config.HASH_SALT_ROUNDS);
 }

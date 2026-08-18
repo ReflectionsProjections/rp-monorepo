@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import {
     DailyLeaderboardRequestValidator,
     SubmitLeaderboardRequestValidator,
@@ -10,16 +10,16 @@ import {
     SubmitLeaderboardResponseValidator,
     CheckSubmissionResponseValidator,
     MyLeaderboardRankResponseValidator,
-} from "./leaderboard-schema";
-import RoleChecker from "../../middleware/role-checker";
-import { Role } from "../auth/auth-models";
+} from './leaderboard-schema';
+import RoleChecker from '../../middleware/role-checker';
+import { Role } from '../auth/auth-models';
 import {
     getDailyLeaderboard,
     getGlobalLeaderboard,
     recordLeaderboardSubmission,
     promoteUsersToNextTier,
     checkLeaderboardSubmissionExists,
-} from "./leaderboard-utils";
+} from './leaderboard-utils';
 
 const leaderboardRouter = Router();
 
@@ -58,7 +58,7 @@ const leaderboardRouter = Router();
  *               $ref: '#/components/schemas/PreviewLeaderboardResponseValidator'
  *     security: []
  */
-leaderboardRouter.get("/daily", async (req, res) => {
+leaderboardRouter.get('/daily', async (req, res) => {
     const { day, n } = DailyLeaderboardRequestValidator.parse({
         day: req.query.day,
         n: req.query.n,
@@ -103,7 +103,7 @@ leaderboardRouter.get("/daily", async (req, res) => {
  *               $ref: '#/components/schemas/GlobalLeaderboardResponseValidator'
  *     security: []
  */
-leaderboardRouter.get("/global", async (req, res) => {
+leaderboardRouter.get('/global', async (req, res) => {
     const { n } = GlobalLeaderboardRequestValidator.parse({
         n: req.query.n,
     });
@@ -148,47 +148,39 @@ leaderboardRouter.get("/global", async (req, res) => {
  *     security:
  *       - bearerAuth: []
  */
-leaderboardRouter.get(
-    "/me",
-    RoleChecker([Role.Enum.USER]),
-    async (req, res) => {
-        const payload = res.locals.payload;
-        const userId = payload.userId;
+leaderboardRouter.get('/me', RoleChecker([Role.Enum.USER]), async (req, res) => {
+    const payload = res.locals.payload;
+    const userId = payload.userId;
 
-        const leaderboard = await getGlobalLeaderboard();
-        const myIndex = leaderboard.findIndex(
-            (entry) => entry.userId === userId
-        );
+    const leaderboard = await getGlobalLeaderboard();
+    const myIndex = leaderboard.findIndex((entry) => entry.userId === userId);
 
-        if (myIndex === -1) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ error: "UserNotFound" });
-        }
-
-        const me = leaderboard[myIndex];
-
-        // With competition ranking, tied entries share a rank, so walk backwards
-        // to the first entry with a strictly better rank.
-        let nextEntry = null;
-        for (let i = myIndex - 1; i >= 0; i--) {
-            if (leaderboard[i].rank < me.rank) {
-                nextEntry = leaderboard[i];
-                break;
-            }
-        }
-
-        const response = MyLeaderboardRankResponseValidator.parse({
-            rank: me.rank,
-            points: me.points,
-            totalParticipants: leaderboard.length,
-            nextRank: nextEntry ? nextEntry.rank : null,
-            pointsToNextRank: nextEntry ? nextEntry.points - me.points : null,
-        });
-
-        return res.status(StatusCodes.OK).json(response);
+    if (myIndex === -1) {
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'UserNotFound' });
     }
-);
+
+    const me = leaderboard[myIndex];
+
+    // With competition ranking, tied entries share a rank, so walk backwards
+    // to the first entry with a strictly better rank.
+    let nextEntry = null;
+    for (let i = myIndex - 1; i >= 0; i--) {
+        if (leaderboard[i].rank < me.rank) {
+            nextEntry = leaderboard[i];
+            break;
+        }
+    }
+
+    const response = MyLeaderboardRankResponseValidator.parse({
+        rank: me.rank,
+        points: me.points,
+        totalParticipants: leaderboard.length,
+        nextRank: nextEntry ? nextEntry.rank : null,
+        pointsToNextRank: nextEntry ? nextEntry.points - me.points : null,
+    });
+
+    return res.status(StatusCodes.OK).json(response);
+});
 
 /**
  * @swagger
@@ -219,22 +211,17 @@ leaderboardRouter.get(
  *     security:
  *       - bearerAuth: []
  */
-leaderboardRouter.get(
-    "/submission-status",
-    RoleChecker([]),
-    async (req, res) => {
-        const { day } = CheckSubmissionRequestValidator.parse({
-            day: req.query.day,
-        });
+leaderboardRouter.get('/submission-status', RoleChecker([]), async (req, res) => {
+    const { day } = CheckSubmissionRequestValidator.parse({
+        day: req.query.day,
+    });
 
-        const submissionStatus = await checkLeaderboardSubmissionExists(day);
+    const submissionStatus = await checkLeaderboardSubmissionExists(day);
 
-        const response =
-            CheckSubmissionResponseValidator.parse(submissionStatus);
+    const response = CheckSubmissionResponseValidator.parse(submissionStatus);
 
-        return res.status(StatusCodes.OK).json(response);
-    }
-);
+    return res.status(StatusCodes.OK).json(response);
+});
 
 /**
  * @swagger
@@ -272,55 +259,42 @@ leaderboardRouter.get(
  *     security:
  *       - bearerAuth: []
  */
-leaderboardRouter.post(
-    "/submit",
-    RoleChecker([Role.Enum.SUPER_ADMIN]),
-    async (req, res) => {
-        const payload = res.locals.payload;
-        const submittedBy = payload.userId;
+leaderboardRouter.post('/submit', RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
+    const payload = res.locals.payload;
+    const submittedBy = payload.userId;
 
-        const { day, n, userIdsToPromote } =
-            SubmitLeaderboardRequestValidator.parse(req.body);
+    const { day, n, userIdsToPromote } = SubmitLeaderboardRequestValidator.parse(req.body);
 
-        // Check if this date has already been submitted
-        const submissionStatus = await checkLeaderboardSubmissionExists(day);
-        if (submissionStatus.exists) {
-            return res.status(StatusCodes.CONFLICT).json({
-                error: "Leaderboard already submitted",
-                message: `A leaderboard submission already exists for ${day}`,
-                existingSubmission: submissionStatus.submission,
-            });
-        }
-
-        const leaderboard = await getDailyLeaderboard(day, n);
-
-        // Use explicit user IDs if provided, otherwise use all users from leaderboard
-        const userIdsForPromotion =
-            userIdsToPromote || leaderboard.map((entry) => entry.userId);
-
-        const entriesProcessed = await promoteUsersToNextTier(
-            userIdsForPromotion,
-            day
-        );
-
-        const { submissionId, submittedAt } = await recordLeaderboardSubmission(
-            day,
-            n,
-            submittedBy
-        );
-
-        const response = SubmitLeaderboardResponseValidator.parse({
-            leaderboard,
-            day,
-            count: n,
-            entriesProcessed,
-            submissionId,
-            submittedAt,
-            submittedBy,
+    // Check if this date has already been submitted
+    const submissionStatus = await checkLeaderboardSubmissionExists(day);
+    if (submissionStatus.exists) {
+        return res.status(StatusCodes.CONFLICT).json({
+            error: 'Leaderboard already submitted',
+            message: `A leaderboard submission already exists for ${day}`,
+            existingSubmission: submissionStatus.submission,
         });
-
-        return res.status(StatusCodes.OK).json(response);
     }
-);
+
+    const leaderboard = await getDailyLeaderboard(day, n);
+
+    // Use explicit user IDs if provided, otherwise use all users from leaderboard
+    const userIdsForPromotion = userIdsToPromote || leaderboard.map((entry) => entry.userId);
+
+    const entriesProcessed = await promoteUsersToNextTier(userIdsForPromotion, day);
+
+    const { submissionId, submittedAt } = await recordLeaderboardSubmission(day, n, submittedBy);
+
+    const response = SubmitLeaderboardResponseValidator.parse({
+        leaderboard,
+        day,
+        count: n,
+        entriesProcessed,
+        submissionId,
+        submittedAt,
+        submittedBy,
+    });
+
+    return res.status(StatusCodes.OK).json(response);
+});
 
 export default leaderboardRouter;

@@ -1,0 +1,28 @@
+# Dependencies and package-manager state
+**/node_modules
+**/.yarn
+**/*.lock
+
+# Build and native outputs
+**/dist
+**/build
+**/.expo
+**/android
+**/ios
+
+# Generated and vendored files
+**/nativewind-output.js
+**/assets/**/animations/*.json
+**/assets/lottie/*.json
+**/assets/Landing/*.json
+**/yarn-*.cjs
+services/api/src/database.types.ts
+
+# Configuration whose quoting is significant
+db/kong.yml
+
+# Keep workflow diffs focused so fixture credentials are not reported as new secrets
+.github/workflows/**
+
+# Documentation is outside the formatter's scope
+**/*.md

@@ -1,15 +1,10 @@
-import { beforeAll, describe } from "@jest/globals";
-import { server } from "../../app";
-import { DashboardMessage, DisplayMetadata } from "./dashboard-schema";
-import {
-    getAsAdmin,
-    getAsStaff,
-    postAsAdmin,
-    postAsStaff,
-} from "../../../testing/testingTools";
-import TestWebSocket from "../../../testing/testWebSocket";
-import { StatusCodes } from "http-status-codes";
-import Config from "../../config";
+import { beforeAll, describe } from '@jest/globals';
+import { server } from '../../app';
+import { DashboardMessage, DisplayMetadata } from './dashboard-schema';
+import { getAsAdmin, getAsStaff, postAsAdmin, postAsStaff } from '../../../testing/testingTools';
+import TestWebSocket from '../../../testing/testWebSocket';
+import { StatusCodes } from 'http-status-codes';
+import Config from '../../config';
 
 const serverPort = 4000;
 const wsBaseURL = `ws://localhost:${serverPort}`;
@@ -17,27 +12,27 @@ const DISPLAY_0_METADATA: DisplayMetadata = {
     screenWidth: 1920,
     screenHeight: 1080,
     devicePixelRatio: 1,
-    platform: "Linux - I Use Arch btw",
+    platform: 'Linux - I Use Arch btw',
     unixTime: Date.now(),
-    userAgent: "BrowserIMadeMyselfSoItNeverRendersProperly/0.1.2",
+    userAgent: 'BrowserIMadeMyselfSoItNeverRendersProperly/0.1.2',
 };
 const DISPLAY_1_METADATA: DisplayMetadata = {
     screenWidth: 3840,
     screenHeight: 2160,
     devicePixelRatio: 1,
-    platform: "Windows",
+    platform: 'Windows',
     unixTime: Date.now(),
-    userAgent: "Chrome/140.0.0.0 Windows NT/3",
+    userAgent: 'Chrome/140.0.0.0 Windows NT/3',
 };
 
 const DASHBOARD_MESSAGE: DashboardMessage = {
-    message: "test message",
+    message: 'test message',
 };
 
 const WS_SETTLE_MS = 50;
 const originalPingEveryMs = Config.DASHBOARD_PING_EVERY_MS;
 const originalTimeoutMs = Config.DASHBOARD_TIMEOUT_MS;
-const PING_MESSAGE = JSON.stringify({ type: "ping" });
+const PING_MESSAGE = JSON.stringify({ type: 'ping' });
 
 function sleep(delay: number) {
     return new Promise((res) => setTimeout(res, delay));
@@ -53,8 +48,8 @@ afterAll((done) => {
     server.close(done);
 });
 
-describe("ws /dashboard", () => {
-    it("ws accepts good input", async () => {
+describe('ws /dashboard', () => {
+    it('ws accepts good input', async () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
         ws.send(JSON.stringify(DISPLAY_0_METADATA));
@@ -65,38 +60,38 @@ describe("ws /dashboard", () => {
             received: [PING_MESSAGE],
         });
     });
-    it("ws rejects bad input", async () => {
+    it('ws rejects bad input', async () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
-        ws.send("bad input");
+        ws.send('bad input');
         await sleep(WS_SETTLE_MS);
         const result = await ws.close();
         expect(result).toEqual({
             code: 1008,
-            received: [PING_MESSAGE, "Invalid message"],
+            received: [PING_MESSAGE, 'Invalid message'],
         });
     });
 });
 
-describe("GET /dashboard", () => {
-    it("shows metadata of connected", async () => {
+describe('GET /dashboard', () => {
+    it('shows metadata of connected', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
         ws0.send(JSON.stringify(DISPLAY_0_METADATA));
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
-        const result = await getAsAdmin("/dashboard").expect(StatusCodes.OK);
+        const result = await getAsAdmin('/dashboard').expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
 
         expect(wsResults).toEqual([
             {
                 code: 1005,
-                received: [JSON.stringify({ type: "ping" })],
+                received: [JSON.stringify({ type: 'ping' })],
             },
             {
                 code: 1005,
-                received: [JSON.stringify({ type: "ping" })],
+                received: [JSON.stringify({ type: 'ping' })],
             },
         ]);
         expect(result.body).toEqual([
@@ -113,7 +108,7 @@ describe("GET /dashboard", () => {
         ]);
     });
 
-    it("removes metadata when display disconnected", async () => {
+    it('removes metadata when display disconnected', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -122,16 +117,16 @@ describe("GET /dashboard", () => {
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
         const ws0Result = await ws0.close();
 
-        const result = await getAsAdmin("/dashboard").expect(StatusCodes.OK);
+        const result = await getAsAdmin('/dashboard').expect(StatusCodes.OK);
         const ws1Result = await ws1.close();
 
         expect(ws0Result).toEqual({
             code: 1005,
-            received: [JSON.stringify({ type: "ping" })],
+            received: [JSON.stringify({ type: 'ping' })],
         });
         expect(ws1Result).toEqual({
             code: 1005,
-            received: [JSON.stringify({ type: "ping" })],
+            received: [JSON.stringify({ type: 'ping' })],
         });
         expect(result.body).toEqual([
             {
@@ -142,7 +137,7 @@ describe("GET /dashboard", () => {
         ]);
     });
 
-    it("removes metadata when display times out", async () => {
+    it('removes metadata when display times out', async () => {
         Config.DASHBOARD_PING_EVERY_MS = 100;
         Config.DASHBOARD_TIMEOUT_MS = 300;
 
@@ -152,21 +147,15 @@ describe("GET /dashboard", () => {
             ws.send(JSON.stringify(DISPLAY_0_METADATA));
             await sleep(Config.DASHBOARD_PING_EVERY_MS);
 
-            const beforeTimeoutResult = await getAsAdmin("/dashboard").expect(
-                StatusCodes.OK
-            );
+            const beforeTimeoutResult = await getAsAdmin('/dashboard').expect(StatusCodes.OK);
             await sleep(Config.DASHBOARD_TIMEOUT_MS);
-            const afterTimeoutResult = await getAsAdmin("/dashboard").expect(
-                StatusCodes.OK
-            );
+            const afterTimeoutResult = await getAsAdmin('/dashboard').expect(StatusCodes.OK);
 
             const wsResult = await ws.close();
 
             expect(wsResult?.code).toBe(1005);
             expect(wsResult?.received.length).toBeGreaterThanOrEqual(2);
-            expect(
-                wsResult?.received.every((message) => message === PING_MESSAGE)
-            ).toBe(true);
+            expect(wsResult?.received.every((message) => message === PING_MESSAGE)).toBe(true);
             expect(beforeTimeoutResult.body).toEqual([
                 {
                     id: 0,
@@ -181,21 +170,19 @@ describe("GET /dashboard", () => {
         }
     });
 
-    it("returns nothing if none connected", async () => {
-        const res = await getAsAdmin("/dashboard").expect(StatusCodes.OK);
+    it('returns nothing if none connected', async () => {
+        const res = await getAsAdmin('/dashboard').expect(StatusCodes.OK);
         expect(res.body).toEqual([]);
     });
 
-    it("fails for non admin", async () => {
-        const res = await getAsStaff("/dashboard").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await getAsStaff('/dashboard').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });
 
-describe("POST /dashboard/identify", () => {
-    it("sends identify message to all displays", async () => {
+describe('POST /dashboard/identify', () => {
+    it('sends identify message to all displays', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -203,24 +190,22 @@ describe("POST /dashboard/identify", () => {
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
 
-        const res = await postAsAdmin("/dashboard/identify").expect(
-            StatusCodes.OK
-        );
+        const res = await postAsAdmin('/dashboard/identify').expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
 
         expect(wsResults).toEqual([
             {
                 code: 1005,
                 received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "message", message: "0" }),
+                    JSON.stringify({ type: 'ping' }),
+                    JSON.stringify({ type: 'message', message: '0' }),
                 ],
             },
             {
                 code: 1005,
                 received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "message", message: "1" }),
+                    JSON.stringify({ type: 'ping' }),
+                    JSON.stringify({ type: 'message', message: '1' }),
                 ],
             },
         ]);
@@ -228,16 +213,14 @@ describe("POST /dashboard/identify", () => {
         expect(res.body).toEqual({ sentTo: [0, 1] });
     });
 
-    it("fails for non admin", async () => {
-        const res = await postAsStaff("/dashboard/identify").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await postAsStaff('/dashboard/identify').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });
 
-describe("POST /dashboard/identify/:id", () => {
-    it("sends identify message to specified display", async () => {
+describe('POST /dashboard/identify/:id', () => {
+    it('sends identify message to specified display', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -245,21 +228,19 @@ describe("POST /dashboard/identify/:id", () => {
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
 
-        const res = await postAsAdmin("/dashboard/identify/1").expect(
-            StatusCodes.OK
-        );
+        const res = await postAsAdmin('/dashboard/identify/1').expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
 
         expect(wsResults).toEqual([
             {
                 code: 1005,
-                received: [JSON.stringify({ type: "ping" })],
+                received: [JSON.stringify({ type: 'ping' })],
             },
             {
                 code: 1005,
                 received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "message", message: "1" }),
+                    JSON.stringify({ type: 'ping' }),
+                    JSON.stringify({ type: 'message', message: '1' }),
                 ],
             },
         ]);
@@ -267,35 +248,31 @@ describe("POST /dashboard/identify/:id", () => {
         expect(res.body).toEqual({ sentTo: [1] });
     });
 
-    it("fails if the display is not found", async () => {
+    it('fails if the display is not found', async () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
         ws.send(JSON.stringify(DISPLAY_0_METADATA));
 
-        const result = await postAsAdmin("/dashboard/identify/2").expect(
-            StatusCodes.NOT_FOUND
-        );
+        const result = await postAsAdmin('/dashboard/identify/2').expect(StatusCodes.NOT_FOUND);
 
         const wsResult = await ws.close();
 
         expect(wsResult).toEqual({
             code: 1005,
-            received: [JSON.stringify({ type: "ping" })],
+            received: [JSON.stringify({ type: 'ping' })],
         });
 
-        expect(result.body).toMatchObject({ error: "NotFound" });
+        expect(result.body).toMatchObject({ error: 'NotFound' });
     });
 
-    it("fails for non admin", async () => {
-        const res = await postAsStaff("/dashboard/identify/1").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await postAsStaff('/dashboard/identify/1').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });
 
-describe("POST /dashboard/reload", () => {
-    it("sends reload message to all displays", async () => {
+describe('POST /dashboard/reload', () => {
+    it('sends reload message to all displays', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -303,41 +280,31 @@ describe("POST /dashboard/reload", () => {
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
 
-        const res = await postAsAdmin("/dashboard/reload").expect(
-            StatusCodes.OK
-        );
+        const res = await postAsAdmin('/dashboard/reload').expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
 
         expect(wsResults).toEqual([
             {
                 code: 1005,
-                received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "reload" }),
-                ],
+                received: [JSON.stringify({ type: 'ping' }), JSON.stringify({ type: 'reload' })],
             },
             {
                 code: 1005,
-                received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "reload" }),
-                ],
+                received: [JSON.stringify({ type: 'ping' }), JSON.stringify({ type: 'reload' })],
             },
         ]);
 
         expect(res.body).toEqual({ sentTo: [0, 1] });
     });
 
-    it("fails for non admin", async () => {
-        const res = await postAsStaff("/dashboard/reload").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await postAsStaff('/dashboard/reload').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });
 
-describe("POST /dashboard/reload/:id", () => {
-    it("sends reload message to specified display", async () => {
+describe('POST /dashboard/reload/:id', () => {
+    it('sends reload message to specified display', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -345,57 +312,48 @@ describe("POST /dashboard/reload/:id", () => {
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
 
-        const res = await postAsAdmin("/dashboard/reload/1").expect(
-            StatusCodes.OK
-        );
+        const res = await postAsAdmin('/dashboard/reload/1').expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
 
         expect(wsResults).toEqual([
             {
                 code: 1005,
-                received: [JSON.stringify({ type: "ping" })],
+                received: [JSON.stringify({ type: 'ping' })],
             },
             {
                 code: 1005,
-                received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "reload" }),
-                ],
+                received: [JSON.stringify({ type: 'ping' }), JSON.stringify({ type: 'reload' })],
             },
         ]);
 
         expect(res.body).toEqual({ sentTo: [1] });
     });
 
-    it("fails if the display is not found", async () => {
+    it('fails if the display is not found', async () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
         ws.send(JSON.stringify(DISPLAY_0_METADATA));
 
-        const result = await postAsAdmin("/dashboard/reload/2").expect(
-            StatusCodes.NOT_FOUND
-        );
+        const result = await postAsAdmin('/dashboard/reload/2').expect(StatusCodes.NOT_FOUND);
 
         const wsResult = await ws.close();
 
         expect(wsResult).toEqual({
             code: 1005,
-            received: [JSON.stringify({ type: "ping" })],
+            received: [JSON.stringify({ type: 'ping' })],
         });
 
-        expect(result.body).toMatchObject({ error: "NotFound" });
+        expect(result.body).toMatchObject({ error: 'NotFound' });
     });
 
-    it("fails for non admin", async () => {
-        const res = await postAsStaff("/dashboard/reload/1").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await postAsStaff('/dashboard/reload/1').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });
 
-describe("POST /dashboard/message", () => {
-    it("sends a message to all displays", async () => {
+describe('POST /dashboard/message', () => {
+    it('sends a message to all displays', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -403,7 +361,7 @@ describe("POST /dashboard/message", () => {
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
 
-        const res = await postAsAdmin("/dashboard/message")
+        const res = await postAsAdmin('/dashboard/message')
             .send(DASHBOARD_MESSAGE)
             .expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
@@ -412,15 +370,15 @@ describe("POST /dashboard/message", () => {
             {
                 code: 1005,
                 received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "message", ...DASHBOARD_MESSAGE }),
+                    JSON.stringify({ type: 'ping' }),
+                    JSON.stringify({ type: 'message', ...DASHBOARD_MESSAGE }),
                 ],
             },
             {
                 code: 1005,
                 received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "message", ...DASHBOARD_MESSAGE }),
+                    JSON.stringify({ type: 'ping' }),
+                    JSON.stringify({ type: 'message', ...DASHBOARD_MESSAGE }),
                 ],
             },
         ]);
@@ -428,24 +386,22 @@ describe("POST /dashboard/message", () => {
         expect(res.body).toEqual({ sentTo: [0, 1] });
     });
 
-    it("fails for invalid payload", async () => {
-        const result = await postAsAdmin("/dashboard/message")
-            .send({ invalid: "whatever" })
+    it('fails for invalid payload', async () => {
+        const result = await postAsAdmin('/dashboard/message')
+            .send({ invalid: 'whatever' })
             .expect(StatusCodes.BAD_REQUEST);
 
-        expect(result.body).toMatchObject({ error: "BadRequest" });
+        expect(result.body).toMatchObject({ error: 'BadRequest' });
     });
 
-    it("fails for non admin", async () => {
-        const res = await postAsStaff("/dashboard/message").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await postAsStaff('/dashboard/message').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });
 
-describe("POST /dashboard/message/:id", () => {
-    it("sends a message to specified display", async () => {
+describe('POST /dashboard/message/:id', () => {
+    it('sends a message to specified display', async () => {
         const ws0 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         const ws1 = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws0.start();
@@ -453,7 +409,7 @@ describe("POST /dashboard/message/:id", () => {
         await ws1.start();
         ws1.send(JSON.stringify(DISPLAY_1_METADATA));
 
-        const res = await postAsAdmin("/dashboard/message/1")
+        const res = await postAsAdmin('/dashboard/message/1')
             .send(DASHBOARD_MESSAGE)
             .expect(StatusCodes.OK);
         const wsResults = await Promise.all([ws0.close(), ws1.close()]);
@@ -461,13 +417,13 @@ describe("POST /dashboard/message/:id", () => {
         expect(wsResults).toEqual([
             {
                 code: 1005,
-                received: [JSON.stringify({ type: "ping" })],
+                received: [JSON.stringify({ type: 'ping' })],
             },
             {
                 code: 1005,
                 received: [
-                    JSON.stringify({ type: "ping" }),
-                    JSON.stringify({ type: "message", ...DASHBOARD_MESSAGE }),
+                    JSON.stringify({ type: 'ping' }),
+                    JSON.stringify({ type: 'message', ...DASHBOARD_MESSAGE }),
                 ],
             },
         ]);
@@ -475,12 +431,12 @@ describe("POST /dashboard/message/:id", () => {
         expect(res.body).toEqual({ sentTo: [1] });
     });
 
-    it("fails if the display is not found", async () => {
+    it('fails if the display is not found', async () => {
         const ws = new TestWebSocket(`${wsBaseURL}/dashboard`);
         await ws.start();
         ws.send(JSON.stringify(DISPLAY_0_METADATA));
 
-        const result = await postAsAdmin("/dashboard/message/2")
+        const result = await postAsAdmin('/dashboard/message/2')
             .send(DASHBOARD_MESSAGE)
             .expect(StatusCodes.NOT_FOUND);
 
@@ -488,24 +444,22 @@ describe("POST /dashboard/message/:id", () => {
 
         expect(wsResult).toEqual({
             code: 1005,
-            received: [JSON.stringify({ type: "ping" })],
+            received: [JSON.stringify({ type: 'ping' })],
         });
 
-        expect(result.body).toMatchObject({ error: "NotFound" });
+        expect(result.body).toMatchObject({ error: 'NotFound' });
     });
 
-    it("fails for invalid payload", async () => {
-        const result = await postAsAdmin("/dashboard/message/0")
-            .send({ invalid: "whatever" })
+    it('fails for invalid payload', async () => {
+        const result = await postAsAdmin('/dashboard/message/0')
+            .send({ invalid: 'whatever' })
             .expect(StatusCodes.BAD_REQUEST);
 
-        expect(result.body).toMatchObject({ error: "BadRequest" });
+        expect(result.body).toMatchObject({ error: 'BadRequest' });
     });
 
-    it("fails for non admin", async () => {
-        const res = await postAsStaff("/dashboard/message/1").expect(
-            StatusCodes.FORBIDDEN
-        );
-        expect(res.body).toMatchObject({ error: "Forbidden" });
+    it('fails for non admin', async () => {
+        const res = await postAsStaff('/dashboard/message/1').expect(StatusCodes.FORBIDDEN);
+        expect(res.body).toMatchObject({ error: 'Forbidden' });
     });
 });

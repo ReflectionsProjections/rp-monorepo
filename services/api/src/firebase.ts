@@ -1,5 +1,5 @@
-import * as admin from "firebase-admin";
-import Config from "./config";
+import * as admin from 'firebase-admin';
+import Config from './config';
 
 // We only want to initialize the firebase admin once
 let initialized = false;

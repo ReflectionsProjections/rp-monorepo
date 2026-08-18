@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import type {
     OpenAPIObject,
     OperationObject,
@@ -6,12 +6,12 @@ import type {
     MediaTypeObject,
     SchemaObject,
     ReferenceObject,
-} from "openapi3-ts/oas30";
-import { Config, Environment } from "./config";
+} from 'openapi3-ts/oas30';
+import { Config, Environment } from './config';
 
 export async function connectToDatabase() {
     const url = getDatabaseUrl();
-    console.log("URL", url);
+    console.log('URL', url);
     return mongoose.connect(url);
 }
 
@@ -59,13 +59,10 @@ export function injectOneOfExamples(spec: OpenAPIObject): void {
     // grab the application/json media type, check if its schema uses oneOf, and if so,
     // pull the example from each referenced schema and inject it into mediaType.examples
     for (const pathObj of Object.values(spec.paths ?? {})) {
-        for (const operation of Object.values(
-            pathObj as Record<string, OperationObject>
-        )) {
+        for (const operation of Object.values(pathObj as Record<string, OperationObject>)) {
             for (const response of Object.values(operation.responses ?? {})) {
-                const mediaType: MediaTypeObject | undefined = (
-                    response as ResponseObject
-                )?.content?.["application/json"];
+                const mediaType: MediaTypeObject | undefined = (response as ResponseObject)
+                    ?.content?.['application/json'];
 
                 if (!mediaType?.schema) continue;
                 const schema = mediaType.schema as SchemaObject;
@@ -74,10 +71,7 @@ export function injectOneOfExamples(spec: OpenAPIObject): void {
                 // happen, but this is less confusing behavior)
                 if (mediaType.examples) continue;
 
-                const examples: Record<
-                    string,
-                    { summary: string; value: unknown }
-                > = {};
+                const examples: Record<string, { summary: string; value: unknown }> = {};
 
                 for (const variant of schema.oneOf) {
                     let ref = (variant as ReferenceObject).$ref;
@@ -86,7 +80,7 @@ export function injectOneOfExamples(spec: OpenAPIObject): void {
                     if (!ref) {
                         const asSchema = variant as SchemaObject;
                         if (
-                            asSchema.type === "array" &&
+                            asSchema.type === 'array' &&
                             (asSchema.items as ReferenceObject)?.$ref
                         ) {
                             ref = (asSchema.items as ReferenceObject).$ref;
@@ -95,17 +89,15 @@ export function injectOneOfExamples(spec: OpenAPIObject): void {
 
                     if (!ref) continue;
 
-                    const schemaName = ref.split("/").pop()!;
-                    const resolved = schemas[schemaName] as
-                        | SchemaObject
-                        | undefined;
+                    const schemaName = ref.split('/').pop()!;
+                    const resolved = schemas[schemaName] as SchemaObject | undefined;
                     if (!resolved?.example) continue;
 
                     examples[schemaName] = {
                         summary: schemaName,
                         // wrap in an array if the variant is an array type
                         value:
-                            (variant as SchemaObject).type === "array"
+                            (variant as SchemaObject).type === 'array'
                                 ? [resolved.example]
                                 : resolved.example,
                     };

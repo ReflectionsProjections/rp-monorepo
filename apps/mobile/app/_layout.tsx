@@ -19,53 +19,53 @@ SplashScreen.preventAutoHideAsync();
 
 const RNText = Text as any;
 RNText.defaultProps = {
-  ...(RNText.defaultProps || {}),
-  style: {
-    ...(RNText.defaultProps?.style || {}),
-    fontFamily: 'ProRacing',
-  },
+    ...(RNText.defaultProps || {}),
+    style: {
+        ...(RNText.defaultProps?.style || {}),
+        fontFamily: 'ProRacing',
+    },
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  // const {
-  //   fcmToken,
-  //   isLoading: notificationsLoading,
-  //   error: notificationsError,
-  // } = useFirebaseNotifications();
-  const [loaded] = useFonts({
-    RacingSansOne: require('../assets/fonts/RacingSansOne-Regular.ttf'),
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ProRacing: require('../assets/fonts/ProRacing-Regular.otf'),
-    ProRacingSlant: require('../assets/fonts/ProRacingSlant.otf'),
-    Magistral: require('../assets/fonts/magistral-light.ttf'),
-    MagistralMedium: require('../assets/fonts/magistral-medium.ttf'),
-  });
+    const colorScheme = useColorScheme();
+    // const {
+    //   fcmToken,
+    //   isLoading: notificationsLoading,
+    //   error: notificationsError,
+    // } = useFirebaseNotifications();
+    const [loaded] = useFonts({
+        RacingSansOne: require('../assets/fonts/RacingSansOne-Regular.ttf'),
+        SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+        ProRacing: require('../assets/fonts/ProRacing-Regular.otf'),
+        ProRacingSlant: require('../assets/fonts/ProRacingSlant.otf'),
+        Magistral: require('../assets/fonts/magistral-light.ttf'),
+        MagistralMedium: require('../assets/fonts/magistral-medium.ttf'),
+    });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    useEffect(() => {
+        if (loaded) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded]);
+
+    if (!loaded) {
+        return null;
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen
-          name="(auth)"
-          options={{
-            headerShown: false,
-            animation: 'ios_from_left',
-          }}
-        />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style="auto" />
-      <Toast />
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+                <Stack.Screen
+                    name="(auth)"
+                    options={{
+                        headerShown: false,
+                        animation: 'ios_from_left',
+                    }}
+                />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar style="auto" />
+            <Toast />
+        </ThemeProvider>
+    );
 }

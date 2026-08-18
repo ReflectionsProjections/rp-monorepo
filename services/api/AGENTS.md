@@ -73,8 +73,10 @@ Run commands from `services/api`:
 -   `yarn test:watch`
 -   `yarn lint`
 -   `yarn lint:check`
--   `yarn format:check`
 -   `yarn verify`
+
+Run repository-wide formatting from the monorepo root with `npm run format` or
+`npm run format:check`.
 
 ## Verification Expectations
 
@@ -82,7 +84,7 @@ Prefer the narrowest verification that proves the change:
 
 -   route or schema changes: `yarn test`
 -   type-level or build-sensitive changes: `yarn build`
--   style or rule compliance: `yarn lint:check` and `yarn format:check`
+-   style or rule compliance: `yarn lint:check` plus `npm run format:check` from the monorepo root
 -   broader API changes: `yarn verify`
 
 If tests or verification cannot be run, say so clearly and explain why.

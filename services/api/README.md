@@ -38,8 +38,8 @@ From `services/api`:
 | Run tests in watch mode | `yarn test:watch` |
 | Lint code | `yarn lint` |
 | Check lint | `yarn lint:check` |
-| Format code | `yarn format` |
-| Check formatting | `yarn format:check` |
+| Format repository code | `cd ../.. && npm run format` |
+| Check repository formatting | `cd ../.. && npm run format:check` |
 | Build project | `yarn build` |
 | Verify | `yarn verify` |
 

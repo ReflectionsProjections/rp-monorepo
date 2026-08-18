@@ -1,29 +1,29 @@
-import { z } from "zod";
-import { CommitteeTypes } from "../../database";
-import { registry } from "../../middleware/openapi-registry";
+import { z } from 'zod';
+import { CommitteeTypes } from '../../database';
+import { registry } from '../../middleware/openapi-registry';
 
 export enum StaffAttendanceTypeEnum {
-    PRESENT = "PRESENT",
-    EXCUSED = "EXCUSED",
-    ABSENT = "ABSENT",
+    PRESENT = 'PRESENT',
+    EXCUSED = 'EXCUSED',
+    ABSENT = 'ABSENT',
 }
 export const StaffAttendanceType = registry.register(
-    "StaffAttendanceType",
-    z.nativeEnum(StaffAttendanceTypeEnum).openapi("StaffAttendanceType", {
-        description: "Attendance status for a staff meeting",
-    })
+    'StaffAttendanceType',
+    z.nativeEnum(StaffAttendanceTypeEnum).openapi('StaffAttendanceType', {
+        description: 'Attendance status for a staff meeting',
+    }),
 );
 export type AttendancesMap = Record<string, StaffAttendanceTypeEnum>;
 
 // Zod schema for staff
 export const StaffValidator = registry.register(
-    "StaffView",
+    'StaffView',
     z
         .object({
             email: z.coerce.string(),
             name: z.string(),
             team: z.nativeEnum(CommitteeTypes).openapi({
-                description: "Committee the staff member belongs to",
+                description: 'Committee the staff member belongs to',
             }),
             // add preprocessor to convert a map into a plain javascript object
             attendances: z
@@ -36,39 +36,39 @@ export const StaffValidator = registry.register(
                 }, z.record(z.string()))
                 .default({}),
         })
-        .openapi("StaffView", {
+        .openapi('StaffView', {
             example: {
-                email: "volunteer@illinois.edu",
-                name: "Jane Doe",
-                team: "DEV",
+                email: 'volunteer@illinois.edu',
+                name: 'Jane Doe',
+                team: 'DEV',
                 attendances: {
-                    "3a72d491-c2f9-4baf-af5a-55713621d978": "PRESENT",
+                    '3a72d491-c2f9-4baf-af5a-55713621d978': 'PRESENT',
                 },
             },
-        })
+        }),
 );
 export type Staff = z.infer<typeof StaffValidator>;
 
 export const CheckInValidator = registry.register(
-    "CheckInValidator",
-    z.object({ meetingId: z.string() }).openapi("CheckInValidator", {
-        example: { meetingId: "3a72d491-c2f9-4baf-af5a-55713621d978" },
-    })
+    'CheckInValidator',
+    z.object({ meetingId: z.string() }).openapi('CheckInValidator', {
+        example: { meetingId: '3a72d491-c2f9-4baf-af5a-55713621d978' },
+    }),
 );
 
 export const UpdateStaffAttendanceValidator = registry.register(
-    "UpdateStaffAttendanceValidator",
+    'UpdateStaffAttendanceValidator',
     z
         .object({
             meetingId: z.string(),
             attendanceType: StaffAttendanceType,
         })
-        .openapi("UpdateStaffAttendanceValidator", {
+        .openapi('UpdateStaffAttendanceValidator', {
             example: {
-                meetingId: "3a72d491-c2f9-4baf-af5a-55713621d978",
+                meetingId: '3a72d491-c2f9-4baf-af5a-55713621d978',
                 attendanceType: StaffAttendanceTypeEnum.PRESENT,
             },
-        })
+        }),
 );
 
 // // Mongoose schema for staff

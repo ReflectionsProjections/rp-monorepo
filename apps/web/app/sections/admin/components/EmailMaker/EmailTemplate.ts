@@ -1,5 +1,5 @@
 export function rpMainTemplate(htmlContent: string) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -703,7 +703,7 @@ export function rpMainTemplate(htmlContent: string) {
 }
 
 export function rpEmptyTemplate(htmlContent: string) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -1313,7 +1313,7 @@ export function rpEmptyTemplate(htmlContent: string) {
 }
 
 export function rpNoneTemplate(htmlContent: string) {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />

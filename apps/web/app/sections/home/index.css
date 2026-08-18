@@ -1,24 +1,24 @@
 :root {
-  color: #213547;
-  background-color: #000000;
+    color: #213547;
+    background-color: #000000;
 }
 
 @font-face {
-  font-family: "Geist Pixel";
-  src: url("/site/geist-pixel.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Geist Pixel';
+    src: url('/site/geist-pixel.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/site/inter.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Inter';
+    src: url('/site/inter.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
 }
 
 .condensed {
-  font-stretch: condensed;
+    font-stretch: condensed;
 }

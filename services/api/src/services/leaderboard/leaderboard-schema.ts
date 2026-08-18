@@ -1,65 +1,65 @@
-import { z } from "zod";
-import { Tiers, IconColors } from "../attendee/attendee-schema";
-import { registry } from "../../middleware/openapi-registry";
+import { z } from 'zod';
+import { Tiers, IconColors } from '../attendee/attendee-schema';
+import { registry } from '../../middleware/openapi-registry';
 
 export const DayStringValidator = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-    message: "Day must be in YYYY-MM-DD format",
+    message: 'Day must be in YYYY-MM-DD format',
 });
 
 // Request validator for daily leaderboard GET endpoint (n is optional)
 export const DailyLeaderboardRequestValidator = registry.register(
-    "DailyLeaderboardRequestValidator",
+    'DailyLeaderboardRequestValidator',
     z
         .object({
             day: DayStringValidator,
             n: z.coerce.number().int().min(1).optional(),
         })
-        .openapi("DailyLeaderboardRequestValidator", {
-            example: { day: "2025-04-01", n: 10 },
-        })
+        .openapi('DailyLeaderboardRequestValidator', {
+            example: { day: '2025-04-01', n: 10 },
+        }),
 );
 
 // Request validator for leaderboard submission endpoint (n is required)
 export const SubmitLeaderboardRequestValidator = registry.register(
-    "SubmitLeaderboardRequestValidator",
+    'SubmitLeaderboardRequestValidator',
     z
         .object({
             day: DayStringValidator,
             n: z.coerce.number().int().min(1),
             userIdsToPromote: z.array(z.string()).optional(),
         })
-        .openapi("SubmitLeaderboardRequestValidator", {
-            example: { day: "2025-04-01", n: 10 },
-        })
+        .openapi('SubmitLeaderboardRequestValidator', {
+            example: { day: '2025-04-01', n: 10 },
+        }),
 );
 
 // Request validator for global leaderboard endpoint (n is optional)
 export const GlobalLeaderboardRequestValidator = registry.register(
-    "GlobalLeaderboardRequestValidator",
+    'GlobalLeaderboardRequestValidator',
     z
         .object({
             n: z.coerce.number().int().min(1).optional(),
         })
-        .openapi("GlobalLeaderboardRequestValidator", {
+        .openapi('GlobalLeaderboardRequestValidator', {
             example: { n: 10 },
-        })
+        }),
 );
 
 // Request validator for checking submission status (day is required)
 export const CheckSubmissionRequestValidator = registry.register(
-    "CheckSubmissionRequestValidator",
+    'CheckSubmissionRequestValidator',
     z
         .object({
             day: DayStringValidator,
         })
-        .openapi("CheckSubmissionRequestValidator", {
-            example: { day: "2025-04-01" },
-        })
+        .openapi('CheckSubmissionRequestValidator', {
+            example: { day: '2025-04-01' },
+        }),
 );
 
 // Leaderboard entry - represents a single user in the leaderboard; reuse for global and daily
 export const LeaderboardEntryValidator = registry.register(
-    "LeaderboardEntryValidator",
+    'LeaderboardEntryValidator',
     z
         .object({
             rank: z.number().int().min(1),
@@ -69,73 +69,73 @@ export const LeaderboardEntryValidator = registry.register(
             currentTier: Tiers,
             icon: IconColors,
         })
-        .openapi("LeaderboardEntryValidator", {
+        .openapi('LeaderboardEntryValidator', {
             example: {
                 rank: 1,
-                userId: "abc123",
-                displayName: "Jane Doe",
+                userId: 'abc123',
+                displayName: 'Jane Doe',
                 points: 150,
-                currentTier: "TIER2",
-                icon: "BLUE",
+                currentTier: 'TIER2',
+                icon: 'BLUE',
             },
-        })
+        }),
 );
 
 // GET /daily response (preview)
 export const PreviewLeaderboardResponseValidator = registry.register(
-    "PreviewLeaderboardResponseValidator",
+    'PreviewLeaderboardResponseValidator',
     z
         .object({
             leaderboard: z.array(LeaderboardEntryValidator),
             day: z.string(),
             count: z.number().int().min(0),
         })
-        .openapi("PreviewLeaderboardResponseValidator", {
+        .openapi('PreviewLeaderboardResponseValidator', {
             example: {
-                day: "2025-04-01",
+                day: '2025-04-01',
                 count: 1,
                 leaderboard: [
                     {
                         rank: 1,
-                        userId: "abc123",
-                        displayName: "Jane Doe",
+                        userId: 'abc123',
+                        displayName: 'Jane Doe',
                         points: 150,
-                        currentTier: "TIER2",
-                        icon: "BLUE",
+                        currentTier: 'TIER2',
+                        icon: 'BLUE',
                     },
                 ],
             },
-        })
+        }),
 );
 
 // GET /global response
 export const GlobalLeaderboardResponseValidator = registry.register(
-    "GlobalLeaderboardResponseValidator",
+    'GlobalLeaderboardResponseValidator',
     z
         .object({
             leaderboard: z.array(LeaderboardEntryValidator),
             count: z.number().int().min(0),
         })
-        .openapi("GlobalLeaderboardResponseValidator", {
+        .openapi('GlobalLeaderboardResponseValidator', {
             example: {
                 count: 1,
                 leaderboard: [
                     {
                         rank: 1,
-                        userId: "abc123",
-                        displayName: "Jane Doe",
+                        userId: 'abc123',
+                        displayName: 'Jane Doe',
                         points: 500,
-                        currentTier: "TIER3",
-                        icon: "GREEN",
+                        currentTier: 'TIER3',
+                        icon: 'GREEN',
                     },
                 ],
             },
-        })
+        }),
 );
 
 // POST /submit response
 export const SubmitLeaderboardResponseValidator = registry.register(
-    "SubmitLeaderboardResponseValidator",
+    'SubmitLeaderboardResponseValidator',
     z
         .object({
             leaderboard: z.array(LeaderboardEntryValidator),
@@ -146,22 +146,22 @@ export const SubmitLeaderboardResponseValidator = registry.register(
             submittedAt: z.string(),
             submittedBy: z.string(),
         })
-        .openapi("SubmitLeaderboardResponseValidator", {
+        .openapi('SubmitLeaderboardResponseValidator', {
             example: {
-                day: "2025-04-01",
+                day: '2025-04-01',
                 count: 10,
                 entriesProcessed: 10,
-                submissionId: "3a72d491-c2f9-4baf-af5a-55713621d978",
-                submittedAt: "2025-04-01T23:59:00Z",
-                submittedBy: "admin_user",
+                submissionId: '3a72d491-c2f9-4baf-af5a-55713621d978',
+                submittedAt: '2025-04-01T23:59:00Z',
+                submittedBy: 'admin_user',
                 leaderboard: [],
             },
-        })
+        }),
 );
 
 // GET /me response
 export const MyLeaderboardRankResponseValidator = registry.register(
-    "MyLeaderboardRankResponseValidator",
+    'MyLeaderboardRankResponseValidator',
     z
         .object({
             rank: z.number().int().min(1),
@@ -170,7 +170,7 @@ export const MyLeaderboardRankResponseValidator = registry.register(
             nextRank: z.number().int().min(1).nullable(),
             pointsToNextRank: z.number().int().min(0).nullable(),
         })
-        .openapi("MyLeaderboardRankResponseValidator", {
+        .openapi('MyLeaderboardRankResponseValidator', {
             example: {
                 rank: 78,
                 points: 150,
@@ -178,12 +178,12 @@ export const MyLeaderboardRankResponseValidator = registry.register(
                 nextRank: 77,
                 pointsToNextRank: 123,
             },
-        })
+        }),
 );
 
 // GET /submission-status response
 export const CheckSubmissionResponseValidator = registry.register(
-    "CheckSubmissionResponseValidator",
+    'CheckSubmissionResponseValidator',
     z
         .object({
             exists: z.boolean(),
@@ -196,45 +196,27 @@ export const CheckSubmissionResponseValidator = registry.register(
                 })
                 .optional(),
         })
-        .openapi("CheckSubmissionResponseValidator", {
+        .openapi('CheckSubmissionResponseValidator', {
             example: {
                 exists: true,
                 submission: {
-                    submissionId: "3a72d491-c2f9-4baf-af5a-55713621d978",
-                    submittedAt: "2025-04-01T23:59:00Z",
-                    submittedBy: "admin_user",
+                    submissionId: '3a72d491-c2f9-4baf-af5a-55713621d978',
+                    submittedAt: '2025-04-01T23:59:00Z',
+                    submittedBy: 'admin_user',
                     count: 10,
                 },
             },
-        })
+        }),
 );
 
 // Type exports
-export type DailyLeaderboardRequest = z.infer<
-    typeof DailyLeaderboardRequestValidator
->;
-export type SubmitLeaderboardRequest = z.infer<
-    typeof SubmitLeaderboardRequestValidator
->;
-export type GlobalLeaderboardRequest = z.infer<
-    typeof GlobalLeaderboardRequestValidator
->;
+export type DailyLeaderboardRequest = z.infer<typeof DailyLeaderboardRequestValidator>;
+export type SubmitLeaderboardRequest = z.infer<typeof SubmitLeaderboardRequestValidator>;
+export type GlobalLeaderboardRequest = z.infer<typeof GlobalLeaderboardRequestValidator>;
 export type LeaderboardEntry = z.infer<typeof LeaderboardEntryValidator>;
-export type PreviewLeaderboardResponse = z.infer<
-    typeof PreviewLeaderboardResponseValidator
->;
-export type GlobalLeaderboardResponse = z.infer<
-    typeof GlobalLeaderboardResponseValidator
->;
-export type SubmitLeaderboardResponse = z.infer<
-    typeof SubmitLeaderboardResponseValidator
->;
-export type CheckSubmissionRequest = z.infer<
-    typeof CheckSubmissionRequestValidator
->;
-export type CheckSubmissionResponse = z.infer<
-    typeof CheckSubmissionResponseValidator
->;
-export type MyLeaderboardRankResponse = z.infer<
-    typeof MyLeaderboardRankResponseValidator
->;
+export type PreviewLeaderboardResponse = z.infer<typeof PreviewLeaderboardResponseValidator>;
+export type GlobalLeaderboardResponse = z.infer<typeof GlobalLeaderboardResponseValidator>;
+export type SubmitLeaderboardResponse = z.infer<typeof SubmitLeaderboardResponseValidator>;
+export type CheckSubmissionRequest = z.infer<typeof CheckSubmissionRequestValidator>;
+export type CheckSubmissionResponse = z.infer<typeof CheckSubmissionResponseValidator>;
+export type MyLeaderboardRankResponse = z.infer<typeof MyLeaderboardRankResponseValidator>;

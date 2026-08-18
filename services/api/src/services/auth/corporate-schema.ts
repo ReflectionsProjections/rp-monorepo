@@ -1,30 +1,30 @@
-import { InferSchemaType, Schema } from "mongoose";
-import { z } from "zod";
-import { registry } from "../../middleware/openapi-registry";
+import { InferSchemaType, Schema } from 'mongoose';
+import { z } from 'zod';
+import { registry } from '../../middleware/openapi-registry';
 
 // Zod schema
 export const CorporateValidator = registry.register(
-    "CorporateValidator",
+    'CorporateValidator',
     z
         .object({
             name: z.string(),
             email: z.string(),
         })
-        .openapi("CorporateValidator", {
-            example: { name: "Acme Corp", email: "sponsor@acme.com" },
-        })
+        .openapi('CorporateValidator', {
+            example: { name: 'Acme Corp', email: 'sponsor@acme.com' },
+        }),
 );
 
 // Zod schema
 export const CorporateDeleteRequest = registry.register(
-    "CorporateDeleteRequest",
+    'CorporateDeleteRequest',
     z
         .object({
             email: z.string(),
         })
-        .openapi("CorporateDeleteRequest", {
-            example: { email: "sponsor@acme.com" },
-        })
+        .openapi('CorporateDeleteRequest', {
+            example: { email: 'sponsor@acme.com' },
+        }),
 );
 
 // Mongoose schema

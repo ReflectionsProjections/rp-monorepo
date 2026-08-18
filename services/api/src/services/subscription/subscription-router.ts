@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import {
     SubscriptionValidator,
     CreateMailingListValidator,
@@ -7,52 +7,45 @@ import {
     SendEmailBulkValidator,
     SendEmailSingleValidator,
     UnsubscribeValidator,
-} from "./subscription-schema";
-import { SupabaseDB } from "../../database";
-import cors from "cors";
-import RoleChecker from "../../middleware/role-checker";
-import { Role } from "../auth/auth-models";
-import { sendHTMLEmail, sendBulkTemplateEmail } from "../ses/ses-utils";
-import { Templates } from "../../config";
+} from './subscription-schema';
+import { SupabaseDB } from '../../database';
+import cors from 'cors';
+import RoleChecker from '../../middleware/role-checker';
+import { Role } from '../auth/auth-models';
+import { sendHTMLEmail, sendBulkTemplateEmail } from '../ses/ses-utils';
+import { Templates } from '../../config';
 
 const subscriptionRouter = Router();
 
 // Subscribe a user to a mailing list
 subscriptionRouter.post(
-    "/",
+    '/',
     cors(),
     RoleChecker([Role.Enum.USER, Role.Enum.ADMIN]),
     async (req, res) => {
         const { userId, mailingList } = SubscriptionValidator.parse(req.body);
 
         const payload = res.locals.payload;
-        if (
-            !payload.roles.includes(Role.Enum.ADMIN) &&
-            payload.userId !== userId
-        ) {
-            return res
-                .status(StatusCodes.FORBIDDEN)
-                .json({ error: "Access denied." });
+        if (!payload.roles.includes(Role.Enum.ADMIN) && payload.userId !== userId) {
+            return res.status(StatusCodes.FORBIDDEN).json({ error: 'Access denied.' });
         }
 
-        const { data: user } = await SupabaseDB.AUTH_INFO.select("email")
-            .eq("userId", userId)
+        const { data: user } = await SupabaseDB.AUTH_INFO.select('email')
+            .eq('userId', userId)
             .maybeSingle()
             .throwOnError();
 
         if (!user) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .json({ error: "User not found." });
+            return res.status(StatusCodes.BAD_REQUEST).json({ error: 'User not found.' });
         }
 
         await SupabaseDB.MAILING_LISTS.upsert(
             { listName: mailingList, email: user.email },
-            { onConflict: "listName,email", ignoreDuplicates: true }
+            { onConflict: 'listName,email', ignoreDuplicates: true },
         ).throwOnError();
 
         return res.status(StatusCodes.CREATED).json({ userId, mailingList });
-    }
+    },
 );
 
 /**
@@ -83,25 +76,21 @@ subscriptionRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-subscriptionRouter.post(
-    "/lists",
-    RoleChecker([Role.Enum.SUPER_ADMIN]),
-    async (req, res) => {
-        const { listName, emails } = CreateMailingListValidator.parse(req.body);
+subscriptionRouter.post('/lists', RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
+    const { listName, emails } = CreateMailingListValidator.parse(req.body);
 
-        const rows = emails.map((email) => ({ listName, email }));
+    const rows = emails.map((email) => ({ listName, email }));
 
-        await SupabaseDB.MAILING_LISTS.upsert(rows, {
-            onConflict: "listName,email",
-            ignoreDuplicates: true,
-        }).throwOnError();
+    await SupabaseDB.MAILING_LISTS.upsert(rows, {
+        onConflict: 'listName,email',
+        ignoreDuplicates: true,
+    }).throwOnError();
 
-        return res.status(StatusCodes.CREATED).json({
-            status: "success",
-            message: "Mailing list created successfully",
-        });
-    }
-);
+    return res.status(StatusCodes.CREATED).json({
+        status: 'success',
+        message: 'Mailing list created successfully',
+    });
+});
 
 /**
  * @swagger
@@ -119,16 +108,11 @@ subscriptionRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-subscriptionRouter.get(
-    "/",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (_req, res) => {
-        const { data } =
-            await SupabaseDB.MAILING_LISTS.select("*").throwOnError();
+subscriptionRouter.get('/', RoleChecker([Role.Enum.ADMIN]), async (_req, res) => {
+    const { data } = await SupabaseDB.MAILING_LISTS.select('*').throwOnError();
 
-        return res.status(StatusCodes.OK).json(data);
-    }
-);
+    return res.status(StatusCodes.OK).json(data);
+});
 
 /**
  * @swagger
@@ -154,20 +138,13 @@ subscriptionRouter.get(
  *     security:
  *       - bearerAuth: []
  */
-subscriptionRouter.get(
-    "/lists",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (_req, res) => {
-        const { data: lists } =
-            await SupabaseDB.MAILING_LISTS.select("listName").throwOnError();
+subscriptionRouter.get('/lists', RoleChecker([Role.Enum.ADMIN]), async (_req, res) => {
+    const { data: lists } = await SupabaseDB.MAILING_LISTS.select('listName').throwOnError();
 
-        const uniqueListNames = [
-            ...new Set(lists?.map((row) => row.listName) || []),
-        ];
+    const uniqueListNames = [...new Set(lists?.map((row) => row.listName) || [])];
 
-        return res.status(StatusCodes.OK).json(uniqueListNames);
-    }
-);
+    return res.status(StatusCodes.OK).json(uniqueListNames);
+});
 
 /**
  * @swagger
@@ -198,43 +175,35 @@ subscriptionRouter.get(
  *     security:
  *       - bearerAuth: []
  */
-subscriptionRouter.post(
-    "/send-email",
-    RoleChecker([Role.Enum.SUPER_ADMIN]),
-    async (req, res) => {
-        const { mailingList, subject, htmlBody } = SendEmailValidator.parse(
-            req.body
-        );
+subscriptionRouter.post('/send-email', RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
+    const { mailingList, subject, htmlBody } = SendEmailValidator.parse(req.body);
 
-        const { data: entries } = await SupabaseDB.MAILING_LISTS.select("email")
-            .eq("listName", mailingList)
-            .throwOnError();
+    const { data: entries } = await SupabaseDB.MAILING_LISTS.select('email')
+        .eq('listName', mailingList)
+        .throwOnError();
 
-        if (!entries || entries.length === 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                error: "No subscribers found for this mailing list.",
-            });
-        }
-
-        const emailAddresses = entries.map((row) => row.email);
-        const result = await sendBulkTemplateEmail(
-            Templates.RP_EMAILS,
-            emailAddresses.map((email) => ({ email })),
-            { subject, body: htmlBody }
-        );
-
-        return res.status(StatusCodes.OK).send(result);
+    if (!entries || entries.length === 0) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+            error: 'No subscribers found for this mailing list.',
+        });
     }
-);
+
+    const emailAddresses = entries.map((row) => row.email);
+    const result = await sendBulkTemplateEmail(
+        Templates.RP_EMAILS,
+        emailAddresses.map((email) => ({ email })),
+        { subject, body: htmlBody },
+    );
+
+    return res.status(StatusCodes.OK).send(result);
+});
 
 // Send an email to a list of arbitrary emails (testing only)
 subscriptionRouter.post(
-    "/send-email/bulk",
+    '/send-email/bulk',
     RoleChecker([Role.Enum.SUPER_ADMIN]),
     async (req, res) => {
-        const { emails, subject, htmlBody } = SendEmailBulkValidator.parse(
-            req.body
-        );
+        const { emails, subject, htmlBody } = SendEmailBulkValidator.parse(req.body);
 
         const result = await sendBulkTemplateEmail(
             Templates.RP_EMAILS,
@@ -242,11 +211,11 @@ subscriptionRouter.post(
                 email,
                 data: { subject, body: htmlBody },
             })),
-            { subject, body: htmlBody }
+            { subject, body: htmlBody },
         );
 
         return res.status(StatusCodes.OK).send(result);
-    }
+    },
 );
 
 /**
@@ -276,19 +245,17 @@ subscriptionRouter.post(
  *       - bearerAuth: []
  */
 subscriptionRouter.post(
-    "/send-email/single",
+    '/send-email/single',
     RoleChecker([Role.Enum.SUPER_ADMIN]),
     async (req, res) => {
-        const { email, subject, htmlBody } = SendEmailSingleValidator.parse(
-            req.body
-        );
+        const { email, subject, htmlBody } = SendEmailSingleValidator.parse(req.body);
 
         await sendHTMLEmail(email, subject, htmlBody);
 
         return res
             .status(StatusCodes.OK)
-            .json({ status: "success", message: "Email sent successfully" });
-    }
+            .json({ status: 'success', message: 'Email sent successfully' });
+    },
 );
 
 /**
@@ -315,25 +282,21 @@ subscriptionRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-subscriptionRouter.get(
-    "/:mailingList",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (req, res) => {
-        const { mailingList } = req.params;
+subscriptionRouter.get('/:mailingList', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+    const { mailingList } = req.params;
 
-        const { data: entries } = await SupabaseDB.MAILING_LISTS.select("email")
-            .eq("listName", mailingList)
-            .throwOnError();
+    const { data: entries } = await SupabaseDB.MAILING_LISTS.select('email')
+        .eq('listName', mailingList)
+        .throwOnError();
 
-        if (!entries || entries.length === 0) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ error: "No subscribers found for this mailing list." });
-        }
-
-        return res.status(StatusCodes.OK).json(entries.map((row) => row.email));
+    if (!entries || entries.length === 0) {
+        return res
+            .status(StatusCodes.NOT_FOUND)
+            .json({ error: 'No subscribers found for this mailing list.' });
     }
-);
+
+    return res.status(StatusCodes.OK).json(entries.map((row) => row.email));
+});
 
 /**
  * @swagger
@@ -361,23 +324,18 @@ subscriptionRouter.get(
  *       - bearerAuth: []
  */
 subscriptionRouter.get(
-    "/user/:userId",
+    '/user/:userId',
     RoleChecker([Role.Enum.USER, Role.Enum.ADMIN]),
     async (req, res) => {
         const { userId } = req.params;
 
         const payload = res.locals.payload;
-        if (
-            !payload.roles.includes(Role.Enum.ADMIN) &&
-            payload.userId !== userId
-        ) {
-            return res
-                .status(StatusCodes.FORBIDDEN)
-                .json({ error: "Access denied." });
+        if (!payload.roles.includes(Role.Enum.ADMIN) && payload.userId !== userId) {
+            return res.status(StatusCodes.FORBIDDEN).json({ error: 'Access denied.' });
         }
 
-        const { data: user } = await SupabaseDB.AUTH_INFO.select("email")
-            .eq("userId", userId)
+        const { data: user } = await SupabaseDB.AUTH_INFO.select('email')
+            .eq('userId', userId)
             .maybeSingle()
             .throwOnError();
 
@@ -385,16 +343,14 @@ subscriptionRouter.get(
             return res.status(StatusCodes.OK).json([]);
         }
 
-        const { data: entries } = await SupabaseDB.MAILING_LISTS.select(
-            "listName"
-        )
-            .eq("email", user.email)
+        const { data: entries } = await SupabaseDB.MAILING_LISTS.select('listName')
+            .eq('email', user.email)
             .throwOnError();
 
         const mailingLists = entries?.map((row) => row.listName) || [];
 
         return res.status(StatusCodes.OK).json(mailingLists);
-    }
+    },
 );
 
 /**
@@ -424,54 +380,39 @@ subscriptionRouter.get(
  *     security:
  *       - bearerAuth: []
  */
-subscriptionRouter.delete(
-    "/",
-    RoleChecker([Role.Enum.USER, Role.Enum.ADMIN]),
-    async (req, res) => {
-        const { userId, mailingList } = UnsubscribeValidator.parse(req.body);
+subscriptionRouter.delete('/', RoleChecker([Role.Enum.USER, Role.Enum.ADMIN]), async (req, res) => {
+    const { userId, mailingList } = UnsubscribeValidator.parse(req.body);
 
-        const payload = res.locals.payload;
-        if (
-            !payload.roles.includes(Role.Enum.ADMIN) &&
-            payload.userId !== userId
-        ) {
-            return res
-                .status(StatusCodes.FORBIDDEN)
-                .json({ error: "Access denied." });
-        }
-
-        const { data: user } = await SupabaseDB.AUTH_INFO.select("email")
-            .eq("userId", userId)
-            .maybeSingle()
-            .throwOnError();
-
-        if (!user) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ error: "Subscription not found." });
-        }
-
-        const { data: existing } = await SupabaseDB.MAILING_LISTS.select(
-            "listName"
-        )
-            .eq("listName", mailingList)
-            .eq("email", user.email)
-            .maybeSingle()
-            .throwOnError();
-
-        if (!existing) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ error: "Subscription not found." });
-        }
-
-        await SupabaseDB.MAILING_LISTS.delete()
-            .eq("listName", mailingList)
-            .eq("email", user.email)
-            .throwOnError();
-
-        return res.status(StatusCodes.OK).json({ status: "success" });
+    const payload = res.locals.payload;
+    if (!payload.roles.includes(Role.Enum.ADMIN) && payload.userId !== userId) {
+        return res.status(StatusCodes.FORBIDDEN).json({ error: 'Access denied.' });
     }
-);
+
+    const { data: user } = await SupabaseDB.AUTH_INFO.select('email')
+        .eq('userId', userId)
+        .maybeSingle()
+        .throwOnError();
+
+    if (!user) {
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'Subscription not found.' });
+    }
+
+    const { data: existing } = await SupabaseDB.MAILING_LISTS.select('listName')
+        .eq('listName', mailingList)
+        .eq('email', user.email)
+        .maybeSingle()
+        .throwOnError();
+
+    if (!existing) {
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'Subscription not found.' });
+    }
+
+    await SupabaseDB.MAILING_LISTS.delete()
+        .eq('listName', mailingList)
+        .eq('email', user.email)
+        .throwOnError();
+
+    return res.status(StatusCodes.OK).json({ status: 'success' });
+});
 
 export default subscriptionRouter;

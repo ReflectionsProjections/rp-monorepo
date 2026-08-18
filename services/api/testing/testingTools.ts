@@ -1,22 +1,22 @@
-import request from "supertest";
-import { z } from "zod";
-import jsonwebtoken from "jsonwebtoken";
-import { Config } from "../src/config";
-import { JwtPayloadType, Role } from "../src/services/auth/auth-models";
-import { SupabaseClient } from "@supabase/supabase-js";
+import request from 'supertest';
+import { z } from 'zod';
+import jsonwebtoken from 'jsonwebtoken';
+import { Config } from '../src/config';
+import { JwtPayloadType, Role } from '../src/services/auth/auth-models';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 type RoleType = z.infer<typeof Role>;
 
 export const TESTER = {
-    userId: "test-er-user-id",
-    authId: "test-er-auth-id",
-    displayName: "Loid Forger",
-    email: "loid.forger@testing.com",
+    userId: 'test-er-user-id',
+    authId: 'test-er-auth-id',
+    displayName: 'Loid Forger',
+    email: 'loid.forger@testing.com',
 };
 
 function app() {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const appExports = require("../src/app");
+    const appExports = require('../src/app');
     return appExports.app;
 }
 
@@ -30,14 +30,14 @@ function setRole(request: request.Test, role?: RoleType) {
         roles: [role],
         displayName: TESTER.displayName,
         email: TESTER.email,
-        tokenType: "access",
+        tokenType: 'access',
     } satisfies JwtPayloadType;
 
     const jwt = jsonwebtoken.sign(payload, Config.JWT_SIGNING_SECRET, {
         expiresIn: Config.JWT_EXPIRATION_TIME,
     });
 
-    return request.set("Authorization", jwt as string);
+    return request.set('Authorization', jwt as string);
 }
 
 export function get(url: string, role?: RoleType): request.Test {
@@ -68,13 +68,10 @@ export function post(url: string, role?: RoleType): request.Test {
     return setRole(request(app()).post(url), role);
 }
 
-export function postWithAuthorization(
-    url: string,
-    authorization?: string
-): request.Test {
+export function postWithAuthorization(url: string, authorization?: string): request.Test {
     const req = request(app()).post(url);
     if (authorization) {
-        req.set("Authorization", authorization);
+        req.set('Authorization', authorization);
     }
     return req;
 }
@@ -173,27 +170,27 @@ export function delAsCorporate(url: string): request.Test {
 
 export async function clearSupabaseTables(supabase: SupabaseClient) {
     const tables: string[] = [
-        "eventAttendances",
-        "attendeeAttendances",
-        "leaderboardSubmissions",
-        "redemptions",
-        "attendees",
-        "notifications",
-        "magicLinkTokens",
-        "draftRegistrations",
-        "registrations",
-        "authRoles",
-        "shiftAssignments",
-        "authCodes",
-        "events",
-        "corporate",
-        "meetings",
-        "staff",
-        "shifts",
-        "subscriptions",
-        "customTopics",
-        "authInfo",
-        "speakers",
+        'eventAttendances',
+        'attendeeAttendances',
+        'leaderboardSubmissions',
+        'redemptions',
+        'attendees',
+        'notifications',
+        'magicLinkTokens',
+        'draftRegistrations',
+        'registrations',
+        'authRoles',
+        'shiftAssignments',
+        'authCodes',
+        'events',
+        'corporate',
+        'meetings',
+        'staff',
+        'shifts',
+        'subscriptions',
+        'customTopics',
+        'authInfo',
+        'speakers',
     ]; // TODO: Get this from the database
 
     for (const table of tables) {
@@ -204,10 +201,7 @@ export async function clearSupabaseTables(supabase: SupabaseClient) {
     }
 
     // mailingLists requires a WHERE clause (PostgREST v12 + RLS)
-    const { error: mlError } = await supabase
-        .from("mailingLists")
-        .delete()
-        .neq("email", "");
+    const { error: mlError } = await supabase.from('mailingLists').delete().neq('email', '');
     if (mlError) {
         console.warn(`⚠️ Could not clear mailingLists:`, mlError.message);
     }

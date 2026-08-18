@@ -1,10 +1,10 @@
-import { z } from "zod";
-import { Database } from "../../database.types";
-import { registry } from "../../middleware/openapi-registry";
+import { z } from 'zod';
+import { Database } from '../../database.types';
+import { registry } from '../../middleware/openapi-registry';
 
 // Zod schema for registration drafts
 const RegistrationDraftValidator = registry.register(
-    "RegistrationDraftValidator",
+    'RegistrationDraftValidator',
     z
         .object({
             allergies: z.array(z.string().max(50)).max(10),
@@ -31,37 +31,37 @@ const RegistrationDraftValidator = registry.register(
             isInterestedPuzzleBang: z.boolean(),
             tags: z.array(z.string().max(50)).max(15),
         })
-        .openapi("RegistrationDraftValidator", {
+        .openapi('RegistrationDraftValidator', {
             example: {
                 allergies: [],
-                allergiesOther: "",
+                allergiesOther: '',
                 dietaryRestrictions: [],
-                dietaryOther: "",
-                educationLevel: "Undergraduate",
-                educationOther: "",
-                email: "hacker@example.com",
+                dietaryOther: '',
+                educationLevel: 'Undergraduate',
+                educationOther: '',
+                email: 'hacker@example.com',
                 ethnicity: [],
-                ethnicityOther: "",
-                gender: "Prefer not to say",
-                genderOther: "",
-                graduationYear: "2026",
-                howDidYouHear: ["Social media"],
-                majors: ["Computer Science"],
+                ethnicityOther: '',
+                gender: 'Prefer not to say',
+                genderOther: '',
+                graduationYear: '2026',
+                howDidYouHear: ['Social media'],
+                majors: ['Computer Science'],
                 minors: [],
-                name: "Jane Doe",
+                name: 'Jane Doe',
                 opportunities: [],
                 personalLinks: [],
-                school: "University of Illinois Urbana-Champaign",
+                school: 'University of Illinois Urbana-Champaign',
                 isInterestedMechMania: false,
                 isInterestedPuzzleBang: true,
-                tags: ["AI"],
+                tags: ['AI'],
             },
-        })
+        }),
 );
 
 // Zod schema for registration
 const RegistrationValidator = registry.register(
-    "RegistrationValidator",
+    'RegistrationValidator',
     z
         .object({
             allergies: z.array(z.string().max(50)).max(10),
@@ -80,39 +80,39 @@ const RegistrationValidator = registry.register(
             // A resume is mandatory to register; the file itself is uploaded
             // to S3 separately once the registration is accepted.
             hasResume: z.literal(true, {
-                errorMap: () => ({ message: "A resume is required" }),
+                errorMap: () => ({ message: 'A resume is required' }),
             }),
             school: z.string().max(50),
             isInterestedMechMania: z.boolean(),
             isInterestedPuzzleBang: z.boolean(),
             tags: z.array(z.string().max(50)).max(15),
         })
-        .openapi("RegistrationValidator", {
+        .openapi('RegistrationValidator', {
             example: {
                 allergies: [],
                 dietaryRestrictions: [],
-                educationLevel: "Undergraduate",
-                email: "hacker@example.com",
+                educationLevel: 'Undergraduate',
+                email: 'hacker@example.com',
                 ethnicity: [],
-                gender: "Prefer not to say",
-                graduationYear: "2026",
-                howDidYouHear: ["Social media"],
-                majors: ["Computer Science"],
+                gender: 'Prefer not to say',
+                graduationYear: '2026',
+                howDidYouHear: ['Social media'],
+                majors: ['Computer Science'],
                 minors: [],
-                name: "Jane Doe",
+                name: 'Jane Doe',
                 opportunities: [],
                 personalLinks: [],
                 hasResume: true,
-                school: "University of Illinois Urbana-Champaign",
+                school: 'University of Illinois Urbana-Champaign',
                 isInterestedMechMania: false,
                 isInterestedPuzzleBang: true,
-                tags: ["AI"],
+                tags: ['AI'],
             },
-        })
+        }),
 );
 
 export const RegistrationSummaryView = registry.register(
-    "RegistrationSummaryView",
+    'RegistrationSummaryView',
     z
         .object({
             userId: z.string(),
@@ -125,23 +125,23 @@ export const RegistrationSummaryView = registry.register(
             opportunities: z.array(z.string()),
             personalLinks: z.array(z.string()),
         })
-        .openapi("RegistrationSummaryView", {
+        .openapi('RegistrationSummaryView', {
             description:
-                "Subset of registration fields returned to corporate/admin for resume review.",
+                'Subset of registration fields returned to corporate/admin for resume review.',
             example: {
-                userId: "user_abc123",
-                name: "Jane Doe",
-                majors: ["Computer Science"],
+                userId: 'user_abc123',
+                name: 'Jane Doe',
+                majors: ['Computer Science'],
                 minors: [],
-                school: "University of Illinois Urbana-Champaign",
-                educationLevel: "Undergraduate",
-                graduationYear: "2026",
-                opportunities: ["Internship"],
-                personalLinks: ["github.com/janedoe"],
+                school: 'University of Illinois Urbana-Champaign',
+                educationLevel: 'Undergraduate',
+                graduationYear: '2026',
+                opportunities: ['Internship'],
+                personalLinks: ['github.com/janedoe'],
             },
-        })
+        }),
 );
 
-export type Registration = Database["public"]["Tables"]["registrations"]["Row"];
+export type Registration = Database['public']['Tables']['registrations']['Row'];
 
 export { RegistrationDraftValidator, RegistrationValidator };

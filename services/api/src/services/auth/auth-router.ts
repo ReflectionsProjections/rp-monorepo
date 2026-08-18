@@ -1,32 +1,28 @@
-import { Router } from "express";
-import { StatusCodes } from "http-status-codes";
-import RoleChecker from "../../middleware/role-checker";
-import { Role } from "../auth/auth-models";
-import { AuthInfo, AuthRoleChangeRequest } from "./auth-schema";
-import authSponsorRouter from "./sponsor/sponsor-router";
-import { CorporateDeleteRequest, CorporateValidator } from "./corporate-schema";
-import { SupabaseDB } from "../../database";
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import RoleChecker from '../../middleware/role-checker';
+import { Role } from '../auth/auth-models';
+import { AuthInfo, AuthRoleChangeRequest } from './auth-schema';
+import authSponsorRouter from './sponsor/sponsor-router';
+import { CorporateDeleteRequest, CorporateValidator } from './corporate-schema';
+import { SupabaseDB } from '../../database';
 import {
     MagicLinkCodeVerifyValidator,
     MagicLinkIssueValidator,
     MagicLinkVerifyValidator,
-} from "./magic-link-schema";
-import {
-    issueMagicLink,
-    verifyMagicLink,
-    verifyMagicLinkCode,
-} from "./magic-link-service";
-import { normalizeEmail } from "./auth-utils";
+} from './magic-link-schema';
+import { issueMagicLink, verifyMagicLink, verifyMagicLinkCode } from './magic-link-service';
+import { normalizeEmail } from './auth-utils';
 import {
     magicLinkIssueEmailLimiter,
     magicLinkIssueIpLimiter,
     magicLinkVerifyEmailLimiter,
     magicLinkVerifyIpLimiter,
-} from "./magic-link-rate-limit";
+} from './magic-link-rate-limit';
 
 const authRouter = Router();
 
-authRouter.use("/sponsor", authSponsorRouter);
+authRouter.use('/sponsor', authSponsorRouter);
 
 /**
  * @swagger
@@ -50,7 +46,7 @@ authRouter.use("/sponsor", authSponsorRouter);
  *     security: []
  */
 authRouter.post(
-    "/magic-links",
+    '/magic-links',
     magicLinkIssueIpLimiter,
     magicLinkIssueEmailLimiter,
     async (req, res) => {
@@ -59,10 +55,10 @@ authRouter.post(
             await issueMagicLink(request);
         } catch (error) {
             // The public response must not disclose if an account exists.
-            console.error("Failed to issue a magic link", error);
+            console.error('Failed to issue a magic link', error);
         }
         return res.sendStatus(StatusCodes.ACCEPTED);
-    }
+    },
 );
 
 /**
@@ -90,20 +86,14 @@ authRouter.post(
  *         description: The request limit was reached
  *     security: []
  */
-authRouter.post(
-    "/magic-links/verify",
-    magicLinkVerifyIpLimiter,
-    async (req, res) => {
-        const request = MagicLinkVerifyValidator.parse(req.body);
-        const token = await verifyMagicLink(request.token, request.client);
-        if (!token) {
-            return res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({ error: "InvalidToken" });
-        }
-        return res.status(StatusCodes.OK).json({ token });
+authRouter.post('/magic-links/verify', magicLinkVerifyIpLimiter, async (req, res) => {
+    const request = MagicLinkVerifyValidator.parse(req.body);
+    const token = await verifyMagicLink(request.token, request.client);
+    if (!token) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'InvalidToken' });
     }
-);
+    return res.status(StatusCodes.OK).json({ token });
+});
 
 /**
  * @swagger
@@ -131,23 +121,17 @@ authRouter.post(
  *     security: []
  */
 authRouter.post(
-    "/magic-links/verify-code",
+    '/magic-links/verify-code',
     magicLinkVerifyIpLimiter,
     magicLinkVerifyEmailLimiter,
     async (req, res) => {
         const request = MagicLinkCodeVerifyValidator.parse(req.body);
-        const token = await verifyMagicLinkCode(
-            request.email,
-            request.code,
-            request.client
-        );
+        const token = await verifyMagicLinkCode(request.email, request.code, request.client);
         if (!token) {
-            return res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({ error: "InvalidCode" });
+            return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'InvalidCode' });
         }
         return res.status(StatusCodes.OK).json({ token });
-    }
+    },
 );
 
 /**
@@ -185,34 +169,30 @@ authRouter.post(
  *       - bearerAuth: []
  */
 // Remove role from userId (super admin only endpoint)
-authRouter.delete(
-    "/",
-    RoleChecker([Role.Enum.SUPER_ADMIN]),
-    async (req, res) => {
-        // Validate request body using Zod schema
-        const { userId, role } = AuthRoleChangeRequest.parse(req.body);
+authRouter.delete('/', RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
+    // Validate request body using Zod schema
+    const { userId, role } = AuthRoleChangeRequest.parse(req.body);
 
-        const { data } = await SupabaseDB.AUTH_INFO.select("userId")
-            .eq("userId", userId)
-            .maybeSingle()
-            .throwOnError();
+    const { data } = await SupabaseDB.AUTH_INFO.select('userId')
+        .eq('userId', userId)
+        .maybeSingle()
+        .throwOnError();
 
-        if (!data) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                error: "UserNotFound",
-            });
-        }
-
-        const { data: deleted } = await SupabaseDB.AUTH_ROLES.delete()
-            .eq("userId", userId)
-            .eq("role", role)
-            .select()
-            .single()
-            .throwOnError();
-
-        return res.status(StatusCodes.OK).json(deleted);
+    if (!data) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+            error: 'UserNotFound',
+        });
     }
-);
+
+    const { data: deleted } = await SupabaseDB.AUTH_ROLES.delete()
+        .eq('userId', userId)
+        .eq('role', role)
+        .select()
+        .single()
+        .throwOnError();
+
+    return res.status(StatusCodes.OK).json(deleted);
+});
 
 /**
  * @swagger
@@ -248,17 +228,17 @@ authRouter.delete(
  *     security:
  *       - bearerAuth: []
  */
-authRouter.put("/", RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
+authRouter.put('/', RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
     const { userId, role } = AuthRoleChangeRequest.parse(req.body);
 
-    const { data } = await SupabaseDB.AUTH_INFO.select("userId")
-        .eq("userId", userId)
+    const { data } = await SupabaseDB.AUTH_INFO.select('userId')
+        .eq('userId', userId)
         .maybeSingle()
         .throwOnError();
 
     if (!data) {
         return res.status(StatusCodes.NOT_FOUND).json({
-            error: "UserNotFound",
+            error: 'UserNotFound',
         });
     }
 
@@ -295,15 +275,11 @@ authRouter.put("/", RoleChecker([Role.Enum.SUPER_ADMIN]), async (req, res) => {
  *     security:
  *       - bearerAuth: []
  */
-authRouter.get(
-    "/corporate",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (req, res) => {
-        const { data } = await SupabaseDB.CORPORATE.select().throwOnError();
+authRouter.get('/corporate', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+    const { data } = await SupabaseDB.CORPORATE.select().throwOnError();
 
-        return res.status(StatusCodes.OK).json(data);
-    }
-);
+    return res.status(StatusCodes.OK).json(data);
+});
 
 /**
  * @swagger
@@ -339,30 +315,26 @@ authRouter.get(
  *     security:
  *       - bearerAuth: []
  */
-authRouter.post(
-    "/corporate",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (req, res) => {
-        const parsed = CorporateValidator.parse(req.body);
-        // Stored normalized so magic-link sign-in can match the roster row
-        // against the normalized email it works with.
-        const data = { ...parsed, email: normalizeEmail(parsed.email) };
-        const { data: existing } = await SupabaseDB.CORPORATE.select()
-            .eq("email", data.email)
-            .throwOnError();
-        if (existing.length > 0) {
-            return res.status(StatusCodes.BAD_REQUEST).send({
-                error: "AlreadyExists",
-            });
-        }
-        const { data: corporate } = await SupabaseDB.CORPORATE.insert(data)
-            .select()
-            .single()
-            .throwOnError();
-
-        return res.status(StatusCodes.CREATED).json(corporate);
+authRouter.post('/corporate', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+    const parsed = CorporateValidator.parse(req.body);
+    // Stored normalized so magic-link sign-in can match the roster row
+    // against the normalized email it works with.
+    const data = { ...parsed, email: normalizeEmail(parsed.email) };
+    const { data: existing } = await SupabaseDB.CORPORATE.select()
+        .eq('email', data.email)
+        .throwOnError();
+    if (existing.length > 0) {
+        return res.status(StatusCodes.BAD_REQUEST).send({
+            error: 'AlreadyExists',
+        });
     }
-);
+    const { data: corporate } = await SupabaseDB.CORPORATE.insert(data)
+        .select()
+        .single()
+        .throwOnError();
+
+    return res.status(StatusCodes.CREATED).json(corporate);
+});
 
 /**
  * @swagger
@@ -394,40 +366,34 @@ authRouter.post(
  *     security:
  *       - bearerAuth: []
  */
-authRouter.delete(
-    "/corporate",
-    RoleChecker([Role.Enum.ADMIN]),
-    async (req, res) => {
-        const { email } = CorporateDeleteRequest.parse(req.body);
-        const normalizedEmail = normalizeEmail(email);
-        const { data } = await SupabaseDB.CORPORATE.delete()
-            .eq("email", normalizedEmail)
-            .select()
-            .throwOnError();
+authRouter.delete('/corporate', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+    const { email } = CorporateDeleteRequest.parse(req.body);
+    const normalizedEmail = normalizeEmail(email);
+    const { data } = await SupabaseDB.CORPORATE.delete()
+        .eq('email', normalizedEmail)
+        .select()
+        .throwOnError();
 
-        if (data.length == 0) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .send({ error: "NotFound" });
-        }
-
-        // Sign-in copies the roster onto the account as the CORPORATE role, so
-        // removing the roster row must revoke the role too or the sponsor
-        // keeps resume-book access.
-        const { data: account } = await SupabaseDB.AUTH_INFO.select("userId")
-            .eq("email", normalizedEmail)
-            .maybeSingle()
-            .throwOnError();
-        if (account) {
-            await SupabaseDB.AUTH_ROLES.delete()
-                .eq("userId", account.userId)
-                .eq("role", Role.Enum.CORPORATE)
-                .throwOnError();
-        }
-
-        return res.sendStatus(StatusCodes.NO_CONTENT);
+    if (data.length == 0) {
+        return res.status(StatusCodes.BAD_REQUEST).send({ error: 'NotFound' });
     }
-);
+
+    // Sign-in copies the roster onto the account as the CORPORATE role, so
+    // removing the roster row must revoke the role too or the sponsor
+    // keeps resume-book access.
+    const { data: account } = await SupabaseDB.AUTH_INFO.select('userId')
+        .eq('email', normalizedEmail)
+        .maybeSingle()
+        .throwOnError();
+    if (account) {
+        await SupabaseDB.AUTH_ROLES.delete()
+            .eq('userId', account.userId)
+            .eq('role', Role.Enum.CORPORATE)
+            .throwOnError();
+    }
+
+    return res.sendStatus(StatusCodes.NO_CONTENT);
+});
 
 /**
  * @swagger
@@ -449,14 +415,14 @@ authRouter.delete(
  *     security:
  *       - bearerAuth: []
  */
-authRouter.get("/info", RoleChecker([]), async (req, res) => {
+authRouter.get('/info', RoleChecker([]), async (req, res) => {
     const userId = res.locals.payload.userId;
     const { data: info } = await SupabaseDB.AUTH_INFO.select()
-        .eq("userId", userId)
+        .eq('userId', userId)
         .single()
         .throwOnError();
     const { data: roleRows } = await SupabaseDB.AUTH_ROLES.select()
-        .eq("userId", userId)
+        .eq('userId', userId)
         .throwOnError();
     const user = {
         ...info,
@@ -497,15 +463,13 @@ authRouter.get("/info", RoleChecker([]), async (req, res) => {
  *       - bearerAuth: []
  */
 // Get team members (users with STAFF or ADMIN roles)
-authRouter.get("/team", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
+authRouter.get('/team', RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
     try {
         // Get all users first
-        const { data: users } =
-            await SupabaseDB.AUTH_INFO.select("*").throwOnError();
+        const { data: users } = await SupabaseDB.AUTH_INFO.select('*').throwOnError();
 
         // Get all roles
-        const { data: roles } =
-            await SupabaseDB.AUTH_ROLES.select("*").throwOnError();
+        const { data: roles } = await SupabaseDB.AUTH_ROLES.select('*').throwOnError();
 
         // Create a map of userId to roles
         const userRolesMap = new Map<string, Role[]>();
@@ -522,8 +486,7 @@ authRouter.get("/team", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
                 ?.filter((user: AuthInfo) => {
                     const userRoles = userRolesMap.get(user.userId) || [];
                     return userRoles.some(
-                        (role: Role) =>
-                            role === Role.Enum.STAFF || role === Role.Enum.ADMIN
+                        (role: Role) => role === Role.Enum.STAFF || role === Role.Enum.ADMIN,
                     );
                 })
                 .map((user: AuthInfo) => ({
@@ -533,9 +496,9 @@ authRouter.get("/team", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
 
         return res.status(StatusCodes.OK).json(teamMembers);
     } catch (error) {
-        console.error("Error fetching team members:", error);
+        console.error('Error fetching team members:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            error: "Failed to fetch team members",
+            error: 'Failed to fetch team members',
         });
     }
 });
@@ -562,17 +525,13 @@ authRouter.get("/team", RoleChecker([Role.Enum.ADMIN]), async (req, res) => {
  *       - bearerAuth: []
  */
 // Get staff user ids for resume book
-authRouter.get(
-    "/staff",
-    RoleChecker([Role.Enum.CORPORATE, Role.Enum.STAFF]),
-    async (req, res) => {
-        const { data } = await SupabaseDB.AUTH_ROLES.select("userId")
-            .eq("role", Role.Enum.STAFF)
-            .throwOnError();
-        const userIds = data.map((row: { userId: string }) => row.userId);
-        return res.status(StatusCodes.OK).json(userIds);
-    }
-);
+authRouter.get('/staff', RoleChecker([Role.Enum.CORPORATE, Role.Enum.STAFF]), async (req, res) => {
+    const { data } = await SupabaseDB.AUTH_ROLES.select('userId')
+        .eq('role', Role.Enum.STAFF)
+        .throwOnError();
+    const userIds = data.map((row: { userId: string }) => row.userId);
+    return res.status(StatusCodes.OK).json(userIds);
+});
 
 /**
  * @swagger
@@ -601,13 +560,11 @@ authRouter.get(
  *       - bearerAuth: []
  */
 // Get a list of user ids by role (staff only endpoint)
-authRouter.get("/:ROLE", RoleChecker([Role.Enum.STAFF]), async (req, res) => {
+authRouter.get('/:ROLE', RoleChecker([Role.Enum.STAFF]), async (req, res) => {
     // Validate the role using Zod schema
     const role = Role.parse(req.params.ROLE);
 
-    const { data } = await SupabaseDB.AUTH_ROLES.select("userId")
-        .eq("role", role)
-        .throwOnError();
+    const { data } = await SupabaseDB.AUTH_ROLES.select('userId').eq('role', role).throwOnError();
     const userIds = data.map((row: { userId: string }) => row.userId);
     return res.status(StatusCodes.OK).json(userIds);
 });

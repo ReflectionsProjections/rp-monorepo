@@ -26,46 +26,46 @@ const d = `
 `;
 
 const CurvedBottomBar = () => {
-  return (
-    <View style={styles.container}>
-      {/* Bottom Bar SVG */}
-      <Svg width={WIDTH} height={HEIGHT} style={styles.svg}>
-        <Path d={d} fill="#473737" />
-      </Svg>
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            {/* Bottom Bar SVG */}
+            <Svg width={WIDTH} height={HEIGHT} style={styles.svg}>
+                <Path d={d} fill="#473737" />
+            </Svg>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  svg: {
-    position: 'absolute',
-    bottom: 0,
-  },
-  fabContainer: {
-    position: 'absolute',
-    bottom: HEIGHT - CUTOUT_DEPTH - FAB_RADIUS, // aligns the center of the FAB with the cutout
-    left: WIDTH / 2 - FAB_RADIUS,
-    zIndex: 1,
-  },
-  fab: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-  },
-  fabText: {
-    fontSize: 30,
-    color: '#6200EE',
-  },
+    container: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    svg: {
+        position: 'absolute',
+        bottom: 0,
+    },
+    fabContainer: {
+        position: 'absolute',
+        bottom: HEIGHT - CUTOUT_DEPTH - FAB_RADIUS, // aligns the center of the FAB with the cutout
+        left: WIDTH / 2 - FAB_RADIUS,
+        zIndex: 1,
+    },
+    fab: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+    },
+    fabText: {
+        fontSize: 30,
+        color: '#6200EE',
+    },
 });
 
 export default CurvedBottomBar;
