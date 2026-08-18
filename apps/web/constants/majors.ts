@@ -1,4 +1,4 @@
-export const majors = [
+const majorsCatalog = [
   "Computer Science",
   "Computer Science + Advertising",
   "Computer Science + Animal Sciences",
@@ -509,5 +509,48 @@ export const majors = [
   "Workplace Training & Development",
   "World Literatures",
   "Writing Studies",
+  "Other"
+];
+
+// Catches "Engineering" (also mid-word, as in "Bioengineering") plus the
+// abbreviations "Eng." and bare "Eng" ("… Eng + Data Science"), without
+// matching words like "English".
+const isEngineeringMajor = (major: string) =>
+  /engineering/i.test(major) || /\bEng\.?\b/.test(major);
+
+const compare = (a: string, b: string) => a.localeCompare(b);
+
+const uniqueMajors = [...new Set(majorsCatalog)];
+
+const csMajors = uniqueMajors
+  .filter((major) => major.includes("Computer Science"))
+  .sort(compare);
+
+const engineeringMajors = uniqueMajors
+  .filter(
+    (major) =>
+      !csMajors.includes(major) &&
+      major !== "Computer Engineering" &&
+      isEngineeringMajor(major)
+  )
+  .sort(compare);
+
+const otherMajors = uniqueMajors
+  .filter(
+    (major) =>
+      major !== "Other" &&
+      major !== "Computer Engineering" &&
+      !csMajors.includes(major) &&
+      !isEngineeringMajor(major)
+  )
+  .sort(compare);
+
+// Dropdown order: CS majors, Computer Engineering, the other engineering
+// majors, then everything else alphabetically, with "Other" last.
+export const majors = [
+  ...csMajors,
+  "Computer Engineering",
+  ...engineeringMajors,
+  ...otherMajors,
   "Other"
 ];

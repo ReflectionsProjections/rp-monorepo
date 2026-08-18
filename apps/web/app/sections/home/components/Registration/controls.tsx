@@ -150,9 +150,10 @@ type ComboBoxProps = {
 };
 
 /**
- * Search-as-you-type picker for the long option lists (schools, majors,
- * minors). Selections render as removable chips below the input; pass
- * maxSelections 1 for single-choice fields.
+ * Dropdown picker for the long option lists (schools, majors, minors).
+ * Focusing the input opens the full list; typing filters it. Selections
+ * render as removable chips below the input; pass maxSelections 1 for
+ * single-choice fields.
  */
 export const ComboBox = ({
   placeholder,
@@ -162,22 +163,25 @@ export const ComboBox = ({
   maxSelections
 }: ComboBoxProps) => {
   const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
 
   const trimmed = query.trim().toLowerCase();
-  const results = trimmed
-    ? options
-        .filter(
-          (option) =>
-            option.toLowerCase().includes(trimmed) && !selected.includes(option)
-        )
-        .slice(0, 40)
-    : [];
+  const results = options.filter(
+    (option) =>
+      !selected.includes(option) &&
+      (trimmed === "" || option.toLowerCase().includes(trimmed))
+  );
 
   const pick = (option: string) => {
     if (maxSelections === 1) {
       onChange([option]);
+      setOpen(false);
     } else if (maxSelections === undefined || selected.length < maxSelections) {
-      onChange([...selected, option]);
+      const next = [...selected, option];
+      onChange(next);
+      if (maxSelections !== undefined && next.length >= maxSelections) {
+        setOpen(false);
+      }
     }
     setQuery("");
   };
@@ -188,9 +192,19 @@ export const ComboBox = ({
         <WizardInput
           value={query}
           placeholder={placeholder}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              setOpen(false);
+            }
+          }}
         />
-        {results.length > 0 && (
+        {open && results.length > 0 && (
           <Box
             position="absolute"
             left={0}
@@ -220,6 +234,11 @@ export const ComboBox = ({
                 color={TEXT_COLOR}
                 fontSize="14px"
                 _hover={{ bg: "rgba(239,83,158,0.16)" }}
+                // preventDefault keeps the input focused so its onBlur
+                // doesn't close the list before this click lands
+                onMouseDown={(event: React.MouseEvent) =>
+                  event.preventDefault()
+                }
                 onClick={() => pick(option)}
               >
                 {option}
