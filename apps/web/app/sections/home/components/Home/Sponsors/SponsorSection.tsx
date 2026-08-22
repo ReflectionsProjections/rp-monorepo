@@ -9,6 +9,12 @@ type SponsorPlacement = {
   height: number;
   logoSrc?: string;
   href?: string;
+  /** Lit-screen fill behind the logo, for logos that need contrast. */
+  screenBg?: string;
+  /** Fixed logo height (as % of the screen) so same-tier logos match. */
+  logoHeight?: string;
+  /** Sponsor confirmed but logo not released yet. */
+  tba?: boolean;
 };
 
 /**
@@ -19,35 +25,43 @@ type SponsorPlacement = {
 const SPONSOR_PLACEMENTS: SponsorPlacement[] = [
   {
     id: "screen-top-left",
-    label: "Sponsor logo slot 1",
+    label: "Aechelon, a Shield AI company",
     left: 17.55,
     top: 1.42,
     width: 25.7,
-    height: 13.05
+    height: 13.05,
+    logoSrc: "/site/sponsors/2026/aechelon.png",
+    screenBg: "#262626",
+    logoHeight: "23%"
   },
   {
     id: "screen-top-right",
-    label: "Sponsor logo slot 2",
+    label: "Caterpillar",
     left: 52.06,
     top: 4.75,
     width: 25.7,
-    height: 13.05
+    height: 13.05,
+    logoSrc: "/site/sponsors/2026/caterpillar.png",
+    screenBg: "linear-gradient(180deg, #f7f6f2 0%, #e9e7e0 100%)",
+    logoHeight: "23%"
   },
   {
     id: "screen-center-portrait",
-    label: "Sponsor logo slot 3",
+    label: "Sponsor to be announced",
     left: 33.47,
     top: 17.54,
     width: 15.06,
-    height: 22.26
+    height: 22.26,
+    tba: true
   },
   {
     id: "screen-right-portrait",
-    label: "Sponsor logo slot 4",
+    label: "Sponsor to be announced",
     left: 51.28,
     top: 25.34,
     width: 15.96,
-    height: 18.1
+    height: 18.1,
+    tba: true
   },
   {
     id: "screen-center-wide",
@@ -139,11 +153,29 @@ const SponsorSlot = ({ placement }: { placement: SponsorPlacement }) => {
     <Image
       src={placement.logoSrc}
       alt={placement.label}
-      w="82%"
-      h="78%"
+      w={placement.logoHeight ? "auto" : "82%"}
+      maxW="90%"
+      h={placement.logoHeight ?? "78%"}
       objectFit="contain"
       filter="drop-shadow(0 0 12px rgba(255,255,255,0.28))"
     />
+  ) : placement.tba ? (
+    <Text
+      m={0}
+      px="8%"
+      color="rgba(252, 248, 251, 0.55)"
+      fontFamily="'Geist Pixel', sans-serif"
+      fontSize={{
+        base: "clamp(10px, 2.6vw, 18px)",
+        lg: "clamp(12px, 1.3vw, 22px)"
+      }}
+      lineHeight="1.4"
+      textAlign="center"
+      textTransform="uppercase"
+      letterSpacing="0.06em"
+    >
+      To be announced
+    </Text>
   ) : (
     <Box
       aria-hidden="true"
@@ -166,6 +198,7 @@ const SponsorSlot = ({ placement }: { placement: SponsorPlacement }) => {
       justifyContent="center"
       overflow="hidden"
       borderRadius="2%"
+      bg={placement.screenBg}
       data-sponsor-slot={placement.id}
       aria-label={placement.label}
     >
