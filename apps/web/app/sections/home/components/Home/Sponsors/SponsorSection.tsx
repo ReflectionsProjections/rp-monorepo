@@ -202,7 +202,7 @@ const WorkstationScene = () => (
     aspectRatio="1512 / 986"
   >
     <Image
-      src="/site/sponsors/2026/workstation.png"
+      src="/site/sponsors/2026/workstation-v2.png"
       alt=""
       aria-hidden="true"
       position="absolute"
