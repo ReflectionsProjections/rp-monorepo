@@ -27,9 +27,9 @@ const SPONSOR_PLACEMENTS: SponsorPlacement[] = [
     id: "screen-top-left",
     label: "Aechelon, a Shield AI company",
     left: 17.55,
-    top: 1.42,
+    top: 2.52,
     width: 25.7,
-    height: 13.05,
+    height: 23.1,
     logoSrc: "/site/sponsors/2026/aechelon.png",
     screenBg: "#262626",
     logoHeight: "23%"
@@ -38,9 +38,9 @@ const SPONSOR_PLACEMENTS: SponsorPlacement[] = [
     id: "screen-top-right",
     label: "Caterpillar",
     left: 52.06,
-    top: 4.75,
+    top: 2.52,
     width: 25.7,
-    height: 13.05,
+    height: 23.1,
     logoSrc: "/site/sponsors/2026/caterpillar.png",
     screenBg: "linear-gradient(180deg, #f7f6f2 0%, #e9e7e0 100%)",
     logoHeight: "23%"
@@ -49,51 +49,19 @@ const SPONSOR_PLACEMENTS: SponsorPlacement[] = [
     id: "screen-center-portrait",
     label: "Sponsor to be announced",
     left: 33.47,
-    top: 17.54,
+    top: 31.04,
     width: 15.06,
-    height: 22.26,
+    height: 39.4,
     tba: true
   },
   {
     id: "screen-right-portrait",
     label: "Sponsor to be announced",
     left: 51.28,
-    top: 25.34,
+    top: 44.85,
     width: 15.96,
-    height: 18.1,
+    height: 32.03,
     tba: true
-  },
-  {
-    id: "screen-center-wide",
-    label: "Sponsor logo slot 5",
-    left: 41.01,
-    top: 49.17,
-    width: 25.69,
-    height: 13.05
-  },
-  {
-    id: "screen-left-lower",
-    label: "Sponsor logo slot 6",
-    left: 19.58,
-    top: 51,
-    width: 17.66,
-    height: 26.1
-  },
-  {
-    id: "screen-bottom-center",
-    label: "Sponsor logo slot 7",
-    left: 41.12,
-    top: 66.76,
-    width: 25.7,
-    height: 13.05
-  },
-  {
-    id: "screen-lower-right",
-    label: "Sponsor logo slot 8",
-    left: 70.04,
-    top: 58.28,
-    width: 18.72,
-    height: 15.3
   }
 ];
 
@@ -227,11 +195,11 @@ const WorkstationScene = () => (
   <Box
     position="absolute"
     zIndex={3}
-    top={{ base: "230px", lg: "19.47%" }}
+    top={{ base: "230px", lg: "29.33%" }}
     left={{ base: "calc(50% + 2vw)", sm: "50%", lg: 0 }}
     transform={{ base: "translateX(-50%)", lg: "none" }}
     w={{ base: "165vw", sm: "100vw", lg: "100%" }}
-    aspectRatio="1512 / 1745"
+    aspectRatio="1512 / 986"
   >
     <Image
       src="/site/sponsors/2026/workstation.png"
@@ -261,12 +229,12 @@ export default function SponsorSection() {
       position="relative"
       w="100%"
       h={{
-        base: "calc(230px + 190.4vw)",
-        sm: "calc(230px + 115.4vw)",
+        base: "calc(230px + 107.6vw)",
+        sm: "calc(230px + 65.2vw)",
         lg: "auto"
       }}
-      aspectRatio={{ lg: "1512 / 2260" }}
-      minH={{ base: "910px", lg: "auto" }}
+      aspectRatio={{ lg: "1512 / 1500" }}
+      minH={{ base: "640px", lg: "auto" }}
       overflow="hidden"
       bg="#1b141f"
       isolation="isolate"
@@ -279,7 +247,7 @@ export default function SponsorSection() {
         insetX={0}
         bottom={0}
         zIndex={2}
-        h={{ base: "8%", lg: "5.2%" }}
+        h={{ base: "8%", lg: "7.8%" }}
         bg="linear-gradient(180deg, #252936 0%, #252936 35%, #1d202a 36%, #1d202a 67%, #171a22 68%, #171a22 100%)"
         boxShadow="inset 0 5px 0 rgba(70, 75, 96, 0.28)"
         pointerEvents="none"
@@ -291,7 +259,7 @@ export default function SponsorSection() {
         aria-hidden="true"
         position="absolute"
         zIndex={1}
-        top={{ base: "16%", lg: "15.5%" }}
+        top={{ base: "16%", lg: "23.3%" }}
         left={{ base: "-16%", lg: "3.2%" }}
         w={{ base: "54%", lg: "30%" }}
         opacity={0.3}
@@ -304,7 +272,7 @@ export default function SponsorSection() {
         aria-hidden="true"
         position="absolute"
         zIndex={1}
-        top={{ base: "4%", lg: "2.75%" }}
+        top={{ base: "4%", lg: "4.1%" }}
         right={{ base: "-14%", lg: "-1%" }}
         w={{ base: "46%", lg: "25.6%" }}
         opacity={0.33}
@@ -317,7 +285,7 @@ export default function SponsorSection() {
         aria-hidden="true"
         position="absolute"
         zIndex={1}
-        top={{ base: "42%", lg: "40.2%" }}
+        top={{ base: "42%", lg: "60.6%" }}
         left={{ base: "-7%", lg: "20.2%" }}
         w={{ base: "42%", lg: "23.7%" }}
         opacity={0.17}
@@ -330,7 +298,7 @@ export default function SponsorSection() {
         id="sponsors-heading"
         position="absolute"
         zIndex={4}
-        top={{ base: "140px", lg: "10.72%" }}
+        top={{ base: "140px", lg: "16.1%" }}
         left="50%"
         transform="translateX(-50%)"
         m={0}
