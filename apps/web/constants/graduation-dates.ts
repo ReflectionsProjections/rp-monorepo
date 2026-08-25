@@ -1,6 +1,5 @@
 export const graduationDates = [
-  "Before December 2025",
-  "December 2025",
+  "Before May 2026",
   "May 2026",
   "December 2026",
   "May 2027",
@@ -11,5 +10,6 @@ export const graduationDates = [
   "December 2029",
   "May 2030",
   "December 2030",
-  "After December 2030"
+  "May 2031",
+  "After May 2031"
 ];
