@@ -279,7 +279,7 @@ type FlagCardProps = {
   onToggle: () => void;
 };
 
-/** The PuzzleBang / MechMania interest toggle card. */
+/** The PuzzleBang interest toggle card. */
 export const FlagCard = ({
   title,
   description,

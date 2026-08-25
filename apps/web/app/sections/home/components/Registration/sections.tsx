@@ -513,17 +513,6 @@ export const InterestsSection = () => {
             )
           }
         />
-        <FlagCard
-          title="MechMania"
-          description="Are you interested in participating in MechMania?"
-          active={values.isInterestedMechMania}
-          onToggle={() =>
-            void setFieldValue(
-              "isInterestedMechMania",
-              !values.isInterestedMechMania
-            )
-          }
-        />
       </SimpleGrid>
     </>
   );
