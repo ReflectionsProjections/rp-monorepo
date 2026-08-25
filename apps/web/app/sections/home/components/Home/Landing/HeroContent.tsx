@@ -153,7 +153,7 @@ export const HeroContent = () => {
             sm: "md",
             lg: "clamp(1rem, 1.3vw, 1.2rem)"
           }}
-          color="#F52DBC"
+          color="rgba(252,242,246,0.85)"
           textAlign="center"
           maxW="640px"
         >
