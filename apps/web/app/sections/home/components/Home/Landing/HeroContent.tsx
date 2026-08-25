@@ -19,8 +19,9 @@ const PIPE_DELAY = 0.2;
 const WORDS_DELAY = 0.85;
 const GLOW_DELAY = WORDS_DELAY + 0.75;
 const DATES_DELAY = 1.35;
-const BADGES_DELAY = 1.6;
-const REGISTER_DELAY = 1.9;
+const FOLLOW_DELAY = 1.5;
+const BADGES_DELAY = 1.75;
+const REGISTER_DELAY = 2.05;
 
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 24 },
@@ -139,6 +140,33 @@ export const HeroContent = () => {
           textAlign="center"
         >
           September 16&ndash;19, 2026
+        </Text>
+      </MotionBox>
+
+      {/* Follow for announcements */}
+      <MotionBox {...fadeUp(FOLLOW_DELAY)} mt={{ base: -2, xl: -3 }}>
+        <Text
+          fontFamily="Inter, sans-serif"
+          fontWeight={600}
+          fontSize={{
+            base: "sm",
+            sm: "md",
+            lg: "clamp(1rem, 1.3vw, 1.2rem)"
+          }}
+          color="rgba(252,242,246,0.85)"
+          textAlign="center"
+          maxW="640px"
+        >
+          Follow{" "}
+          <Link
+            href="https://instagram.com/uiuc_rp/"
+            isExternal
+            textDecoration="underline"
+            _hover={{ color: "#FFFFFF" }}
+          >
+            @uiuc_rp on Instagram
+          </Link>{" "}
+          and download the app for announcements &amp; updates!
         </Text>
       </MotionBox>
 
