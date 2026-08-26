@@ -27,9 +27,9 @@ const SPONSOR_PLACEMENTS: SponsorPlacement[] = [
     id: "screen-top-left",
     label: "Aechelon, a Shield AI company",
     left: 17.55,
-    top: 2.52,
+    top: 2.18,
     width: 25.7,
-    height: 23.1,
+    height: 19.98,
     logoSrc: "/site/sponsors/2026/aechelon.png",
     screenBg: "#262626",
     logoHeight: "23%"
@@ -38,30 +38,41 @@ const SPONSOR_PLACEMENTS: SponsorPlacement[] = [
     id: "screen-top-right",
     label: "Caterpillar",
     left: 52.06,
-    top: 2.52,
+    top: 2.18,
     width: 25.7,
-    height: 23.1,
+    height: 19.98,
     logoSrc: "/site/sponsors/2026/caterpillar.png",
     screenBg: "linear-gradient(180deg, #f7f6f2 0%, #e9e7e0 100%)",
     logoHeight: "23%"
   },
   {
     id: "screen-center-portrait",
-    label: "Sponsor to be announced",
+    label: "John Deere",
     left: 33.47,
-    top: 31.04,
+    top: 26.85,
     width: 15.06,
-    height: 39.4,
-    tba: true
+    height: 34.08,
+    logoSrc: "/site/sponsors/2026/johndeere.svg",
+    screenBg: "linear-gradient(180deg, #f7f6f2 0%, #e9e7e0 100%)"
   },
   {
     id: "screen-right-portrait",
-    label: "Sponsor to be announced",
+    label: "Pylon",
     left: 51.28,
-    top: 44.85,
+    top: 38.79,
     width: 15.96,
-    height: 32.03,
-    tba: true
+    height: 27.7,
+    logoSrc: "/site/sponsors/2026/pylon.svg",
+    screenBg: "linear-gradient(180deg, #f7f6f2 0%, #e9e7e0 100%)"
+  },
+  {
+    id: "screen-center-wide",
+    label: "Jane Street",
+    left: 40.21,
+    top: 71.4,
+    width: 27.38,
+    height: 22.98,
+    logoSrc: "/site/sponsors/2026/janestreet.png"
   }
 ];
 
@@ -195,14 +206,14 @@ const WorkstationScene = () => (
   <Box
     position="absolute"
     zIndex={3}
-    top={{ base: "230px", lg: "29.33%" }}
+    top={{ base: "230px", lg: "26.6%" }}
     left={{ base: "calc(50% + 2vw)", sm: "50%", lg: 0 }}
     transform={{ base: "translateX(-50%)", lg: "none" }}
     w={{ base: "165vw", sm: "100vw", lg: "100%" }}
-    aspectRatio="1512 / 986"
+    aspectRatio="1512 / 1140"
   >
     <Image
-      src="/site/sponsors/2026/workstation-v2.png"
+      src="/site/sponsors/2026/workstation-v3.png"
       alt=""
       aria-hidden="true"
       position="absolute"
@@ -229,11 +240,11 @@ export default function SponsorSection() {
       position="relative"
       w="100%"
       h={{
-        base: "calc(230px + 107.6vw)",
-        sm: "calc(230px + 65.2vw)",
+        base: "calc(230px + 124.4vw)",
+        sm: "calc(230px + 75.4vw)",
         lg: "auto"
       }}
-      aspectRatio={{ lg: "1512 / 1500" }}
+      aspectRatio={{ lg: "1512 / 1654" }}
       minH={{ base: "640px", lg: "auto" }}
       overflow="hidden"
       bg="#1b141f"
