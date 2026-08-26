@@ -14,7 +14,7 @@ import { MobileMagicLink } from "./routes/MobileMagicLink";
 import { Profile } from "./routes/Profile";
 import Register from "./routes/Register";
 import Resume from "./routes/Resume";
-import Speakers from "./routes/Speakers/Speakers";
+import SpeakersComingSoon from "./routes/Speakers/SpeakersComingSoon";
 import AppScreen from "./routes/AppScreen";
 import NotFound from "./routes/NotFound";
 
@@ -27,7 +27,8 @@ function App() {
         <Routes>
           <Route element={<Main />}>
             <Route path="/" element={<Home />} />
-            <Route path="/speakers" element={<Speakers />} />
+            {/* Swap back to Speakers (routes/Speakers/Speakers) once the 2026 lineup is announced */}
+            <Route path="/speakers" element={<SpeakersComingSoon />} />
             <Route path="/app" element={<AppScreen />} />
             <Route element={<RequireRegistrationAuth />}>
               <Route key="/register" path="/register" element={<Register />} />
