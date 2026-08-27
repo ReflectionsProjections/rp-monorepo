@@ -34,7 +34,7 @@ function Home() {
         textAlign="left"
         initial={{ opacity: 0 }}
         animate={
-          displayName === ""
+          !displayName
             ? {}
             : {
                 opacity: 1,
@@ -45,7 +45,7 @@ function Home() {
         }
         backgroundSize="400%"
       >
-        {displayName == "" ? "Welcome!" : `Welcome, ${displayName}!`}
+        {displayName ? `Welcome, ${displayName}!` : "Welcome!"}
       </MotionHeader>
 
       <VStack spacing={6} align="stretch">

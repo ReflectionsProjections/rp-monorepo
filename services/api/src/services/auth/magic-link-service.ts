@@ -126,11 +126,22 @@ async function isRosteredCorporate(email: string): Promise<boolean> {
  * the role directly.
  */
 async function syncRosterRoles(userId: string, email: string): Promise<void> {
-    if (await isRosteredStaff(email)) {
+    const { data: staffRow } = await SupabaseDB.STAFF.select("name")
+        .eq("email", email)
+        .maybeSingle()
+        .throwOnError();
+    if (staffRow) {
         await SupabaseDB.AUTH_ROLES.upsert({
             userId,
             role: Role.Enum.STAFF,
         }).throwOnError();
+        // Staff accounts are created by magic-link sign-in with a null
+        // displayName (only attendee registration fills it in), so take the
+        // name from the roster; never overwrite a name the user already has.
+        await SupabaseDB.AUTH_INFO.update({ displayName: staffRow.name })
+            .eq("userId", userId)
+            .is("displayName", null)
+            .throwOnError();
     }
 
     if (await isRosteredCorporate(email)) {
