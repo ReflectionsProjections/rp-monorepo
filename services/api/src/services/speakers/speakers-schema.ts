@@ -17,7 +17,7 @@ export const SpeakerValidator = registry.register(
             bio: z.string(),
             eventTitle: z.string(),
             eventDescription: z.string(),
-            imgUrl: z.string().default(""),
+            imgUrl: z.string().default("http://reflectionsprojections.org"),
         })
         .openapi("SpeakerValidator", {
             example: {
