@@ -97,8 +97,7 @@ export function injectOneOfExamples(spec: OpenAPIObject): void {
 
                     const schemaName = ref.split("/").pop()!;
                     const resolved = schemas[schemaName] as
-                        | SchemaObject
-                        | undefined;
+                        SchemaObject | undefined;
                     if (!resolved?.example) continue;
 
                     examples[schemaName] = {

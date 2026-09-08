@@ -16,11 +16,15 @@ export const EventFormSchema: yup.Schema<EventFormValues> = yup.object({
   imageUrl: yup
     .string()
     .nullable()
-    .transform((value, originalValue) =>
-      typeof originalValue === "string" && originalValue.trim().length === 0
-        ? null
-        : value
-    )
+    .transform((value: unknown, originalValue: unknown) => {
+      if (
+        typeof originalValue === "string" &&
+        originalValue.trim().length === 0
+      ) {
+        return null;
+      }
+      return typeof value === "string" ? value : null;
+    })
     .default(null)
     .test(
       "image-url",
