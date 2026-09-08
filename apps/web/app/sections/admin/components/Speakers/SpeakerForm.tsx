@@ -26,6 +26,7 @@ const SPEAKER_IMAGE_OPTIONS = [
   ["Alaknantha Suresh", "alaknantha_suresh.JPG"],
   ["Anup Warrier", "anup_warrier.jpg"],
   ["Dakarai Crowder", "dakarai_crowder.jpg"],
+  ["Geoffrey Urbach", "geoffrey_urbach.jpg"],
   ["Jacqueline Yau", "jacqueline_yau.jpg"],
   ["Maru Nimit", "maru_nimit.jpg"],
   ["Michael Schrenk", "michael_schrenk.png"],
@@ -34,7 +35,8 @@ const SPEAKER_IMAGE_OPTIONS = [
   ["Nate Gross", "nate_gross.jpg"],
   ["Philip Su", "philip_su.jpg"],
   ["Suresh Poopandi", "suresh_poopandi.png"],
-  ["Tamanna Sait", "tamanna_sait.jpg"]
+  ["Tamanna Sait", "tamanna_sait.jpg"],
+  ["Tony Ogden", "tony_ogden.jpeg"]
 ] as const;
 
 interface SpeakerFormProps {
