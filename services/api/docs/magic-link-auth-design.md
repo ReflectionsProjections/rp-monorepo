@@ -11,23 +11,23 @@ that its roles permit.
 
 ## Main Rules
 
-- The API stores one account in `authInfo`.
-- The API stores account roles in `authRoles`.
-- Registration adds the `USER` role.
-- An administrator adds or removes the `CORPORATE` role.
-- A login operation does not add the `CORPORATE` role.
-- A resume-book login requires the `CORPORATE` role.
-- A mobile login requires the `USER` role.
+-   The API stores one account in `authInfo`.
+-   The API stores account roles in `authRoles`.
+-   Registration adds the `USER` role.
+-   An administrator adds or removes the `CORPORATE` role.
+-   A login operation does not add the `CORPORATE` role.
+-   A resume-book login requires the `CORPORATE` role.
+-   A mobile login requires the `USER` role.
 
 ## Link Request
 
 The client sends an email, a client name, and an intent to the API. The API
 accepts only these combinations:
 
-- Web and registration.
-- Web and login.
-- Mobile and login.
-- Web and resume-book.
+-   Web and registration.
+-   Web and login.
+-   Mobile and login.
+-   Web and resume-book.
 
 The API does not accept a redirect address. The API selects a fixed callback
 address for each combination.
@@ -77,23 +77,23 @@ resume-book authorization.
 The API does not return a destination. The callback route owns client
 navigation.
 
-- Web registration uses `/auth/registration`.
-- Web login uses `/auth/login`.
-- Mobile login uses `/auth/mobile/login`.
-- Resume-book login uses `/sponsor/auth/magic-link`.
+-   Web registration uses `/auth/registration`.
+-   Web login uses `/auth/login`.
+-   Mobile login uses `/auth/mobile/login`.
+-   Resume-book login uses `/sponsor/auth/magic-link`.
 
 The mobile route must use an HTTPS Universal Link or Android App Link. The
 client must remove the token from the visible URL after it reads the token.
 
 ## Security Controls
 
-- The API normalizes all account emails.
-- The API stores only token digests.
-- The API uses a generic invalid-token response.
-- The API limits requests by IP address and email.
-- Anonymous database clients cannot access authentication tables.
-- The service role is the only database role that can consume tokens.
-- The verification operation loads current roles before it creates a JWT.
+-   The API normalizes all account emails.
+-   The API stores only token digests.
+-   The API uses a generic invalid-token response.
+-   The API limits requests by IP address and email.
+-   Anonymous database clients cannot access authentication tables.
+-   The service role is the only database role that can consume tokens.
+-   The verification operation loads current roles before it creates a JWT.
 
 ## Compatibility
 
