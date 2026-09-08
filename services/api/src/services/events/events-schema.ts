@@ -26,7 +26,7 @@ export const externalEventView = registry.register(
             points: z.number().min(0),
             description: z.string(),
             isVirtual: z.boolean(),
-            imageUrl: z.string().nullable(),
+            imageUrl: z.string().nullable().default(null),
             location: z.string().nullable(),
             eventType: EventType,
             tags: z.array(z.string()).default([]),

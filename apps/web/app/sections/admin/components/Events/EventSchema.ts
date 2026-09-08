@@ -13,7 +13,15 @@ export const EventFormSchema: yup.Schema<EventFormValues> = yup.object({
   startTime: yup.string().required("Start time is required"),
   endTime: yup.string().required("End time is required"),
   points: yup.number().min(0, "Points must be non-negative").required(),
-  imageUrl: yup.string().url("Must be a valid URL").required().nullable(),
+  imageUrl: yup
+    .string()
+    .nullable()
+    .default(null)
+    .test(
+      "image-url",
+      "Must be a valid URL",
+      (value) => !value || /^https?:\/\/[^\s]+$/i.test(value)
+    ),
   description: yup.string().required("Description is required"),
   location: yup.string().default(""),
   eventType: yup

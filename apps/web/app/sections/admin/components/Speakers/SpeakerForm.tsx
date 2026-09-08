@@ -128,10 +128,7 @@ const SpeakerForm: React.FC<SpeakerFormProps> = ({
                     <FormErrorMessage>{errors.bio}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl
-                    isRequired
-                    isInvalid={!!errors.imgUrl && touched.imgUrl}
-                  >
+                  <FormControl isInvalid={!!errors.imgUrl && touched.imgUrl}>
                     <FormLabel>Image</FormLabel>
                     <Select
                       mb={2}
