@@ -13,7 +13,11 @@ import {
 } from "../../../testing/testingTools";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
-import { SpeakerType, UpdateSpeakerType } from "./speakers-schema";
+import {
+    DEFAULT_SPEAKER_IMAGE_URL,
+    SpeakerType,
+    UpdateSpeakerType,
+} from "./speakers-schema";
 import { SupabaseDB } from "../../database";
 
 const SPEAKER_1_ID = uuidv4();
@@ -131,6 +135,33 @@ describe("POST /speakers/", () => {
             speakerId: response.body.speakerId,
         });
     });
+
+    it.each([
+        {
+            description: "omitted",
+            payload: { ...NEW_SPEAKER_PAYLOAD_NO_ID, imgUrl: undefined },
+        },
+        {
+            description: "blank",
+            payload: { ...NEW_SPEAKER_PAYLOAD_NO_ID, imgUrl: "   " },
+        },
+    ])(
+        "should use the default image when imgUrl is $description",
+        async ({ payload }) => {
+            const response = await postAsAdmin("/speakers/")
+                .send(payload)
+                .expect(StatusCodes.CREATED);
+
+            expect(response.body.imgUrl).toBe(DEFAULT_SPEAKER_IMAGE_URL);
+
+            const createdSpeakerResponse = await get(
+                `/speakers/${response.body.speakerId}`
+            ).expect(StatusCodes.OK);
+            expect(createdSpeakerResponse.body.imgUrl).toBe(
+                DEFAULT_SPEAKER_IMAGE_URL
+            );
+        }
+    );
 
     it("should create and return a new speaker with provided speakerId when valid speakerId is in payload", async () => {
         const response = await postAsAdmin("/speakers/")

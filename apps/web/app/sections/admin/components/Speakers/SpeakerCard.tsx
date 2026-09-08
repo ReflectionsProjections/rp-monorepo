@@ -28,7 +28,9 @@ const SpeakerCard: React.FC<SpeakerCardProps> = ({
   updateSpeakers
 }) => {
   const mirrorStyles = useMirrorStyles(true, true);
-  const isDefaultImage = speaker.imgUrl === "http://reflectionsprojections.org";
+  const isDefaultImage =
+    !speaker.imgUrl.trim() ||
+    speaker.imgUrl === "http://reflectionsprojections.org";
 
   return (
     <Card sx={mirrorStyles} maxW="sm">
