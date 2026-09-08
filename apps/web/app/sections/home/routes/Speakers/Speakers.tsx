@@ -5,10 +5,10 @@ import { api } from "@app";
 import { useEffect, useMemo, useState } from "react";
 
 // Shown until the 2026 speakers are announced (matches the Figma placeholders)
-const PLACEHOLDER_SPEAKERS: Speaker[] = Array.from({ length: 8 }, (_, i) => ({
+const PLACEHOLDER_SPEAKERS: Speaker[] = Array.from({ length: 12 }, (_, i) => ({
   speakerId: `placeholder-${i}`,
   name: "Name Name",
-  title: "",
+  title: "Speaker Title",
   bio: "",
   eventTitle: "",
   eventDescription: "",

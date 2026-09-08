@@ -146,16 +146,18 @@ export default function SpeakerCard({
           style={{ transition: "fill 0.2s ease" }}
         />
       </svg>
-      {/* Name plate (HTML so long names can wrap/shrink) */}
+      {/* Name and title plate (HTML so long text can wrap/shrink) */}
       <Box
         position="absolute"
         left="12%"
         right="14%"
-        top="85%"
-        bottom="6.5%"
+        top="83%"
+        bottom="4.5%"
         display="flex"
+        flexDirection="column"
         alignItems="center"
         justifyContent="center"
+        gap="2px"
         pointerEvents="none"
       >
         <Text
@@ -169,6 +171,19 @@ export default function SpeakerCard({
           noOfLines={2}
         >
           {speaker.name}
+        </Text>
+        <Text
+          minH="2.2em"
+          color={accent}
+          fontFamily="Inter, sans-serif"
+          fontWeight={600}
+          textAlign="center"
+          lineHeight="1.1"
+          fontSize="clamp(8px, 0.72vw, 12px)"
+          noOfLines={2}
+          transition="color 0.2s ease"
+        >
+          {speaker.title || "\u00A0"}
         </Text>
       </Box>
     </Box>
