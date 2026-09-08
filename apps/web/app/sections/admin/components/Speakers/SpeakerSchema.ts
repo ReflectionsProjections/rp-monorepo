@@ -26,7 +26,7 @@ export const SpeakerFormSchema = yup.object({
   eventDescription: yup.string().required("Event description is required"),
   imgUrl: yup
     .string()
-    .required("Image URL is required")
+    .default("")
     .test(
       "image-url",
       "Choose a speaker image or enter a valid URL",
