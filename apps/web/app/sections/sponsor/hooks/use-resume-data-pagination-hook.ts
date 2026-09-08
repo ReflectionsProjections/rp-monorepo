@@ -142,19 +142,11 @@ export function useResumeDataPaginationHook({
       .sort((a, b) => {
         if (filterBy.sortCol) {
           let aValue:
-            | moment.Moment
-            | string
-            | string[]
-            | number
-            | null
-            | undefined = a[filterBy.sortCol as keyof Resume];
+            moment.Moment | string | string[] | number | null | undefined =
+            a[filterBy.sortCol as keyof Resume];
           let bValue:
-            | moment.Moment
-            | string
-            | string[]
-            | number
-            | null
-            | undefined = b[filterBy.sortCol as keyof Resume];
+            moment.Moment | string | string[] | number | null | undefined =
+            b[filterBy.sortCol as keyof Resume];
 
           if (filterBy.sortCol === "graduationYear") {
             aValue = moment(aValue as string);
