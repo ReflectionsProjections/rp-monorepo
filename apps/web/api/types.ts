@@ -64,7 +64,12 @@ export type DietaryRestrictionStats = {
 };
 
 export type EventType =
-  "SPEAKER" | "CORPORATE" | "SPECIAL" | "PARTNERS" | "MEALS" | "CHECKIN";
+  | "SPEAKER"
+  | "CORPORATE"
+  | "SPECIAL"
+  | "PARTNERS"
+  | "MEALS"
+  | "CHECKIN";
 
 export type Event = {
   eventId: string;
