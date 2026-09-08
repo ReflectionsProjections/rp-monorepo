@@ -30,8 +30,12 @@ export const SpeakerFormSchema = yup.object({
     .test(
       "image-url",
       "Choose a speaker image or enter a valid URL",
-      (value) =>
-        value.startsWith("/site/speakers-2026/") ||
-        /^https?:\/\/[^\s]+$/i.test(value)
+      (value) => {
+        if (typeof value !== "string" || value.length === 0) return true;
+        return (
+          value.startsWith("/site/speakers-2026/") ||
+          /^https?:\/\/[^\s]+$/i.test(value)
+        );
+      }
     )
 });
