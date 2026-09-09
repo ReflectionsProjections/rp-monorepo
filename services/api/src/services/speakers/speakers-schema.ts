@@ -6,6 +6,8 @@ import { registry } from "../../middleware/openapi-registry";
 export type SpeakerType = z.infer<typeof SpeakerValidator>;
 export type UpdateSpeakerType = z.infer<typeof UpdateSpeakerValidator>;
 
+export const DEFAULT_SPEAKER_IMAGE_URL = "http://reflectionsprojections.org";
+
 // Zod schema for speaker
 export const SpeakerValidator = registry.register(
     "SpeakerValidator",
@@ -17,7 +19,13 @@ export const SpeakerValidator = registry.register(
             bio: z.string(),
             eventTitle: z.string(),
             eventDescription: z.string(),
-            imgUrl: z.string(),
+            imgUrl: z.preprocess(
+                (value) =>
+                    typeof value === "string" && value.trim().length === 0
+                        ? undefined
+                        : value,
+                z.string().default(DEFAULT_SPEAKER_IMAGE_URL)
+            ),
         })
         .openapi("SpeakerValidator", {
             example: {

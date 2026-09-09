@@ -11,16 +11,33 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Select,
   Textarea,
   FormErrorMessage,
   VStack,
-  HStack,
   useColorModeValue
 } from "@chakra-ui/react";
 import type { FormikHelpers } from "formik";
 import { Formik } from "formik";
 import type { SpeakerFormValues } from "./SpeakerSchema";
 import { SpeakerFormInitialValues, SpeakerFormSchema } from "./SpeakerSchema";
+
+const SPEAKER_IMAGE_OPTIONS = [
+  ["Alaknantha Suresh", "alaknantha_suresh.JPG"],
+  ["Anup Warrier", "anup_warrier.jpg"],
+  ["Dakarai Crowder", "dakarai_crowder.jpg"],
+  ["Geoffrey Urbach", "geoffrey_urbach.jpg"],
+  ["Jacqueline Yau", "jacqueline_yau.jpg"],
+  ["Maru Nimit", "maru_nimit.jpg"],
+  ["Michael Schrenk", "michael_schrenk.png"],
+  ["Michael Stopa", "michael_stopa.jpeg"],
+  ["Moshe Mahler", "moshe_mahler.jpg"],
+  ["Nate Gross", "nate_gross.jpg"],
+  ["Philip Su", "philip_su.jpg"],
+  ["Suresh Poopandi", "suresh_poopandi.png"],
+  ["Tamanna Sait", "tamanna_sait.jpg"],
+  ["Tony Ogden", "tony_ogden.jpeg"]
+] as const;
 
 interface SpeakerFormProps {
   initialValues?: SpeakerFormValues;
@@ -113,31 +130,35 @@ const SpeakerForm: React.FC<SpeakerFormProps> = ({
                     <FormErrorMessage>{errors.bio}</FormErrorMessage>
                   </FormControl>
 
-                  <FormControl
-                    isRequired
-                    isInvalid={!!errors.imgUrl && touched.imgUrl}
-                  >
-                    <FormLabel>Image URL</FormLabel>
-                    <HStack>
-                      <Input
-                        name="imgUrl"
-                        value={values.imgUrl}
-                        onChange={handleChange}
-                        placeholder="Enter image URL"
-                        flex={1}
-                      />
-                      <Button
-                        size="md"
-                        onClick={() => {
-                          void setFieldValue(
-                            "imgUrl",
-                            "http://reflectionsprojections.org"
-                          );
-                        }}
-                      >
-                        Default
-                      </Button>
-                    </HStack>
+                  <FormControl isInvalid={!!errors.imgUrl && touched.imgUrl}>
+                    <FormLabel>Image</FormLabel>
+                    <Select
+                      mb={2}
+                      placeholder="Choose a 2026 speaker image"
+                      value={
+                        values.imgUrl.startsWith("/site/speakers-2026/")
+                          ? values.imgUrl
+                          : ""
+                      }
+                      onChange={(event) => {
+                        void setFieldValue("imgUrl", event.target.value);
+                      }}
+                    >
+                      {SPEAKER_IMAGE_OPTIONS.map(([label, filename]) => {
+                        const imagePath = `/site/speakers-2026/${filename}`;
+                        return (
+                          <option key={filename} value={imagePath}>
+                            {label}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                    <Input
+                      name="imgUrl"
+                      value={values.imgUrl}
+                      onChange={handleChange}
+                      placeholder="Or enter a full image URL"
+                    />
                     <FormErrorMessage>{errors.imgUrl}</FormErrorMessage>
                   </FormControl>
                 </VStack>
