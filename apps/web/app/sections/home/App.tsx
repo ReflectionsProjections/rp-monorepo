@@ -34,10 +34,10 @@ function App() {
               <Route key="/register" path="/register" element={<Register />} />
             </Route>
           </Route>
-          <Route element={<RequireAuth />}>
-            <Route key="/resume" path="/resume" element={<Resume />} />
-            <Route key="/profile" path="/profile" element={<Profile />} />
-          </Route>
+          {/* <Route element={<RequireAuth />}> */}
+          <Route key="/resume" path="/resume" element={<Resume />} />
+          <Route key="/profile" path="/profile" element={<Profile />} />
+          {/* </Route> */}
           <Route path="/login" element={<Login />} />
           {/* Callback paths are fixed by the API's MAGIC_LINK_*_CALLBACK config */}
           <Route
