@@ -97,7 +97,11 @@ const TAG_OPTIONS = [
   "Autonomous Vehicles",
   "Networking",
   "Company Talk",
-  "Cybersecurity"
+  "Cybersecurity",
+  "Defensive Engineering & AI Alignment",
+  "Agents, Autonomy & EdgeAI",
+  "Infrastructure & Sustainable Tech",
+  "Tech x Creativity"
 ];
 
 const EDUCATION_OPTIONS = [...educationLevels, "Other"];
