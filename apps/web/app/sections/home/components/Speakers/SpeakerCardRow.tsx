@@ -1,6 +1,14 @@
 import type { Speaker } from "@app";
 import { CloseIcon } from "@chakra-ui/icons";
-import { Box, Collapse, IconButton, SimpleGrid, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Collapse,
+  IconButton,
+  SimpleGrid,
+  Text,
+  usePrefersReducedMotion
+} from "@chakra-ui/react";
+import { useEffect, useRef } from "react";
 import SpeakerCard from "./SpeakerCard";
 
 type SpeakerCardRowProps = {
@@ -19,6 +27,21 @@ export default function SpeakerCardRow({
   onSelect
 }: SpeakerCardRowProps) {
   const selected = speakers.find((s) => s.speakerId === selectedId) ?? null;
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (!selected) return;
+
+    const scrollTimer = window.setTimeout(() => {
+      detailsRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "center"
+      });
+    }, 250);
+
+    return () => window.clearTimeout(scrollTimer);
+  }, [prefersReducedMotion, selected]);
 
   return (
     <Box w="100%">
@@ -39,6 +62,7 @@ export default function SpeakerCardRow({
       <Collapse in={selected !== null} animateOpacity>
         {selected && (
           <Box
+            ref={detailsRef}
             position="relative"
             mt={{ base: 4, md: 8 }}
             mb={{ base: 2, md: 4 }}
