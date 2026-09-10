@@ -10,6 +10,7 @@ import { getWeekday, formatAMPM } from '@/lib/utils';
 import { api } from '@/api/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
+import { TEMPORARY_EVENTS } from '@/constants/temporary-events';
 
 const dayTabs = [
   { label: 'TUE', dayNumber: 2, barColor: '#4F0202' },
@@ -32,7 +33,7 @@ const typeColors = {
 };
 
 const EventsScreen = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>(TEMPORARY_EVENTS);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState(2);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -95,7 +96,7 @@ const EventsScreen = () => {
     const fetchEvents = async () => {
       try {
         const response = await api.get('/events');
-        setEvents(response.data as Event[]);
+        setEvents([...(response.data as Event[]), ...TEMPORARY_EVENTS]);
       } catch (e: any) {
         console.error('Failed to fetch or process events:', e);
         setError(e.message || 'Failed to load events');
