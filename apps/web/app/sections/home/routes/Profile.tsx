@@ -6,32 +6,22 @@ import {
   Link,
   Spinner,
   Text,
+  useMediaQuery,
   useToast,
   VStack
 } from "@chakra-ui/react";
 import type { Attendee, RoleObject, TierTypes } from "@app";
 import { api, path } from "@app";
 import axios from "axios";
-import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
-import { FaMedal } from "react-icons/fa";
-import { MdRefresh } from "react-icons/md";
-
-const MotionBox = motion(Box);
+import { MdArrowBack, MdRefresh } from "react-icons/md";
 
 const tierToName: Record<TierTypes, string> = {
-  TIER1: "Tier 0",
-  TIER2: "Tier 1",
-  TIER3: "Tier 2",
-  TIER4: "Tier 3"
-};
-
-const tierToLeftMargin: Record<TierTypes, string> = {
-  TIER1: "0%",
-  TIER2: "30%",
-  TIER3: "60%",
-  TIER4: "85%"
+  TIER1: "TIER 0",
+  TIER2: "TIER 1",
+  TIER3: "TIER 2",
+  TIER4: "TIER 3"
 };
 
 type FoodWave = "standard" | "priority" | "not-yet" | null;
@@ -43,7 +33,13 @@ export function Profile() {
   const [roleObject, setRoleObject] = useState<RoleObject | null>(null);
   const [attendee, setAttendee] = useState<Attendee | null>(null);
   const [foodWave, setFoodWave] = useState<FoodWave>(null);
-  const [currDay, setCurrDay] = useState<string>("");
+
+  const [smallWebMode] = useMediaQuery("(max-width: 600px)", {
+    ssr: true,
+    fallback: false // return false on the server, and re-evaluate on the client side
+  });
+
+  const [xsWebMode] = useMediaQuery("(max-width: 400px)");
 
   const handleLoadQr = async () => {
     const qrCode = await api.get("/attendee/qr");
@@ -51,7 +47,7 @@ export function Profile() {
   };
 
   const handleLoadAuthData = async () => {
-    let role: RoleObject | null;
+    let role: RoleObject | null = null;
     try {
       role = (await api.get("/auth/info")).data;
       setRoleObject(role);
@@ -113,7 +109,6 @@ export function Profile() {
       const rpStartDate = new Date("2025-09-16T00:00:00-05:00");
       const rpEndDate = new Date("2025-09-20T23:59:59-05:00");
 
-      setCurrDay(todayShort);
       if (now > rpStartDate && now < rpEndDate) {
         // RP in progress
         const hasPriority =
@@ -135,7 +130,273 @@ export function Profile() {
     void handleLoadAuthData();
   }, []);
 
-  return (
+  return !smallWebMode ? (
+    <VStack
+      bgColor="black"
+      minH="100vh"
+      color="white"
+      spacing={0}
+      align="stretch"
+      bgImage="/site/profile_qr_bg.svg"
+      bgSize={"cover"}
+      pb={32}
+      overflow="hidden"
+    >
+      <Link
+        href={"/"}
+        color="blue.300"
+        fontFamily="Inter, sans-serif"
+        display="flex"
+        alignItems="center"
+        gap={1}
+        cursor="pointer"
+        _hover={{
+          color: "blue.500"
+        }}
+        fontSize={"lg"}
+        fontWeight={"bold"}
+        p={4}
+      >
+        <Icon as={MdArrowBack} w={5} h={5} />
+        Back to main site
+      </Link>
+      <Box
+        mt="30px"
+        p={"8px"}
+        maxW="650px"
+        w="100%"
+        mx="auto"
+        bgColor="#EEEEEE"
+        borderRadius={"16px"}
+        transform="rotate(-1.5deg)"
+      >
+        <Box
+          w="100%"
+          h="fit-content"
+          outline="1px solid #BBBBBB"
+          borderRadius="9px"
+          p={"12px"}
+          display="flex"
+          flexDirection="column"
+          position="relative"
+          gap="4px"
+        >
+          {/* top row */}
+          <HStack justifyContent={"flex-start"} w="100%" gap="36px">
+            {/* profile picture */}
+            <Box
+              display="flex"
+              justifyContent={"center"}
+              alignItems={"center"}
+              w="fit-content"
+              h="fit-content"
+              pos="relative"
+            >
+              <Image
+                src="/site/profile_image_wrapper.svg"
+                w="150px"
+                position="relative"
+                zIndex="3"
+              />
+              <Box
+                w="120px"
+                h="142px"
+                pos="absolute"
+                zIndex="1"
+                bgColor="#BBBBBB"
+                // style={{
+                //   background:
+                //     "linear-gradient(0deg,rgba(36, 1, 49, 1) 0%, rgba(153, 153, 153, 1) 100%);"
+                // }}
+              >
+                <Image
+                  src="/site/profile_image_default.svg"
+                  width="100%"
+                  height="110%"
+                  objectFit="cover"
+                  objectPosition={"center"}
+                />
+              </Box>
+            </Box>
+            {/* attendee info */}
+            <HStack
+              px="18px"
+              py="6px"
+              flex={1}
+              minWidth={0}
+              justifyContent={"space-between"}
+              borderRadius="18px"
+              borderLeftWidth="8px"
+              borderRightWidth="2px"
+              borderColor="#049AEB"
+            >
+              <VStack
+                gap={"8px"}
+                alignItems={"flex-start"}
+                fontFamily="'Geist Pixel', sans-serif"
+                minWidth={0}
+              >
+                <Text
+                  fontSize="3xl"
+                  fontWeight="bold"
+                  color="gray.800"
+                  // for cutting off text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  width="100%"
+                  minWidth={0}
+                >
+                  {roleObject?.displayName}
+                </Text>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  color="gray.600"
+                  // for cutting off text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  width="100%"
+                  minWidth={0}
+                >
+                  {roleObject?.email}
+                </Text>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  color="gray.600"
+                  // for cutting off text (just in case)
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  width="100%"
+                  minWidth={0}
+                >
+                  {foodWave === "priority"
+                    ? "FOOD WAVE: PRIORITY"
+                    : foodWave === "standard"
+                      ? "FOOD WAVE: STANDARD"
+                      : "ATTENDEE"}
+                </Text>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  color="gray.600"
+                  // for cutting off text (just in case)
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  width="100%"
+                  minWidth={0}
+                >
+                  {attendee?.points ?? 0} PTS TOTAL -{" "}
+                  {attendee?.currentTier
+                    ? tierToName[attendee.currentTier]
+                    : "Not available"}
+                </Text>
+              </VStack>
+              <Image
+                position="absolute"
+                src="/rp-2026.svg"
+                w="40px"
+                alignSelf="flex-end"
+                m="12px"
+                right="30px"
+              />
+            </HStack>
+          </HStack>
+          {/* bottom row */}
+          <HStack justifyContent={"space-between"} w="100%" gap="24px">
+            {/* text */}
+            <Box
+              display="flex"
+              flexDirection={"column"}
+              justifyContent={"flex-start"}
+              alignItems={"flex-start"}
+              alignSelf={"flex-start"}
+              pt="24px"
+              flex={1}
+              pos="relative"
+              color="gray.800"
+              gap="8px"
+            >
+              <Text
+                fontFamily="Inter, sans-serif"
+                fontSize="md"
+                fontWeight="500"
+              >
+                Welcome to R|P 2026! Attend events and activities to earn
+                points; exchange them at the front desk for prizes -- attend 2
+                events per day to get into the fast lane at dinner! Use this QR
+                code to check into events.
+              </Text>
+              <Text
+                fontFamily="Inter, sans-serif"
+                fontSize="md"
+                display="flex"
+                alignItems={"center"}
+                gap={1}
+                color="blue.300"
+                cursor="pointer"
+                _hover={{
+                  color: "blue.500"
+                }}
+                fontWeight={"bold"}
+                onClick={() => {
+                  void handleLoadQr();
+                  toast({
+                    title: "QR Code Refreshed",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                    position: "top"
+                  });
+                }}
+              >
+                <Icon as={MdRefresh} w={4} h={4} />
+                Refresh QR Code
+              </Text>
+            </Box>
+            {/* qr code */}
+            <VStack w="220px" h="220px">
+              <Box
+                p={8}
+                bgColor={"#ccc"}
+                borderRadius={"8px"}
+                w="100%"
+                h="100%"
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                {qr ? (
+                  <QRCodeSVG
+                    value={qr}
+                    width="100%"
+                    height="100%"
+                    bgColor="transparent"
+                  />
+                ) : (
+                  <Spinner />
+                )}
+              </Box>
+            </VStack>
+          </HStack>
+          <Text
+            fontFamily="'Geist Pixel', sans-serif"
+            fontSize="sm"
+            color="gray.800"
+            position="absolute"
+            bottom="4px"
+          >
+            {attendee?.userId.toUpperCase()}
+          </Text>
+        </Box>
+      </Box>
+    </VStack>
+  ) : (
+    // MOBILE VIEW --------------------------------------------------------
     <VStack
       bgColor="black"
       minH="100vh"
@@ -146,182 +407,183 @@ export function Profile() {
       bgSize={"cover"}
       pb={32}
     >
-      <Box px={6} pt={6} pb={4} maxW="400px" w="100%" mx="auto">
-        <Link
-          href={"/"}
-          color="blue.300"
-          fontFamily="Inter, sans-serif"
-          fontSize={"lg"}
-          fontWeight={"bold"}
-          py={4}
+      <Link
+        href={"/"}
+        color="blue.300"
+        fontFamily="Inter, sans-serif"
+        display="flex"
+        alignItems="center"
+        gap={1}
+        cursor="pointer"
+        _hover={{
+          color: "blue.500"
+        }}
+        fontSize={"lg"}
+        fontWeight={"bold"}
+        p={4}
+      >
+        <Icon as={MdArrowBack} w={5} h={5} />
+        Back to main site
+      </Link>
+      {/* content */}
+      <VStack
+        mt="30px"
+        p="24px"
+        w="100%"
+        maxW="100%"
+        justifyContent={"center"}
+        alignItems={"center"}
+        overflow={"hidden"}
+      >
+        {/* profile picture */}
+        <Box
+          display="flex"
+          justifyContent={"center"}
+          alignItems={"center"}
+          w="fit-content"
+          h="fit-content"
+          pos="relative"
         >
-          Back to main site
-        </Link>
-        <VStack
-          border={"1px solid #ccc"}
-          p={2}
-          pt={0}
-          borderRadius={"xl"}
-          mt={3}
-          gap={0}
-        >
-          <HStack justifyContent={"flex-end"} w="100%">
-            <HStack alignItems={"center"} gap={2}>
-              <Text
-                fontFamily="'Geist Pixel', sans-serif"
-                fontSize="3xl"
-                ps="auto"
-              >
-                {attendee?.points ?? 0}
-              </Text>
-              <Text
-                fontFamily="'Geist Pixel', sans-serif"
-                fontSize="lg"
-                ps="auto"
-                bgColor={"red.500"}
-                px={3}
-                borderRadius={"lg"}
-              >
-                PTS TOTAL
-              </Text>
-            </HStack>
-          </HStack>
-          <Image src="/site/profile_image.svg" w="100%" />
-        </VStack>
+          <Image
+            src="/site/profile_image_wrapper.svg"
+            w="150px"
+            position="relative"
+            zIndex="3"
+          />
+          <Box
+            w="120px"
+            h="142px"
+            pos="absolute"
+            zIndex="1"
+            bgColor="#BBBBBB"
+            // style={{
+            //   background:
+            //     "linear-gradient(0deg,rgba(36, 1, 49, 1) 0%, rgba(153, 153, 153, 1) 100%);"
+            // }}
+          >
+            <Image
+              src="/site/profile_image_default.svg"
+              width="100%"
+              height="110%"
+              objectFit="cover"
+              objectPosition={"center"}
+            />
+          </Box>
+        </Box>
+        {/* attendee info */}
         <HStack
-          bgColor="#ccc"
-          p={5}
-          py={3}
-          my={3}
+          px="18px"
+          mx="0px"
+          py="6px"
+          minWidth={0}
+          width="100%"
           justifyContent={"space-between"}
-          borderRadius="xl"
+          borderRadius="18px"
           borderLeftWidth="8px"
-          borderLeftColor="red.500" // or whatever exact red you need
+          borderRightWidth="2px"
+          borderColor="#049AEB"
         >
-          <VStack gap={0} alignItems={"flex-start"}>
+          <VStack
+            gap={"8px"}
+            alignItems={"flex-start"}
+            fontFamily="'Geist Pixel', sans-serif"
+            minWidth={0}
+            color="gray.100"
+          >
             <Text
-              fontFamily="Inter, sans-serif"
               fontSize="3xl"
               fontWeight="bold"
-              color="gray.800"
+              // for cutting off text (just in case)
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              width="100%"
+              minWidth={0}
             >
               {roleObject?.displayName}
             </Text>
-            <Text
-              fontFamily="Inter, sans-serif"
-              fontSize="xl"
-              fontWeight="bold"
-              color="gray.600"
-            >
+            <Text fontSize="xl" fontWeight="bold">
               {roleObject?.email}
             </Text>
+            <Text fontSize="xl" fontWeight="bold">
+              {foodWave === "priority"
+                ? "FOOD WAVE: PRIORITY"
+                : foodWave === "standard"
+                  ? "FOOD WAVE: STANDARD"
+                  : "ATTENDEE"}
+            </Text>
+            <Text fontSize="xl" fontWeight="bold">
+              {attendee?.points ?? 0} PTS TOTAL -{" "}
+              {attendee?.currentTier
+                ? tierToName[attendee.currentTier]
+                : "Not available"}
+            </Text>
           </VStack>
-          <Image src="/rp_logo.svg" w="40px" />
-        </HStack>
-        <HStack>
-          {foodWave && currDay ? (
-            <>
-              <Text
-                fontFamily="Inter, sans-serif"
-                fontSize="xl"
-                fontWeight="bold"
-                color="white"
-                fontStyle={"italic"}
-              >
-                Food Wave
-                {currDay && foodWave !== "not-yet" ? ` (${currDay})` : ""}:
-              </Text>
-              {foodWave === "priority" ? (
-                <HStack spacing={2} alignItems="center">
-                  <Text
-                    fontFamily="Inter, sans-serif"
-                    fontSize="xl"
-                    fontWeight="bold"
-                    fontStyle="italic"
-                    color="yellow.500"
-                  >
-                    Priority
-                  </Text>
-                  <Icon as={FaMedal} color="yellow.500" w={4} h={4} />
-                </HStack>
-              ) : foodWave === "standard" ? (
-                <Text
-                  fontFamily="Inter, sans-serif"
-                  fontSize="xl"
-                  fontWeight="bold"
-                  fontStyle="italic"
-                >
-                  Standard
-                </Text>
-              ) : foodWave === "not-yet" ? (
-                <Text
-                  fontFamily="Inter, sans-serif"
-                  fontSize="xl"
-                  fontWeight="bold"
-                  fontStyle="italic"
-                >
-                  Not yet available
-                </Text>
-              ) : null}
-            </>
-          ) : (
-            <></>
+          {!xsWebMode && (
+            <Image
+              position="absolute"
+              src="/rp-2026.svg"
+              w="40px"
+              alignSelf="flex-end"
+              m="12px"
+              right="30px"
+            />
           )}
         </HStack>
-        <Text
-          fontFamily="Inter, sans-serif"
-          fontSize="xl"
-          fontWeight="bold"
-          mb={6}
-          color="white"
-          fontStyle={"italic"}
+        <Box
+          display="flex"
+          maxW="80%"
+          flexDirection={"column"}
+          justifyContent={"flex-start"}
+          alignItems={"center"}
+          pt="24px"
+          flex={1}
+          pos="relative"
+          color="gray.800"
+          gap="8px"
         >
-          Prize Tier:{" "}
-          {attendee?.currentTier
-            ? tierToName[attendee.currentTier]
-            : "Not available"}
-          {attendee?.currentTier ? (
-            <PrizeTier tier={attendee.currentTier} />
-          ) : (
-            " Not available"
-          )}
-        </Text>
-
+          <Text
+            fontFamily="Inter, sans-serif"
+            fontSize="md"
+            fontWeight="500"
+            color="gray.100"
+          >
+            Welcome to R|P 2026! Attend events and activities to earn points;
+            exchange them at the front desk for prizes -- attend 2 events per
+            day to get into the fast lane at dinner! Use this QR code to check
+            into events.
+          </Text>
+        </Box>
+        <br />
+        {/* qr code */}
+        <VStack w="220px" h="220px">
+          <Box
+            p={8}
+            bgColor={"#ccc"}
+            borderRadius={"8px"}
+            w="100%"
+            h="100%"
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            {qr ? (
+              <QRCodeSVG
+                value={qr}
+                width="100%"
+                height="100%"
+                bgColor="transparent"
+              />
+            ) : (
+              <Spinner />
+            )}
+          </Box>
+        </VStack>
         <Text
           fontFamily="Inter, sans-serif"
-          fontSize="lg"
-          fontWeight="bold"
-          mb={2}
-        >
-          Level up your prize tier to unlock more rewards at the end of the
-          event.
-        </Text>
-
-        <Text
-          fontFamily="Inter, sans-serif"
-          fontSize="lg"
-          fontWeight="bold"
-          mb={2}
-        >
-          Attend events and activities to earn points, which advance your prize
-          tier.
-        </Text>
-
-        <Text
-          fontFamily="Inter, sans-serif"
-          fontSize="2xl"
-          fontWeight="bold"
-          mt={4}
-        >
-          Check-in QR Code
-        </Text>
-        <Text
-          fontFamily="Inter, sans-serif"
-          fontSize="xl"
-          pb={3}
+          fontSize="md"
           display="flex"
           alignItems={"center"}
-          gap={1}
           color="blue.300"
           cursor="pointer"
           _hover={{
@@ -339,140 +601,19 @@ export function Profile() {
             });
           }}
         >
-          <Icon as={MdRefresh} w={5} h={5} />
+          <Icon as={MdRefresh} w={4} h={4} />
           Refresh QR Code
         </Text>
-        <Box p={8} bgColor={"#ccc"} borderRadius={"xl"}>
-          {qr ? (
-            <QRCodeSVG
-              value={qr}
-              width="100%"
-              height="100%"
-              bgColor="transparent"
-            />
-          ) : (
-            <Spinner />
-          )}
-        </Box>
-      </Box>
-    </VStack>
-  );
-}
-
-export function PrizeTier({ tier }: { tier: TierTypes }) {
-  // map tiers 1–4 → percent offsets
-  const tierIndex = Number(tier.slice(-1)) - 1; // 0–3
-
-  // create 4 markers
-  const roadMarkers = Array.from({ length: 50 }, (_, i) => (
-    <Box
-      key={i}
-      position="absolute"
-      left={`${i * 24}px`}
-      top="50%"
-      transform="translateY(-50%)"
-      width="8px"
-      height="2px"
-      backgroundColor="#ffd700"
-      borderRadius="1px"
-      zIndex={1}
-      opacity={0.5}
-    />
-  ));
-
-  const markers = [1, 2, 3, 4].map((n, i) => {
-    const isCurrent = i <= tierIndex;
-    return {
-      label: n - 1,
-      left: `${(i / 3) * 100}%`,
-      size: isCurrent ? 24 : 20,
-      bg: isCurrent ? "#ffd700" : "#555",
-      color: isCurrent ? "black" : "white",
-      fontSize: isCurrent ? "md" : "sm"
-    };
-  });
-
-  return (
-    <Box width="100%" position="relative" height="60px" mt={2}>
-      <Box
-        height="24px"
-        overflow="hidden"
-        position="relative"
-        backgroundColor="#333"
-        borderRadius="8px"
-        margin="0"
-        border="1px solid #555"
-      >
-        {/* ROAD */}
-        <MotionBox
-          height="100%"
-          style={{ width: "100%" }}
-          backgroundColor="#666"
-          transition="width 0.8s ease-out"
+        <Text
+          fontFamily="'Geist Pixel', sans-serif"
+          fontSize="sm"
           position="absolute"
-          left={0}
-          top={0}
-          borderRadius="8px"
-        />
-
-        {/* DASHED */}
-        {roadMarkers}
-
-        <MotionBox
-          position="absolute"
-          top="50%"
-          initial={{ left: tierToLeftMargin[tier] }}
-          style={{ left: "0%" }}
-          transform="translateY(-50%)"
-          zIndex={2}
-          transition="left 0.8s ease-out"
+          bottom="4px"
+          color="gray.100"
         >
-          <img
-            src="/site/registration/progress-icon.svg"
-            alt="Progress"
-            style={{ display: "block", height: "22px" }}
-          />
-        </MotionBox>
-      </Box>
-
-      {/* TIER MARKERS BELOW ROAD */}
-      <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        mt={2}
-      >
-        {markers.map(({ label, size, bg, color, fontSize }) => (
-          <Box
-            key={label}
-            display="flex"
-            top="36px"
-            textAlign="center"
-            flexDir={"column"}
-            alignItems={"center"}
-          >
-            <Box
-              width={`${size}px`}
-              height={`${size}px`}
-              bg={bg}
-              borderRadius="50%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mb={1}
-            >
-              <Text
-                fontSize={fontSize}
-                fontWeight="bold"
-                color={color}
-                ml={"-2px"}
-              >
-                {label}
-              </Text>
-            </Box>
-          </Box>
-        ))}
-      </Box>
-    </Box>
+          {attendee?.userId.toUpperCase()}
+        </Text>
+      </VStack>
+    </VStack>
   );
 }
