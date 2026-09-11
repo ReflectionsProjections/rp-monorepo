@@ -16,7 +16,9 @@ process.env.DATABASE_PASSWORD =
 process.env.DATABASE_HOST =
     process.env.DATABASE_HOST ?? rootEnv.DATABASE_HOST ?? "db";
 
-process.env.FIREBASE_ADMIN_CERT_PATH = "testing.json";
+process.env.PROJECT_ID = "testing-project";
+process.env.CLIENT_EMAIL = "testing@example.com";
+process.env.PRIVATE_KEY = "testing-key";
 
 process.env.PUZZLEBANG_API_KEY = "iampuzzlebangtrust";
 
