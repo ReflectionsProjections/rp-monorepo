@@ -12,11 +12,6 @@ const common = {
         response.status(429).json({ error: "TooManyRequests" }),
 };
 
-export const magicLinkIssueIpLimiter = rateLimit({
-    ...common,
-    max: Config.MAGIC_LINK_ISSUE_IP_LIMIT,
-});
-
 export const magicLinkIssueEmailLimiter = rateLimit({
     ...common,
     max: Config.MAGIC_LINK_ISSUE_EMAIL_LIMIT,
@@ -26,11 +21,6 @@ export const magicLinkIssueEmailLimiter = rateLimit({
                 ? request.body.email
                 : "invalid-email"
         ),
-});
-
-export const magicLinkVerifyIpLimiter = rateLimit({
-    ...common,
-    max: Config.MAGIC_LINK_VERIFY_IP_LIMIT,
 });
 
 // Caps code guesses per email across IPs; the per-token attempt cap in the

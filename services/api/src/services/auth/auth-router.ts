@@ -19,9 +19,7 @@ import {
 import { normalizeEmail } from "./auth-utils";
 import {
     magicLinkIssueEmailLimiter,
-    magicLinkIssueIpLimiter,
     magicLinkVerifyEmailLimiter,
-    magicLinkVerifyIpLimiter,
 } from "./magic-link-rate-limit";
 
 const authRouter = Router();
@@ -51,7 +49,6 @@ authRouter.use("/sponsor", authSponsorRouter);
  */
 authRouter.post(
     "/magic-links",
-    magicLinkIssueIpLimiter,
     magicLinkIssueEmailLimiter,
     async (req, res) => {
         const request = MagicLinkIssueValidator.parse(req.body);
@@ -86,24 +83,18 @@ authRouter.post(
  *               $ref: '#/components/schemas/MagicLinkTokenResponse'
  *       401:
  *         description: The token is invalid
- *       429:
- *         description: The request limit was reached
  *     security: []
  */
-authRouter.post(
-    "/magic-links/verify",
-    magicLinkVerifyIpLimiter,
-    async (req, res) => {
-        const request = MagicLinkVerifyValidator.parse(req.body);
-        const token = await verifyMagicLink(request.token, request.client);
-        if (!token) {
-            return res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({ error: "InvalidToken" });
-        }
-        return res.status(StatusCodes.OK).json({ token });
+authRouter.post("/magic-links/verify", async (req, res) => {
+    const request = MagicLinkVerifyValidator.parse(req.body);
+    const token = await verifyMagicLink(request.token, request.client);
+    if (!token) {
+        return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json({ error: "InvalidToken" });
     }
-);
+    return res.status(StatusCodes.OK).json({ token });
+});
 
 /**
  * @swagger
@@ -132,7 +123,6 @@ authRouter.post(
  */
 authRouter.post(
     "/magic-links/verify-code",
-    magicLinkVerifyIpLimiter,
     magicLinkVerifyEmailLimiter,
     async (req, res) => {
         const request = MagicLinkCodeVerifyValidator.parse(req.body);
