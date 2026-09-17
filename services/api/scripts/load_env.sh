@@ -11,7 +11,7 @@ set -euo pipefail
 DEPLOY_DIR="/home/ubuntu/rp-api"
 ENV_SECRET_ID="rp-api/prod/env"
 FIREBASE_SECRET_ID="rp-api/prod/firebase-admin-cert"
-FIREBASE_CERT_PATH="$DEPLOY_DIR/firebase-admin-cert.json"
+DEFAULT_FIREBASE_CERT_PATH="$DEPLOY_DIR/firebase-admin-cert.json"
 
 # Resolve the region from instance metadata (IMDSv2).
 TOKEN="$(curl -sf -X PUT "http://169.254.169.254/latest/api/token" \
@@ -36,6 +36,14 @@ if ! grep -q "^ENV=" "$DEPLOY_DIR/.env.tmp"; then
     exit 1
 fi
 mv "$DEPLOY_DIR/.env.tmp" "$DEPLOY_DIR/.env"
+
+# Write the cert to the path the API will actually read it from
+# (FIREBASE_ADMIN_CERT_PATH in the .env), so the two can never drift apart.
+FIREBASE_CERT_PATH="$(sed -n 's/^FIREBASE_ADMIN_CERT_PATH=//p' "$DEPLOY_DIR/.env" | tail -n 1 | tr -d '"\r' | sed "s/^'//; s/'$//")"
+if [ -z "$FIREBASE_CERT_PATH" ]; then
+    FIREBASE_CERT_PATH="$DEFAULT_FIREBASE_CERT_PATH"
+fi
+mkdir -p "$(dirname "$FIREBASE_CERT_PATH")"
 
 fetch_secret "$FIREBASE_SECRET_ID" > "$FIREBASE_CERT_PATH.tmp"
 if ! grep -q '"private_key"' "$FIREBASE_CERT_PATH.tmp"; then

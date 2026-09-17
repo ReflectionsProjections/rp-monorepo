@@ -58,9 +58,22 @@ notificationsRouter.post(
             .throwOnError();
 
         // sign them up for the default topic: all users (notify everyone who has the app)
-        await getFirebaseAdmin()
-            .messaging()
-            .subscribeToTopic(notificationEnrollmentData.deviceId, "allUsers");
+        try {
+            await getFirebaseAdmin()
+                .messaging()
+                .subscribeToTopic(
+                    notificationEnrollmentData.deviceId,
+                    "allUsers"
+                );
+        } catch (error) {
+            console.error(
+                `Failed to subscribe ${userId} to allUsers (non-fatal):`,
+                error
+            );
+            return res
+                .status(StatusCodes.CREATED)
+                .json(notificationEnrollmentData);
+        }
 
         // Get their tags
         const { data: attendee } = await SupabaseDB.ATTENDEES.select("tags")
