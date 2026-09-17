@@ -14,10 +14,13 @@ import RoleChecker from "../../middleware/role-checker";
 import { Role } from "../auth/auth-models";
 import { generateQrHash, getCurrentDay } from "../checkin/checkin-utils";
 import { getFirebaseAdmin } from "../../firebase";
+import { getTierForPoints } from "./attendee-utils";
 
 const attendeeRouter = Router();
 
-// Tier hierarchy for redemption logic
+// Tier hierarchy for redemption logic. An attendee's tier is derived from
+// their points total (see getTierForPoints), never from leaderboard
+// promotion.
 const TIER_HIERARCHY = {
     [Tiers.Enum.TIER1]: 1,
     [Tiers.Enum.TIER2]: 2,
@@ -669,7 +672,7 @@ attendeeRouter.get(
     async (req, res) => {
         const { userId } = req.params;
 
-        const { data: user } = await SupabaseDB.ATTENDEES.select("currentTier")
+        const { data: user } = await SupabaseDB.ATTENDEES.select("points")
             .eq("userId", userId)
             .maybeSingle()
             .throwOnError();
@@ -686,7 +689,8 @@ attendeeRouter.get(
 
         const redeemedTiers = redeemed.map((r: { item: TierType }) => r.item);
 
-        const userTierLevel = TIER_HIERARCHY[user.currentTier];
+        const currentTier = getTierForPoints(user.points);
+        const userTierLevel = TIER_HIERARCHY[currentTier];
         const allTiers: TierType[] = Object.values(Tiers.Enum);
 
         const redeemableTiers = allTiers.filter((tier) => {
@@ -696,7 +700,7 @@ attendeeRouter.get(
 
         return res.status(StatusCodes.OK).json({
             userId,
-            currentTier: user.currentTier,
+            currentTier,
             redeemedTiers,
             redeemableTiers,
         });
@@ -758,7 +762,7 @@ attendeeRouter.post(
     async (req, res) => {
         const { userId, tier } = AttendeeRedeemMerchValidator.parse(req.body);
 
-        const { data: user } = await SupabaseDB.ATTENDEES.select("currentTier")
+        const { data: user } = await SupabaseDB.ATTENDEES.select("points")
             .eq("userId", userId)
             .maybeSingle()
             .throwOnError();
@@ -782,8 +786,8 @@ attendeeRouter.post(
                 .json({ error: "Tier already redeemed" });
         }
 
-        // check if user tier is too low for redemption
-        const userTierLevel = TIER_HIERARCHY[user.currentTier];
+        // check if user tier (derived from points) is too low for redemption
+        const userTierLevel = TIER_HIERARCHY[getTierForPoints(user.points)];
         const tierLevel = TIER_HIERARCHY[tier];
         if (tierLevel > userTierLevel) {
             return res
@@ -1037,7 +1041,10 @@ attendeeRouter.patch(
 
         // Update the points
         console.log(`Updating points for user ${userId} to ${newPoints}`);
-        await SupabaseDB.ATTENDEES.update({ points: newPoints })
+        await SupabaseDB.ATTENDEES.update({
+            points: newPoints,
+            currentTier: getTierForPoints(newPoints),
+        })
             .eq("userId", userId)
             .throwOnError();
 

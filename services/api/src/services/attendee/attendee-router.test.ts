@@ -900,6 +900,27 @@ describe("PATCH /attendee/addPoints", () => {
         expect(updated.data?.points).toBe(25);
     });
 
+    it("should update currentTier when points cross a threshold", async () => {
+        await insertTestAttendee({
+            attendee: {
+                userId: BASE_TEST_ATTENDEE.userId,
+                points: 30,
+                currentTier: "TIER1",
+            },
+        });
+
+        await patch("/attendee/addPoints", Role.enum.ADMIN)
+            .send({ userId: TESTER.userId, pointsToAdd: 30 })
+            .expect(StatusCodes.OK);
+
+        const updated = await SupabaseDB.ATTENDEES.select("points, currentTier")
+            .eq("userId", TESTER.userId)
+            .maybeSingle()
+            .throwOnError();
+
+        expect(updated.data).toEqual({ points: 60, currentTier: "TIER3" });
+    });
+
     it("should return 404 if attendee to add points to is not found", async () => {
         await insertTestAttendee();
 
@@ -945,7 +966,7 @@ describe("POST /attendee/redeem", () => {
                 attendee: {
                     ...BASE_TEST_ATTENDEE,
                     userId: userId,
-                    currentTier: "TIER2",
+                    points: 40, // TIER2
                 },
             });
 
@@ -989,7 +1010,7 @@ describe("POST /attendee/redeem", () => {
             attendee: {
                 ...BASE_TEST_ATTENDEE,
                 userId: userId,
-                currentTier: "TIER2",
+                points: 40, // TIER2
             },
         });
 
@@ -1008,14 +1029,29 @@ describe("POST /attendee/redeem", () => {
             attendee: {
                 ...BASE_TEST_ATTENDEE,
                 userId: userId,
-                currentTier: "TIER1",
+                points: 39, // just below TIER2
             },
         });
 
-        // User with TIER1 cannot redeem TIER2
+        // User with 39 points (TIER1) cannot redeem TIER2
         await post("/attendee/redeem", Role.enum.STAFF)
             .send({ userId, tier: "TIER2" })
             .expect(StatusCodes.BAD_REQUEST);
+    });
+
+    it("should ignore the stored currentTier column and use points", async () => {
+        await insertTestAttendee({
+            attendee: {
+                ...BASE_TEST_ATTENDEE,
+                userId: userId,
+                points: 90, // TIER4
+                currentTier: "TIER1", // stale column value
+            },
+        });
+
+        await post("/attendee/redeem", Role.enum.STAFF)
+            .send({ userId, tier: "TIER4" })
+            .expect(StatusCodes.OK);
     });
 
     it("should return 401 if unauthenticated", async () => {
@@ -1045,7 +1081,7 @@ describe("GET /attendee/redeemable/:userId", () => {
                 attendee: {
                     ...BASE_TEST_ATTENDEE,
                     userId: userId,
-                    currentTier: "TIER3",
+                    points: 60, // TIER3
                 },
             });
 
@@ -1068,7 +1104,7 @@ describe("GET /attendee/redeemable/:userId", () => {
             attendee: {
                 ...BASE_TEST_ATTENDEE,
                 userId: userId,
-                currentTier: "TIER3",
+                points: 75, // TIER3
             },
         });
 
@@ -1095,7 +1131,7 @@ describe("GET /attendee/redeemable/:userId", () => {
             attendee: {
                 ...BASE_TEST_ATTENDEE,
                 userId: userId,
-                currentTier: "TIER2",
+                points: 59, // TIER2
             },
         });
 
@@ -1114,6 +1150,47 @@ describe("GET /attendee/redeemable/:userId", () => {
             currentTier: "TIER2",
             redeemedTiers: ["TIER1", "TIER2"],
             redeemableTiers: [],
+        });
+    });
+
+    it("should derive currentTier from points, not the stored column", async () => {
+        await insertTestAttendee({
+            attendee: {
+                ...BASE_TEST_ATTENDEE,
+                userId: userId,
+                points: 130,
+                currentTier: "TIER1", // stale column value
+            },
+        });
+
+        const res = await get(
+            `/attendee/redeemable/${userId}`,
+            Role.enum.STAFF
+        ).expect(StatusCodes.OK);
+
+        expect(res.body).toEqual({
+            userId,
+            currentTier: "TIER4",
+            redeemedTiers: [],
+            redeemableTiers: ["TIER1", "TIER2", "TIER3", "TIER4"],
+        });
+    });
+
+    it("should only allow the shirt for an attendee with 0 points", async () => {
+        await insertTestAttendee({
+            attendee: { ...BASE_TEST_ATTENDEE, userId: userId, points: 0 },
+        });
+
+        const res = await get(
+            `/attendee/redeemable/${userId}`,
+            Role.enum.STAFF
+        ).expect(StatusCodes.OK);
+
+        expect(res.body).toEqual({
+            userId,
+            currentTier: "TIER1",
+            redeemedTiers: [],
+            redeemableTiers: ["TIER1"],
         });
     });
 
