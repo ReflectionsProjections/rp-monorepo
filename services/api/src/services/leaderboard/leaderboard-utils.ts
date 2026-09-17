@@ -218,16 +218,26 @@ export async function promoteUsersToNextTier(
     if (userDevices && userDevices.length > 0) {
         const deviceTokens = userDevices.map((device) => device.deviceId);
         const topicName = `tier-promotion-${day.toLowerCase()}`;
-        await getFirebaseAdmin()
-            .messaging()
-            .subscribeToTopic(deviceTokens, topicName);
-        // Add today's tier promotion day
-        await SupabaseDB.CUSTOM_TOPICS.upsert(
-            {
-                topicName: topicName,
-            },
-            { onConflict: "topicName", ignoreDuplicates: true }
-        ).throwOnError();
+        // Best-effort: tiers are already promoted in the DB above. If this
+        // threw, the submission would not be recorded and a retry would
+        // promote everyone a second time.
+        try {
+            await getFirebaseAdmin()
+                .messaging()
+                .subscribeToTopic(deviceTokens, topicName);
+            // Add today's tier promotion day
+            await SupabaseDB.CUSTOM_TOPICS.upsert(
+                {
+                    topicName: topicName,
+                },
+                { onConflict: "topicName", ignoreDuplicates: true }
+            ).throwOnError();
+        } catch (error) {
+            console.error(
+                `Failed to subscribe promoted users to ${topicName} (non-fatal):`,
+                error
+            );
+        }
     }
 
     return data || 0;

@@ -119,9 +119,16 @@ attendeeRouter.post(
         const topicName = `event_${event.name.replace(/[^a-zA-Z0-9-_.~%]/g, "_")}`;
 
         if (device?.deviceId) {
-            await getFirebaseAdmin()
-                .messaging()
-                .subscribeToTopic(device?.deviceId, topicName);
+            try {
+                await getFirebaseAdmin()
+                    .messaging()
+                    .subscribeToTopic(device.deviceId, topicName);
+            } catch (error) {
+                console.error(
+                    `Failed to subscribe ${userId} to ${topicName} (non-fatal):`,
+                    error
+                );
+            }
         }
 
         return res.status(StatusCodes.OK).json({ favorites: newFavorites });

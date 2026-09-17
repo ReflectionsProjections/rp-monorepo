@@ -68,9 +68,18 @@ async function updateAttendeePriority(userId: string) {
         return; // we can just be done here if they don't have a deviceId
     }
     const topicName = `food-wave-1-${day.toLowerCase()}`;
-    await getFirebaseAdmin()
-        .messaging()
-        .subscribeToTopic(userDevice.deviceId, topicName);
+    // Push subscription is best-effort: a Firebase failure must never fail
+    // the check-in itself (attendance is already recorded at this point).
+    try {
+        await getFirebaseAdmin()
+            .messaging()
+            .subscribeToTopic(userDevice.deviceId, topicName);
+    } catch (error) {
+        console.error(
+            `Failed to subscribe ${userId} to ${topicName} (non-fatal):`,
+            error
+        );
+    }
 }
 
 async function updateAttendanceRecords(eventId: string, userId: string) {
@@ -121,8 +130,11 @@ export async function checkInUserToEvent(eventId: string, userId: string) {
         .single()
         .throwOnError();
 
-    // Update attendance records first
+    // Update attendance records first, then award points. Priority/push
+    // subscription runs last so a failure there can't leave an attendee
+    // checked in but unpaid.
     await updateAttendanceRecords(eventId, userId);
+    await assignPixelsToUser(userId, event.points);
 
     // Check if user should get priority (only for non-meal/checkin events and if they have attended >1 event)
     if (
@@ -170,7 +182,6 @@ export async function checkInUserToEvent(eventId: string, userId: string) {
             }
         }
     }
-    await assignPixelsToUser(userId, event.points);
 }
 
 export function generateQrHash(userId: string, expTime: number) {
