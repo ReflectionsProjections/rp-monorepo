@@ -1018,6 +1018,28 @@ describe("POST /attendee/redeem", () => {
             .expect(StatusCodes.BAD_REQUEST);
     });
 
+    it.each([
+        { points: 40, tier: "TIER2" },
+        { points: 60, tier: "TIER3" },
+        { points: 90, tier: "TIER4" },
+    ] as const)(
+        "should allow $tier redemption at $points points",
+        async ({ points, tier }) => {
+            await insertTestAttendee({
+                attendee: {
+                    ...BASE_TEST_ATTENDEE,
+                    userId,
+                    currentTier: "TIER1",
+                    points,
+                },
+            });
+
+            await post("/attendee/redeem", Role.enum.STAFF)
+                .send({ userId, tier })
+                .expect(StatusCodes.OK);
+        }
+    );
+
     it("should return 401 if unauthenticated", async () => {
         await post("/attendee/redeem")
             .send({ userId, tier: "TIER1" })
@@ -1088,6 +1110,29 @@ describe("GET /attendee/redeemable/:userId", () => {
             redeemedTiers: ["TIER1"],
             redeemableTiers: ["TIER2", "TIER3"],
         });
+    });
+
+    it("should include tiers unlocked by points", async () => {
+        await insertTestAttendee({
+            attendee: {
+                ...BASE_TEST_ATTENDEE,
+                userId,
+                currentTier: "TIER1",
+                points: 90,
+            },
+        });
+
+        const res = await get(
+            `/attendee/redeemable/${userId}`,
+            Role.enum.STAFF
+        ).expect(StatusCodes.OK);
+
+        expect(res.body.redeemableTiers).toEqual([
+            "TIER1",
+            "TIER2",
+            "TIER3",
+            "TIER4",
+        ]);
     });
 
     it("should return empty redeemableTiers if all tiers possible to redeem are redeemed", async () => {

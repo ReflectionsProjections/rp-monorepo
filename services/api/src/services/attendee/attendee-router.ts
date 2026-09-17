@@ -25,6 +25,25 @@ const TIER_HIERARCHY = {
     [Tiers.Enum.TIER4]: 4,
 } as const;
 
+const TIER_POINT_THRESHOLDS: Record<TierType, number> = {
+    TIER1: 0,
+    TIER2: 40,
+    TIER3: 60,
+    TIER4: 90,
+};
+
+function getEligibleTierLevel(currentTier: TierType, points: number): number {
+    const pointsTierLevel = Object.entries(TIER_POINT_THRESHOLDS).reduce(
+        (level, [tier, threshold]) =>
+            points >= threshold
+                ? Math.max(level, TIER_HIERARCHY[tier as TierType])
+                : level,
+        1
+    );
+
+    return Math.max(TIER_HIERARCHY[currentTier], pointsTierLevel);
+}
+
 /**
  * @swagger
  * /attendee/favorites/{eventId}:
@@ -669,7 +688,9 @@ attendeeRouter.get(
     async (req, res) => {
         const { userId } = req.params;
 
-        const { data: user } = await SupabaseDB.ATTENDEES.select("currentTier")
+        const { data: user } = await SupabaseDB.ATTENDEES.select(
+            "currentTier, points"
+        )
             .eq("userId", userId)
             .maybeSingle()
             .throwOnError();
@@ -686,7 +707,10 @@ attendeeRouter.get(
 
         const redeemedTiers = redeemed.map((r: { item: TierType }) => r.item);
 
-        const userTierLevel = TIER_HIERARCHY[user.currentTier];
+        const userTierLevel = getEligibleTierLevel(
+            user.currentTier,
+            user.points
+        );
         const allTiers: TierType[] = Object.values(Tiers.Enum);
 
         const redeemableTiers = allTiers.filter((tier) => {
@@ -758,7 +782,9 @@ attendeeRouter.post(
     async (req, res) => {
         const { userId, tier } = AttendeeRedeemMerchValidator.parse(req.body);
 
-        const { data: user } = await SupabaseDB.ATTENDEES.select("currentTier")
+        const { data: user } = await SupabaseDB.ATTENDEES.select(
+            "currentTier, points"
+        )
             .eq("userId", userId)
             .maybeSingle()
             .throwOnError();
@@ -783,7 +809,10 @@ attendeeRouter.post(
         }
 
         // check if user tier is too low for redemption
-        const userTierLevel = TIER_HIERARCHY[user.currentTier];
+        const userTierLevel = getEligibleTierLevel(
+            user.currentTier,
+            user.points
+        );
         const tierLevel = TIER_HIERARCHY[tier];
         if (tierLevel > userTierLevel) {
             return res
