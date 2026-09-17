@@ -1,5 +1,38 @@
-import { SupabaseDB } from "../../database";
+import { SupabaseDB, TierType } from "../../database";
 import { Config } from "../../config";
+
+/**
+ * Minimum points required to unlock each merchandise tier.
+ * TIER1 = Shirt, TIER2 = Lanyard, TIER3 = Keychain, TIER4 = Tote Bag.
+ *
+ * Keep in sync with rp-mobile `lib/pointShopProgress.ts` (POINT_SHOP_TIERS),
+ * which shows the same thresholds to attendees.
+ */
+export const TIER_POINT_THRESHOLDS: Record<TierType, number> = {
+    TIER1: 0,
+    TIER2: 40,
+    TIER3: 60,
+    TIER4: 90,
+};
+
+/** Tiers ordered from lowest to highest. */
+export const TIER_ORDER: TierType[] = ["TIER1", "TIER2", "TIER3", "TIER4"];
+
+/**
+ * Get the highest merchandise tier unlocked by a points total.
+ * @param points - Attendee's total points (null/undefined treated as 0)
+ * @returns The highest TierType whose threshold is <= points
+ */
+export function getTierForPoints(points: number | null | undefined): TierType {
+    const safePoints = Math.max(0, points || 0);
+    let tier: TierType = "TIER1";
+    for (const candidate of TIER_ORDER) {
+        if (safePoints >= TIER_POINT_THRESHOLDS[candidate]) {
+            tier = candidate;
+        }
+    }
+    return tier;
+}
 
 /**
  * Event start date: September 16, 2025 in Central Time
@@ -64,8 +97,10 @@ export async function addPoints(
         .single()
         .throwOnError();
 
-    const updateData: Record<string, number> = {
-        points: (attendee.points || 0) + points,
+    const newPoints = (attendee.points || 0) + points;
+    const updateData: Record<string, number | TierType> = {
+        points: newPoints,
+        currentTier: getTierForPoints(newPoints),
     };
 
     if (eventDay !== null) {
